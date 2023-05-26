@@ -1141,6 +1141,8 @@ Declared and defined in [`lua/dropbar/menu.lua`](https://github.com/Bekaboo/drop
 
 | Field          | Type                                              | Description                                                                            |
 | ------         | ------                                            | ------                                                                                 |
+| `buf`          | `integer`                                         | buffer number of the menu                                                              |
+| `win`          | `integer`                                         | window id of the menu                                                                  |
 | `is_opened`    | `boolean?`                                        | whether the menu is currently opened                                                   |
 | `entries`      | [`dropbar_menu_entry_t[]`](#dropbar_menu_entry_t) | entries in the menu                                                                    |
 | `win_configs`  | `table`                                           | window configuration, value can be a function, see [menu configuration options](#menu) |

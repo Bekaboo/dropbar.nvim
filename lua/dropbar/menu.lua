@@ -114,6 +114,8 @@ end
 ---@field prev_win integer? previous window
 
 ---@class dropbar_menu_t
+---@field buf integer?
+---@field win integer?
 ---@field is_opened boolean?
 ---@field entries dropbar_menu_entry_t[]
 ---@field win_configs table window configuration, value can be a function
