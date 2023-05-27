@@ -6,9 +6,14 @@
   <b>IDE-like breadcrumbs, out of the box</b>
 </p>
 
-`dropbar.nvim` is a [Neovim](https://neovim.io/) plugin that provides a
-polished, IDE-like, highly-customizable winbar with drop-down menu support and
-mutiple backends.
+<p align='center'>
+  <img src=https://github.com/Bekaboo/dropbar.nvim/assets/76579810/b6e8b247-d7a4-4f95-9468-af55f5cd7f88 width=400>
+</p>
+
+<p align='center'>
+  A polished, IDE-like, highly-customizable winbar for Neovim <br>
+  with drop-down menu support and mutiple backends
+</p>
 
 - [Features](#features)
 - [Requirements](#requirements)
@@ -41,6 +46,8 @@ mutiple backends.
 - [Similar Projects](#similar-projects)
 
 ## Features
+
+https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-b20fc3098c5a
 
 - Opening drop-down menus or go to definition with a single mouse click
 
