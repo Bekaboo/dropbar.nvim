@@ -51,7 +51,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
 - Opening drop-down menus or go to definition with a single mouse click
 
-- Pick mode for quickly select a component in the winbar with shortcuts
+- Pick mode for quickly selecting a component in the winbar with shortcuts
 
 - Automatically truncating long components
 
@@ -829,7 +829,7 @@ each sources.
 
 ##### LSP
 
-- `opts.sources.lsp.request.tt_init`: `number`
+- `opts.sources.lsp.request.ttl_init`: `number`
   - Number of times to retry a request before giving up
   - Default: `60`
 - `opts.sources.lsp.request.interval`: `number`
