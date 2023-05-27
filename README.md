@@ -1243,9 +1243,9 @@ A [`dropbar_source_t`](#dropbar_source_t) instance is just a table with
 cursor position.
 
 We have seen a simple example a custom source in the [default config of
-`opts.bar.sources`](#bar) where the second source is set to a table with
-`get_symbols` field set to a function gets symbols from either the markdown,
-LSP, or treesitter sources to achieve fall-back behavior.
+`opts.bar.sources`](#bar) where the second source is set to a table with its
+field `get_symbols` set to a function that gets symbols from either the
+markdown, LSP, or treesitter sources to achieve fall-back behavior.
 
 Here is another example of a custom source that will always return two symbols
 saying 'Hello' and 'dropbar' with highlights `'hl-Keyword'` and `'hl-Title'`
