@@ -51,9 +51,15 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
 - Opening drop-down menus or go to definition with a single mouse click
 
+    ![mouse-click](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/25282bf2-c90d-496b-9c37-0cbb6938ff5f)
+
 - Pick mode for quickly selecting a component in the winbar with shortcuts
 
+    ![pick-mode](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/6126ceb1-0ad9-468b-89b9-457ce4110999)
+
 - Automatically truncating long components
+
+    ![auto-truncate](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/c3b03e7f-d6f7-4c60-9c0d-da038529e1c7)
 
 - Multiple backbends that support fall-backs
 
