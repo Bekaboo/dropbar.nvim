@@ -96,7 +96,8 @@ INSTALLATION                                            *dropbar-installation*
 - Using native package manager >bash
 
         mkdir -p ~/.local/share/nvim/site/pack/packages/
-        git clone https://github.com/Bekaboo/dropbar.nvim ~/.local/share/nvim/site/pack/packages/start/dropbar.nvim
+        git clone https://github.com/Bekaboo/dropbar.nvim \
+	  ~/.local/share/nvim/site/pack/packages/start/dropbar.nvim
 <
 
 
