@@ -254,7 +254,7 @@ function dropbar_t:redraw()
     self:truncate()
   end
   self.string_cache = self:cat()
-  vim.cmd.redrawstatus()
+  vim.cmd('silent! redrawstatus')
 end
 
 ---Update dropbar components from sources and redraw dropbar, supposed to be
