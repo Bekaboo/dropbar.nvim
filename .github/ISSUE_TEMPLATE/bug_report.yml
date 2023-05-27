@@ -1,0 +1,91 @@
+name: Bug Report
+description: Report a bug in dropbar.nvim
+title: '[Bug]: '
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting to dropbar.nvim!
+        Before reporting please make sure you have searched through the
+        existing issues and have read the documentation.
+  - type: textarea
+    attributes:
+      label: 'Description'
+      description: 'Describe the problem you have when using dropbar.nvim'
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: 'nvim version'
+      description: 'Output of `nvim --version`'
+      placeholder: 'nvim --version'
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: 'dropbar.nvim version'
+      description: 'commit SHA of dropbar.nvim'
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: 'Operating system and version'
+      placeholder: 'Linux 6.3.2-arch1-1'
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 'Minimal config'
+      render: Lua
+      description: 'Minimal config to reproduce the bug'
+      value: |
+        local tmp = vim.env.TMPDIR
+          or vim.env.TEMPDIR
+          or vim.env.TMP
+          or vim.env.TEMP
+          or '/tmp'
+        local data = tmp ..  '/' .. (vim.env.NVIM_APPNAME or 'nvim')
+        local packages_root = data .. '/site'
+        local cloned_root = packages_root .. '/pack/packages/start'
+        local cloned_path = cloned_root .. '/dropbar.nvim'
+        local url = 'https://github.com/Bekaboo/dropbar.nvim.git'
+
+        vim.fn.mkdir(cloned_root, 'p')
+        vim.opt.pp:prepend(packages_root)
+        vim.opt.rtp:prepend(packages_root)
+
+        if not vim.loop.fs_stat(cloned_path) then
+          vim.fn.system({ 'git', 'clone', url, cloned_path })
+        end
+
+        require('dropbar').setup()
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 'Steps to reproduce'
+      description: 'Steps to reproduce using the minimal config'
+      placeholder: |
+        1. Save the configuration above as `minimal.lua`
+        2. `nvim --clean -u minimal.lua`
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 'Expected behavior'
+      description: 'A description of the expected behavior'
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 'Actual behavior'
+      description: 'A description of the actual behavior'
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 'Additional information'
+      description: 'Any additional information that can help with debugging'
+      placeholder: 'Screen recording, screenshots, etc'
