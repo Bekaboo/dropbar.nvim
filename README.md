@@ -164,11 +164,12 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           and not vim.wo[win].diff
       end,
       update_events = {
-        'CursorHold',
-        'CursorHoldI',
+        'CursorMoved',
+        'CursorMovedI',
         'DirChanged',
         'FileChangedShellPost',
         'TextChanged',
+        'TextChangedI',
         'VimResized',
         'WinResized',
         'WinScrolled',
@@ -486,11 +487,12 @@ general behavior of the plugin:
   - Default:
     ```lua
     {
-      'CursorHold',
-      'CursorHoldI',
+      'CursorMoved',
+      'CursorMovedI',
       'DirChanged',
       'FileChangedShellPost',
       'TextChanged',
+      'TextChangedI',
       'VimResized',
       'WinResized',
       'WinScrolled',

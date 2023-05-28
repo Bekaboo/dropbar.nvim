@@ -160,11 +160,12 @@ behavior of the plugin:
     - Default: >lua
 
             {
-              'CursorHold',
-              'CursorHoldI',
+              'CursorMoved',
+              'CursorMovedI',
               'DirChanged',
               'FileChangedShellPost',
               'TextChanged',
+              'TextChangedI',
               'VimResized',
               'WinResized',
               'WinScrolled',

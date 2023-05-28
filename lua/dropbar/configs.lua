@@ -11,11 +11,12 @@ M.opts = {
         and not vim.wo[win].diff
     end,
     update_events = {
-      'CursorHold',
-      'CursorHoldI',
+      'CursorMoved',
+      'CursorMovedI',
       'DirChanged',
       'FileChangedShellPost',
       'TextChanged',
+      'TextChangedI',
       'VimResized',
       'WinResized',
       'WinScrolled',
