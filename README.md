@@ -7,7 +7,7 @@
 </p>
 
 <p align='center'>
-  <img src=https://github.com/Bekaboo/dropbar.nvim/assets/76579810/b6e8b247-d7a4-4f95-9468-af55f5cd7f88 width=400>
+  <img src=https://github.com/Bekaboo/dropbar.nvim/assets/76579810/28db72ab-d75c-46fe-8a9d-1f06b4440de9 width=500>
 </p>
 
 <p align='center'>
