@@ -117,7 +117,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
   git clone https://github.com/Bekaboo/dropbar.nvim ~/.local/share/nvim/site/pack/packages/start/dropbar.nvim
   ```
 
-  Lazy-loading is unneeded as it is already done in [plugin/dropbar.nvim](https://github.com/Bekaboo/dropbar.nvim/blob/master/plugin/dropbar.lua).
+  Lazy-loading is unneeded as it is already done in [plugin/dropbar.lua](https://github.com/Bekaboo/dropbar.nvim/blob/master/plugin/dropbar.lua).
 
 ## Usage
 
