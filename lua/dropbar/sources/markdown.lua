@@ -62,14 +62,14 @@ setmetatable(markdown_heading_buf_symbols, {
 ---@return nil
 local function parse_buf(buf, lnum_end, incremental)
   local symbols_parsed = markdown_heading_buf_symbols[buf]
-  local lnum_start = symbols_parsed['end'].lnum + 1
+  local lnum_start = symbols_parsed['end'].lnum
   if not incremental then
     lnum_start = 0
     symbols_parsed.symbols = {}
     symbols_parsed['end'] = { lnum = 0, inside_code_block = false }
   end
   local lines = vim.api.nvim_buf_get_lines(buf, lnum_start, lnum_end, false)
-  symbols_parsed['end'].lnum = lnum_start + #lines
+  symbols_parsed['end'].lnum = lnum_start + #lines + 1
 
   for idx, line in ipairs(lines) do
     if line:match('^```') then
