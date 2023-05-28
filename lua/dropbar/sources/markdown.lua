@@ -110,18 +110,16 @@ local function unify(symbol, symbols, list_idx, buf)
       parse_buf(buf, -1, true) -- Parse whole buffer before opening menu
       if k == 'children' then
         self.children = {}
-        local depth = 0
         local lev = symbol.level
         for i, heading in vim.iter(symbols):enumerate():skip(list_idx) do
           if heading.level <= symbol.level then
             break
           end
-          local delta = lev - heading.level
-          local gain = delta < 0 and -1 or delta > 0 and 1 or 0
-          if depth + gain >= -1 then
-            table.insert(self.children, unify(heading, symbols, i, buf))
-            depth = depth + gain
+          if i == list_idx + 1 or heading.level < lev then
             lev = heading.level
+          end
+          if heading.level <= lev then
+            table.insert(self.children, unify(heading, symbols, i, buf))
           end
         end
         return self.children
