@@ -1,0 +1,11 @@
+{
+    "diagnostics.globals": [
+        "after_each",
+        "assert",
+        "before_each",
+        "clear",
+        "describe",
+        "it",
+        "pending"
+    ]
+}
