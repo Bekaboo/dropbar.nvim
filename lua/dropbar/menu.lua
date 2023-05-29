@@ -33,9 +33,11 @@ function dropbar_menu_entry_t:new(opts)
       }),
       padding = configs.opts.menu.entry.padding,
       components = {},
-    }, opts),
+    }, opts or {}),
     self
   )
+  -- vim.tbl_deep_extend drops metatables
+  entry.separator = bar.dropbar_symbol_t:new(entry.separator)
   for idx, component in ipairs(entry.components) do
     component.entry = entry
     component.entry_idx = idx
