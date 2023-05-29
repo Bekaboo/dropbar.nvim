@@ -318,7 +318,7 @@ describe('[menu]', function()
       assert.spy(agent2).was.called()
       assert.spy(agent3).was.called()
     end)
-    it('closes current menu will set cursor to parent menu', function()
+    it('closeing current menu will set cursor to parent menu', function()
       sub_sub_menu_it:close()
       assert.are.same(
         sub_sub_menu_it.prev_win,
@@ -334,7 +334,7 @@ describe('[menu]', function()
       menu_it:close()
       assert.are.same(menu_it.prev_win, vim.api.nvim_get_current_win())
     end)
-    it('closes current menu will close all sub-menus', function()
+    it('closeing current menu will close all sub-menus', function()
       local win = menu_it.win
       local sub_win = sub_menu_it.win
       local sub_sub_win = sub_sub_menu_it.win
@@ -346,7 +346,7 @@ describe('[menu]', function()
       assert.is_false(vim.api.nvim_win_is_valid(sub_win))
       assert.is_false(vim.api.nvim_win_is_valid(sub_sub_win))
     end)
-    it('deletes current menu will delete all sub-menus', function()
+    it('deleteing current menu will delete all sub-menus', function()
       local buf = menu_it.buf
       local win = menu_it.win
       local sub_buf = sub_menu_it.buf
