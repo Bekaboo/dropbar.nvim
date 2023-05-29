@@ -49,40 +49,45 @@
 
 https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-b20fc3098c5a
 
-- Opening drop-down menus or go to definition with a single mouse click
+- [x] Opening drop-down menus or go to definition with a single mouse click
 
     ![mouse-click](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/25282bf2-c90d-496b-9c37-0cbb6938ff5f)
 
-- Pick mode for quickly selecting a component in the winbar with shortcuts
+- [x] Pick mode for quickly selecting a component in the winbar with shortcuts
 
     ![pick-mode](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/6126ceb1-0ad9-468b-89b9-457ce4110999)
 
-- Automatically truncating long components
+- [x] Automatically truncating long components
 
     ![auto-truncate](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/c3b03e7f-d6f7-4c60-9c0d-da038529e1c7)
 
-- Multiple backbends that support fall-backs
+- [x] Multiple backbends that support fall-backs
 
   `dropbar.nvim` comes with four builtin sources:
 
-  - [lsp](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/sources/lsp.lua): gets symbols from language servers using nvim's builtin LSP framework
+  - [x] [lsp](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/sources/lsp.lua): gets symbols from language servers using nvim's builtin LSP framework
 
-  - [markdown](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/sources/markdown.lua): a custom incremental parser that gets symbol information about markdown headings
+  - [x] [markdown](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/sources/markdown.lua): a custom incremental parser that gets symbol information about markdown headings
 
-  - [path](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/sources/path.lua): gets current file path
+  - [x] [path](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/sources/path.lua): gets current file path
 
-  - [treesitter](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/sources/treesitter.lua): gets symbols from treesitter parsers using nvim's builtin treesitter integration
+  - [x] [treesitter](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/sources/treesitter.lua): gets symbols from treesitter parsers using nvim's builtin treesitter integration
 
   To make a new source yourself, see [making a new source](#making-a-new-source).
 
   For source fall-backs support, see [bar bptions](#bar).
 
-- Zero config & Zero dependency
+- [x] Zero config & Zero dependency
 
   `dropbar.nvim` does not require [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig), [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)
   or any third-party UI libraries to work.
   As long as the language server or the treesitter parser is installed,
   it should work just fine.
+
+- [ ] Show highlights in the drop-down menu according to current mouse/cursor
+  position, see `:h mousemev` and `:h <MouseMove>`
+- [ ] Preview symbol ranges in original window when hovering over them in the
+  drop-down menu
 
 ## Requirements
 

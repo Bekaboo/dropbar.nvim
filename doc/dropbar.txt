@@ -64,6 +64,12 @@ highly-customizable 'winbar' with drop-down menu support and mutiple backends.
     third-party UI libraries to work. As long as the language server or the
     treesitter parser is installed, it should work just fine.
 
+TODO
+
+- Show highlights in the drop-down menu according to current mouse/cursor
+    position, see 'mousemev' and `<MouseMove>`
+- Preview symbol ranges in original window when hovering over them in the
+    drop-down menu
 
 ==============================================================================
 REQUIREMENTS                                            *dropbar-requirements*
