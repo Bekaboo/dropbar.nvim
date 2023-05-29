@@ -1257,7 +1257,7 @@ A [`dropbar_source_t`](#dropbar_source_t) instance is just a table with
 [`dropbar_symbol_t`](#dropbar_symbol_t) instances given a buffer number and a
 cursor position.
 
-We have seen a simple example a custom source in the [default config of
+We have seen a simple example of a custom source in the [default config of
 `opts.bar.sources`](#bar) where the second source is set to a table with its
 field `get_symbols` set to a function that gets symbols from either the
 markdown, LSP, or treesitter sources to achieve fall-back behavior.

@@ -1537,7 +1537,7 @@ A `dropbar_source_t` instance is just a table with `get_symbols` field set to
 a function that returns an array of `dropbar_symbol_t` instances given a
 buffer number and a cursor position.
 
-We have seen a simple example a custom source in
+We have seen a simple example of a custom source in
 |dropbar-configuration-options-bar| where the second source is set to a
 table with its field `get_symbols` set to a function tht gets symbols from
 either the markdown, LSP, or treesitter sources to achieve fall-back behavior.
