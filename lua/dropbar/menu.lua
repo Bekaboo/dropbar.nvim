@@ -7,8 +7,8 @@ local groupid = vim.api.nvim_create_augroup('DropBarMenu', {})
 _G.dropbar.menus = {}
 
 ---@class dropbar_menu_hl_info_t
----@field start integer
----@field end integer
+---@field start integer byte-indexed, 0-indexed, start inclusive
+---@field end integer byte-indexed, 0-indexed, end exclusive
 ---@field hlgroup string
 ---@field ns integer? namespace id, nil if using default namespace
 
@@ -57,7 +57,7 @@ function dropbar_menu_entry_t:cat()
     end
     table.insert(components_with_sep, component)
   end
-  local str = ''
+  local str = string.rep(' ', self.padding.left)
   local hl_info = {}
   for _, component in ipairs(components_with_sep) do
     if component.icon_hl then
@@ -69,18 +69,14 @@ function dropbar_menu_entry_t:cat()
     end
     if component.name_hl then
       table.insert(hl_info, {
-        start = #str + #component.icon + 1,
-        ['end'] = #str + #component.icon + #component.name + 1,
+        start = #str + #component.icon,
+        ['end'] = #str + #component.icon + #component.name,
         hlgroup = component.name_hl,
       })
     end
     str = str .. component:cat(true)
   end
-  return string.rep(' ', self.padding.left) .. str .. string.rep(
-    ' ',
-    self.padding.right
-  ),
-    hl_info
+  return str .. string.rep(' ', self.padding.right), hl_info
 end
 
 ---Get the display length of the dropbar menu entry
@@ -99,10 +95,12 @@ end
 ---@param offset integer? offset from the beginning of the entry, default 0
 ---@return dropbar_symbol_t?
 function dropbar_menu_entry_t:first_clickable(offset)
-  offset = offset or 0
-  for _, component in ipairs(self.components) do
-    offset = offset - component:bytewidth()
-    if offset <= 0 and component.on_click then
+  offset = (offset or 0) - self.padding.left
+  for i, component in ipairs(self.components) do
+    offset = offset
+      - component:bytewidth()
+      - (i > 1 and self.separator:bytewidth() or 0)
+    if offset < 0 and component.on_click then
       return component
     end
   end
