@@ -60,7 +60,7 @@ end
 ---@param plain boolean?
 ---@return string
 function dropbar_symbol_t:cat(plain)
-  if plain then
+  if plain or not self.bar then
     return self.icon .. self.name
   end
   local icon_highlighted = hl(self.icon, self.icon_hl)
