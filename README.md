@@ -91,7 +91,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
 ## Requirements
 
-- Neovim >= 0.9.0
+- Neovim **Nightly** (>= 0.10.0-dev)
 - Optional
   - [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons), if you want to see icons for different filetypes
   - Working language server installation for the lsp source to work
