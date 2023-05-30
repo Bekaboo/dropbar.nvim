@@ -10,7 +10,7 @@ local source = {
     return {
       bar.dropbar_symbol_t:new(),
       bar.dropbar_symbol_t:new({
-        icon = ' ',
+        icon = '󰅩 ',
         name = 'testing',
         icon_hl = 'DropBarIconTest',
         name_hl = 'DropBarNameTest',
@@ -85,9 +85,9 @@ describe('[bar]', function()
       assert.are.same(2, #winbar.components)
     end)
     it('concatenates and converts to string', function()
-      local plain_str = ' |  testing    '
+      local plain_str = ' | 󰅩 testing    '
       local formatted_str = string.format(
-        '%%#DropBar#%%* | %%@v:lua.dropbar.on_click_callbacks.buf%d.win%d.fn%d@%%#DropBarIconTest# %%*%%#DropBarNameTest#testing%%*%%X%%#DropBar#    %%*',
+        '%%#DropBar#%%* | %%@v:lua.dropbar.on_click_callbacks.buf%d.win%d.fn%d@%%#DropBarIconTest#󰅩 %%*%%#DropBarNameTest#testing%%*%%X%%#DropBar#    %%*',
         winbar.buf,
         winbar.win,
         winbar.components[2].bar_idx
@@ -98,7 +98,7 @@ describe('[bar]', function()
     end)
     it('calculates display width', function()
       assert.are.same(
-        vim.fn.strdisplaywidth(' |  testing    '),
+        vim.fn.strdisplaywidth(' | 󰅩 testing    '),
         winbar:displaywidth()
       )
     end)
@@ -106,7 +106,7 @@ describe('[bar]', function()
       vim.cmd.vsplit()
       vim.api.nvim_win_set_width(winbar.win, 10)
       winbar:truncate()
-      assert.are.same(' |  t...    ', winbar:cat(true))
+      assert.are.same(' | 󰅩 t...    ', winbar:cat(true))
       vim.api.nvim_win_close(vim.api.nvim_get_current_win(), true)
     end)
     it('sets and restores pick mode correctly', function()
@@ -156,7 +156,7 @@ describe('[bar]', function()
     local symbol = winbar.components[2]
     it('creates new instances', function()
       assert.are.same('testing', symbol.name)
-      assert.are.same(' ', symbol.icon)
+      assert.are.same('󰅩 ', symbol.icon)
       assert.are.same('DropBarNameTest', symbol.name_hl)
       assert.are.same('DropBarIconTest', symbol.icon_hl)
       symbol:on_click()
@@ -168,10 +168,10 @@ describe('[bar]', function()
       assert.spy(agent).was_called()
     end)
     it('concatenates', function()
-      assert.are.same(' testing', symbol:cat(true))
+      assert.are.same('󰅩 testing', symbol:cat(true))
       assert.are.same(
         string.format(
-          '%%@v:lua.dropbar.on_click_callbacks.buf%d.win%d.fn%d@%%#DropBarIconTest# %%*%%#DropBarNameTest#testing%%*%%X',
+          '%%@v:lua.dropbar.on_click_callbacks.buf%d.win%d.fn%d@%%#DropBarIconTest#󰅩 %%*%%#DropBarNameTest#testing%%*%%X',
           symbol.bar.buf,
           symbol.bar.win,
           symbol.bar_idx
@@ -181,12 +181,12 @@ describe('[bar]', function()
     end)
     it('calculates display width', function()
       assert.are.same(
-        vim.fn.strdisplaywidth(' testing'),
+        vim.fn.strdisplaywidth('󰅩 testing'),
         symbol:displaywidth()
       )
     end)
     it('calculates byte width', function()
-      assert.are.same(#' testing', symbol:bytewidth())
+      assert.are.same(#'󰅩 testing', symbol:bytewidth())
     end)
     it(
       'goes to the start of the range of the associated symbol tree node',
