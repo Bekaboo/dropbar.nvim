@@ -16,3 +16,7 @@ format-check:
 .PHONY: format
 format:
 	stylua .
+
+.PHONY: lint
+lint:
+	luacheck .
