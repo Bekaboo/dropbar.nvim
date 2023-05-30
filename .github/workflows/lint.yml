@@ -1,0 +1,15 @@
+name: lint
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: install luacheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install lua-check
+      - name: lint
+        run: make lint
