@@ -378,7 +378,7 @@ function dropbar_t:pick(idx)
     self:redraw()
     -- Execute the on_click callback of the component
     for i, shortcut in ipairs(shortcuts) do
-      if shortcut == shortcut_read then
+      if shortcut == shortcut_read and self.components[i].on_click then
         self.components[i]:on_click()
         break
       end
