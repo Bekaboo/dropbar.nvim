@@ -1,3 +1,6 @@
+.PHONY: all
+all: format-check lint test
+
 .PHONY: test
 test:
 	nvim --headless -u tests/minimal_init.lua \
