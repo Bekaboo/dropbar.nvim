@@ -320,17 +320,11 @@ describe('[menu]', function()
     end)
     it('closeing current menu will set cursor to parent menu', function()
       sub_sub_menu_it:close()
-      assert.are.same(
-        sub_sub_menu_it.prev_win,
-        sub_sub_menu_it.parent_menu.win,
-        vim.api.nvim_get_current_win()
-      )
+      assert.are.same(sub_sub_menu_it.prev_win, vim.api.nvim_get_current_win())
+      assert.are.same(sub_sub_menu_it.prev_win, vim.api.nvim_get_current_win())
       sub_menu_it:close()
-      assert.are.same(
-        sub_menu_it.prev_win,
-        sub_menu_it.parent_menu.win,
-        vim.api.nvim_get_current_win()
-      )
+      assert.are.same(sub_menu_it.prev_win, vim.api.nvim_get_current_win())
+      assert.are.same(sub_menu_it.prev_win, vim.api.nvim_get_current_win())
       menu_it:close()
       assert.are.same(menu_it.prev_win, vim.api.nvim_get_current_win())
     end)
