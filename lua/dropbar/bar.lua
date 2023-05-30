@@ -44,7 +44,7 @@ function dropbar_symbol_t:new(opts)
       name = '',
       icon = '',
     }, opts or {}),
-    dropbar_symbol_t
+    self
   )
 end
 
@@ -183,7 +183,7 @@ function dropbar_t:new(opts)
       }),
       padding = configs.opts.bar.padding,
     }, opts or {}),
-    dropbar_t
+    self
   )
   -- vim.tbl_deep_extend drops metatables
   dropbar.separator = dropbar_symbol_t:new(dropbar.separator)

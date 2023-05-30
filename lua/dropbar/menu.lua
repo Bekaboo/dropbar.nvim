@@ -137,7 +137,7 @@ function dropbar_menu_t:new(opts)
       entries = {},
       win_configs = configs.opts.menu.win_configs,
     }, opts or {}),
-    dropbar_menu_t
+    self
   )
   for idx, entry in ipairs(dropbar_menu.entries) do
     entry.menu = dropbar_menu
