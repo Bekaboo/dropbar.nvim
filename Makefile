@@ -8,3 +8,11 @@ test:
 test-file:
 	nvim --headless -u tests/minimal_init.lua \
 		-c "lua require(\"plenary.busted\").run(\"tests/$(WHICH)_spec.lua\")"
+
+.PHONY: format-check
+format-check:
+	stylua . --check
+
+.PHONY: format
+format:
+	stylua .
