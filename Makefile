@@ -7,4 +7,4 @@ test:
 .PHONY: test-file
 test-file:
 	nvim --headless -u tests/minimal_init.lua \
-		-c "lua require(\"plenary.busted\").run(\"$(FILE)\")"
+		-c "lua require(\"plenary.busted\").run(\"tests/$(WHICH)_spec.lua\")"
