@@ -120,6 +120,7 @@ function dropbar_symbol_t:goto_start()
 end
 
 ---Temporarily change the content of a dropbar symbol
+---Does not support replacing nil values
 ---@param field string
 ---@param new_val any
 function dropbar_symbol_t:swap_field(field, new_val)
@@ -130,6 +131,7 @@ function dropbar_symbol_t:swap_field(field, new_val)
 end
 
 ---Restore the content of a dropbar symbol
+---Does not support restoring nil values
 function dropbar_symbol_t:restore()
   if not self.data or not self.data.swap then
     return

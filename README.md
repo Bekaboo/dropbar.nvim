@@ -1095,8 +1095,8 @@ basic element of [`dropbar_t`](#dropbar_t) and [`dropbar_menu_entry_t`](#dropbar
 | `dropbar_symbol_t:displaywidth(): integer`                        | returns the display width of the symbol                                                                                                                                                       |
 | `dropbar_symbol_t:bytewidth(): integer`                           | returns the byte width of the symbol                                                                                                                                                          |
 | `dropbar_symbol_t:goto_start()`                                   | moves the cursor to the start of the range of the dropbar tree symbol<sub>[`dropbar_symbol_tree_t`](#dropbar_symbol_tree_t)</sub> associated with the dropbar symbol                          |
-| `dropbar_symbol_t:swap_field(field: string, new_val: any)`        | temporarily change the content of a dropbar symbol                                                                                                                                            |
-| `dropbar_symbol_t:restore()`                                      | restore the content of a dropbar symbol after `dropbar_symbol_t:swap_field()` is called                                                                                                       |
+| `dropbar_symbol_t:swap_field(field: string, new_val: any)`        | temporarily change the content of a dropbar symbol <br> *does not support replacing nil values                                                                                                |
+| `dropbar_symbol_t:restore()`                                      | restore the content of a dropbar symbol after `dropbar_symbol_t:swap_field()` is called <br> *does not support restoring nil values                                                           |
 
 
 #### `dropbar_symbol_tree_t`
