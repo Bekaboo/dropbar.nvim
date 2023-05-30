@@ -183,6 +183,9 @@ function dropbar_t:new(opts)
     }, opts or {}),
     dropbar_t
   )
+  -- vim.tbl_deep_extend drops metatables
+  dropbar.separator = dropbar_symbol_t:new(dropbar.separator)
+  dropbar.extends = dropbar_symbol_t:new(dropbar.extends)
   return dropbar
 end
 
