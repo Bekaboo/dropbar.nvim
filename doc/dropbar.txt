@@ -764,65 +764,65 @@ function to call when a symbol is clicked.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-`dropbat_t` has the following fields:
+`dropbar_t` has the following fields:
 
-dropbat_t.buf                                                  *dropbar_t.buf*
+dropbar_t.buf                                                  *dropbar_t.buf*
 
 	The buffer the dropbar is attached to
 
 	Type ~
 	    integer
 
-dropbat_t.win                                                  *dropbar_t.win*
+dropbar_t.win                                                  *dropbar_t.win*
 
 	The window the dropbar is attached to
 
 	Type ~
 	    integer
 
-dropbat_t.sources                                          *dropbar_t.sources*
+dropbar_t.sources                                          *dropbar_t.sources*
 
  	Sourcess that provide symbols to the dropbar
 
 	Type ~
 	    `dropbar_source_t`[]
 
-dropbat_t.separator                                      *dropbar_t.separator*
+dropbar_t.separator                                      *dropbar_t.separator*
 
  	Seprarator between symbols provided by sources
 
 	Type ~
 	    `dropbar_symbol_t`
 
-dropbat_t.padding                                          *dropbar_t.padding*
+dropbar_t.padding                                          *dropbar_t.padding*
 
  	Padding to use between the winbar and the window border
 
 	Type ~
 	    { left: integer, right: integer }
 
-dropbat_t.extends                                          *dropbar_t.extends*
+dropbar_t.extends                                          *dropbar_t.extends*
 
  	Symbol to use at the end of a symbol when it is truncated
 
 	Type ~
 	    `dropbar_symbol_t`
 
-dropbat_t.components                                    *dropbar_t.components*
+dropbar_t.components                                    *dropbar_t.components*
 
  	Symbols got from sources
 
 	Type ~
 	    `dropbar_symbol_t`[]
 
-dropbat_t.string_cache                                *dropbar_t.string_cache*
+dropbar_t.string_cache                                *dropbar_t.string_cache*
 
  	String cache of the dropbar
 
 	Type ~
 	    string
 
-dropbat_t.in_pick_mode                                *dropbar_t.in_pick_mode*
+dropbar_t.in_pick_mode                                *dropbar_t.in_pick_mode*
 
  	Whether the dropbar is in pick mode
 
@@ -854,7 +854,7 @@ dropbar_t:displaywidth()                            *dropbar_t:displaywidth()*
 	Returns ~
 	    The display width of the dropbar
 
-dropbat_t:truncate()                                    *dropbar_t:truncate()*
+dropbar_t:truncate()                                    *dropbar_t:truncate()*
 
  	Truncates the dropbar if it exceeds the window width
 
@@ -912,7 +912,7 @@ DROPBAR_SYMBOL_T                 *dropbar-developers-classes-dropbar_symbol_t*
 Declared and defined in `lua/dropbar/bar.lua`.
 
 `dropbar_symbol_t` is a class that represents a symbol in a dropbar. It is the
-basic element of `dropbat_t` and `dropbar_menu_entry_t`, see
+basic element of `dropbar_t` and `dropbar_menu_entry_t`, see
 |dropbar-developers-classes-dropbar_t| and
 |dropbar-developers-classes-dropbar_menu_entry_t| for more information.
 

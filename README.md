@@ -1026,7 +1026,7 @@ symbol in the global table `_G.dropbar.on_click_callbacks` so that nvim knows
 which function to call when a symbol is clicked.
 
 
-`dropbat_t` has the following fields:
+`dropbar_t` has the following fields:
 
 | Field          | Type                                      | Description                                                                                     |
 | -------------- | ---------------------------------         | ---------------------------------------------------------------------------------------------   |
@@ -1048,7 +1048,7 @@ which function to call when a symbol is clicked.
 | `dropbar_t:new(opts: dropbar_opts_t): dropbar_t` | constructor of `dropbar_t`                                                                                                                                                                                |
 | `dropbar_t:del()`                                | destructor of `dropbar_t`                                                                                                                                                                                 |
 | `dropbar_t:displaywidth(): integer`              | returns the display width of the dropbar                                                                                                                                                                  |
-| `dropbat_t:truncate()`                           | truncates the dropbar if it exceeds the display width <br> *side effect: changes dropbar components<sub>[`dropbar_symbol_t[]`](#dropbar_symbol_t)                                                         |
+| `dropbar_t:truncate()`                           | truncates the dropbar if it exceeds the display width <br> *side effect: changes dropbar components<sub>[`dropbar_symbol_t[]`](#dropbar_symbol_t)                                                         |
 | `dropbar_t:cat(plain: boolean?): string`         | concatenates the dropbar components into a string with substrings for highlights and click support if `plain` is not set; else returns a plain string without substrings for highlights and click support |
 | `dropbar_t:redraw()`                             | redraws the dropbar                                                                                                                                                                                       |
 | `dropbar_t:update()`                             | update dropbar components<sub>[`dropbar_symbol_t[]`](#dropbar_symbol_t)</sub> and redraw the dropbar afterwards                                                                                           |
