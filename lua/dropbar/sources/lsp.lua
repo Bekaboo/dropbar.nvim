@@ -289,7 +289,9 @@ local function convert_document_symbol_list(
     if cursor_in_range(cursor, symbol.range) then
       table.insert(
         dropbar_symbols,
-        utils.to_dropbar_symbol(unify_document_symbol(symbol, lsp_symbols, idx))
+        utils.to_dropbar_symbol(
+          unify_document_symbol(symbol, lsp_symbols, idx)
+        )
       )
       if symbol.children then
         convert_document_symbol_list(symbol.children, dropbar_symbols, cursor)

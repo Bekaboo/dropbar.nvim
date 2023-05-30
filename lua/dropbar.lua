@@ -88,7 +88,9 @@ local function setup(opts)
       local win = info.event == 'WinScrolled' and tonumber(info.match)
         or vim.api.nvim_get_current_win()
       local buf = vim.api.nvim_win_get_buf(win)
-      if rawget(_G.dropbar.bars, buf) and rawget(_G.dropbar.bars[buf], win) then
+      if
+        rawget(_G.dropbar.bars, buf) and rawget(_G.dropbar.bars[buf], win)
+      then
         _G.dropbar.bars[buf][win]:update()
       end
     end,
