@@ -1,0 +1,39 @@
+name: tests
+
+on: [push, pull_request]
+
+jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            release-build: nvim-linux64.tar.gz
+            version: nightly
+          - os: macos-12
+            release-build: nvim-macos.tar.gz
+            version: nightly
+    steps:
+      - uses: actions/checkout@v3
+      - name: prepare
+        run: |
+          test -d nvim || {
+            mkdir -p nvim
+            curl -sL "https://github.com/neovim/neovim/releases/download/${{ matrix.version }}/${{ matrix.release-build }}" \
+              | tar xzf - --strip-components=1 -C "${PWD}/nvim"
+          }
+
+          DATA_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}"
+          NVIM_PACK_START="${DATA_HOME}/nvim/site/pack/packages/start"
+          mkdir -p "${NVIM_PACK_START}"
+          git clone --depth 1 https://github.com/nvim-lua/plenary.nvim "${NVIM_PACK_START}/plenary.nvim"
+
+          ln -s "${PWD}" "${NVIM_PACK_START}"
+
+      - name: run tests
+        run: |
+          export PATH="${PWD}/nvim/bin:${PATH}"
+          export VIM="${PWD}/nvim/share/nvim/runtime"
+          nvim --version
+          make test
