@@ -405,7 +405,8 @@ local function init()
     desc = 'Attach LSP symbol getter to buffer when an LS that supports documentSymbol attaches.',
     group = groupid,
     callback = function(info)
-      local client = vim.lsp.get_client_by_id(info.data and info.data.client_id)
+      local client =
+        vim.lsp.get_client_by_id(info.data and info.data.client_id)
       if client and client.supports_method('textDocument/documentSymbol') then
         attach(info.buf)
       end
