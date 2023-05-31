@@ -218,24 +218,6 @@ describe('[menu]', function()
         '               ',
       }, vim.api.nvim_buf_get_lines(menu_it.buf, 0, -1, false))
     end)
-    it('respects win_configs', function()
-      assert.are.same(
-        { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' },
-        vim.api.nvim_win_get_config(menu_it.win).border
-      )
-      assert.are.same(
-        vim.o.columns * 0.5,
-        vim.api.nvim_win_get_config(sub_menu_it.win).width
-      )
-    end)
-    it('respects the parent-child relationship', function()
-      assert.are.equal(menu_it, sub_menu_it.parent_menu)
-      assert.are.equal(sub_menu_it, sub_sub_menu_it.parent_menu)
-      assert.are.equal(sub_menu_it, menu_it.sub_menu)
-      assert.are.equal(sub_sub_menu_it, sub_menu_it.sub_menu)
-      assert.are.equal(menu_it.win, sub_menu_it.prev_win)
-      assert.are.equal(sub_menu_it.win, sub_sub_menu_it.prev_win)
-    end)
     it('gets component at {pos}', function()
       local entry1 = menu_it.entries[1]
       local component1 = entry1.components[1]
@@ -309,6 +291,24 @@ describe('[menu]', function()
         .spy(agent2).was
         .called_with(match.is_ref(component2), 7, 2, 'r', 's')
     end)
+    it('respects win_configs', function()
+      assert.are.same(
+        { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' },
+        vim.api.nvim_win_get_config(menu_it.win).border
+      )
+      assert.are.same(
+        vim.o.columns * 0.5,
+        vim.api.nvim_win_get_config(sub_menu_it.win).width
+      )
+    end)
+    it('respects the parent-child relationship', function()
+      assert.are.equal(menu_it, sub_menu_it.parent_menu)
+      assert.are.equal(sub_menu_it, sub_sub_menu_it.parent_menu)
+      assert.are.equal(sub_menu_it, menu_it.sub_menu)
+      assert.are.equal(sub_sub_menu_it, sub_menu_it.sub_menu)
+      assert.are.equal(menu_it.win, sub_menu_it.prev_win)
+      assert.are.equal(sub_menu_it.win, sub_sub_menu_it.prev_win)
+    end)
     it('close() method always triggers when the window closes', function()
       local agent1 = spy.on(menu_it, 'close')
       local agent2 = spy.on(sub_menu_it, 'close')
@@ -318,7 +318,7 @@ describe('[menu]', function()
       assert.spy(agent2).was.called()
       assert.spy(agent3).was.called()
     end)
-    it('closeing current menu will set cursor to parent menu', function()
+    it('closing current menu will set cursor to parent menu', function()
       sub_sub_menu_it:close()
       assert.are.same(sub_sub_menu_it.prev_win, vim.api.nvim_get_current_win())
       assert.are.same(sub_sub_menu_it.prev_win, vim.api.nvim_get_current_win())
@@ -328,7 +328,7 @@ describe('[menu]', function()
       menu_it:close()
       assert.are.same(menu_it.prev_win, vim.api.nvim_get_current_win())
     end)
-    it('closeing current menu will close all sub-menus', function()
+    it('closing current menu will close all sub-menus', function()
       local win = menu_it.win
       local sub_win = sub_menu_it.win
       local sub_sub_win = sub_sub_menu_it.win
@@ -337,6 +337,18 @@ describe('[menu]', function()
       assert(sub_win)
       assert(sub_sub_win)
       assert.is_false(vim.api.nvim_win_is_valid(win))
+      assert.is_false(vim.api.nvim_win_is_valid(sub_win))
+      assert.is_false(vim.api.nvim_win_is_valid(sub_sub_win))
+    end)
+    it('closes existing sub-menus on opening a new sub-menu', function()
+      local win = menu_it.win
+      local sub_win = sub_menu_it.win
+      local sub_sub_win = sub_sub_menu_it.win
+      vim.api.nvim_set_current_win(menu_it.win)
+      menu.dropbar_menu_t:new():open() -- open a new sub-menu
+      assert(win)
+      assert(sub_win)
+      assert(sub_sub_win)
       assert.is_false(vim.api.nvim_win_is_valid(sub_win))
       assert.is_false(vim.api.nvim_win_is_valid(sub_sub_win))
     end)
