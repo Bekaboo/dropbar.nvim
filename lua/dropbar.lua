@@ -59,8 +59,6 @@ local function setup(opts)
   local function _switch(buf, win)
     if configs.eval(configs.opts.general.enable, buf, win) then
       vim.wo.winbar = '%{%v:lua.dropbar.get_dropbar_str()%}'
-    else
-      vim.wo.winbar = nil
     end
   end
   for _, win in ipairs(vim.api.nvim_list_wins()) do
