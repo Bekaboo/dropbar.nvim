@@ -97,10 +97,12 @@ local function to_dropbar_symbol(symbol, opts)
               to_dropbar_symbol(sym, {
                 name = '',
                 icon = menu_indicator_icon,
+                name_hl = 'DropBarMenuNormalFloat',
                 icon_hl = 'DropBarIconUIIndicator',
                 on_click = menu_indicator_on_click,
               }),
               to_dropbar_symbol(sym, {
+                name_hl = 'DropBarMenuNormalFloat',
                 ---Goto the location of the symbol on click
                 ---@param dropbar_symbol dropbar_symbol_t
                 on_click = function(dropbar_symbol, _, _, _, _)
@@ -232,10 +234,12 @@ local function to_dropbar_symbol_from_path(symbol, opts)
               to_dropbar_symbol_from_path(sym, {
                 name = '',
                 icon = menu_indicator_icon,
+                name_hl = 'DropBarMenuNormalFloat',
                 icon_hl = menu_indicator_icon_hl,
                 on_click = menu_indicator_on_click,
               }),
               to_dropbar_symbol_from_path(sym, {
+                name_hl = 'DropBarMenuNormalFloat',
                 on_click = menu_entry_text_on_click,
               }),
             },

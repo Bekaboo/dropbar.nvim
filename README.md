@@ -956,6 +956,7 @@ should be self-explanatory:
   | DropBarIconUISeparator           | `{ link = 'SpecialChar' }`              |
   | DropBarIconUISeparatorMenu       | `{ link = 'DropBarIconUISeparator' }`   |
   | DropBarMenuCurrentContext        | `{ link = 'PmenuSel' }`                 |
+  | DropBarMenuNormalFloat           | `{ link = 'WinBar' }`                   |
 
 </details>
 

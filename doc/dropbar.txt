@@ -688,6 +688,7 @@ Highlight groups ~
   DropBarIconUISeparator             `{ link = 'SpecialChar' }`
   DropBarIconUISeparatorMenu         `{ link = 'DropBarIconUISeparator' }`
   DropBarMenuCurrentContext          `{ link = 'PmenuSel' }`
+  DropBarMenuNormalFloat             `{ link = 'WinBar' }`
 
 
 ==============================================================================
