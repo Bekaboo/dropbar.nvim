@@ -37,7 +37,7 @@ function dropbar_menu_entry_t:new(opts)
     self
   )
   -- vim.tbl_deep_extend drops metatables
-  entry.separator = bar.dropbar_symbol_t:new(entry.separator)
+  setmetatable(entry.separator, bar.dropbar_symbol_t)
   for idx, component in ipairs(entry.components) do
     component.entry = entry
     component.entry_idx = idx

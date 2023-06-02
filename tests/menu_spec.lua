@@ -19,6 +19,7 @@ local entry_it = menu.dropbar_menu_entry_t:new({
       icon = ' ',
       icon_hl = 'Special',
       name = 'lua',
+      on_click = false,
     }),
     bar.dropbar_symbol_t:new({
       icon = '󰊕 ',

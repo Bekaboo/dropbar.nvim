@@ -15,10 +15,11 @@ local source = {
         icon_hl = 'DropBarIconTest',
         name_hl = 'DropBarNameTest',
         on_click = function(self)
-          self.data = { clicked = true }
+          self.data = self.data or {}
+          self.data.clicked = true
         end,
         menu = menu.dropbar_menu_t:new(),
-        symbol = {
+        data = {
           range = {
             start = {
               line = 3,
@@ -193,10 +194,10 @@ describe('[bar]', function()
       function()
         vim.cmd.edit('tests/assets/blank.txt')
         winbar:update()
-        symbol:goto_start()
+        symbol:goto_range_start()
         assert.are.same({
-          symbol.symbol.range.start.line + 1,
-          symbol.symbol.range.start.character,
+          symbol.data.range.start.line + 1,
+          symbol.data.range.start.character,
         }, vim.api.nvim_win_get_cursor(0))
       end
     )

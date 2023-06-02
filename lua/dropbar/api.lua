@@ -65,7 +65,7 @@ local function goto_context_start(count)
     end
     current_sym = prev_sym
   end
-  current_sym:goto_start()
+  current_sym:goto_range_start()
 end
 
 ---Open the menu of current context to select the next context

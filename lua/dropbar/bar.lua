@@ -24,28 +24,129 @@ end
 ---@field icon string
 ---@field name_hl string?
 ---@field icon_hl string?
----@field bar dropbar_t? the dropbar the symbol belongs to, if the symbol is shown inside a dropbar
----@field menu dropbar_menu_t? menu associated with the dropbar symbol, if the symbol is shown inside a dropbar
+---@field bar dropbar_t? the winbar the symbol belongs to, if the symbol is shown inside a winbar
+---@field menu dropbar_menu_t? menu associated with the winbar symbol, if the symbol is shown inside a winbar
 ---@field entry dropbar_menu_entry_t? the dropbar entry the symbol belongs to, if the symbol is shown inside a menu
----@field symbol dropbar_symbol_tree_t? the symbol associated with the dropbar symbol
----@field data table? any data associated with the symbol
----@field bar_idx integer? index of the symbol in the dropbar
+---@field children dropbar_symbol_t[]? children of the symbol
+---@field siblings dropbar_symbol_t[]? siblings of the symbol
+---@field bar_idx integer? index of the symbol in the winbar
 ---@field entry_idx integer? index of the symbol in the menu entry
+---@field sibling_idx integer? index of the symbol in its siblings
 ---@field on_click fun(this: dropbar_symbol_t, min_width: integer?, n_clicks: integer?, button: string?, modifiers: string?)|false? force disable on_click when false
+---@field actions table<string, fun(this: dropbar_symbol_t)>? select, preview, jump, etc.
+---@field data table? any data associated with the symbol
 local dropbar_symbol_t = {}
-dropbar_symbol_t.__index = dropbar_symbol_t
+
+function dropbar_symbol_t:__index(k)
+  ---@diagnostic disable-next-line: undefined-field
+  return self._[k] or dropbar_symbol_t[k]
+end
+
+function dropbar_symbol_t:__newindex(k, v)
+  ---@diagnostic disable-next-line: undefined-field
+  self._[k] = v
+end
 
 ---Create a dropbar symbol instance
 ---@param opts dropbar_symbol_t?
 ---@return dropbar_symbol_t
 function dropbar_symbol_t:new(opts)
-  return setmetatable(
-    vim.tbl_deep_extend('force', {
-      name = '',
-      icon = '',
-    }, opts or {}),
-    self
-  )
+  return setmetatable({
+    _ = setmetatable(
+      vim.tbl_deep_extend('force', {
+        name = '',
+        icon = '',
+        on_click = opts
+          and function(this, _, _, _, _)
+            if this.entry and this.entry.menu then
+              this.entry.menu:hl_line_single(this.entry.idx)
+            end
+            -- Toggle menu on click, or create one if menu don't exist:
+            -- 1. If symbol inside a winbar, create a menu with entries
+            --    containing the symbol's siblings
+            -- 2. Else if symbol inside a menu, create menu with entries
+            --    containing the symbol's children
+            if this.menu then
+              this.menu:toggle()
+              return
+            end
+
+            local menu_prev_win = nil ---@type integer?
+            local menu_entries_source = nil ---@type dropbar_symbol_t[]?
+            local menu_cursor_init = nil ---@type integer[]?
+            if this.bar then -- If symbol inside a winbar
+              menu_prev_win = this.bar and this.bar.win
+              menu_entries_source = opts.siblings
+              menu_cursor_init = opts.sibling_idx and { opts.sibling_idx, 0 }
+            elseif this.entry and this.entry.menu then -- If inside a menu
+              menu_prev_win = this.entry.menu.win
+              menu_entries_source = opts.children
+            end
+            if
+              not menu_entries_source or vim.tbl_isempty(menu_entries_source)
+            then
+              return
+            end
+
+            -- Called in pick mode, open the menu relative to the symbol
+            -- position in the winbar
+            local menu_win_configs = nil
+            if this.bar and this.bar.in_pick_mode then
+              local col = 0
+              for i, component in ipairs(this.bar.components) do
+                if i < this.bar_idx then
+                  col = col
+                    + component:displaywidth()
+                    + this.bar.separator:displaywidth()
+                end
+              end
+              menu_win_configs = {
+                relative = 'win',
+                row = 0,
+                col = col,
+              }
+            end
+
+            local menu = require('dropbar.menu')
+            this.menu = menu.dropbar_menu_t:new({
+              prev_win = menu_prev_win,
+              cursor = menu_cursor_init,
+              win_configs = menu_win_configs,
+              ---@param sym dropbar_symbol_t
+              entries = vim.tbl_map(function(sym)
+                local menu_indicator_icon =
+                  configs.opts.icons.ui.menu.indicator
+                local menu_indicator_on_click = nil
+                if not sym.children or vim.tbl_isempty(sym.children) then
+                  menu_indicator_icon = string.rep(
+                    ' ',
+                    vim.fn.strdisplaywidth(menu_indicator_icon)
+                  )
+                  menu_indicator_on_click = false
+                end
+                return menu.dropbar_menu_entry_t:new({
+                  components = {
+                    dropbar_symbol_t:new(vim.tbl_deep_extend('force', sym, {
+                      name = '',
+                      icon = menu_indicator_icon,
+                      name_hl = 'DropBarMenuNormalFloat',
+                      icon_hl = 'DropBarIconUIIndicator',
+                      on_click = menu_indicator_on_click,
+                    })),
+                    dropbar_symbol_t:new(vim.tbl_deep_extend('force', sym, {
+                      name_hl = 'DropBarMenuNormalFloat',
+                      on_click = sym.actions and sym.actions.jump,
+                    })),
+                  },
+                })
+              end, menu_entries_source),
+            })
+            this.menu:toggle()
+          end,
+      }, opts or {}),
+      getmetatable(opts or {})
+    ),
+  }, self)
 end
 
 ---Delete a dropbar symbol instance
@@ -93,11 +194,11 @@ end
 
 ---Goto the start location of the symbol associated with the dropbar symbol
 ---@return nil
-function dropbar_symbol_t:goto_start()
-  if not self.symbol or not self.symbol.range then
+function dropbar_symbol_t:goto_range_start()
+  if not self.data or not self.data.range then
     return
   end
-  local dest_pos = self.symbol.range.start
+  local dest_pos = self.data.range.start
   if not self.entry then -- symbol is not shown inside a menu
     vim.api.nvim_win_set_cursor(self.bar.win, {
       dest_pos.line + 1,
@@ -186,8 +287,8 @@ function dropbar_t:new(opts)
     self
   )
   -- vim.tbl_deep_extend drops metatables
-  dropbar.separator = dropbar_symbol_t:new(dropbar.separator)
-  dropbar.extends = dropbar_symbol_t:new(dropbar.extends)
+  setmetatable(dropbar.separator, dropbar_symbol_t)
+  setmetatable(dropbar.extends, dropbar_symbol_t)
   return dropbar
 end
 

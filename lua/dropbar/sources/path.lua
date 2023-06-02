@@ -1,35 +1,72 @@
-local utils = require('dropbar.sources.utils')
 local configs = require('dropbar.configs')
+local bar = require('dropbar.bar')
 
----Unify a path into a dropbar tree symbol tree structure
+---Get icon and icon highlight group of a path
+---@param path string
+---@return string icon
+---@return string? icon_hl
+local function get_icon(path)
+  local icon = configs.opts.icons.kinds.symbols.Folder
+  local icon_hl = 'DropBarIconKindFolder'
+  local stat = vim.loop.fs_stat(path)
+  if configs.opts.icons.kinds.use_devicons then
+    local devicons_ok, devicons = pcall(require, 'nvim-web-devicons')
+    if devicons_ok and stat and stat.type ~= 'directory' then
+      local devicon, devicon_hl = devicons.get_icon(
+        vim.fs.basename(path),
+        vim.fn.fnamemodify(path, ':e'),
+        { default = true }
+      )
+      icon = devicon and devicon .. ' ' or icon
+      icon_hl = devicon_hl
+    end
+  end
+  return icon, icon_hl
+end
+
+---Convert a path to the dropbr symbol structure
 ---@param path string full path
----@return dropbar_path_symbol_tree_t
-local function unify(path)
+---@return dropbar_symbol_t
+local function convert(path)
+  local icon, icon_hl = get_icon(path)
   return setmetatable({
     name = vim.fs.basename(path),
-    kind = '',
-    data = { path = path },
+    icon = icon,
+    icon_hl = icon_hl,
+    actions = {
+      ---@param symbol dropbar_symbol_t
+      jump = function(symbol)
+        if symbol.entry then
+          local current_menu = symbol.entry.menu
+          while current_menu do
+            current_menu:close()
+            current_menu = current_menu.parent_menu
+          end
+          vim.cmd.edit(path)
+        end
+      end,
+    },
   }, {
-    ---@param self dropbar_symbol_tree_t
+    ---@param self dropbar_symbol_t
     __index = function(self, k)
       if k == 'children' then
         self.children = {}
         for name in vim.fs.dir(path) do
           if configs.opts.sources.path.filter(name) then
-            table.insert(self.children, unify(path .. '/' .. name))
+            table.insert(self.children, convert(path .. '/' .. name))
           end
         end
         return self.children
       end
-      if k == 'siblings' or k == 'idx' then
+      if k == 'siblings' or k == 'sibling_idx' then
         local parent_dir = vim.fs.dirname(path)
         self.siblings = {}
-        self.idx = 1
+        self.sibling_idx = 1
         for idx, name in vim.iter(vim.fs.dir(parent_dir)):enumerate() do
           if configs.opts.sources.path.filter(name) then
-            table.insert(self.siblings, unify(parent_dir .. '/' .. name))
+            table.insert(self.siblings, convert(parent_dir .. '/' .. name))
             if name == self.name then
-              self.idx = idx
+              self.sibling_idx = idx
             end
           end
         end
@@ -56,11 +93,7 @@ local function get_symbols(buf, _)
         configs.eval(configs.opts.sources.path.relative_to, buf)
       )
   do
-    table.insert(
-      symbols,
-      1,
-      utils.to_dropbar_symbol_from_path(unify(current_path))
-    )
+    table.insert(symbols, 1, bar.dropbar_symbol_t:new(convert(current_path)))
     current_path = vim.fs.dirname(current_path)
   end
   return symbols
