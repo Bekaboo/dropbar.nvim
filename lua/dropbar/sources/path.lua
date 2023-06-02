@@ -24,12 +24,12 @@ local function get_icon(path)
   return icon, icon_hl
 end
 
----Convert a path to the dropbr symbol structure
+---Convert a path to a dropbar symbol
 ---@param path string full path
 ---@return dropbar_symbol_t
 local function convert(path)
   local icon, icon_hl = get_icon(path)
-  return setmetatable({
+  return bar.dropbar_symbol_t:new(setmetatable({
     name = vim.fs.basename(path),
     icon = icon,
     icon_hl = icon_hl,
@@ -73,7 +73,7 @@ local function convert(path)
         return self[k]
       end
     end,
-  })
+  }))
 end
 
 ---Get list of dropbar symbols of the parent directories of given buffer
@@ -93,7 +93,7 @@ local function get_symbols(buf, _)
         configs.eval(configs.opts.sources.path.relative_to, buf)
       )
   do
-    table.insert(symbols, 1, bar.dropbar_symbol_t:new(convert(current_path)))
+    table.insert(symbols, 1, convert(current_path))
     current_path = vim.fs.dirname(current_path)
   end
   return symbols

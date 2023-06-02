@@ -71,14 +71,14 @@ local function get_node_siblings(node)
   return siblings, idx
 end
 
----Convert TSNode into dropbar symbol structure
+---Convert a TSNode into a dropbar symbol
 ---@param ts_node TSNode
 ---@param buf integer buffer handler
 ---@return dropbar_symbol_t
 local function convert(ts_node, buf)
   local range = { ts_node:range() }
   local kind = snake_to_camel(get_node_short_type(ts_node))
-  return setmetatable({
+  return bar.dropbar_symbol_t:new(setmetatable({
     name = get_node_short_name(ts_node, buf),
     icon = configs.opts.icons.kinds.symbols[kind],
     icon_hl = 'DropBarIconKind' .. kind,
@@ -116,7 +116,7 @@ local function convert(ts_node, buf)
         return self[k]
       end
     end,
-  })
+  }))
 end
 
 ---Get treesitter symbols from buffer
@@ -148,11 +148,7 @@ local function get_symbols(buf, cursor)
         or symbols[1].name ~= name
         or start_row < prev_row
       then
-        table.insert(
-          symbols,
-          1,
-          bar.dropbar_symbol_t:new(convert(current_node, buf))
-        )
+        table.insert(symbols, 1, convert(current_node, buf))
         prev_type_rank = type_rank
         prev_row = start_row
       elseif type_rank < prev_type_rank then

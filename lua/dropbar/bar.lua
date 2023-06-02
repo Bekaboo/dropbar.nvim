@@ -20,6 +20,7 @@ local function make_clickable(str, callback)
 end
 
 ---@class dropbar_symbol_t
+---@field _ dropbar_symbol_t
 ---@field name string
 ---@field icon string
 ---@field name_hl string?
@@ -38,17 +39,27 @@ end
 local dropbar_symbol_t = {}
 
 function dropbar_symbol_t:__index(k)
-  ---@diagnostic disable-next-line: undefined-field
   return self._[k] or dropbar_symbol_t[k]
 end
 
 function dropbar_symbol_t:__newindex(k, v)
-  ---@diagnostic disable-next-line: undefined-field
   self._[k] = v
 end
 
+---Create a new dropbar symbol instance with merged options
+---@param opts dropbar_symbol_t
+---@return dropbar_symbol_t
+function dropbar_symbol_t:merge(opts)
+  return dropbar_symbol_t:new(
+    setmetatable(
+      vim.tbl_deep_extend('force', self._, opts),
+      getmetatable(self._)
+    )
+  )
+end
+
 ---Create a dropbar symbol instance
----@param opts dropbar_symbol_t?
+---@param opts dropbar_symbol_t? dropbar symbol structure
 ---@return dropbar_symbol_t
 function dropbar_symbol_t:new(opts)
   return setmetatable({
@@ -126,17 +137,17 @@ function dropbar_symbol_t:new(opts)
                 end
                 return menu.dropbar_menu_entry_t:new({
                   components = {
-                    dropbar_symbol_t:new(vim.tbl_deep_extend('force', sym, {
+                    sym:merge({
                       name = '',
                       icon = menu_indicator_icon,
                       name_hl = 'DropBarMenuNormalFloat',
                       icon_hl = 'DropBarIconUIIndicator',
                       on_click = menu_indicator_on_click,
-                    })),
-                    dropbar_symbol_t:new(vim.tbl_deep_extend('force', sym, {
+                    }),
+                    sym:merge({
                       name_hl = 'DropBarMenuNormalFloat',
                       on_click = sym.actions and sym.actions.jump,
-                    })),
+                    }),
                   },
                 })
               end, menu_entries_source),
