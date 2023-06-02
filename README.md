@@ -37,7 +37,6 @@
   - [Classes](#classes)
     - [`dropbar_t`](#dropbar_t)
     - [`dropbar_symbol_t`](#dropbar_symbol_t)
-    - [`dropbar_symbol_tree_t`](#dropbar_symbol_tree_t)
     - [`dropbar_menu_t`](#dropbar_menu_t)
     - [`dropbar_menu_entry_t`](#dropbar_menu_entry_t)
     - [`dropbar_menu_hl_info_t`](#dropbar_menu_hl_info_t)
@@ -1070,20 +1069,23 @@ basic element of [`dropbar_t`](#dropbar_t) and [`dropbar_menu_entry_t`](#dropbar
 
 `dropbar_symbol_t` has the following fields:
 
-| Field       | Type                                                                                                                | Description                                                                                                                                  |
-| ----------- | ------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`      | `string`                                                                                                            | name of the symbol                                                                                                                           |
-| `icon`      | `string`                                                                                                            | icon of the symbol                                                                                                                           |
-| `name_hl`   | `string?`                                                                                                           | highlight of the name of the symbol                                                                                                          |
-| `icon_hl`   | `string?`                                                                                                           | highlight of the icon of the symbol                                                                                                          |
-| `bar`       | [`dropbar_t?`](#dropbar_t)                                                                                          | the dropbar<sub>[`dropbar_t`](#dropbar_t)</sub> the symbol belongs to, if the symbol is shown inside a winbar                                |
-| `menu`      | [`dropbar_menu_t?`](#dropbar_menu_t)                                                                                | menu<sub>[`dropbar_menu_t`](#dropbar_menu_t)</sub> associated with the symbol, if the symbol is shown inside a winbar                        |
-| `entry`     | [`dropbar_menu_entry_t?`](#dropbar_menu_entry_t)                                                                    | the dropbar menu entry<sub>[`dropbar_menu_entry_t`](#dropbar_menu_entry_t)</sub> the symbol belongs to, if the symbol is shown inside a menu |
-| `symbol`    | [`dropbar_symbol_tree_t?`](#dropbar_symbol_tree_t)                                                                  | the dropbar tree symbol<sub>[`dropbar_symbol_tree_t`](#dropbar_symbol_tree_t)</sub> associated with the dropbar symbol                       |
-| `data`      | `table?`                                                                                                            | any extra data associated with the symbol                                                                                                    |
-| `bar_idx`   | `integer?`                                                                                                          | index of the symbol in the dropbar<sub>[`dropbar_t`](#dropbar_t)</sub>                                                                       |
-| `entry_idx` | `integer?`                                                                                                          | index of the symbol in the menu entry<sub>[`dropbar_menu_entry_t`](#dropbar_menu_entry_t)</sub>                                              |
-| `on_click`  | `fun(this: dropbar_symbol_t, min_width: integer?, n_clicks: integer?, button: string?, modifiers: string?)\|false?` | callback to invoke when the symbol is clicked, force disable `on_click` when the value if set to `false`                                     |
+| Field         | Type                                                                                                                | Description                                                                                                                                  |
+| -----------   | ------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`        | `string`                                                                                                            | name of the symbol                                                                                                                           |
+| `icon`        | `string`                                                                                                            | icon of the symbol                                                                                                                           |
+| `name_hl`     | `string?`                                                                                                           | highlight of the name of the symbol                                                                                                          |
+| `icon_hl`     | `string?`                                                                                                           | highlight of the icon of the symbol                                                                                                          |
+| `bar`         | [`dropbar_t?`](#dropbar_t)                                                                                          | the dropbar<sub>[`dropbar_t`](#dropbar_t)</sub> the symbol belongs to, if the symbol is shown inside a winbar                                |
+| `menu`        | [`dropbar_menu_t?`](#dropbar_menu_t)                                                                                | menu<sub>[`dropbar_menu_t`](#dropbar_menu_t)</sub> associated with the symbol, if the symbol is shown inside a winbar                        |
+| `entry`       | [`dropbar_menu_entry_t?`](#dropbar_menu_entry_t)                                                                    | the dropbar menu entry<sub>[`dropbar_menu_entry_t`](#dropbar_menu_entry_t)</sub> the symbol belongs to, if the symbol is shown inside a menu |
+| `children`    | `dropbar_symbol_t[]?`                                                                                               | children of the symbol (e.g. a children of a function symbol can be local variables inside the function)                                     |
+| `siblings`    | `dropbar_symbol_t[]?`                                                                                               | siblings of the symbol (e.g. a sibling of a symbol that represents a level 4 markdown heading can be other headings with level 4)            |
+| `bar_idx`     | `integer?`                                                                                                          | index of the symbol in the dropbar<sub>[`dropbar_t`](#dropbar_t)</sub>                                                                       |
+| `entry_idx`   | `integer?`                                                                                                          | index of the symbol in the menu entry<sub>[`dropbar_menu_entry_t`](#dropbar_menu_entry_t)</sub>                                              |
+| `sibling_idx` | `integer?`                                                                                                          | index of the symbol in the siblings                                                                                                          |
+| `on_click`    | `fun(this: dropbar_symbol_t, min_width: integer?, n_clicks: integer?, button: string?, modifiers: string?)\|false?` | callback to invoke when the symbol is clicked, force disable `on_click` when the value if set to `false`                                     |
+| `actions`     | `table<string, fun(this: dropbar_symbol_t)>?`                                                                       | select, preview, jump, etc; pick one to invoke when clicking or hitting Enter on the corresponding symbol                                    |
+| `data`        | `table?`                                                                                                            | any extra data associated with the symbol                                                                                                    |
 
 
 `dropbar_symbol_t` has the following methods:
@@ -1095,60 +1097,9 @@ basic element of [`dropbar_t`](#dropbar_t) and [`dropbar_menu_entry_t`](#dropbar
 | `dropbar_symbol_t:cat(plain: boolean?): string`                   | concatenates the symbol into a string with substrings for highlights and click support if `plain` is not set; else returns a plain string without substrings for highlights and click support |
 | `dropbar_symbol_t:displaywidth(): integer`                        | returns the display width of the symbol                                                                                                                                                       |
 | `dropbar_symbol_t:bytewidth(): integer`                           | returns the byte width of the symbol                                                                                                                                                          |
-| `dropbar_symbol_t:goto_start()`                                   | moves the cursor to the start of the range of the dropbar tree symbol<sub>[`dropbar_symbol_tree_t`](#dropbar_symbol_tree_t)</sub> associated with the dropbar symbol                          |
+| `dropbar_symbol_t:goto_range_start()`                             | moves the cursor to the start of the range of the dropbar symbol                                                                                                                              |
 | `dropbar_symbol_t:swap_field(field: string, new_val: any)`        | temporarily change the content of a dropbar symbol <br> *does not support replacing nil values                                                                                                |
 | `dropbar_symbol_t:restore()`                                      | restore the content of a dropbar symbol after `dropbar_symbol_t:swap_field()` is called <br> *does not support restoring nil values                                                           |
-
-
-#### `dropbar_symbol_tree_t`
-
-Declared in [`lua/dropbar/sources/utils.lua`](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/sources/utils.lua).
-
----
-
-`dropbar_symbol_tree_t` is a class that represents a tree structure in a dropbar.
-
-The main purpose of this class is to provide a common structure for symbols got
-from different sources, so that it is more convenient to convert them into
-[`dropbar_symbol_t`](#dropbar_symbol_t) that supports opening a drop-down menu
-on click.
-
-```
-                ┌─────────┐
-                │file path├────┐
-                └─────────┘    │
-                   ┌──────┐    │
-                   │TSNode├──┐ │
-                   └──────┘  │ │
-    ┌─────────────────────┐  │ │  ┌─────────────────────┐   ┌────────────────┐
-    │lsp_document_symbol_t├──┼─┼──▶dropbar_symbol_tree_t├───▶dropbar_symbol_t│
-    └─────────────────────┘  │ │  └──────────┬──────────┘   └────────────────┘
- ┌────────────────────────┐  │ │             │
- │lsp_symbol_information_t├──┘ │  provides a unified interface
- └────────────────────────┘    │  to get the children, siblings,
-┌─────────────────────────┐    │  range, or other information
-│markdown_heading_symbol_t├────┘  used to generate a drop-down menu
-└─────────────────────────┘       on click
-```
-
-A `dropbar_symbol_tree_t` instance should have the following fields:
-
-| Field      | Type                                            | Description                                                                                                                             |
-| ------     | ----------------                                | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`     | `string`                                        | name of the symbol                                                                                                                      |
-| `kind`     | `string`                                        | kind/type of the symbol, used to determine the icon used for the symbol when it is converted to [`dropbar_symbol_t`](#dropbar_symbol_t) |
-| `children` | [`dropbar_symbol_tree_t[]?`](#dropbar_symbol_t) | children of the symbol                                                                                                                  |
-| `siblings` | `dropbar_symbol_tree_t[]?`                      | siblings of the symbol                                                                                                                  |
-| `idx`      | `integer?`                                      | indtex of the symbol in its siblings                                                                                                    |
-| `range`    | `dropbar_symbol_range_t?`                       | range of the symbol                                                                                                                     |
-| `data`     | `table?`                                        | any extra data associated with the tree symbol                                                                                          |
-
-where `dropbar_symbol_range_t` is a table with the following fields:
-
-| Field   | Type                                    | Description                   |
-| ------  | ------                                  | ------                        |
-| `start` | `{ line: integer, character: integer }` | start of the range, 0-indexed |
-| `end`   | `{ line: integer, character: integer }` | end of the range, 0-indexed   |
 
 #### `dropbar_menu_t`
 
