@@ -60,7 +60,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
     ![auto-truncate](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/c3b03e7f-d6f7-4c60-9c0d-da038529e1c7)
 
-- [x] Multiple backbends that support fall-backs
+- [x] Multiple backends that support fall-backs
 
   `dropbar.nvim` comes with four builtin sources:
 
@@ -74,7 +74,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
   To make a new source yourself, see [making a new source](#making-a-new-source).
 
-  For source fall-backs support, see [bar bptions](#bar).
+  For source fall-backs support, see [bar options](#bar).
 
 - [x] Zero config & Zero dependency
 

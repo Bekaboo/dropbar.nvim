@@ -48,7 +48,7 @@ highly-customizable 'winbar' with drop-down menu support and mutiple backends.
 - Opening drop-down menus or go to definition with a single mouse click
 - Pick mode for quickly selecting a component in the winbar with shortcuts
 - Automatically truncating long components
-- Multiple backbends that support fall-backs
+- Multiple backends that support fall-backs
     `dropbar.nvim` comes with four builtin sources:
 
     lsp: gets symbols from language servers using nvim’s builtin LSP framework
