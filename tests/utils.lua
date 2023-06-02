@@ -2,7 +2,7 @@ _G.test = {}
 _G.test.utils = {}
 
 ---Build a nested table from dropbar symbol tree
----@param symbol dropbar_symbol_tree_t
+---@param symbol dropbar_symbol_t
 ---@param tbl table (reference to) to the nested table
 ---@return nil
 function test.utils.build_nested_tbl(symbol, tbl)
@@ -55,7 +55,7 @@ end
 
 ---Get the names of a field of a symbol, the value of the field must be a list
 ---@param field string
----@param symbol dropbar_symbol_tree_t
+---@param symbol dropbar_symbol_t
 ---@return string[]
 function test.utils.get_names_of(field, symbol)
   if not symbol[field] then

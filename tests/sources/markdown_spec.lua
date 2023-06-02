@@ -65,7 +65,7 @@ describe('[source][markdown]', function()
             vim.api.nvim_get_current_buf(),
             test.utils.get_testpoint(0)
           )
-        ).symbol,
+        ),
         tree
       )
       assert.are.same({

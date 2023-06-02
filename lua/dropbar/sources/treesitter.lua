@@ -1,5 +1,5 @@
-local utils = require('dropbar.sources.utils')
 local configs = require('dropbar.configs')
+local bar = require('dropbar.bar')
 
 ---Convert a snake_case string to camelCase
 ---@param str string?
@@ -71,39 +71,48 @@ local function get_node_siblings(node)
   return siblings, idx
 end
 
----Unify TSNode into dropbar symbol tree format
+---Convert TSNode into dropbar symbol structure
 ---@param ts_node TSNode
 ---@param buf integer buffer handler
----@return dropbar_symbol_tree_t
-local function unify(ts_node, buf)
+---@return dropbar_symbol_t
+local function convert(ts_node, buf)
   local range = { ts_node:range() }
+  local kind = snake_to_camel(get_node_short_type(ts_node))
   return setmetatable({
-    node = ts_node,
     name = get_node_short_name(ts_node, buf),
-    kind = snake_to_camel(get_node_short_type(ts_node)),
-    range = {
-      start = {
-        line = range[1],
-        character = range[2],
+    icon = configs.opts.icons.kinds.symbols[kind],
+    icon_hl = 'DropBarIconKind' .. kind,
+    data = {
+      range = {
+        start = {
+          line = range[1],
+          character = range[2],
+        },
+        ['end'] = {
+          line = range[3],
+          character = range[4],
+        },
       },
-      ['end'] = {
-        line = range[3],
-        character = range[4],
-      },
+    },
+    actions = {
+      ---@param symbol dropbar_symbol_t
+      jump = function(symbol)
+        symbol:goto_range_start()
+      end,
     },
   }, {
     __index = function(self, k)
       if k == 'children' then
         self.children = vim.tbl_map(function(child)
-          return unify(child, buf)
+          return convert(child, buf)
         end, get_node_children(ts_node))
         return self.children
-      elseif k == 'siblings' or k == 'idx' then
+      elseif k == 'siblings' or k == 'sibling_idx' then
         local siblings, idx = get_node_siblings(ts_node)
         self.siblings = vim.tbl_map(function(sibling)
-          return unify(sibling, buf)
+          return convert(sibling, buf)
         end, siblings)
-        self.idx = idx
+        self.sibling_idx = idx
         return self[k]
       end
     end,
@@ -142,7 +151,7 @@ local function get_symbols(buf, cursor)
         table.insert(
           symbols,
           1,
-          utils.to_dropbar_symbol(unify(current_node, buf))
+          bar.dropbar_symbol_t:new(convert(current_node, buf))
         )
         prev_type_rank = type_rank
         prev_row = start_row
