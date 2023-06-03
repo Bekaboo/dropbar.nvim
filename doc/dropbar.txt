@@ -1067,6 +1067,15 @@ dropbar_symbol_t:del()                                *dropbar_symbol_t:del()*
 
  	Destructor of `dropbar_symbol_t`
 
+dropbar_symbol_t:merge({opts})                      *dropbar_symbol_t:merge()*
+
+	Create a new `dropbar_symbol_t` by merging `opts` into the current
+	`dropbar_symbol_t`
+
+  Parameters ~
+      • {opts} (`dropbar_symbol_t`): The options to merge into the
+				      `dropbar_symbol_t`
+
 dropbar_symbol_t:cat([{plain}])                       *dropbar_symbol_t:cat()*
 
  	Concatenates the symbol into a string with substrings for highlights
