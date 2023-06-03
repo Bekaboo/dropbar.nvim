@@ -43,7 +43,7 @@
     - [`dropbar_source_t`](#dropbar_source_t)
   - [Making a New Source](#making-a-new-source)
     - [Making a Source With Drop-Down Menus](#making-a-source-with-drop-down-menus)
-    - [Default `on_click()` Callback](#default-on_click()-callback)
+    - [Default `on_click()` Callback](#default-on_click-callback)
     - [Lazy-Loading Expensive Fields](#lazy-loading-expensive-fields)
 - [Similar Projects](#similar-projects)
 
