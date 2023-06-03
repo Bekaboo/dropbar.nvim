@@ -461,6 +461,29 @@ PATH                              *dropbar-configuration-options-sources-path*
               return true
             end
 <
+- `opts.sources.path.modified`: `function(sym: dropbar_symbol_t): dropbar_symbol_t`
+  - A function that takes the last symbol in the result got from the path
+    source and returns an alternative symbol to show if the current buffer is
+    modified, for information about dropbar symbols see
+    |dropbar-developers-classes-dropbar_symbol_t|
+  - Default: >lua
+
+	    function(sym)
+	      return sym
+	    end
+<
+  - To set a different icon, name, or highlights when the buffer is modified,
+    you can change the corresponding fields in the returned symbol: >lua
+
+	    function(sym)
+	      return sym:merge({
+		name = sym.name .. ' [+]',
+		icon = ' ',
+		name_hl = 'DiffAdded',
+		icon_hl = 'DiffAdded',
+		-- ...
+	      })
+	    end
 
 TREESITTER                  *dropbar-configuration-options-sources-treesitter*
 

@@ -96,6 +96,9 @@ local function get_symbols(buf, _)
     table.insert(symbols, 1, convert(current_path))
     current_path = vim.fs.dirname(current_path)
   end
+  if vim.bo[buf].mod then
+    symbols[#symbols] = configs.opts.sources.path.modified(symbols[#symbols])
+  end
   return symbols
 end
 

@@ -232,6 +232,12 @@ M.opts = {
       filter = function(_)
         return true
       end,
+      ---Symbol of current buf is modified
+      ---@param sym dropbar_symbol_t
+      ---@return dropbar_symbol_t
+      modified = function(sym)
+        return sym
+      end,
     },
     treesitter = {
       -- Lua pattern used to extract a short name from the node text

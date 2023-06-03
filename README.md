@@ -392,6 +392,12 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
         filter = function(_)
           return true
         end,
+        ---Symbol of current buf is modified
+        ---@param sym dropbar_symbol_t
+        ---@return dropbar_symbol_t
+        modified = function(sym)
+          return sym
+        end
       },
       treesitter = {
         -- Lua pattern used to extract a short name from the node text
@@ -777,6 +783,32 @@ each sources.
     ```lua
     function(_)
       return true
+    end
+    ```
+- `opts.sources.path.modified`: `function(sym: dropbar_symbol_t): dropbar_symbol_t`
+  - A function that takes the last
+    symbol<sub>[`dropbar_symbol_t`](#dropbar_symbol_t)</sub> in the result got
+    from the path source and returns an alternative
+    symbol<sub>[`dropbar_symbol_t`](#dropbar_symbol_t)</sub> to show if the
+    current buffer is modified
+  - Default:
+    ```lua
+    function(sym)
+      return sym
+    end
+    ```
+  - To set a different icon, name, or highlights when the buffer is modified,
+    you can change the corresponding fields in the returned
+    symbol<sub>[`dropbar_symbol_t`](#dropbar_symbol_t)</sub>
+    ```lua
+    function(sym)
+      return sym:merge({
+        name = sym.name .. '[+]',
+        icon = ' ',
+        name_hl = 'DiffAdded',
+        icon_hl = 'DiffAdded',
+        -- ...
+      })
     end
     ```
 
