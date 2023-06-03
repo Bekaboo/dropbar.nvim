@@ -36,6 +36,9 @@ CONTENTS                                           *dropbar-table-of-contents*
     6.2.6 `dropbar_menu_hl_info_t` |dropbar-developers-classes-dropbar_menu_hl_info_t|
     6.2.7 `dropbar_source_t`     |dropbar-developers-classes-dropbar_source_t|
   6.3 Making a new source             |dropbar-developers-making-a-new-source|
+    6.3.1 Making a source with drop-down menus |dropbar-developers-making-a-source-with-drop-down-menus|
+    6.3.2 Default `on_click()` callback |dropbar-developers-default-on_click-callback|
+    6.3.3 Lazy-loading expensive fields |dropbar-developers-lazy-loading-expensive-fields|
 7. Similar Projects                                 |dropbar-similar-projects|
 
 
@@ -1528,6 +1531,162 @@ action: >lua
     })
 <
 
+..............................................................................
+MAKING A SOURCE WITH DROP-DOWN MENUS
+*dropbar-developers-making-a-source-with-drop-down-menus*
+
+
+The following example shows how to make a source that returns two symbols with
+the first symbol having a drop-down menu with a single entry saying 'World':
+>lua
+    local bar = require('dropbar.bar')
+    local menu = require('dropbar.menu')
+    local custom_source = {
+      get_symbols = function(_, _)
+	return {
+	  bar.dropbar_symbol_t:new({
+	    icon = ' ',
+	    icon_hl = 'WarningMsg',
+	    name = 'Hello',
+	    name_hl = 'Keyword',
+	    on_click = function(self)
+	      self.menu = menu.dropbar_menu_t:new({
+		entries = {
+		  menu.dropbar_menu_entry_t:new({
+		    components = {
+		      bar.dropbar_symbol_t:new({
+			icon = ' ',
+			icon_hl = 'WarningMsg',
+			name = 'World',
+			name_hl = 'Keyword',
+			on_click = function(sym)
+			  vim.notify('Have you smiled today? ' .. sym.icon)
+			end,
+		      }),
+		    },
+		  }),
+		},
+	      })
+	      self.menu:toggle()
+	    end,
+	  }),
+	  bar.dropbar_symbol_t:new({
+	    name = 'dropbar',
+	    icon = ' ',
+	    name_hl = 'Special',
+	    icon_hl = 'Error',
+	  }),
+	}
+      end,
+    }
+<
+
+..............................................................................
+DEFAULT ON_CLICK() CALLBACK     *dropbar-developers-default-on_click-callback*
+
+`dropbar_symbol_t:new()` defines a default `on_click()` callback if non is
+provided.
+
+The default `on_click()` callback will look for these fields in the symbol
+instance and create a drop-down menu accordingly on click, for more
+information about these fields, see
+|dropbar-developers-classes-dropbar_symbol_t|:
+
+    • `dropbar_symbol_t.siblings`
+
+	Array of symbols to show in the first drop-down menu (the menu opened
+	by clicking the symbol in the winbar)
+
+    • `dropbar_symbol_t.sibling_idx`
+
+	Index of the symbol in `dropbar_symbol_t.siblings`, used to determine
+	the initial position of the cursor in the first drop-down menu
+
+    • `dropbar_symbol_t.children`
+
+	Array of symbols to show in the sub-menus of the corresponding symbol
+	(the menus opened by clicking a symbol inside another menu)
+
+    • `dropbar_symbol_t.actions.jump`
+
+	Jump to the start of the symbol, it will be called when clicking on
+	the corresponding symbol (not the indicator) inside a menu
+
+The following example shows a source that utilizes the default `on_click()`
+callback: >lua
+
+    local bar = require('dropbar.bar')
+    local custom_source = {
+      get_symbols = function(_, _)
+	return {
+	  bar.dropbar_symbol_t:new({
+	    name = 'Lev 1',
+	    name_hl = 'Keyword',
+	    siblings = {
+	      bar.dropbar_symbol_t:new({
+		name = 'Lev 1.1',
+		name_hl = 'WarningMsg',
+	      }),
+	      bar.dropbar_symbol_t:new({
+		name = 'Lev 1.2',
+		name_hl = 'Error',
+	      }),
+	      bar.dropbar_symbol_t:new({
+		name = 'Lev 1.3',
+		name_hl = 'String',
+		children = {
+		  bar.dropbar_symbol_t:new({
+		    name = 'Lev 1.3.1',
+		    name_hl = 'String',
+		    actions = {
+		      jump = function(_)
+			vim.notify('Jumping to Lev 1.3.1')
+		      end
+		    }
+		  }),
+		},
+	      }),
+	    },
+	  }),
+	}
+      end,
+    }
+<
+
+..............................................................................
+LAZY-LOADING EXPENSIVE FIELDS
+*dropbar-developers-lazy-loading-expensive-fields*
+
+If the symbol fields `siblings` or `children` are expensive to compute, you
+can use meta-tables to lazy-load them, so that they are only computed when a
+menu is opened: >lua
+
+    local bar = require('dropbar.bar')
+    local custom_source = {
+      get_symbols = function(_, _)
+	return {
+	  bar.dropbar_symbol_t:new(setmetatable({
+	    name = 'Lev 1',
+	    name_hl = 'Keyword',
+	  }, {
+	    __index = function(self, key)
+	      if key == 'siblings' then
+		self[siblings] = -- [[ compute siblings ]]
+		return self[siblings]
+	      end
+	      if key == 'children' then
+		self[children] = -- [[ compute children ]]
+		return self[children]
+	      end
+	      -- ...
+	    end,
+	  })),
+	}
+      end,
+    }
+<
+
+To see concrete examples of lazy-loading, see `lua/dropbar/sources`.
 
 ==============================================================================
 SIMILAR PROJECTS                                    *dropbar-similar-projects*
