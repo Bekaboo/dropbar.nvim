@@ -104,6 +104,7 @@ local function convert(symbol, symbols, list_idx, buf)
   return bar.dropbar_symbol_t:new(setmetatable({
     name = symbol.name,
     icon = configs.opts.icons.kinds.symbols[kind],
+    name_hl = 'DropBarKind' .. kind,
     icon_hl = 'DropBarIconKind' .. kind,
     data = setmetatable({
       heading_symbol = symbol,

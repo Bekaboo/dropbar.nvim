@@ -140,12 +140,10 @@ function dropbar_symbol_t:new(opts)
                     sym:merge({
                       name = '',
                       icon = menu_indicator_icon,
-                      name_hl = 'DropBarMenuNormalFloat',
                       icon_hl = 'DropBarIconUIIndicator',
                       on_click = menu_indicator_on_click,
                     }),
                     sym:merge({
-                      name_hl = 'DropBarMenuNormalFloat',
                       on_click = sym.actions and sym.actions.jump,
                     }),
                   },
@@ -357,11 +355,10 @@ function dropbar_t:cat(plain)
         and result .. self.separator:cat(plain) .. component:cat(plain)
       or component:cat(plain)
   end
-  -- Must add highlights to padding, else nvim will automatically truncate it
-  local padding_hl = not plain and 'DropBar' or nil
-  local padding_left = hl(string.rep(' ', self.padding.left), padding_hl)
-  local padding_right = hl(string.rep(' ', self.padding.right), padding_hl)
-  return result and padding_left .. result .. padding_right or ''
+  local padding_left = string.rep(' ', self.padding.left)
+  local padding_right = string.rep(' ', self.padding.right)
+  result = result and padding_left .. result .. padding_right or ''
+  return plain and result or hl(result, 'DropBar')
 end
 
 ---Reevaluate dropbar string from components and redraw dropbar

@@ -32,6 +32,7 @@ local function convert(path)
   return bar.dropbar_symbol_t:new(setmetatable({
     name = vim.fs.basename(path),
     icon = icon,
+    name_hl = 'DropBarKindFolder',
     icon_hl = icon_hl,
     actions = {
       ---@param symbol dropbar_symbol_t

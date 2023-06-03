@@ -88,7 +88,7 @@ describe('[bar]', function()
     it('concatenates and converts to string', function()
       local plain_str = ' | 󰅩 testing    '
       local formatted_str = string.format(
-        '%%#DropBar#%%*%%#DropBarIconUISeparator# | %%*%%@v:lua.dropbar.on_click_callbacks.buf%d.win%d.fn%d@%%#DropBarIconTest#󰅩 %%*%%#DropBarNameTest#testing%%*%%X%%#DropBar#    %%*',
+        '%%#DropBar#%%#DropBarIconUISeparator# | %%*%%@v:lua.dropbar.on_click_callbacks.buf%d.win%d.fn%d@%%#DropBarIconTest#󰅩 %%*%%#DropBarNameTest#testing%%*%%X    %%*',
         winbar.buf,
         winbar.win,
         winbar.components[2].bar_idx

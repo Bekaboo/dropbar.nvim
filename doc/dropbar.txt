@@ -714,6 +714,62 @@ Highlight groups ~
   DropBarIconUISeparatorMenu         `{ link = 'DropBarIconUISeparator' }`
   DropBarMenuCurrentContext          `{ link = 'PmenuSel' }`
   DropBarMenuNormalFloat             `{ link = 'WinBar' }`
+  DropBarKindArray                   undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindBoolean                 undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindBreakStatement          undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindCall                    undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindCaseStatement           undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindClass                   undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindConstant                undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindConstructor             undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindContinueStatement       undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindDeclaration             undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindDelete                  undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindDoStatement             undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindElseStatement           undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindEnum                    undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindEnumMember              undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindEvent                   undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindField                   undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindFile                    undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindFolder                  undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindForStatement            undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindFunction                undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindIdentifier              undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindIfStatement             undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindInterface               undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindKeyword                 undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindList                    undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindMacro                   undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindMarkdownH1              undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindMarkdownH2              undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindMarkdownH3              undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindMarkdownH4              undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindMarkdownH5              undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindMarkdownH6              undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindMethod                  undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindModule                  undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindNamespace               undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindNull                    undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindNumber                  undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindObject                  undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindOperator                undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindPackage                 undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindProperty                undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindReference               undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindRepeat                  undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindScope                   undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindSpecifier               undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindStatement               undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindString                  undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindStruct                  undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindSwitchStatement         undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindType                    undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindTypeParameter           undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindUnit                    undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindValue                   undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindVariable                undefined, follows `hl-WinBar` and `hl-WinBarNC`
+  DropBarKindWhileStatement          undefined, follows `hl-WinBar` and `hl-WinBarNC`
 
 
 ==============================================================================

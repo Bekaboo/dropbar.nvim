@@ -190,6 +190,7 @@ local function convert_symbol_information(symbol, symbols, list_idx)
   return bar.dropbar_symbol_t:new(setmetatable({
     name = symbol.name,
     icon = configs.opts.icons.kinds.symbols[kind],
+    name_hl = 'DropBarKind' .. kind,
     icon_hl = 'DropBarIconKind' .. kind,
     data = { range = symbol.location.range },
     actions = {
@@ -254,6 +255,7 @@ local function convert_document_symbol(document_symbol, siblings, idx)
   return bar.dropbar_symbol_t:new(setmetatable({
     name = document_symbol.name,
     icon = configs.opts.icons.kinds.symbols[kind],
+    name_hl = 'DropBarKind' .. kind,
     icon_hl = 'DropBarIconKind' .. kind,
     data = { range = document_symbol.range },
     sibling_idx = idx,

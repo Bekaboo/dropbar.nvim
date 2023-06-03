@@ -81,6 +81,7 @@ local function convert(ts_node, buf)
   return bar.dropbar_symbol_t:new(setmetatable({
     name = get_node_short_name(ts_node, buf),
     icon = configs.opts.icons.kinds.symbols[kind],
+    name_hl = 'DropBarKind' .. kind,
     icon_hl = 'DropBarIconKind' .. kind,
     data = {
       range = {
@@ -154,6 +155,7 @@ local function get_symbols(buf, cursor)
       elseif type_rank < prev_type_rank then
         symbols[1].icon = configs.opts.icons.kinds.symbols[lsp_type]
         symbols[1].icon_hl = 'DropBarIconKind' .. lsp_type
+        symbols[1].name_hl = 'DropBarKind' .. lsp_type
         prev_type_rank = type_rank
         prev_row = start_row
       end
