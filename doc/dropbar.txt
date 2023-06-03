@@ -168,6 +168,7 @@ behavior of the plugin:
     - Default: >lua
 
             {
+              'BufModifiedSet',
               'CursorMoved',
               'CursorMovedI',
               'DirChanged',

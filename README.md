@@ -171,6 +171,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           and not vim.wo[win].diff
       end,
       update_events = {
+        'BufModifiedSet',
         'CursorMoved',
         'CursorMovedI',
         'DirChanged',
@@ -500,6 +501,7 @@ general behavior of the plugin:
   - Default:
     ```lua
     {
+      'BufModifiedSet',
       'CursorMoved',
       'CursorMovedI',
       'DirChanged',

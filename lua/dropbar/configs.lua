@@ -11,6 +11,7 @@ M.opts = {
         and not vim.wo[win].diff
     end,
     update_events = {
+      'BufModifiedSet',
       'CursorMoved',
       'CursorMovedI',
       'DirChanged',
