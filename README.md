@@ -171,16 +171,24 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           and not vim.wo[win].diff
       end,
       update_events = {
-        'BufModifiedSet',
-        'CursorMoved',
-        'CursorMovedI',
-        'DirChanged',
-        'FileChangedShellPost',
-        'TextChanged',
-        'TextChangedI',
-        'VimResized',
-        'WinResized',
-        'WinScrolled',
+        win = {
+          'CursorMoved',
+          'CursorMovedI',
+          'WinEnter',
+          'WinLeave',
+          'WinResized',
+          'WinScrolled',
+        },
+        buf = {
+          'BufModifiedSet',
+          'FileChangedShellPost',
+          'TextChanged',
+          'TextChangedI',
+        },
+        global = {
+          'DirChanged',
+          'VimResized',
+        },
       },
     },
     icons = {
@@ -496,21 +504,40 @@ general behavior of the plugin:
       and not vim.wo[win].diff
     end
     ```
-- `opts.general.update_events`: `string[]`
-  - List of events that should trigger an update of the dropbar
+- `opts.general.update_events.win`: `string[]`
+  - List of events that should trigger an update on the dropbar attached to
+    a single window
+  - Default:
+    ```lua
+    {
+      'CursorMoved',
+      'CursorMovedI',
+      'WinEnter',
+      'WinLeave',
+      'WinResized',
+      'WinScrolled',
+    }
+    ```
+- `opts.general.update_events.buf`: `string[]`
+  - List of events that should trigger an update on all dropbars attached to a
+    buffer
   - Default:
     ```lua
     {
       'BufModifiedSet',
-      'CursorMoved',
-      'CursorMovedI',
-      'DirChanged',
       'FileChangedShellPost',
       'TextChanged',
       'TextChangedI',
+    }
+    ```
+- `opts.general.update_events.global`: `string[]`
+  - List of events that should trigger an update of all dropbars in current
+    nvim session
+  - Default:
+    ```lua
+    {
+      'DirChanged',
       'VimResized',
-      'WinResized',
-      'WinScrolled',
     }
     ```
 

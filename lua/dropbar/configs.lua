@@ -11,16 +11,24 @@ M.opts = {
         and not vim.wo[win].diff
     end,
     update_events = {
-      'BufModifiedSet',
-      'CursorMoved',
-      'CursorMovedI',
-      'DirChanged',
-      'FileChangedShellPost',
-      'TextChanged',
-      'TextChangedI',
-      'VimResized',
-      'WinResized',
-      'WinScrolled',
+      win = {
+        'CursorMoved',
+        'CursorMovedI',
+        'WinEnter',
+        'WinLeave',
+        'WinResized',
+        'WinScrolled',
+      },
+      buf = {
+        'BufModifiedSet',
+        'FileChangedShellPost',
+        'TextChanged',
+        'TextChangedI',
+      },
+      global = {
+        'DirChanged',
+        'VimResized',
+      },
     },
   },
   icons = {
@@ -318,7 +326,28 @@ M.opts = {
 ---Set dropbar options
 ---@param new_opts dropbar_configs_t?
 function M.set(new_opts)
-  M.opts = vim.tbl_deep_extend('force', M.opts, new_opts or {})
+  new_opts = new_opts or {}
+  -- Notify deprecated options
+  if new_opts.general and vim.tbl_islist(new_opts.general.update_events) then
+    vim.api.nvim_echo({
+      { '[dropbar.nvim] ', 'Normal' },
+      { 'opts.general.update_events', 'WarningMsg' },
+      { ' is deprecated.\n', 'Normal' },
+      { '[dropbar.nvim] ', 'Normal' },
+      { 'Please use\n', 'Normal' },
+      { '               opts.general.update_events.win ', 'WarningMsg' },
+      { 'for updating a winbar attached to a single window,\n', 'Normal' },
+      { '               opts.general.update_events.buf ', 'WarningMsg' },
+      { 'for updating all winbars attached to a buffer, or\n', 'Normal' },
+      { '               opts.general.update_events.global ', 'WarningMsg' },
+      { 'for updating all winbars in current nvim session ', 'Normal' },
+      { 'instead.\n', 'Normal' },
+    }, true, {})
+    new_opts.general.update_events = {
+      win = new_opts.general.update_events,
+    }
+  end
+  M.opts = vim.tbl_deep_extend('force', M.opts, new_opts)
 end
 
 ---Evaluate a dynamic option value (with type T|fun(...): T)
