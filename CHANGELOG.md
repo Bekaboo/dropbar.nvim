@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/Bekaboo/dropbar.nvim/compare/v2.1.0...v2.1.1) (2023-06-04)
+
+
+### Bug Fixes
+
+* **highlights:** fix the name of hl-DropBarMenuHoverSymbol ([63ab461](https://github.com/Bekaboo/dropbar.nvim/commit/63ab4610da3d98208af08a7aa80b7c571209858d))
+
 ## [2.1.0](https://github.com/Bekaboo/dropbar.nvim/compare/v2.0.0...v2.1.0) (2023-06-04)
 
 
