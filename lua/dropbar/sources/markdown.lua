@@ -161,7 +161,7 @@ local function convert(symbol, symbols, list_idx, buf)
         return self.children
       end
       if k == 'siblings' or k == 'sibling_idx' then
-        self.siblings = { self }
+        self.siblings = { convert(symbol, symbols, list_idx, buf) }
         for i = list_idx - 1, 1, -1 do
           if symbols[i].level < symbol.level then
             break
