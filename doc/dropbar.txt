@@ -1572,28 +1572,28 @@ single line of a drop-down menu.
 
 `dropbar_menu_hl_info_t` has the following fields:
 
-dropbar_menu_t.start                                    *dropbar_menu_t.start*
+dropbar_menu_hl_info_t.start                    *dropbar_menu_hl_info_t.start*
 
  	The start column of the highlight range
 
 	Type ~
 	    integer
 
-dropbar_menu_t.end                                        *dropbar_menu_t.end*
+dropbar_menu_hl_info_t.end                        *dropbar_menu_hl_info_t.end*
 
  	The end column of the highlight range
 
 	Type ~
 	    integer
 
-dropbar_menu_t.hlgroup                                *dropbar_menu_t.hlgroup*
+dropbar_menu_hl_info_t.hlgroup                *dropbar_menu_hl_info_t.hlgroup*
 
  	The highlight group to use for the range
 
 	Type ~
 	    string
 
-dropbar_menu_t.ns                                          *dropbar_menu_t.ns*
+dropbar_menu_hl_info_t.ns                          *dropbar_menu_hl_info_t.ns*
 
  	The namespace to use for the range, nil if using default namespace
 
