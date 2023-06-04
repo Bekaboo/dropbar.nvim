@@ -86,8 +86,12 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
   As long as the language server or the treesitter parser is installed,
   it should work just fine.
 
-- [ ] Show highlights in the drop-down menu according to current mouse/cursor
-  position, see `:h mousemev` and `:h <MouseMove>`
+- [x] Drop-down menu components that response to mouse/cursor hovering:
+
+    ![hover](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/d72ea8b5-264d-413c-9780-79a0da5cc064)
+
+    - To enable this feature, `mousemoveevent` must be enabled.
+
 - [ ] Preview symbol ranges in original window when hovering over them in the
   drop-down menu
 
@@ -342,6 +346,17 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           if component then
             menu:click_on(component, nil, 1, 'l')
           end
+        end,
+        ['<MouseMove>'] = function()
+          local menu = require('dropbar.api').get_current_dropbar_menu()
+          if not menu then
+            return
+          end
+          local mouse = vim.fn.getmousepos()
+          if mouse.winid ~= menu.win then
+            return
+          end
+          menu:update_hover_hl({ mouse.line, mouse.column })
         end,
       },
       ---@alias dropbar_menu_win_config_opts_t any|fun(menu: dropbar_menu_t):any
@@ -733,6 +748,17 @@ menu:
           menu:click_on(component, nil, 1, 'l')
         end
       end,
+      ['<MouseMove>'] = function()
+        local menu = require('dropbar.api').get_current_dropbar_menu()
+        if not menu then
+          return
+        end
+        local mouse = vim.fn.getmousepos()
+        if mouse.winid ~= menu.win then
+          return
+        end
+        menu:update_hover_hl({ mouse.line, mouse.column })
+      end,
     }
     ```
 - `opts.menu.win_configs`: `table<string, dropbar_menu_win_config_opts_t>`
@@ -1020,6 +1046,9 @@ should be self-explanatory:
   | DropBarIconUISeparatorMenu       | `{ link = 'DropBarIconUISeparator' }`            |
   | DropBarMenuCurrentContext        | `{ link = 'PmenuSel' }`                          |
   | DropBarMenuNormalFloat           | `{ link = 'WinBar' }`                            |
+  | DropBarMenuHoverEntry            | `{ link = 'Visual' }`                            |
+  | DropBarMenuHoverIcon             | `{ reverse = true }`                             |
+  | DropBarMenuHoverSymbol           | `{ bold = true }`                                |
   | DropBarKindArray                 | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
   | DropBarKindBoolean               | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
   | DropBarKindBreakStatement        | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
@@ -1248,20 +1277,22 @@ Declared and defined in [`lua/dropbar/menu.lua`](https://github.com/Bekaboo/drop
 
 `dropbar_menu_t` has the following methods:
 
-| Method                                                                                                                            | Description                                                                                                                                                                      |
-| ------                                                                                                                            | ------                                                                                                                                                                           |
-| `dropbar_menu_t:new(opts: dropbar_menu_opts_t?): dropbar_menu_t`                                                                  | constructor of `dropbar_menu_t`                                                                                                                                                  |
-| `dropbar_menu_t:del()`                                                                                                            | destructor of `dropbar_menu_t`                                                                                                                                                   |
-| `dropbar_menu_t:eval_win_config()`                                                                                                | evaluate window configuration and store the result in `_win_configs`                                                                                                             |
-| `dropbar_menu_t:get_component_at(pos: integer[]): dropbar_symbol_t`                                                               | get the component<sub>[`dropbar_symbol_t`](#dropbar_symbol_t)</sub> at position `pos`                                                                                            |
-| `dropbar_menu_t:click_at(pos: integer[], min_width: integer?, n_clicks: integer?, button: string?, modifiers: string?)`           | simulate a click at `pos` in the menu                                                                                                                                            |
-| `dropbar_menu_t:click_on(symbol: dropbar_symbol_t, min_width: integer?, n_clicks: integer?, button: string?, modifiers: string?)` | simulate a click at the component `symbol`<sub>[`dropbar_symbol_t`](#dropbar_symbol_t)</sub> of the menu                                                                         |
-| `dropbar_menu_t:hl_line_range(line: integer, hl_info: dropbar_menu_hl_info_t)`                                                    | add highlight to a range in the menu buffer according to the line number and the highlight info<sub>[`dropbar_menu_hl_info_t`](#dropbar_menu_hl_info_t)                          |
-| `dropbar_menu_t:hl_line_single(line: integer, hlgroup: string?)`                                                                  | add highlight to a single line in the menu buffer; `hlgroups` defaults to `'DropBarMenuCurrentContext'`<br> *all other highlights added by this functions before will be cleared |
-| `dropbar_menu_t:make_buf()`                                                                                                       | create the menu buffer from the entries<sub>[`dropbar_menu_entry_t`](#dropbar_menu_entry_t)                                                                                      |
-| `dropbar_menu_t:open()`                                                                                                           | open the menu                                                                                                                                                                    |
-| `dropbar_menu_t:close()`                                                                                                          | close the menu                                                                                                                                                                   |
-| `dropbar_menu_t:toggle()`                                                                                                         | toggle the menu                                                                                                                                                                  |
+| Method                                                                                                                            | Description                                                                                                                                                                                                     |
+| ------                                                                                                                            | ------                                                                                                                                                                                                          |
+| `dropbar_menu_t:new(opts: dropbar_menu_opts_t?): dropbar_menu_t`                                                                  | constructor of `dropbar_menu_t`                                                                                                                                                                                 |
+| `dropbar_menu_t:del()`                                                                                                            | destructor of `dropbar_menu_t`                                                                                                                                                                                  |
+| `dropbar_menu_t:eval_win_config()`                                                                                                | evaluate window configuration and store the result in `_win_configs`                                                                                                                                            |
+| `dropbar_menu_t:get_component_at(pos: integer[]): dropbar_symbol_t?, { start: integer, end: integer }?`                           | get the component<sub>[`dropbar_symbol_t`](#dropbar_symbol_t)</sub> at position `pos` and its range it occupies in the entry it belongs to                                                                      |
+| `dropbar_menu_t:click_at(pos: integer[], min_width: integer?, n_clicks: integer?, button: string?, modifiers: string?)`           | simulate a click at `pos` in the menu                                                                                                                                                                           |
+| `dropbar_menu_t:click_on(symbol: dropbar_symbol_t, min_width: integer?, n_clicks: integer?, button: string?, modifiers: string?)` | simulate a click at the component `symbol`<sub>[`dropbar_symbol_t`](#dropbar_symbol_t)</sub> of the menu                                                                                                        |
+| `dropbar_menu_t:hl_line_range(line: integer, hl_info: dropbar_menu_hl_info_t)`                                                    | add highlight to a range in the menu buffer according to the line number and the highlight info<sub>[`dropbar_menu_hl_info_t`](#dropbar_menu_hl_info_t)                                                         |
+| `dropbar_menu_t:hl_line_single(line: integer?, hlgroup: string?)`                                                                 | add highlight to a single line in the menu buffer; `hlgroups` defaults to `'DropBarMenuCurrentContext'`<br> *all highlights with the same hlgroup added by this functions before will be cleared                |
+| `dropbar_menu_t:hl_range_single(line: integer?, range: { start: integer, end: integer }?, hlgroup: string?)`                      | add highlight to a single range in a single line in the menu buffer; `hlgroups` defaults to `'DropBarMenuHoverSymbol'`<br> *all highlights with the same hlgroup added by this functions before will be cleared |
+| `dropbar_menu_t:update_hover_hl(pos: integer[])`                                                                                  | update the hover highlights (`DropBarMenuHover*`) assuming the cursor/mouse is hovering at `pos` in the menu                                                                                                    |
+| `dropbar_menu_t:make_buf()`                                                                                                       | create the menu buffer from the entries<sub>[`dropbar_menu_entry_t`](#dropbar_menu_entry_t)                                                                                                                     |
+| `dropbar_menu_t:open()`                                                                                                           | open the menu                                                                                                                                                                                                   |
+| `dropbar_menu_t:close()`                                                                                                          | close the menu                                                                                                                                                                                                  |
+| `dropbar_menu_t:toggle()`                                                                                                         | toggle the menu                                                                                                                                                                                                 |
 
 #### `dropbar_menu_entry_t`
 
@@ -1287,14 +1318,14 @@ multiple `dropbar_menu_entry_t` instances while a
 
 `dropbar_menu_entry_t` has the following methods:
 
-| Method                                                                        | Description                                                                                                                                               |
-| ------                                                                        | ------                                                                                                                                                    |
-| `dropbar_menu_entry_t:new(opts: dropbar_menu_entry_t?): dropbar_menu_entry_t` | constructor of `dropbar_menu_entry_t`                                                                                                                     |
-| `dropbar_menu_entry_t:del()`                                                  | destructor of `dropbar_menu_entry_t`                                                                                                                      |
-| `dropbar_menu_entry_t:cat(): string, dropbar_menu_hl_info_t`                  | concatenate the components into a string, returns the string and highlight info<sub>[`dropbar_menu_hl_info_t`](#dropbar_menu_hl_info_t)                   |
-| `dropbar_menu_entry_t:displaywidth(): integer`                                | calculate the display width of the entry                                                                                                                  |
-| `dropbar_menu_entry_t:bytewidth(): integer`                                   | calculate the byte width of the entry                                                                                                                     |
-| `dropbar_menu_entry_t:first_clickable(offset: integer?): dropbar_symbol_t?`   | get the first clickable component<sub>[`dropbar_symbol_t`](#dropbar_symbol_t)</sub> in the dropbar menu entry starting from `offset`, which defaults to 0 |
+| Method                                                                                                         | Description                                                                                                                                                             |
+| ------                                                                                                         | ------                                                                                                                                                                  |
+| `dropbar_menu_entry_t:new(opts: dropbar_menu_entry_t?): dropbar_menu_entry_t`                                  | constructor of `dropbar_menu_entry_t`                                                                                                                                   |
+| `dropbar_menu_entry_t:del()`                                                                                   | destructor of `dropbar_menu_entry_t`                                                                                                                                    |
+| `dropbar_menu_entry_t:cat(): string, dropbar_menu_hl_info_t`                                                   | concatenate the components into a string, returns the string and highlight info<sub>[`dropbar_menu_hl_info_t`](#dropbar_menu_hl_info_t)                                 |
+| `dropbar_menu_entry_t:displaywidth(): integer`                                                                 | calculate the display width of the entry                                                                                                                                |
+| `dropbar_menu_entry_t:bytewidth(): integer`                                                                    | calculate the byte width of the entry                                                                                                                                   |
+| `dropbar_menu_entry_t:first_clickable(offset: integer?): dropbar_symbol_t?, { start: integer, end: integer }?` | get the first clickable component<sub>[`dropbar_symbol_t`](#dropbar_symbol_t)</sub> and its range in the dropbar menu entry starting from `offset`, which defaults to 0 |
 
 #### `dropbar_menu_hl_info_t`
 

@@ -65,11 +65,11 @@ highly-customizable 'winbar' with drop-down menu support and mutiple backends.
     `dropbar.nvim` does not require nvim-lspconfig , nvim-treesitter or any
     third-party UI libraries to work. As long as the language server or the
     treesitter parser is installed, it should work just fine.
+- Drop-down menu components that response to mouse/cursor hovering
+    This features requires 'mousemoveevent' to be enabled.
 
 TODO
 
-- Show highlights in the drop-down menu according to current mouse/cursor
-    position, see 'mousemev' and `<MouseMove>`
 - Preview symbol ranges in original window when hovering over them in the
     drop-down menu
 
@@ -402,6 +402,17 @@ the menu:
                   menu:click_on(component, nil, 1, 'l')
                 end
               end,
+	      ['<MouseMove>'] = function()
+		local menu = require('dropbar.api').get_current_dropbar_menu()
+		if not menu then
+		  return
+		end
+		local mouse = vim.fn.getmousepos()
+		if mouse.winid ~= menu.win then
+		  return
+		end
+		menu:update_hover_hl({ mouse.line, mouse.column })
+	      end,
             }
 <
 - `opts.menu.win_configs`: `table<string, dropbar_menu_win_config_opts_t>`
@@ -734,6 +745,9 @@ Highlight groups ~
   DropBarIconUISeparatorMenu         `{ link = 'DropBarIconUISeparator' }`
   DropBarMenuCurrentContext          `{ link = 'PmenuSel' }`
   DropBarMenuNormalFloat             `{ link = 'WinBar' }`
+  DropBarMenuHoverEntry              `{ link = 'Visual' }`
+  DropBarMenuHoverIcon               `{ reverse = true }`
+  DropBarMenuHoverSymbol             `{ bold = true }`
   DropBarKindArray                   undefined, follows `hl-WinBar` and `hl-WinBarNC`
   DropBarKindBoolean                 undefined, follows `hl-WinBar` and `hl-WinBarNC`
   DropBarKindBreakStatement          undefined, follows `hl-WinBar` and `hl-WinBarNC`
@@ -1340,13 +1354,17 @@ dropbar_menu_t:eval_win_config()            *dropbar_menu_t:eval_win_config()*
 
 dropbar_menu_t:get_component_at({pos})     *dropbar_menu_t:get_component_at()*
 
- 	Get the component at position `pos`
+ 	Get the component at position `pos` and the range it occupies in the
+	menu
 
 	Parameters ~
 	    • {pos} (integer[]): position
 
 	Returns ~
 	    (`dropbar_symbol_t`): the component at `pos`
+
+	    A table with fields `start` and `end` representing the range the
+	    component occupies in the menu
 
 						   *dropbar_menu_t:click_at()*
 dropbar_menu_t:click_at({pos}, {min_width}, {n_clicks}, {button}, {modifiers})
@@ -1388,14 +1406,37 @@ dropbar_menu_t:hl_line_single({line}[, {hlgroup}])
 
 	Add highlight to a single line in the menu buffer
 
-	{hlgroup} defaults to 'DropBarMenuCurrentContext'
+	{hlgroup} defaults to DropBarMenuCurrentContext
 
-	Notice that all other highlights added by this functions before will
-	be cleared when this function is called
+	Notice that all highlights with the same hlgroup added by this functions
+	previously will be cleared when this function is called
 
 	Parameters ~
 	    • {line} (integer): line number
 	    • {hlgroup} (string?): highlight group
+
+					    *dropbar_menu_t:hl_range_single()*
+dropbar_menu_t:hl_range_single([{line}, {range}, {hlgroup}])
+
+  Add highlight to a single range in a single line the menu buffer
+
+  {hlgroup} defaults to DropBarMenuHoverSymbol
+
+  Notice that all highlights with the same hlgroup added by this functions
+  previously will be cleared when this function is called
+
+  Parameters ~
+      • {line} (integer?): line number
+      • {range} (integer[]): range
+      • {hlgroup} (string?): highlight group
+
+dropbar_menu_t:udpate_hover_hl([{pos}])     *dropbar_menu_t:udpate_hover_hl()*
+
+  Update the hover highlights (hl-DropBarMenuHover*) assuming the cursor/mouse
+  is hovering at `pos` in the menu
+
+  Parameters ~
+      • {pos} (integer[]?): { start, end }
 
 dropbar_menu_t:make_buf()                          *dropbar_menu_t:make_buf()*
 
@@ -1507,14 +1548,18 @@ dropbar_menu_entry_t:bytewidth()            *dropbar_menu_entry_t:bytewidth()*
 dropbar_menu_entry_t:first_clickable([{offset}])
 
 	Get the first clickable component
-        |dropbar-developers-classes-dropbar_symbol_t| in the dropbar menu
-	entry starting from {offset}, which defaults to 0
+	|dropbar-developers-classes-dropbar_symbol_t| and its range in the
+	menu in the dropbar menu entry starting from {offset}, which defaults
+	to 0
 
 	Parameters ~
 	    • {offset} (integer?): offset to start from, defaults to 0
 
 	Returns ~
 	    (`dropbar_symbol_t`?): the first clickable component
+
+	    A table with fields `start` and `end` representing the range the
+	    component occupies in the menu
 
 ..............................................................................
 DROPBAR_MENU_HL_INFO_T     *dropbar-developers-classes-dropbar_menu_hl_info_t*
