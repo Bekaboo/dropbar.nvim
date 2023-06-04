@@ -285,7 +285,7 @@ function dropbar_menu_t:hl_range_single(line, range, hlgroup)
   if not self.buf then
     return
   end
-  hlgroup = hlgroup or 'dropbarMenuHoverSymbol'
+  hlgroup = hlgroup or 'DropBarMenuHoverSymbol'
   local ns = vim.api.nvim_create_namespace(hlgroup)
   vim.api.nvim_buf_clear_namespace(self.buf, ns, 0, -1)
   if line and range then
