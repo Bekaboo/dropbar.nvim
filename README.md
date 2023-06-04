@@ -315,6 +315,9 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           right = 1,
         },
       },
+      -- When on, automatically set the cursor to the closest previous/next
+      -- clickable component in current menu entry on CursorMoved
+      quick_navigation = true,
       ---@type table<string, string|function|table<string, string|function>>
       keymaps = {
         ['<LeftMouse>'] = function()
@@ -707,6 +710,10 @@ winbar:
 These options live under `opts.menu` and are used to control the behavior of the
 menu:
 
+- `opts.menu.quick_navigation`: `boolean`
+  - When on, automatically set the cursor to the closest previous/next
+    clickable component in current menu entry on `CursorMoved`
+  - Default: `true`
 - `opts.menu.entry.padding`: `{ left: number, right: number }`
   - Padding to use between the menu entry and the menu border
   - Default: `{ left = 1, right = 1 }`
@@ -1274,6 +1281,7 @@ Declared and defined in [`lua/dropbar/menu.lua`](https://github.com/Bekaboo/drop
 | `sub_menu`     | `dropbar_menu_t?`                                 | submenu, assigned when calling new() or automatically determined when a new menu opens |
 | `parent_menu`  | `dropbar_menu_t?`                                 | parent menu, assigned when calling new() or automatically determined in open()         |
 | `clicked_at`   | `integer[]?`                                      | last position where the menu was clicked                                               |
+| `prev_cursor`  | `integer[]?`                                      | previous cursor position in the menu                                                   |
 
 `dropbar_menu_t` has the following methods:
 
@@ -1326,6 +1334,9 @@ multiple `dropbar_menu_entry_t` instances while a
 | `dropbar_menu_entry_t:displaywidth(): integer`                                                                 | calculate the display width of the entry                                                                                                                                |
 | `dropbar_menu_entry_t:bytewidth(): integer`                                                                    | calculate the byte width of the entry                                                                                                                                   |
 | `dropbar_menu_entry_t:first_clickable(offset: integer?): dropbar_symbol_t?, { start: integer, end: integer }?` | get the first clickable component<sub>[`dropbar_symbol_t`](#dropbar_symbol_t)</sub> and its range in the dropbar menu entry starting from `offset`, which defaults to 0 |
+| `dropbar_menu_entry_t:get_component_at(col: integer): dropbar_symbol_t?, { start: integer, end: integer }?`    | get the component<sub>[`dropbar_symbol_t`](#dropbar_symbol_t)</sub> at column position `col` and the range it occupies in the menu entry                                |
+| `dropbar_menu_entry_t:prev_clickable(col: integer): dropbar_symbol_t?, { start: integer, end: integer }?`      | get the previous clickable component<sub>[`dropbar_symbol_t`](#dropbar_symbol_t)</sub> and its range in the dropbar menu entry given current column position `col`      |
+| `dropbar_menu_entry_t:next_clickable(col: integer): dropbar_symbol_t?, { start: integer, end: integer }?`      | get the next clickable component<sub>[`dropbar_symbol_t`](#dropbar_symbol_t)</sub> and its range in the dropbar menu entry given current column position `col`          |
 
 #### `dropbar_menu_hl_info_t`
 

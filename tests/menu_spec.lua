@@ -224,16 +224,19 @@ describe('[menu]', function()
       local component1 = entry1.components[1]
       local component2 = entry1.components[2]
       local component3 = entry1.components[3]
-      assert.are.same(component1, menu_it:get_component_at({ 1, 0 }))
+      assert.is_nil(menu_it:get_component_at({ 1, 0 }))
       assert.are.same(
         component1,
-        menu_it:get_component_at({ 1, entry1.padding.left })
+        menu_it:get_component_at({ 1, entry1.padding.left + 1 })
       )
       assert.are.same(
         component2,
         menu_it:get_component_at({
           1,
-          entry1.padding.left + component1:bytewidth() + 1,
+          entry1.padding.left
+            + component1:bytewidth()
+            + entry1.separator:bytewidth()
+            + 1,
         })
       )
       assert.are.same(
@@ -244,6 +247,7 @@ describe('[menu]', function()
             + component1:bytewidth()
             + entry1.separator:bytewidth()
             + component2:bytewidth()
+            + entry1.separator:bytewidth()
             + 1,
         })
       )

@@ -107,6 +107,59 @@ function dropbar_menu_entry_t:first_clickable(offset)
   end
 end
 
+---Get the component at the given position in the dropbar menu
+---@param col integer 1-indexed, byte-indexed
+---@return dropbar_symbol_t?
+---@return {start: integer, end: integer}? range of the component in the menu, byte-indexed, 0-indexed, start-inclusive, end-exclusive
+function dropbar_menu_entry_t:get_component_at(col)
+  local col_offset = self.padding.left
+  for _, component in ipairs(self.components) do
+    local component_len = component:bytewidth()
+    if col > col_offset and col <= col_offset + component_len then
+      return component,
+        {
+          start = col_offset,
+          ['end'] = col_offset + component_len,
+        }
+    end
+    col_offset = col_offset + component_len + self.separator:bytewidth()
+  end
+  return nil, nil
+end
+
+---Find the previous clickable component in the dropbar menu entry
+---@param col integer byte-indexed, 0-indexed column position
+---@return dropbar_symbol_t?
+---@return {start: integer, end: integer}? range of the clickable component in the menu, byte-indexed, 0-indexed, start-inclusive, end-exclusive
+function dropbar_menu_entry_t:prev_clickable(col)
+  local col_start = self.padding.left
+  local prev_component, range
+  for _, component in ipairs(self.components) do
+    local col_end = col_start + component:bytewidth()
+    if col > col_end and component.on_click then
+      prev_component = component
+      range = { start = col_start, ['end'] = col_end }
+    end
+    col_start = col_end + self.separator:bytewidth()
+  end
+  return prev_component, range
+end
+
+---Find the next clickable component in the dropbar menu entry
+---@param col integer byte-indexed, 0-indexed column position
+---@return dropbar_symbol_t?
+---@return {start: integer, end: integer}? range of the clickable component in the menu, byte-indexed, 0-indexed, start-inclusive, end-exclusive
+function dropbar_menu_entry_t:next_clickable(col)
+  local col_start = self.padding.left
+  for _, component in ipairs(self.components) do
+    local col_end = col_start + component:bytewidth()
+    if col < col_start and component.on_click then
+      return component, { start = col_start, ['end'] = col_end }
+    end
+    col_start = col_end + self.separator:bytewidth()
+  end
+end
+
 ---@class dropbar_menu_opts_t
 ---@field is_opened boolean?
 ---@field entries dropbar_menu_entry_t[]?
@@ -126,6 +179,7 @@ end
 ---@field sub_menu dropbar_menu_t? submenu, assigned when calling new() or automatically determined when a new menu opens
 ---@field parent_menu dropbar_menu_t? parent menu, assigned when calling new() or automatically determined in open()
 ---@field clicked_at integer[]? last position where the menu was clicked
+---@field prev_cursor integer[]? previous cursor position
 local dropbar_menu_t = {}
 dropbar_menu_t.__index = dropbar_menu_t
 
@@ -194,19 +248,7 @@ function dropbar_menu_t:get_component_at(pos)
   if not entry or not entry.components then
     return nil, nil
   end
-  local col_offset = entry.padding.left
-  for _, component in ipairs(entry.components) do
-    local component_len = component:bytewidth()
-    if col <= col_offset + component_len then -- Look-ahead
-      return component,
-        {
-          start = col_offset,
-          ['end'] = col_offset + component_len,
-        }
-    end
-    col_offset = col_offset + component_len + entry.separator:bytewidth()
-  end
-  return nil, nil
+  return entry:get_component_at(col)
 end
 
 ---"Click" the component at the given position in the dropbar menu
@@ -345,7 +387,7 @@ function dropbar_menu_t:update_hover_hl(pos)
   if not pos then
     return
   end
-  local component, range = self:get_component_at({ pos[1], pos[2] })
+  local component, range = self:get_component_at({ pos[1], pos[2] + 1 })
   self:hl_range_single(
     component and component.on_click and component.entry.idx,
     range,
@@ -419,7 +461,34 @@ function dropbar_menu_t:make_buf()
     group = groupid,
     buffer = self.buf,
     callback = function()
-      self:update_hover_hl(vim.api.nvim_win_get_cursor(self.win))
+      local cursor = vim.api.nvim_win_get_cursor(self.win)
+      local entry = self.entries and self.entries[cursor[1]]
+      if not entry or not configs.opts.menu.quick_navigation then
+        goto update_hover_hl
+      end
+
+      -- Code for quick navigation
+      do
+        local target_component, range
+        if not self.prev_cursor then
+          target_component, range = entry:first_clickable(cursor[2])
+        elseif self.prev_cursor[1] == cursor[1] then -- moved inside an entry
+          if cursor[2] > self.prev_cursor[2] then -- moves right
+            target_component, range = entry:next_clickable(self.prev_cursor[2])
+          else -- moves left
+            target_component, range = entry:prev_clickable(self.prev_cursor[2])
+          end
+        end
+        if target_component and range then
+          cursor = { cursor[1], range.start }
+          vim.api.nvim_win_set_cursor(self.win, cursor)
+        end
+        self.prev_cursor = cursor
+      end
+
+      -- Update hover highlights
+      ::update_hover_hl::
+      self:update_hover_hl(cursor)
     end,
   })
   vim.api.nvim_create_autocmd('BufLeave', {

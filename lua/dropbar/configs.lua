@@ -144,6 +144,9 @@ M.opts = {
     truncate = true,
   },
   menu = {
+    -- When on, automatically set the cursor to the closest clickable component
+    -- on CursorMoved
+    quick_navigation = true,
     entry = {
       padding = {
         left = 1,

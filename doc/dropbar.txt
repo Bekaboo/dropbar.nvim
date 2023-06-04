@@ -361,6 +361,10 @@ MENU                                      *dropbar-configuration-options-menu*
 These options live under `opts.menu` and are used to control the behavior of
 the menu:
 
+- `opts.menu.quick_navigation`: `boolean`
+    - When on, automatically set the cursor to the closest previous/next
+      clickable component in current menu entry on |CursorMoved|
+    - Default: `true`
 - `opts.menu.entry.padding`: `{ left: number, right: number }`
     - Padding to use between the menu entry and the menu border
     - Default: `{ left = 1, right = 1 }`
@@ -1330,6 +1334,13 @@ dropbar_menu_t.clicked_at                          *dropbar_menu_t.clicked_at*
 	Type ~
 	    integer[]?
 
+dropbar_menu_t.prev_cursor                        *dropbar_menu_t.prev_cursor*
+
+ 	Previous cursor position in the menu
+
+	Type ~
+	    integer[]?
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 `dropbar_menu_t` has the following methods:
@@ -1557,6 +1568,49 @@ dropbar_menu_entry_t:first_clickable([{offset}])
 
 	Returns ~
 	    (`dropbar_symbol_t`?): the first clickable component
+
+	    A table with fields `start` and `end` representing the range the
+	    component occupies in the menu
+
+				     *dropbar_menu_entry_t:get_component_at()*
+dropbar_menu_entry_t:get_component_at({col})
+
+	Get the compoenent at column position {col} and the range it occupies
+	in the menu entry
+
+	Parameters ~
+	    • {col} (integer): column number, 1-based, byte-indexed
+
+	Returns ~
+	    (`dropbar_symbol_t`?): the component at the position
+
+	    A table with fields `start` and `end` representing the range the
+	    component occupies in the menu
+
+				       *dropbar_menu_entry_t:prev_clickable()*
+dropbar_menu_entry_t:prev_clickable({col})
+
+	Find the previous clickable component in the menu entry
+
+	Parameters ~
+	    • {col} (integer): column number, 0-based, byte-indexed
+
+ 	Returns ~
+	    (`dropbar_symbol_t`?): the previous clickable component
+
+	    A table with fields `start` and `end` representing the range the
+	    component occupies in the menu
+
+				       *dropbar_menu_entry_t:next_clickable()*
+dropbar_menu_entry_t:next_clickable({col})
+
+	Find the next clickable component in the menu entry
+
+	Parameters ~
+	    • {col} (integer): column number, 0-based, byte-indexed
+
+ 	Returns ~
+	    (`dropbar_symbol_t`?): the nextious clickable component
 
 	    A table with fields `start` and `end` representing the range the
 	    component occupies in the menu
