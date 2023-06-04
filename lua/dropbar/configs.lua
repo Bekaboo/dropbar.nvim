@@ -251,7 +251,7 @@ M.opts = {
       filter = function(_)
         return true
       end,
-      ---Symbol of current buf is modified
+      ---Last symbol from path source when current buf is modified
       ---@param sym dropbar_symbol_t
       ---@return dropbar_symbol_t
       modified = function(sym)

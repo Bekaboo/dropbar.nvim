@@ -90,7 +90,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
     ![hover](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/d72ea8b5-264d-413c-9780-79a0da5cc064)
 
-    - To enable this feature, `mousemoveevent` must be enabled.
+    - This features requires `:h mousemoveevent` to be enabled.
 
 - [ ] Preview symbol ranges in original window when hovering over them in the
   drop-down menu
@@ -416,7 +416,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
         filter = function(_)
           return true
         end,
-        ---Symbol of current buf is modified
+        ---Last symbol from path source when current buf is modified
         ---@param sym dropbar_symbol_t
         ---@return dropbar_symbol_t
         modified = function(sym)
@@ -1373,7 +1373,7 @@ markdown, LSP, or treesitter sources to achieve fall-back behavior.
 
 Here is another example of a custom source that will always return two symbols
 saying 'Hello' and 'dropbar' with highlights `'hl-Keyword'` and `'hl-Title'`
-and a smiling face shown in `'hl-WarningMsg'` the start of the first symbol;
+and a smiling face shown in `'hl-WarningMsg'` at the start of the first symbol;
 clicking on the first symbol will show a notification message saying 'Have you
 smiled today?', followed by the smiling face icon used in the in dropbar symbol:
 
