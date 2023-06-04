@@ -183,7 +183,7 @@ M.opts = {
         end
       end,
       ['<MouseMove>'] = function()
-        local menu = require('dropbar.api').get_current_winbar_menu()
+        local menu = require('dropbar.api').get_current_dropbar_menu()
         if not menu then
           return
         end
