@@ -182,6 +182,17 @@ M.opts = {
           menu:click_on(component, nil, 1, 'l')
         end
       end,
+      ['<MouseMove>'] = function()
+        local menu = require('dropbar.api').get_current_winbar_menu()
+        if not menu then
+          return
+        end
+        local mouse = vim.fn.getmousepos()
+        if mouse.winid ~= menu.win then
+          return
+        end
+        menu:update_hover_hl({ mouse.line, mouse.column })
+      end,
     },
     ---@alias dropbar_menu_win_config_opts_t any|fun(menu: dropbar_menu_t):any
     ---@type table<string, dropbar_menu_win_config_opts_t>

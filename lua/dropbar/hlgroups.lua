@@ -63,6 +63,9 @@ local function init()
     DropBarIconUISeparator           = { link = 'SpecialChar' },
     DropBarIconUISeparatorMenu       = { link = 'DropBarIconUISeparator' },
     DropBarMenuCurrentContext        = { link = 'PmenuSel' },
+    DropBarMenuHoverEntry            = { link = 'Visual' },
+    DropBarMenuHoverIcon             = { reverse = true },
+    DropBarMenuHoverSymbol           = { bold = true },
   }
   -- stylua: ignore end
   for hl_name, hl_settings in pairs(hlgroups) do

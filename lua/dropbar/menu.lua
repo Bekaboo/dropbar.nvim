@@ -94,15 +94,16 @@ end
 ---Get the first clickable component in the dropbar menu entry
 ---@param offset integer? offset from the beginning of the entry, default 0
 ---@return dropbar_symbol_t?
+---@return {start: integer, end: integer}? range of the clickable component in the menu, byte-indexed, 0-indexed, start-inclusive, end-exclusive
 function dropbar_menu_entry_t:first_clickable(offset)
-  offset = (offset or 0) - self.padding.left
-  for i, component in ipairs(self.components) do
-    offset = offset
-      - component:bytewidth()
-      - (i > 1 and self.separator:bytewidth() or 0)
-    if offset < 0 and component.on_click then
-      return component
+  offset = offset or 0
+  local col_start = self.padding.left
+  for _, component in ipairs(self.components) do
+    local col_end = col_start + component:bytewidth()
+    if offset < col_end and component.on_click then
+      return component, { start = col_start, ['end'] = col_end }
     end
+    col_start = col_end + self.separator:bytewidth()
   end
 end
 
@@ -182,25 +183,30 @@ end
 ---Get the component at the given position in the dropbar menu
 ---@param pos integer[] {row: integer, col: integer}, 1-indexed, byte-indexed
 ---@return dropbar_symbol_t?
+---@return {start: integer, end: integer}? range of the component in the menu, byte-indexed, 0-indexed, start-inclusive, end-exclusive
 function dropbar_menu_t:get_component_at(pos)
   if not self.entries or vim.tbl_isempty(self.entries) then
-    return nil
+    return nil, nil
   end
   local row = pos[1]
   local col = pos[2]
   local entry = self.entries[row]
   if not entry or not entry.components then
-    return nil
+    return nil, nil
   end
   local col_offset = entry.padding.left
   for _, component in ipairs(entry.components) do
     local component_len = component:bytewidth()
     if col <= col_offset + component_len then -- Look-ahead
-      return component
+      return component,
+        {
+          start = col_offset,
+          ['end'] = col_offset + component_len,
+        }
     end
-    col_offset = col_offset + component_len
+    col_offset = col_offset + component_len + entry.separator:bytewidth()
   end
-  return nil
+  return nil, nil
 end
 
 ---"Click" the component at the given position in the dropbar menu
@@ -269,9 +275,39 @@ function dropbar_menu_t:hl_line_range(line, hl_info)
   )
 end
 
+---Used to add background highlight to a single range in the menu buffer
+---Notice that all other highlight added using this function will be deleted
+---@param line integer|false? 1-indexed
+---@param range {start: integer, end: integer}? 0-indexed, byte-indexed, start inclusive, end exclusive
+---@param hlgroup string? default to 'DropBarMenuHoverSymbol'
+---@return nil
+function dropbar_menu_t:hl_range_single(line, range, hlgroup)
+  if not self.buf then
+    return
+  end
+  hlgroup = hlgroup or 'dropbarMenuHoverSymbol'
+  local ns = vim.api.nvim_create_namespace(hlgroup)
+  vim.api.nvim_buf_clear_namespace(self.buf, ns, 0, -1)
+  if line and range then
+    vim.api.nvim_set_hl(
+      ns,
+      hlgroup,
+      vim.api.nvim_get_hl(0, { name = hlgroup })
+    )
+    vim.api.nvim_buf_add_highlight(
+      self.buf,
+      ns,
+      hlgroup,
+      line - 1,
+      range.start,
+      range['end']
+    )
+  end
+end
+
 ---Used to add background highlight to a single line in the menu buffer
 ---Notice that all other highlight added using this function will be deleted
----@param line integer 1-indexed
+---@param line integer? 1-indexed
 ---@param hlgroup string? default to 'DropBarMenuCurrentContext'
 ---@return nil
 function dropbar_menu_t:hl_line_single(line, hlgroup)
@@ -280,17 +316,43 @@ function dropbar_menu_t:hl_line_single(line, hlgroup)
   end
   hlgroup = hlgroup or 'DropBarMenuCurrentContext'
   -- Use namespace to delete highlights conveniently
-  local ns = vim.api.nvim_create_namespace('DropBarMenu')
-  vim.api.nvim_set_hl(ns, hlgroup, vim.api.nvim_get_hl(0, { name = hlgroup }))
+  local ns = vim.api.nvim_create_namespace(hlgroup)
   vim.api.nvim_buf_clear_namespace(self.buf, ns, 0, -1)
-  vim.api.nvim_buf_add_highlight(
-    self.buf,
-    ns,
-    hlgroup,
-    line - 1, -- 0-indexed
-    0,
-    -1
+  if line then
+    vim.api.nvim_set_hl(
+      ns,
+      hlgroup,
+      vim.api.nvim_get_hl(0, { name = hlgroup })
+    )
+    vim.api.nvim_buf_add_highlight(
+      self.buf,
+      ns,
+      hlgroup,
+      line - 1, -- 0-indexed
+      0,
+      -1
+    )
+  end
+end
+
+---Update DropBarMenuHover* highlights according to pos
+---@param pos integer[]? byte-indexed, 1,0-indexed cursor/mouse position
+---@return nil
+function dropbar_menu_t:update_hover_hl(pos)
+  self:hl_range_single(nil, nil)
+  self:hl_range_single(nil, nil, 'DropBarMenuHoverIcon')
+  self:hl_line_single(nil, 'DropBarMenuHoverEntry')
+  if not pos then
+    return
+  end
+  local component, range = self:get_component_at({ pos[1], pos[2] })
+  self:hl_range_single(
+    component and component.on_click and component.entry.idx,
+    range,
+    component and component.name == '' and 'DropBarMenuHoverIcon'
+      or 'DropBarMenuHoverSymbol'
   )
+  self:hl_line_single(pos[1], 'DropBarMenuHoverEntry')
 end
 
 ---Make a buffer for the menu and set buffer-local keymaps
@@ -351,6 +413,20 @@ function dropbar_menu_t:make_buf()
       -- Trigger self:close() when the popup window is closed
       -- to ensure the cursor is set to the correct previous window
       self:close()
+    end,
+  })
+  vim.api.nvim_create_autocmd('CursorMoved', {
+    group = groupid,
+    buffer = self.buf,
+    callback = function()
+      self:update_hover_hl(vim.api.nvim_win_get_cursor(self.win))
+    end,
+  })
+  vim.api.nvim_create_autocmd('BufLeave', {
+    group = groupid,
+    buffer = self.buf,
+    callback = function()
+      self:update_hover_hl()
     end,
   })
 end
