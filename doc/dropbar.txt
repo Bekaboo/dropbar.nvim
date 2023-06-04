@@ -415,7 +415,7 @@ the menu:
 		if mouse.winid ~= menu.win then
 		  return
 		end
-		menu:update_hover_hl({ mouse.line, mouse.column })
+		menu:update_hover_hl({ mouse.line, mouse.column - 1 })
 	      end,
             }
 <

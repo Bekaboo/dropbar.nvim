@@ -359,7 +359,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           if mouse.winid ~= menu.win then
             return
           end
-          menu:update_hover_hl({ mouse.line, mouse.column })
+          menu:update_hover_hl({ mouse.line, mouse.column - 1 })
         end,
       },
       ---@alias dropbar_menu_win_config_opts_t any|fun(menu: dropbar_menu_t):any
@@ -764,7 +764,7 @@ menu:
         if mouse.winid ~= menu.win then
           return
         end
-        menu:update_hover_hl({ mouse.line, mouse.column })
+        menu:update_hover_hl({ mouse.line, mouse.column - 1 })
       end,
     }
     ```
