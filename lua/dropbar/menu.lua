@@ -471,7 +471,11 @@ function dropbar_menu_t:make_buf()
       do
         local target_component, range
         if not self.prev_cursor then
-          target_component, range = entry:first_clickable(cursor[2])
+          target_component, range =
+            entry.components and entry.components[1], {
+              start = entry.padding.left,
+              ['end'] = entry.padding.left,
+            }
         elseif self.prev_cursor[1] == cursor[1] then -- moved inside an entry
           if cursor[2] > self.prev_cursor[2] then -- moves right
             target_component, range = entry:next_clickable(self.prev_cursor[2])
