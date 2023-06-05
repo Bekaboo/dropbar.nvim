@@ -316,7 +316,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
         },
       },
       -- When on, automatically set the cursor to the closest previous/next
-      -- clickable component in current menu entry on CursorMoved
+      -- clickable component in the direction of cursor movement on CursorMoved
       quick_navigation = true,
       ---@type table<string, string|function|table<string, string|function>>
       keymaps = {
@@ -712,7 +712,7 @@ menu:
 
 - `opts.menu.quick_navigation`: `boolean`
   - When on, automatically set the cursor to the closest previous/next
-    clickable component in current menu entry on `CursorMoved`
+    clickable component in the direction of cursor movement on `CursorMoved`
   - Default: `true`
 - `opts.menu.entry.padding`: `{ left: number, right: number }`
   - Padding to use between the menu entry and the menu border

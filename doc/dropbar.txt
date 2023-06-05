@@ -363,7 +363,7 @@ the menu:
 
 - `opts.menu.quick_navigation`: `boolean`
     - When on, automatically set the cursor to the closest previous/next
-      clickable component in current menu entry on |CursorMoved|
+      clickable component in the direction of cursor movement on |CursorMoved|
     - Default: `true`
 - `opts.menu.entry.padding`: `{ left: number, right: number }`
     - Padding to use between the menu entry and the menu border
