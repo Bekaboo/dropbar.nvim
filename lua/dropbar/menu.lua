@@ -536,7 +536,11 @@ function dropbar_menu_t:open(win_configs)
   vim.wo[self.win].sidescrolloff = 0
   _G.dropbar.menus[self.win] = self
   -- Initialize cursor position
-  if self._win_configs.focusable ~= false and self.cursor then
+  if
+    self._win_configs.focusable ~= false
+    and not self.prev_cursor
+    and self.cursor
+  then
     vim.api.nvim_win_set_cursor(self.win, self.cursor)
   end
 end
