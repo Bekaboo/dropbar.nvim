@@ -1429,25 +1429,25 @@ dropbar_menu_t:hl_line_single({line}[, {hlgroup}])
 					    *dropbar_menu_t:hl_range_single()*
 dropbar_menu_t:hl_range_single([{line}, {range}, {hlgroup}])
 
-  Add highlight to a single range in a single line the menu buffer
+	Add highlight to a single range in a single line the menu buffer
 
-  {hlgroup} defaults to DropBarMenuHoverSymbol
+	{hlgroup} defaults to DropBarMenuHoverSymbol
 
-  Notice that all highlights with the same hlgroup added by this functions
-  previously will be cleared when this function is called
+	Notice that all highlights with the same hlgroup added by this functions
+	previously will be cleared when this function is called
 
-  Parameters ~
-      • {line} (integer?): line number
-      • {range} (integer[]): range
-      • {hlgroup} (string?): highlight group
+	Parameters ~
+	    • {line} (integer?): line number
+	    • {range} (integer[]): range
+	    • {hlgroup} (string?): highlight group
 
 dropbar_menu_t:udpate_hover_hl([{pos}])     *dropbar_menu_t:udpate_hover_hl()*
 
-  Update the hover highlights (hl-DropBarMenuHover*) assuming the cursor/mouse
-  is hovering at `pos` in the menu
+	Update the hover highlights (hl-DropBarMenuHover*) assuming the
+	cursor/mouse is hovering at {pos} in the menu
 
-  Parameters ~
-      • {pos} (integer[]?): { start, end }
+	Parameters ~
+	    • {pos} (integer[]?): { start, end }
 
 dropbar_menu_t:make_buf()                          *dropbar_menu_t:make_buf()*
 
