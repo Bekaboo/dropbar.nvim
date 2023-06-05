@@ -1359,9 +1359,14 @@ dropbar_menu_t:del()                                    *dropbar_menu_t:del()*
 
  	Destructor of `dropbar_menu_t`
 
-dropbar_menu_t:eval_win_config()            *dropbar_menu_t:eval_win_config()*
+					   *dropbar_menu_t:eval_win_configs()*
+dropbar_menu_t:eval_win_configs([{win_configs}])
 
- 	Evaluate window configuration and store the result in `_win_configs`
+	Evaluate window configurations |dropbar_menu_t.win_configs| and store
+	the result in |dropbar_menu_t._win_configs|
+
+	Parameters ~
+	    • {win_configs} (table?): window configurations to override
 
 dropbar_menu_t:get_component_at({pos})     *dropbar_menu_t:get_component_at()*
 
@@ -1454,17 +1459,25 @@ dropbar_menu_t:make_buf()                          *dropbar_menu_t:make_buf()*
  	Create the menu buffer from the entries
 	|dropbar-developers-classes-dropbar_menu_entry_t|
 
-dropbar_menu_t:open()                                  *dropbar_menu_t:open()*
+dropbar_menu_t:open([{win_configs}])                   *dropbar_menu_t:open()*
 
- 	Open the menu
+	Open the menu with window configurations |dropbar_menu_t.win_configs|
+	merged with {win_configs}
+
+	Parameters ~
+	      • {win_configs} (table?): window configurations to override
 
 dropbar_menu_t:close()                                *dropbar_menu_t:close()*
 
  	Close the menu
 
-dropbar_menu_t:toggle()                              *dropbar_menu_t:toggle()*
+dropbar_menu_t:toggle([{win_configs}])               *dropbar_menu_t:toggle()*
 
  	Toggle the menu
+
+	Parameters ~
+	      • {win_configs} (table?): window configurations passing to
+					|dropbar_menu_t:open()|
 
 ..............................................................................
 DROPBAR_MENU_ENTRY_T         *dropbar-developers-classes-dropbar_menu_entry_t*

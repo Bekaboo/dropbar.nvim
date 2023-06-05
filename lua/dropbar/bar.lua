@@ -68,35 +68,10 @@ function dropbar_symbol_t:new(opts)
         name = '',
         icon = '',
         on_click = opts
+          ---@param this dropbar_symbol_t
           and function(this, _, _, _, _)
             if this.entry and this.entry.menu then
               this.entry.menu:hl_line_single(this.entry.idx)
-            end
-            -- Toggle menu on click, or create one if menu don't exist:
-            -- 1. If symbol inside a winbar, create a menu with entries
-            --    containing the symbol's siblings
-            -- 2. Else if symbol inside a menu, create menu with entries
-            --    containing the symbol's children
-            if this.menu then
-              this.menu:toggle()
-              return
-            end
-
-            local menu_prev_win = nil ---@type integer?
-            local menu_entries_source = nil ---@type dropbar_symbol_t[]?
-            local menu_cursor_init = nil ---@type integer[]?
-            if this.bar then -- If symbol inside a winbar
-              menu_prev_win = this.bar and this.bar.win
-              menu_entries_source = opts.siblings
-              menu_cursor_init = opts.sibling_idx and { opts.sibling_idx, 0 }
-            elseif this.entry and this.entry.menu then -- If inside a menu
-              menu_prev_win = this.entry.menu.win
-              menu_entries_source = opts.children
-            end
-            if
-              not menu_entries_source or vim.tbl_isempty(menu_entries_source)
-            then
-              return
             end
 
             -- Called in pick mode, open the menu relative to the symbol
@@ -116,6 +91,33 @@ function dropbar_symbol_t:new(opts)
                 row = 0,
                 col = col,
               }
+            end
+
+            -- Toggle menu on click, or create one if menu don't exist:
+            -- 1. If symbol inside a winbar, create a menu with entries
+            --    containing the symbol's siblings
+            -- 2. Else if symbol inside a menu, create menu with entries
+            --    containing the symbol's children
+            if this.menu then
+              this.menu:toggle(menu_win_configs)
+              return
+            end
+
+            local menu_prev_win = nil ---@type integer?
+            local menu_entries_source = nil ---@type dropbar_symbol_t[]?
+            local menu_cursor_init = nil ---@type integer[]?
+            if this.bar then -- If symbol inside a winbar
+              menu_prev_win = this.bar and this.bar.win
+              menu_entries_source = opts.siblings
+              menu_cursor_init = opts.sibling_idx and { opts.sibling_idx, 0 }
+            elseif this.entry and this.entry.menu then -- If inside a menu
+              menu_prev_win = this.entry.menu.win
+              menu_entries_source = opts.children
+            end
+            if
+              not menu_entries_source or vim.tbl_isempty(menu_entries_source)
+            then
+              return
             end
 
             local menu = require('dropbar.menu')
