@@ -74,57 +74,63 @@ function dropbar_symbol_t:new(opts)
               this.entry.menu:hl_line_single(this.entry.idx)
             end
 
-            -- Called in pick mode, open the menu relative to the symbol
-            -- position in the winbar
-            local menu_win_configs = nil
-            if this.bar and this.bar.in_pick_mode then
-              local col = 0
-              for i, component in ipairs(this.bar.components) do
-                if i < this.bar_idx then
-                  col = col
-                    + component:displaywidth()
-                    + this.bar.separator:displaywidth()
-                end
-              end
-              menu_win_configs = {
-                relative = 'win',
-                row = 0,
-                col = col,
-              }
-            end
-
-            -- Toggle menu on click, or create one if menu don't exist:
-            -- 1. If symbol inside a winbar, create a menu with entries
-            --    containing the symbol's siblings
-            -- 2. Else if symbol inside a menu, create menu with entries
-            --    containing the symbol's children
-            if this.menu then
-              this.menu:toggle(menu_win_configs)
-              return
-            end
-
-            local menu_prev_win = nil ---@type integer?
-            local menu_entries_source = nil ---@type dropbar_symbol_t[]?
-            local menu_cursor_init = nil ---@type integer[]?
+            -- Determine menu configs
+            local prev_win = nil ---@type integer?
+            local entries_source = nil ---@type dropbar_symbol_t[]?
+            local init_cursor = nil ---@type integer[]?
+            local win_configs = {}
             if this.bar then -- If symbol inside a winbar
-              menu_prev_win = this.bar and this.bar.win
-              menu_entries_source = opts.siblings
-              menu_cursor_init = opts.sibling_idx and { opts.sibling_idx, 0 }
+              prev_win = this.bar.win
+              entries_source = opts.siblings
+              init_cursor = opts.sibling_idx and { opts.sibling_idx, 0 }
+              ---@param tbl number[]
+              local function _sum(tbl)
+                local sum = 0
+                for _, v in ipairs(tbl) do
+                  sum = sum + v
+                end
+                return sum
+              end
+              if this.bar.in_pick_mode then
+                win_configs.relative = 'win'
+                win_configs.row = 0
+                win_configs.col = this.bar.padding.left
+                  + _sum(vim.tbl_map(
+                    function(component)
+                      return component:displaywidth()
+                        + this.bar.separator:displaywidth()
+                    end,
+                    vim.tbl_filter(function(component)
+                      return component.bar_idx < this.bar_idx
+                    end, this.bar.components)
+                  ))
+              end
             elseif this.entry and this.entry.menu then -- If inside a menu
-              menu_prev_win = this.entry.menu.win
-              menu_entries_source = opts.children
+              prev_win = this.entry.menu.win
+              entries_source = opts.children
             end
-            if
-              not menu_entries_source or vim.tbl_isempty(menu_entries_source)
-            then
+
+            -- Toggle existing menu
+            if this.menu then
+              this.menu.win_configs = vim.tbl_deep_extend(
+                'force',
+                this.menu.win_configs,
+                win_configs
+              )
+              this.menu.prev_win = prev_win
+              this.menu:toggle()
               return
             end
 
+            -- Create a new menu for the symbol
+            if not entries_source or vim.tbl_isempty(entries_source) then
+              return
+            end
             local menu = require('dropbar.menu')
             this.menu = menu.dropbar_menu_t:new({
-              prev_win = menu_prev_win,
-              cursor = menu_cursor_init,
-              win_configs = menu_win_configs,
+              prev_win = prev_win,
+              cursor = init_cursor,
+              win_configs = win_configs,
               ---@param sym dropbar_symbol_t
               entries = vim.tbl_map(function(sym)
                 local menu_indicator_icon =
@@ -150,7 +156,7 @@ function dropbar_symbol_t:new(opts)
                     }),
                   },
                 })
-              end, menu_entries_source),
+              end, entries_source),
             })
             this.menu:toggle()
           end,

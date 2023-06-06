@@ -220,15 +220,12 @@ end
 
 ---Evaluate window configurations
 ---Side effects: update self._win_configs
----@param win_configs table? window configurations to override
 ---@return nil
 ---@see vim.api.nvim_open_win
-function dropbar_menu_t:eval_win_configs(win_configs)
+function dropbar_menu_t:eval_win_configs()
   -- Evaluate function-valued window configurations
   self._win_configs = {}
-  for k, config in
-    pairs(vim.tbl_deep_extend('force', self.win_configs, win_configs or {}))
-  do
+  for k, config in pairs(self.win_configs) do
     if type(config) == 'function' then
       self._win_configs[k] = config(self)
     else
@@ -509,9 +506,8 @@ end
 
 ---Open the menu
 ---Side effect: change self.win and self.buf
----@param win_configs table? window configurations to override
 ---@return nil
-function dropbar_menu_t:open(win_configs)
+function dropbar_menu_t:open()
   if self.is_opened then
     return
   end
@@ -528,7 +524,7 @@ function dropbar_menu_t:open(win_configs)
     self.prev_win = parent_menu.win
   end
 
-  self:eval_win_configs(win_configs)
+  self:eval_win_configs()
   self:make_buf()
   self.win = vim.api.nvim_open_win(self.buf, true, self._win_configs)
   self.is_opened = true
@@ -569,13 +565,12 @@ function dropbar_menu_t:close()
 end
 
 ---Toggle the menu
----@param win_configs table? window configurations to override
 ---@return nil
-function dropbar_menu_t:toggle(win_configs)
+function dropbar_menu_t:toggle()
   if self.is_opened then
     self:close()
   else
-    self:open(win_configs)
+    self:open()
   end
 end
 
