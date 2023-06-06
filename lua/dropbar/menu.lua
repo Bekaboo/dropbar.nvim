@@ -512,7 +512,6 @@ function dropbar_menu_t:open()
     return
   end
 
-  self.prev_win = vim.api.nvim_get_current_win()
   local parent_menu = _G.dropbar.menus[self.prev_win]
   if parent_menu then
     -- if the parent menu has an existing sub-menu, close the sub-menu first
@@ -552,7 +551,11 @@ function dropbar_menu_t:close()
   if self.sub_menu then
     self.sub_menu:close()
   end
-  if self.win and vim.api.nvim_win_is_valid(self.prev_win) then
+  if
+    self.win
+    and self.prev_win
+    and vim.api.nvim_win_is_valid(self.prev_win)
+  then
     vim.api.nvim_set_current_win(self.prev_win)
   end
   _G.dropbar.menus[self.win] = nil
