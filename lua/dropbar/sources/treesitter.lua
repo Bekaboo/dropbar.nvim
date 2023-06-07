@@ -63,7 +63,7 @@ local function get_node_siblings(node)
     current = current:prev_sibling()
     idx = idx + 1
   end
-  current = node
+  current = node:next_sibling()
   while current do
     table.insert(siblings, current)
     current = current:next_sibling()
