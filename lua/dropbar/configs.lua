@@ -208,7 +208,17 @@ M.opts = {
         end
         local mouse = vim.fn.getmousepos()
         if mouse.winid ~= menu.win then
+          -- Find the root menu
+          while menu and menu.prev_menu do
+            menu = menu.prev_menu
+          end
+          if menu then
+            menu:finish_preview(true)
+          end
           return
+        end
+        if M.opts.symbol.preview.enable then
+          menu:preview_symbol_at({ mouse.line, mouse.column })
         end
         menu:update_hover_hl({ mouse.line, mouse.column - 1 })
       end,
