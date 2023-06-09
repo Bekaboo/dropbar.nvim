@@ -97,6 +97,8 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
     ![preview](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/93f33b90-4f42-459c-861a-1e70114ba6f2)
 
+- [ ] Add hover highlights and preview for symbols shown in the winbar
+
 ## Requirements
 
 - Neovim **Nightly** (>= 0.10.0-dev)

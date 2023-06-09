@@ -71,6 +71,10 @@ highly-customizable 'winbar' with drop-down menu support and mutiple backends.
 - Preview symbols in their source windows when hovering over them in the
   drop-down menu
 
+TODO
+
+- Add hover highlights and preview for symbols shown in the winbar 
+
 ==============================================================================
 REQUIREMENTS                                            *dropbar-requirements*
 
