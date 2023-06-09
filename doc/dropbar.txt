@@ -400,37 +400,37 @@ the menu:
       mode in the menu buffer, or use `<key> = table<mode, function|string>`
       to map a key in specific modes.
     - Default: >lua
-            {
-              ['<LeftMouse>'] = function()
-                local api = require('dropbar.api')
-                local menu = api.get_current_dropbar_menu()
-                if not menu then
-                  return
-                end
-                local mouse = vim.fn.getmousepos()
-                if mouse.winid ~= menu.win then
-                  local prev_menu = api.get_dropbar_menu(mouse.winid)
-                  if prev_menu and prev_menu.sub_menu then
-                    prev_menu.sub_menu:close()
-                  end
-                  if vim.api.nvim_win_is_valid(mouse.winid) then
-                    vim.api.nvim_set_current_win(mouse.winid)
-                  end
-                  return
-                end
-                menu:click_at({ mouse.line, mouse.column }, nil, 1, 'l')
-              end,
-              ['<CR>'] = function()
-                local menu = require('dropbar.api').get_current_dropbar_menu()
-                if not menu then
-                  return
-                end
-                local cursor = vim.api.nvim_win_get_cursor(menu.win)
-                local component = menu.entries[cursor[1]]:first_clickable(cursor[2])
-                if component then
-                  menu:click_on(component, nil, 1, 'l')
-                end
-              end,
+	    {
+	      ['<LeftMouse>'] = function()
+		local api = require('dropbar.api')
+		local menu = api.get_current_dropbar_menu()
+		if not menu then
+		  return
+		end
+		local mouse = vim.fn.getmousepos()
+		if mouse.winid ~= menu.win then
+		  local prev_menu = api.get_dropbar_menu(mouse.winid)
+		  if prev_menu and prev_menu.sub_menu then
+		    prev_menu.sub_menu:close()
+		  end
+		  if vim.api.nvim_win_is_valid(mouse.winid) then
+		    vim.api.nvim_set_current_win(mouse.winid)
+		  end
+		  return
+		end
+		menu:click_at({ mouse.line, mouse.column - 1 }, nil, 1, 'l')
+	      end,
+	      ['<CR>'] = function()
+		local menu = require('dropbar.api').get_current_dropbar_menu()
+		if not menu then
+		  return
+		end
+		local cursor = vim.api.nvim_win_get_cursor(menu.win)
+		local component = menu.entries[cursor[1]]:first_clickable(cursor[2])
+		if component then
+		  menu:click_on(component, nil, 1, 'l')
+		end
+	      end,
 	      ['<MouseMove>'] = function()
 		local menu = require('dropbar.api').get_current_dropbar_menu()
 		if not menu then
@@ -438,21 +438,21 @@ the menu:
 		end
 		local mouse = vim.fn.getmousepos()
 		if mouse.winid ~= menu.win then
-                  -- Find the root menu
-                  while menu and menu.prev_menu do
-                    menu = menu.prev_menu
-                  end
-                  if menu then
-                    menu:finish_preview(true)
-                  end
-                  return
-                end
-                if M.opts.menu.preview then
-                  menu:preview_symbol_at({ mouse.line, mouse.column })
-                end
-                menu:update_hover_hl({ mouse.line, mouse.column - 1 })
-              end,
-            },
+		  -- Find the root menu
+		  while menu and menu.prev_menu do
+		    menu = menu.prev_menu
+		  end
+		  if menu then
+		    menu:finish_preview(true)
+		  end
+		  return
+		end
+		if M.opts.menu.preview then
+		  menu:preview_symbol_at({ mouse.line, mouse.column - 1 })
+		end
+		menu:update_hover_hl({ mouse.line, mouse.column - 1 })
+	      end,
+	    }
 <
 - `opts.menu.win_configs`: `table<string, dropbar_menu_win_config_opts_t>`
     - Window configurations for the menu, see `:h nvim_open_win()`

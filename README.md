@@ -357,7 +357,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
             end
             return
           end
-          menu:click_at({ mouse.line, mouse.column }, nil, 1, 'l')
+          menu:click_at({ mouse.line, mouse.column - 1 }, nil, 1, 'l')
         end,
         ['<CR>'] = function()
           local menu = require('dropbar.api').get_current_dropbar_menu()
@@ -387,7 +387,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
             return
           end
           if M.opts.menu.preview then
-            menu:preview_symbol_at({ mouse.line, mouse.column })
+            menu:preview_symbol_at({ mouse.line, mouse.column - 1 })
           end
           menu:update_hover_hl({ mouse.line, mouse.column - 1 })
         end,
@@ -793,7 +793,7 @@ menu:
           end
           return
         end
-        menu:click_at({ mouse.line, mouse.column }, nil, 1, 'l')
+        menu:click_at({ mouse.line, mouse.column - 1 }, nil, 1, 'l')
       end,
       ['<CR>'] = function()
         local menu = require('dropbar.api').get_current_dropbar_menu()
@@ -823,7 +823,7 @@ menu:
           return
         end
         if M.opts.menu.preview then
-          menu:preview_symbol_at({ mouse.line, mouse.column })
+          menu:preview_symbol_at({ mouse.line, mouse.column - 1 })
         end
         menu:update_hover_hl({ mouse.line, mouse.column - 1 })
       end,

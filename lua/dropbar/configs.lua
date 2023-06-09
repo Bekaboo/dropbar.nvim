@@ -188,7 +188,7 @@ M.opts = {
           end
           return
         end
-        menu:click_at({ mouse.line, mouse.column }, nil, 1, 'l')
+        menu:click_at({ mouse.line, mouse.column - 1 }, nil, 1, 'l')
       end,
       ['<CR>'] = function()
         local menu = require('dropbar.api').get_current_dropbar_menu()
@@ -218,7 +218,7 @@ M.opts = {
           return
         end
         if M.opts.menu.preview then
-          menu:preview_symbol_at({ mouse.line, mouse.column })
+          menu:preview_symbol_at({ mouse.line, mouse.column - 1 })
         end
         menu:update_hover_hl({ mouse.line, mouse.column - 1 })
       end,
