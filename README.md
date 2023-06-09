@@ -183,7 +183,6 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           'CursorMoved',
           'CursorMovedI',
           'WinEnter',
-          'WinLeave',
           'WinResized',
         },
         buf = {
@@ -277,6 +276,23 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
         },
       },
     },
+    symbol = {
+      -- When on, preview the symbol in the source window
+      preview = {
+        enable = true,
+        ---Reorient the preview window on previewing a new symbol
+        ---@param win integer source window
+        ---@param range {start: {line: integer}, end: {line: integer}} 0-indexed
+        reorient = function(win, range)
+          if vim.fn.line('w$') <= range['end'].line then
+            local view = vim.fn.winsaveview()
+            view.topline = range.start.line
+              - math.floor(1 / 4 * vim.api.nvim_win_get_height(win))
+            vim.fn.winrestview(view)
+          end
+        end,
+      },
+    },
     bar = {
       ---@type dropbar_source_t[]|fun(buf: integer, win: integer): dropbar_source_t[]
       sources = function(_, _)
@@ -312,15 +328,15 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
       truncate = true,
     },
     menu = {
+      -- When on, automatically set the cursor to the closest previous/next
+      -- clickable component in the direction of cursor movement on CursorMoved
+      quick_navigation = true,
       entry = {
         padding = {
           left = 1,
           right = 1,
         },
       },
-      -- When on, automatically set the cursor to the closest previous/next
-      -- clickable component in the direction of cursor movement on CursorMoved
-      quick_navigation = true,
       ---@type table<string, string|function|table<string, string|function>>
       keymaps = {
         ['<LeftMouse>'] = function()
@@ -360,7 +376,17 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           end
           local mouse = vim.fn.getmousepos()
           if mouse.winid ~= menu.win then
+            -- Find the root menu
+            while menu and menu.prev_menu do
+              menu = menu.prev_menu
+            end
+            if menu then
+              menu:finish_preview(true)
+            end
             return
+          end
+          if M.opts.symbol.preview.enable then
+            menu:preview_symbol_at({ mouse.line, mouse.column })
           end
           menu:update_hover_hl({ mouse.line, mouse.column - 1 })
         end,
@@ -427,7 +453,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
         ---@return dropbar_symbol_t
         modified = function(sym)
           return sym
-        end
+        end,
       },
       treesitter = {
         -- Lua pattern used to extract a short name from the node text
@@ -764,7 +790,17 @@ menu:
         end
         local mouse = vim.fn.getmousepos()
         if mouse.winid ~= menu.win then
+          -- Find the root menu
+          while menu and menu.prev_menu do
+            menu = menu.prev_menu
+          end
+          if menu then
+            menu:finish_preview(true)
+          end
           return
+        end
+        if M.opts.symbol.preview.enable then
+          menu:preview_symbol_at({ mouse.line, mouse.column })
         end
         menu:update_hover_hl({ mouse.line, mouse.column - 1 })
       end,
