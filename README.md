@@ -1554,12 +1554,17 @@ The default `on_click()` callback will look for these fields in the symbol
 instance and create a drop-down menu accordingly on click, for more information
 about these fields see [`dropbar_symbol_t`](#dropbar_symbol_t).
 
-| Field         | Type                                                                                     | Description                                                                                                                                                                     |
-| ------        | ------                                                                                   | ------                                                                                                                                                                          |
-| `siblings`    | `dropbar_symbol_t[]`                                                                     | array of symbols to show in the first drop-down menu<sub>[`dropbar_menu_t`](#dropbar_menu_t)</sub> (the menu opened by clicking the symbol in the winbar)                       |
-| `sibling_idx` | `integer?`                                                                               | index of the symbol in `siblings` array, used to determine the initial position of the cursor in the first drop-down menu                                                       |
-| `children`    | `dropbar_symbol_t[]`                                                                     | array of symbols to show in the sub-menus<sub>[`dropbar_menu_t`](#dropbar_menu_t)</sub> of the corresponding symbol (the menus opened by clicking a symbol inside another menu) |
-| `range`       | `{start: {line: integer, character: integer}, end: {line: integer, character: integer}}` | range of the symbol, used as the detination of the jump                                                                                                                         |
+For creating the drop-down menu:
+
+      • `dropbar_symbol_t.siblings`
+      • `dropbar_symbol_t.sibling_idx`
+      • `dropbar_symbol_t.children`
+
+For jumping to the symbol or previewing it:
+
+    • `dropbar_symbol_t.range`
+    • `dropbar_symbol_t.win`
+    • `dropbar_symbol_t.buf`
 
 The following example shows a source that utilizes the default `on_click()`
 callback:
@@ -1567,7 +1572,7 @@ callback:
 ```lua
 local bar = require('dropbar.bar')
 local custom_source = {
-  get_symbols = function(_, _, _)
+  get_symbols = function(buf, win, _)
     return {
       bar.dropbar_symbol_t:new({
         name = 'Section 1',
@@ -1586,6 +1591,8 @@ local custom_source = {
             name_hl = 'String',
             children = {
               bar.dropbar_symbol_t:new({
+                buf = buf,
+                win = win,
                 name = 'Section 4.1',
                 name_hl = 'String',
                 -- Will jump to line 3, col 4 (0-indexed) when clicked in the

@@ -1910,32 +1910,24 @@ instance and create a drop-down menu accordingly on click, for more
 information about these fields, see
 |dropbar-developers-classes-dropbar_symbol_t|:
 
-    • `dropbar_symbol_t.siblings`
+For creating the drop-down menu:
 
-	Array of symbols to show in the first drop-down menu (the menu opened
-	by clicking the symbol in the winbar)
+      • `dropbar_symbol_t.siblings`
+      • `dropbar_symbol_t.sibling_idx`
+      • `dropbar_symbol_t.children`
 
-    • `dropbar_symbol_t.sibling_idx`
+For jumping to the symbol or previewing it:
 
-	Index of the symbol in `dropbar_symbol_t.siblings`, used to determine
-	the initial position of the cursor in the first drop-down menu
-
-    • `dropbar_symbol_t.children`
-
-	Array of symbols to show in the sub-menus of the corresponding symbol
-	(the menus opened by clicking a symbol inside another menu)
-
-    • `dropbar_symbol_t.actions.jump`
-
-	Jump to the start of the symbol, it will be called when clicking on
-	the corresponding symbol (not the indicator) inside a menu
+    • `dropbar_symbol_t.range`
+    • `dropbar_symbol_t.win`
+    • `dropbar_symbol_t.buf`
 
 The following example shows a source that utilizes the default `on_click()`
 callback: >lua
 
     local bar = require('dropbar.bar')
     local custom_source = {
-      get_symbols = function(_, _, _)
+      get_symbols = function(buf, win, _)
 	return {
 	  bar.dropbar_symbol_t:new({
 	    name = 'Section 1',
@@ -1954,6 +1946,8 @@ callback: >lua
 		name_hl = 'String',
 		children = {
 		  bar.dropbar_symbol_t:new({
+		    buf = buf,
+                    win = win,
 		    name = 'Section 4.1',
 		    name_hl = 'String',
 		    -- Will jump to line 3, col 4 (0-indexed) when clicked in the
