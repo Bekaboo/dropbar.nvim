@@ -312,7 +312,7 @@ function dropbar_menu_t:update_hover_hl(pos)
     utils.hl_range_single(
       self.buf,
       component and component.name == '' and 'DropBarMenuHoverIcon'
-        or 'DropbarMenuHoverSymbol',
+        or 'DropBarMenuHoverSymbol',
       {
         start = {
           line = pos[1] - 1,
