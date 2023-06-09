@@ -23,6 +23,7 @@
   - [Options](#options)
     - [General](#general)
     - [Icons](#icons)
+    - [Symbol](#symbol)
     - [Bar](#bar)
     - [Menu](#menu)
     - [Sources](#sources)
@@ -277,9 +278,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
       },
     },
     symbol = {
-      -- When on, preview the symbol in the source window
       preview = {
-        enable = true,
         ---Reorient the preview window on previewing a new symbol
         ---@param win integer source window
         ---@param range {start: {line: integer}, end: {line: integer}} 0-indexed
@@ -328,6 +327,8 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
       truncate = true,
     },
     menu = {
+      -- When on, preview the symbol under the cursor on CursorMoved
+      preview = true,
       -- When on, automatically set the cursor to the closest previous/next
       -- clickable component in the direction of cursor movement on CursorMoved
       quick_navigation = true,
@@ -385,7 +386,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
             end
             return
           end
-          if M.opts.symbol.preview.enable then
+          if M.opts.menu.preview then
             menu:preview_symbol_at({ mouse.line, mouse.column })
           end
           menu:update_hover_hl({ mouse.line, mouse.column - 1 })
@@ -683,6 +684,25 @@ used by the plugin:
       indicator = ' ',
     }
     ```
+#### Symbol
+
+These options live under `opts.symbol` and are used to control the behavior of
+the symbols:
+
+- `opts.symbol.preview.reorient`: `fun(win: integer, range: {start: {line: integer, character: integer}, end: {line: integer, character: integer}})`
+  - Function to reorient the source window when previewing symbol given
+    the source window `win` and the range of the symbol `range`
+  - Default:
+    ```lua
+    function(win, range)
+      if vim.fn.line('w$') <= range['end'].line then
+        local view = vim.fn.winsaveview()
+        view.topline = range.start.line
+          - math.floor(1 / 4 * vim.api.nvim_win_get_height(win))
+        vim.fn.winrestview(view)
+      end
+    end
+    ```
 
 #### Bar
 
@@ -745,6 +765,9 @@ menu:
 - `opts.menu.entry.padding`: `{ left: number, right: number }`
   - Padding to use between the menu entry and the menu border
   - Default: `{ left = 1, right = 1 }`
+- `opts.menu.preview`: `boolean`
+  - Whether to enable previewing of menu entries
+  - Default: `true`
 - `opts.menu.keymaps`: `table<string, function|string|table<string, function>|table<string, string>>`
   - Buffer-local keymaps in the menu
   - Use `<key> = <function|string>` to map a key in normal mode and visual mode
@@ -799,7 +822,7 @@ menu:
           end
           return
         end
-        if M.opts.symbol.preview.enable then
+        if M.opts.menu.preview then
           menu:preview_symbol_at({ mouse.line, mouse.column })
         end
         menu:update_hover_hl({ mouse.line, mouse.column - 1 })

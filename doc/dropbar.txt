@@ -17,9 +17,10 @@ CONTENTS                                           *dropbar-table-of-contents*
   5.1 Options                                  |dropbar-configuration-options|
     5.1.1 General                      |dropbar-configuration-options-general|
     5.1.2 Icons                          |dropbar-configuration-options-icons|
-    5.1.3 Bar                              |dropbar-configuration-options-bar|
-    5.1.4 Menu                            |dropbar-configuration-options-menu|
-    5.1.5 Sources                      |dropbar-configuration-options-sources|
+    5.1.3 Symbol                        |dropbar-configuration-options-symbol|
+    5.1.4 Bar                              |dropbar-configuration-options-bar|
+    5.1.5 Menu                            |dropbar-configuration-options-menu|
+    5.1.6 Sources                      |dropbar-configuration-options-sources|
       5.1.5.1 Path                |dropbar-configuration-options-sources-path|
       5.1.5.2 Treesitter    |dropbar-configuration-options-sources-treesitter|
       5.1.5.3 LSP                  |dropbar-configuration-options-sources-lsp|
@@ -302,6 +303,26 @@ by the plugin:
 <
 
 ..............................................................................
+Symbol                                  *dropbar-configuration-options-symbol*
+
+These options live under `opts.bar` and are used to control the behavior of
+the symbols:
+
+- `opts.symbol.preview.reorient`: `fun(win: integer, range: {start: {line: integer, character: integer}, end: {line: integer, character: integer}})`
+    - Function to reorient the source window when previewing symbol given
+      the source window `win` and the range of the symbol `range`
+    - Default: >lua
+	    function(win, range)
+	      if vim.fn.line('w$') <= range['end'].line then
+		local view = vim.fn.winsaveview()
+		view.topline = range.start.line
+		  - math.floor(1 / 4 * vim.api.nvim_win_get_height(win))
+		vim.fn.winrestview(view)
+	      end
+	    end
+<
+
+..............................................................................
 BAR                                        *dropbar-configuration-options-bar*
 
 These options live under `opts.bar` and are used to control the behavior of
@@ -369,6 +390,9 @@ the menu:
 - `opts.menu.entry.padding`: `{ left: number, right: number }`
     - Padding to use between the menu entry and the menu border
     - Default: `{ left = 1, right = 1 }`
+- `opts.menu.preview`: `boolean`
+    - Whether to show a preview window for the current symbol
+    - Default: `true`
 - `opts.menu.keymaps`:
   `table<string, function|string|table<string, function>|table<string, string>>`
     - Buffer-local keymaps in the menu
@@ -423,7 +447,7 @@ the menu:
                   end
                   return
                 end
-                if M.opts.symbol.preview.enable then
+                if M.opts.menu.preview then
                   menu:preview_symbol_at({ mouse.line, mouse.column })
                 end
                 menu:update_hover_hl({ mouse.line, mouse.column - 1 })

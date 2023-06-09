@@ -109,9 +109,7 @@ M.opts = {
     },
   },
   symbol = {
-    -- When on, preview the symbol in the source window
     preview = {
-      enable = true,
       ---Reorient the preview window on previewing a new symbol
       ---@param win integer source window
       ---@param range {start: {line: integer}, end: {line: integer}} 0-indexed
@@ -160,6 +158,8 @@ M.opts = {
     truncate = true,
   },
   menu = {
+    -- When on, preview the symbol under the cursor on CursorMoved
+    preview = true,
     -- When on, automatically set the cursor to the closest previous/next
     -- clickable component in the direction of cursor movement on CursorMoved
     quick_navigation = true,
@@ -217,7 +217,7 @@ M.opts = {
           end
           return
         end
-        if M.opts.symbol.preview.enable then
+        if M.opts.menu.preview then
           menu:preview_symbol_at({ mouse.line, mouse.column })
         end
         menu:update_hover_hl({ mouse.line, mouse.column - 1 })
