@@ -1117,6 +1117,7 @@ should be self-explanatory:
   | DropBarMenuHoverEntry            | `{ link = 'Visual' }`                            |
   | DropBarMenuHoverIcon             | `{ reverse = true }`                             |
   | DropBarMenuHoverSymbol           | `{ bold = true }`                                |
+  | DropBarPreview                   | `{ link = 'Visual' }`                            |
   | DropBarKindArray                 | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
   | DropBarKindBoolean               | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
   | DropBarKindBreakStatement        | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
