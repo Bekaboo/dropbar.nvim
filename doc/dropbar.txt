@@ -1912,9 +1912,9 @@ information about these fields, see
 
 For creating the drop-down menu:
 
-      • `dropbar_symbol_t.siblings`
-      • `dropbar_symbol_t.sibling_idx`
-      • `dropbar_symbol_t.children`
+    • `dropbar_symbol_t.siblings`
+    • `dropbar_symbol_t.sibling_idx`
+    • `dropbar_symbol_t.children`
 
 For jumping to the symbol or previewing it:
 

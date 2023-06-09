@@ -1556,15 +1556,15 @@ about these fields see [`dropbar_symbol_t`](#dropbar_symbol_t).
 
 For creating the drop-down menu:
 
-      • `dropbar_symbol_t.siblings`
-      • `dropbar_symbol_t.sibling_idx`
-      • `dropbar_symbol_t.children`
+  - `dropbar_symbol_t.siblings`
+  - `dropbar_symbol_t.sibling_idx`
+  - `dropbar_symbol_t.children`
 
 For jumping to the symbol or previewing it:
 
-    • `dropbar_symbol_t.range`
-    • `dropbar_symbol_t.win`
-    • `dropbar_symbol_t.buf`
+  - `dropbar_symbol_t.range`
+  - `dropbar_symbol_t.win`
+  - `dropbar_symbol_t.buf`
 
 The following example shows a source that utilizes the default `on_click()`
 callback:
