@@ -1,4 +1,5 @@
 local configs = require('dropbar.configs')
+local utils = require('dropbar.utils')
 
 ---Add highlight to a string
 ---@param str string
@@ -19,12 +20,17 @@ local function make_clickable(str, callback)
   return string.format('%%@%s@%s%%X', callback, str)
 end
 
+---@alias dropbar_symbol_range_t lsp_range_t
+
 ---@class dropbar_symbol_t
 ---@field _ dropbar_symbol_t
 ---@field name string
 ---@field icon string
 ---@field name_hl string?
 ---@field icon_hl string?
+---@field win integer? the source window the symbol is shown in
+---@field buf integer? the source buffer the symbol is defined in
+---@field view table? original view of the source window
 ---@field bar dropbar_t? the winbar the symbol belongs to, if the symbol is shown inside a winbar
 ---@field menu dropbar_menu_t? menu associated with the winbar symbol, if the symbol is shown inside a winbar
 ---@field entry dropbar_menu_entry_t? the dropbar entry the symbol belongs to, if the symbol is shown inside a menu
@@ -33,8 +39,8 @@ end
 ---@field bar_idx integer? index of the symbol in the winbar
 ---@field entry_idx integer? index of the symbol in the menu entry
 ---@field sibling_idx integer? index of the symbol in its siblings
+---@field range dropbar_symbol_range_t?
 ---@field on_click fun(this: dropbar_symbol_t, min_width: integer?, n_clicks: integer?, button: string?, modifiers: string?)|false? force disable on_click when false
----@field actions table<string, fun(this: dropbar_symbol_t)>? select, preview, jump, etc.
 ---@field data table? any data associated with the symbol
 local dropbar_symbol_t = {}
 
@@ -70,10 +76,6 @@ function dropbar_symbol_t:new(opts)
         on_click = opts
           ---@param this dropbar_symbol_t
           and function(this, _, _, _, _)
-            if this.entry and this.entry.menu then
-              this.entry.menu:hl_line_single(this.entry.idx)
-            end
-
             -- Determine menu configs
             local prev_win = nil ---@type integer?
             local entries_source = nil ---@type dropbar_symbol_t[]?
@@ -112,13 +114,10 @@ function dropbar_symbol_t:new(opts)
 
             -- Toggle existing menu
             if this.menu then
-              this.menu.win_configs = vim.tbl_deep_extend(
-                'force',
-                this.menu.win_configs,
-                win_configs
-              )
-              this.menu.prev_win = prev_win
-              this.menu:toggle()
+              this.menu:toggle({
+                prev_win = prev_win,
+                win_configs = win_configs,
+              })
               return
             end
 
@@ -152,7 +151,16 @@ function dropbar_symbol_t:new(opts)
                       on_click = menu_indicator_on_click,
                     }),
                     sym:merge({
-                      on_click = sym.actions and sym.actions.jump,
+                      on_click = function()
+                        local current_menu = this.menu
+                        while current_menu and current_menu.prev_menu do
+                          current_menu = current_menu.prev_menu
+                        end
+                        if current_menu then
+                          current_menu:close(false)
+                        end
+                        sym:jump()
+                      end,
                     }),
                   },
                 })
@@ -209,31 +217,54 @@ function dropbar_symbol_t:bytewidth()
   return #self:cat(true)
 end
 
----Goto the start location of the symbol associated with the dropbar symbol
+---Jump to the start of the symbol associated with the winbar symbol
 ---@return nil
-function dropbar_symbol_t:goto_range_start()
-  if not self.data or not self.data.range then
+function dropbar_symbol_t:jump()
+  if not self.range or not self.win then
     return
   end
-  local dest_pos = self.data.range.start
-  if not self.entry then -- symbol is not shown inside a menu
-    vim.api.nvim_win_set_cursor(self.bar.win, {
-      dest_pos.line + 1,
-      dest_pos.character,
-    })
+  vim.api.nvim_win_set_cursor(self.win, {
+    self.range.start.line + 1,
+    self.range.start.character,
+  })
+end
+
+---Preview the symbol in the source window
+---@return nil
+function dropbar_symbol_t:preview()
+  if not self.range then
     return
   end
-  -- symbol is shown inside a menu
-  local current_menu = self.entry.menu
-  while current_menu and current_menu.parent_menu do
-    current_menu = current_menu.parent_menu
+  if not self.win or not self.buf then
+    return
   end
-  if current_menu then
-    vim.api.nvim_win_set_cursor(current_menu.prev_win, {
-      dest_pos.line + 1,
-      dest_pos.character,
-    })
-    current_menu:close()
+  self.view = utils.win_execute(self.win, vim.fn.winsaveview)
+  utils.hl_range_single(self.buf, 'DropBarPreview', self.range)
+  vim.api.nvim_win_set_cursor(self.win, {
+    self.range.start.line + 1,
+    self.range.start.character,
+  })
+  utils.win_execute(
+    self.win,
+    configs.opts.symbol.preview.reorient,
+    self.win,
+    self.range
+  )
+end
+
+---Clear the preview highlights in the source window
+---@return nil
+function dropbar_symbol_t:preview_restore_hl()
+  if self.buf then
+    utils.hl_range_single(self.buf, 'DropBarPreview')
+  end
+end
+
+---Restore the source window to its original view
+---@return nil
+function dropbar_symbol_t:preview_restore_view()
+  if self.view and self.win then
+    utils.win_execute(self.win, vim.fn.winrestview, self.view)
   end
 end
 
@@ -392,14 +423,14 @@ function dropbar_t:update()
     return self.string_cache
   end
 
-  local cursor = vim.api.nvim_win_get_cursor(0)
+  local cursor = vim.api.nvim_win_get_cursor(self.win)
   for _, component in ipairs(self.components) do
     component:del()
   end
   self.components = {}
   _G.dropbar.on_click_callbacks['buf' .. self.buf]['win' .. self.win] = {}
   for _, source in ipairs(self.sources) do
-    local symbols = source.get_symbols(self.buf, cursor)
+    local symbols = source.get_symbols(self.buf, self.win, cursor)
     for _, symbol in ipairs(symbols) do
       symbol.bar_idx = #self.components + 1
       symbol.bar = self
@@ -428,12 +459,12 @@ end
 ---Execute a function in pick mode
 ---Side effect: change dropbar.in_pick_mode
 ---@generic T
----@param fn fun(): T?
+---@param fn fun(...): T?
 ---@return T?
-function dropbar_t:pick_mode_wrap(fn)
+function dropbar_t:pick_mode_wrap(fn, ...)
   local pick_mode = self.in_pick_mode
   self.in_pick_mode = true
-  local result = fn()
+  local result = fn(...)
   self.in_pick_mode = pick_mode
   return result
 end

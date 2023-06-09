@@ -6,10 +6,16 @@ local stub = require('luassert.stub')
 
 ---@type dropbar_source_t
 local source = {
-  get_symbols = function()
+  get_symbols = function(buf, win, _)
     return {
-      bar.dropbar_symbol_t:new(),
       bar.dropbar_symbol_t:new({
+        buf = buf,
+        win = win,
+        on_click = false,
+      }),
+      bar.dropbar_symbol_t:new({
+        buf = buf,
+        win = win,
         icon = '󰅩 ',
         name = 'testing',
         icon_hl = 'DropBarIconTest',
@@ -19,16 +25,14 @@ local source = {
           self.data.clicked = true
         end,
         menu = menu.dropbar_menu_t:new(),
-        data = {
-          range = {
-            start = {
-              line = 3,
-              character = 4,
-            },
-            ['end'] = {
-              line = 5,
-              character = 6,
-            },
+        range = {
+          start = {
+            line = 3,
+            character = 4,
+          },
+          ['end'] = {
+            line = 5,
+            character = 6,
           },
         },
       }),
@@ -190,14 +194,14 @@ describe('[bar]', function()
       assert.are.same(#'󰅩 testing', symbol:bytewidth())
     end)
     it(
-      'goes to the start of the range of the associated symbol tree node',
+      'jumps to the start of the range of the associated symbol tree node',
       function()
         vim.cmd.edit('tests/assets/blank.txt')
         winbar:update()
-        symbol:goto_range_start()
+        symbol:jump()
         assert.are.same({
-          symbol.data.range.start.line + 1,
-          symbol.data.range.start.character,
+          symbol.range.start.line + 1,
+          symbol.range.start.character,
         }, vim.api.nvim_win_get_cursor(0))
       end
     )

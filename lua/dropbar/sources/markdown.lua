@@ -6,8 +6,8 @@ local groupid = vim.api.nvim_create_augroup('DropBarMarkdown', {})
 
 ---@class markdown_heading_symbol_t
 ---@field name string
----@field level number
----@field lnum number
+---@field level integer
+---@field lnum integer
 local markdown_heading_symbol_t = {}
 markdown_heading_symbol_t.__index = markdown_heading_symbol_t
 
@@ -26,7 +26,7 @@ function markdown_heading_symbol_t:new(opts)
 end
 
 ---@class markdown_heading_symbols_parsed_list_t
----@field end { lnum: number, inside_code_block: boolean }
+---@field end { lnum: integer, inside_code_block: boolean }
 ---@field symbols markdown_heading_symbol_t[]
 local markdown_heading_symbols_parsed_list_t = {}
 markdown_heading_symbols_parsed_list_t.__index =
@@ -98,47 +98,19 @@ end
 ---@param symbols markdown_heading_symbol_t[] markdown heading symbols
 ---@param list_idx integer index of the symbol in the symbols list
 ---@param buf integer buffer handler
+---@param win integer window handler
 ---@return dropbar_symbol_t
-local function convert(symbol, symbols, list_idx, buf)
+local function convert(symbol, symbols, list_idx, buf, win)
   local kind = 'MarkdownH' .. symbol.level
   return bar.dropbar_symbol_t:new(setmetatable({
+    buf = buf,
+    win = win,
     name = symbol.name,
     icon = configs.opts.icons.kinds.symbols[kind],
     name_hl = 'DropBarKind' .. kind,
     icon_hl = 'DropBarIconKind' .. kind,
-    data = setmetatable({
+    data = {
       heading_symbol = symbol,
-    }, {
-      __index = function(self, k)
-        if k == 'range' then
-          self.range = {
-            start = {
-              line = symbol.lnum - 1,
-              character = 0,
-            },
-            ['end'] = {
-              line = symbol.lnum - 1,
-              character = 0,
-            },
-          }
-          for heading in vim.iter(symbols):skip(list_idx) do
-            if heading.level <= symbol.level then
-              self.range['end'] = {
-                line = heading.lnum - 2,
-                character = 0,
-              }
-              break
-            end
-          end
-          return self.range
-        end
-      end,
-    }),
-    actions = {
-      ---@param sym dropbar_symbol_t
-      jump = function(sym)
-        sym:goto_range_start()
-      end,
     },
   }, {
     ---@param self dropbar_symbol_t
@@ -155,13 +127,13 @@ local function convert(symbol, symbols, list_idx, buf)
             lev = heading.level
           end
           if heading.level <= lev then
-            table.insert(self.children, convert(heading, symbols, i, buf))
+            table.insert(self.children, convert(heading, symbols, i, buf, win))
           end
         end
         return self.children
       end
-      if k == 'siblings' or k == 'sibling_idx' then
-        self.siblings = { convert(symbol, symbols, list_idx, buf) }
+      if k == 'siblings' or k == 'idx' then
+        self.siblings = { convert(symbol, symbols, list_idx, buf, win) }
         for i = list_idx - 1, 1, -1 do
           if symbols[i].level < symbol.level then
             break
@@ -176,13 +148,13 @@ local function convert(symbol, symbols, list_idx, buf)
             table.insert(
               self.siblings,
               1,
-              convert(symbols[i], symbols, i, buf)
+              convert(symbols[i], symbols, i, buf, win)
             )
           else
             table.insert(
               self.siblings,
               1,
-              convert(symbols[i], symbols, i, buf)
+              convert(symbols[i], symbols, i, buf, win)
             )
           end
         end
@@ -192,10 +164,35 @@ local function convert(symbol, symbols, list_idx, buf)
             break
           end
           if symbols[i].level == symbol.level then
-            table.insert(self.siblings, convert(symbols[i], symbols, i, buf))
+            table.insert(
+              self.siblings,
+              convert(symbols[i], symbols, i, buf, win)
+            )
           end
         end
         return self[k]
+      end
+      if k == 'range' then
+        self.range = {
+          start = {
+            line = symbol.lnum - 1,
+            character = 0,
+          },
+          ['end'] = {
+            line = symbol.lnum - 1,
+            character = 0,
+          },
+        }
+        for heading in vim.iter(symbols):skip(list_idx) do
+          if heading.level <= symbol.level then
+            self.range['end'] = {
+              line = heading.lnum - 2,
+              character = 0,
+            }
+            break
+          end
+        end
+        return self.range
       end
     end,
   }))
@@ -273,9 +270,10 @@ end
 
 ---Get dropbar symbols from buffer according to cursor position
 ---@param buf integer buffer handler
+---@param win integer window handler
 ---@param cursor integer[] cursor position
 ---@return dropbar_symbol_t[] symbols dropbar symbols
-local function get_symbols(buf, cursor)
+local function get_symbols(buf, win, cursor)
   if vim.bo[buf].filetype ~= 'markdown' then
     return {}
   end
@@ -295,7 +293,11 @@ local function get_symbols(buf, cursor)
   for idx, symbol in vim.iter(buf_symbols.symbols):enumerate():rev() do
     if symbol.lnum <= cursor[1] and symbol.level < current_level then
       current_level = symbol.level
-      table.insert(result, 1, convert(symbol, buf_symbols.symbols, idx, buf))
+      table.insert(
+        result,
+        1,
+        convert(symbol, buf_symbols.symbols, idx, buf, win)
+      )
       if current_level == 1 then
         break
       end

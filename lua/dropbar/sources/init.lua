@@ -1,11 +1,45 @@
 ---@class dropbar_source_t
----@field get_symbols fun(buf: integer, cursor: integer[]): dropbar_symbol_t[]
+---@field get_symbols fun(buf: integer, win: integer, cursor: integer[]): dropbar_symbol_t[]
+
+local notified = false
+
+---For backword compatibility
+---@param get_symbols fun(buf: integer, win: integer, cursor: integer[]): dropbar_symbol_t[]
+---@return dropbar_symbol_t[]
+local function check_params(get_symbols, buf, win, cursor)
+  if
+    type(buf) ~= 'number'
+    or type(win) ~= 'number'
+    or type(cursor) ~= 'table'
+  then
+    if not notified then
+      vim.api.nvim_echo({
+        { '[dropbar.nvim] ', 'Normal' },
+        { 'get_symbols() now accepts three parameters: ', 'Normal' },
+        { '{buf}, ', 'Normal' },
+        { '{win}, ', 'WarningMsg' },
+        { '{cursor} ', 'Normal' },
+        { 'instead of two parameters: ', 'Normal' },
+        { '{buf}, ', 'Normal' },
+        { '{cursor}', 'Normal' },
+        { '.\n', 'Normal' },
+      }, true, {})
+      notified = true
+    end
+    return {}
+  end
+  return get_symbols(buf, win, cursor)
+end
 
 ---@type table<string, dropbar_source_t>
 return setmetatable({}, {
   __index = function(self, key)
     local ok, source = pcall(require, 'dropbar.sources.' .. key)
     if ok then
+      local _get_symbols = source.get_symbols
+      source.get_symbols = function(buf, win, cursor)
+        return check_params(_get_symbols, buf, win, cursor)
+      end
       self[key] = source
       return source
     end

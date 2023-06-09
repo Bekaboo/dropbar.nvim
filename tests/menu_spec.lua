@@ -3,6 +3,9 @@ local bar = require('dropbar.bar')
 local spy = require('luassert.spy')
 local match = require('luassert.match')
 
+local source_buf = vim.api.nvim_get_current_buf()
+local source_win = vim.api.nvim_get_current_win()
+
 local entry_it = menu.dropbar_menu_entry_t:new({
   separator = bar.dropbar_symbol_t:new({
     name = 'separator ',
@@ -16,18 +19,24 @@ local entry_it = menu.dropbar_menu_entry_t:new({
   },
   components = {
     bar.dropbar_symbol_t:new({
+      buf = source_buf,
+      win = source_win,
       icon = ' ',
       icon_hl = 'Special',
       name = 'lua',
       on_click = false,
     }),
     bar.dropbar_symbol_t:new({
+      buf = source_buf,
+      win = source_win,
       icon = '󰊕 ',
       name = 'fn',
       name_hl = 'Function',
       on_click = function() end,
     }),
     bar.dropbar_symbol_t:new({
+      buf = source_buf,
+      win = source_win,
       icon = '󰀫 ',
       name = 'var',
       on_click = function() end,
@@ -43,14 +52,20 @@ local menu_it = menu.dropbar_menu_t:new({
       },
       components = {
         bar.dropbar_symbol_t:new({
+          buf = source_buf,
+          win = source_win,
           name = '1',
           on_click = function() end,
         }),
         bar.dropbar_symbol_t:new({
+          buf = source_buf,
+          win = source_win,
           name = '12',
           on_click = function() end,
         }),
         bar.dropbar_symbol_t:new({
+          buf = source_buf,
+          win = source_win,
           name = '123',
         }),
       },
@@ -58,9 +73,13 @@ local menu_it = menu.dropbar_menu_t:new({
     menu.dropbar_menu_entry_t:new({
       components = {
         bar.dropbar_symbol_t:new({
+          buf = source_buf,
+          win = source_win,
           name = '2',
         }),
         bar.dropbar_symbol_t:new({
+          buf = source_buf,
+          win = source_win,
           name = '22',
         }),
       },
@@ -230,7 +249,7 @@ describe('[menu]', function()
       assert.is_nil(menu_it:get_component_at({ 1, 0 }))
       assert.are.same(
         component1,
-        menu_it:get_component_at({ 1, entry1.padding.left + 1 })
+        menu_it:get_component_at({ 1, entry1.padding.left })
       )
       assert.are.same(
         component2,
@@ -282,7 +301,7 @@ describe('[menu]', function()
       menu_it:click_on(component1, 3, 6, 'l', 'm')
       assert.are.same({
         1,
-        entry1.padding.left + 1,
+        entry1.padding.left,
       }, menu_it.clicked_at)
       assert
         .spy(agent1).was
@@ -292,8 +311,7 @@ describe('[menu]', function()
         1,
         entry1.padding.left
           + component1:bytewidth()
-          + entry1.separator:bytewidth()
-          + 1,
+          + entry1.separator:bytewidth(),
       }, menu_it.clicked_at)
       assert
         .spy(agent2).was
@@ -310,8 +328,8 @@ describe('[menu]', function()
       )
     end)
     it('respects the parent-child relationship', function()
-      assert.are.equal(menu_it, sub_menu_it.parent_menu)
-      assert.are.equal(sub_menu_it, sub_sub_menu_it.parent_menu)
+      assert.are.equal(menu_it, sub_menu_it.prev_menu)
+      assert.are.equal(sub_menu_it, sub_sub_menu_it.prev_menu)
       assert.are.equal(sub_menu_it, menu_it.sub_menu)
       assert.are.equal(sub_sub_menu_it, sub_menu_it.sub_menu)
       assert.are.equal(menu_it.win, sub_menu_it.prev_win)

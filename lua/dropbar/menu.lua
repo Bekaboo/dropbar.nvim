@@ -1,4 +1,5 @@
 local bar = require('dropbar.bar')
+local utils = require('dropbar.utils')
 local configs = require('dropbar.configs')
 local groupid = vim.api.nvim_create_augroup('DropBarMenu', {})
 
@@ -80,13 +81,13 @@ function dropbar_menu_entry_t:cat()
 end
 
 ---Get the display length of the dropbar menu entry
----@return integer
+---@return number
 function dropbar_menu_entry_t:displaywidth()
   return vim.fn.strdisplaywidth((self:cat()))
 end
 
 ---Get the byte length of the dropbar menu entry
----@return integer
+---@return number
 function dropbar_menu_entry_t:bytewidth()
   return #(self:cat())
 end
@@ -108,14 +109,17 @@ function dropbar_menu_entry_t:first_clickable(offset)
 end
 
 ---Get the component at the given position in the dropbar menu
----@param col integer 1-indexed, byte-indexed
+---@param col integer 0-indexed, byte-indexed
+---@param look_ahead boolean? whether to look ahead for the next component if the given position does not contain a component
 ---@return dropbar_symbol_t?
 ---@return {start: integer, end: integer}? range of the component in the menu, byte-indexed, 0-indexed, start-inclusive, end-exclusive
-function dropbar_menu_entry_t:get_component_at(col)
+function dropbar_menu_entry_t:get_component_at(col, look_ahead)
   local col_offset = self.padding.left
   for _, component in ipairs(self.components) do
     local component_len = component:bytewidth()
-    if col > col_offset and col <= col_offset + component_len then
+    if
+      (look_ahead or col >= col_offset) and col < col_offset + component_len
+    then
       return component,
         {
           start = col_offset,
@@ -160,13 +164,6 @@ function dropbar_menu_entry_t:next_clickable(col)
   end
 end
 
----@class dropbar_menu_opts_t
----@field is_opened boolean?
----@field entries dropbar_menu_entry_t[]?
----@field win_configs table? window configuration
----@field cursor integer[]? initial cursor position
----@field prev_win integer? previous window
-
 ---@class dropbar_menu_t
 ---@field buf integer?
 ---@field win integer?
@@ -177,14 +174,15 @@ end
 ---@field cursor integer[]? initial cursor position
 ---@field prev_win integer? previous window, assigned when calling new() or automatically determined in open()
 ---@field sub_menu dropbar_menu_t? submenu, assigned when calling new() or automatically determined when a new menu opens
----@field parent_menu dropbar_menu_t? parent menu, assigned when calling new() or automatically determined in open()
----@field clicked_at integer[]? last position where the menu was clicked
+---@field prev_menu dropbar_menu_t? previous menu, assigned when calling new() or automatically determined in open()
+---@field clicked_at integer[]? last position where the menu was clicked, byte-indexed, 1,0-indexed
 ---@field prev_cursor integer[]? previous cursor position
+---@field symbol_previewed dropbar_symbol_t? symbol being previewed
 local dropbar_menu_t = {}
 dropbar_menu_t.__index = dropbar_menu_t
 
 ---Create a dropbar menu instance
----@param opts dropbar_menu_opts_t?
+---@param opts dropbar_menu_t?
 ---@return dropbar_menu_t
 function dropbar_menu_t:new(opts)
   local dropbar_menu = setmetatable(
@@ -235,25 +233,24 @@ function dropbar_menu_t:eval_win_configs()
 end
 
 ---Get the component at the given position in the dropbar menu
----@param pos integer[] {row: integer, col: integer}, 1-indexed, byte-indexed
+---@param pos integer[] 1,0-indexed, byte-indexed
+---@param look_ahead boolean? whether to look ahead for the component at the given position
 ---@return dropbar_symbol_t?
 ---@return {start: integer, end: integer}? range of the component in the menu, byte-indexed, 0-indexed, start-inclusive, end-exclusive
-function dropbar_menu_t:get_component_at(pos)
+function dropbar_menu_t:get_component_at(pos, look_ahead)
   if not self.entries or vim.tbl_isempty(self.entries) then
     return nil, nil
   end
-  local row = pos[1]
-  local col = pos[2]
-  local entry = self.entries[row]
+  local entry = self.entries[pos[1]]
   if not entry or not entry.components then
     return nil, nil
   end
-  return entry:get_component_at(col)
+  return entry:get_component_at(pos[2], look_ahead)
 end
 
 ---"Click" the component at the given position in the dropbar menu
 ---Side effects: update self.clicked_at
----@param pos integer[] {row: integer, col: integer}, 1-indexed
+---@param pos integer[] 1,0-indexed, byte-indexed
 ---@param min_width integer?
 ---@param n_clicks integer?
 ---@param button string?
@@ -284,7 +281,7 @@ function dropbar_menu_t:click_on(
   modifiers
 )
   local row = symbol.entry.idx
-  local col = symbol.entry.padding.left + 1
+  local col = symbol.entry.padding.left
   for idx, component in ipairs(symbol.entry.components) do
     if idx == symbol.entry_idx then
       break
@@ -299,102 +296,35 @@ function dropbar_menu_t:click_on(
   end
 end
 
----Add highlight to a range in the menu buffer
----@param line integer 1-indexed
----@param hl_info dropbar_menu_hl_info_t
----@return nil
-function dropbar_menu_t:hl_line_range(line, hl_info)
-  if not self.buf then
-    return
-  end
-  vim.api.nvim_buf_add_highlight(
-    self.buf,
-    hl_info.ns or -1,
-    hl_info.hlgroup,
-    line - 1, -- 0-indexed
-    hl_info.start,
-    hl_info['end']
-  )
-end
-
----Used to add background highlight to a single range in the menu buffer
----Notice that all other highlight added using this function will be deleted
----@param line integer|false? 1-indexed
----@param range {start: integer, end: integer}? 0-indexed, byte-indexed, start inclusive, end exclusive
----@param hlgroup string? default to 'DropBarMenuHoverSymbol'
----@return nil
-function dropbar_menu_t:hl_range_single(line, range, hlgroup)
-  if not self.buf then
-    return
-  end
-  hlgroup = hlgroup or 'DropBarMenuHoverSymbol'
-  local ns = vim.api.nvim_create_namespace(hlgroup)
-  vim.api.nvim_buf_clear_namespace(self.buf, ns, 0, -1)
-  if line and range then
-    vim.api.nvim_set_hl(
-      ns,
-      hlgroup,
-      vim.api.nvim_get_hl(0, { name = hlgroup })
-    )
-    vim.api.nvim_buf_add_highlight(
-      self.buf,
-      ns,
-      hlgroup,
-      line - 1,
-      range.start,
-      range['end']
-    )
-  end
-end
-
----Used to add background highlight to a single line in the menu buffer
----Notice that all other highlight added using this function will be deleted
----@param line integer? 1-indexed
----@param hlgroup string? default to 'DropBarMenuCurrentContext'
----@return nil
-function dropbar_menu_t:hl_line_single(line, hlgroup)
-  if not self.buf then
-    return
-  end
-  hlgroup = hlgroup or 'DropBarMenuCurrentContext'
-  -- Use namespace to delete highlights conveniently
-  local ns = vim.api.nvim_create_namespace(hlgroup)
-  vim.api.nvim_buf_clear_namespace(self.buf, ns, 0, -1)
-  if line then
-    vim.api.nvim_set_hl(
-      ns,
-      hlgroup,
-      vim.api.nvim_get_hl(0, { name = hlgroup })
-    )
-    vim.api.nvim_buf_add_highlight(
-      self.buf,
-      ns,
-      hlgroup,
-      line - 1, -- 0-indexed
-      0,
-      -1
-    )
-  end
-end
-
----Update DropBarMenuHover* highlights according to pos
+---Update dropbarMenuHover* highlights according to pos
 ---@param pos integer[]? byte-indexed, 1,0-indexed cursor/mouse position
 ---@return nil
 function dropbar_menu_t:update_hover_hl(pos)
-  self:hl_range_single(nil, nil)
-  self:hl_range_single(nil, nil, 'DropBarMenuHoverIcon')
-  self:hl_line_single(nil, 'DropBarMenuHoverEntry')
+  utils.hl_range_single(self.buf, 'dropbarMenuHoverSymbol', nil)
+  utils.hl_range_single(self.buf, 'dropbarMenuHoverIcon', nil)
+  utils.hl_range_single(self.buf, 'dropbarMenuHoverEntry', nil)
   if not pos then
     return
   end
-  local component, range = self:get_component_at({ pos[1], pos[2] + 1 })
-  self:hl_range_single(
-    component and component.on_click and component.entry.idx,
-    range,
-    component and component.name == '' and 'DropBarMenuHoverIcon'
-      or 'DropBarMenuHoverSymbol'
-  )
-  self:hl_line_single(pos[1], 'DropBarMenuHoverEntry')
+  utils.hl_line_single(self.buf, 'dropbarMenuHoverEntry', pos[1])
+  local component, range = self:get_component_at({ pos[1], pos[2] })
+  if component and component.on_click and range then
+    utils.hl_range_single(
+      self.buf,
+      component and component.name == '' and 'dropbarMenuHoverIcon'
+        or 'dropbarMenuHoverSymbol',
+      {
+        start = {
+          line = pos[1] - 1,
+          character = range.start,
+        },
+        ['end'] = {
+          line = pos[1] - 1,
+          character = range['end'],
+        },
+      }
+    )
+  end
 end
 
 ---Make a buffer for the menu and set buffer-local keymaps
@@ -407,10 +337,10 @@ function dropbar_menu_t:make_buf()
   end
   self.buf = vim.api.nvim_create_buf(false, true)
   local lines = {} ---@type string[]
-  local hl_info = {} ---@type {start: integer, end: integer, hlgroup: string}[][]
+  local hl_info = {} ---@type {start: integer, end: integer, hlgroup: string, ns: integer?}[][]
   for _, entry in ipairs(self.entries) do
     local line, entry_hl_info = entry:cat()
-    -- Pad the line with spaces to the width of the window
+    -- Pad lines with spaces to the width of the window
     -- This is to make sure hl-DropBarMenuCurrentContext colors
     -- the entire line
     table.insert(
@@ -426,10 +356,17 @@ function dropbar_menu_t:make_buf()
   vim.api.nvim_buf_set_lines(self.buf, 0, -1, false, lines)
   for entry_idx, entry_hl_info in ipairs(hl_info) do
     for _, hl in ipairs(entry_hl_info) do
-      self:hl_line_range(entry_idx, hl)
+      vim.api.nvim_buf_add_highlight(
+        self.buf,
+        hl.ns or -1,
+        hl.hlgroup,
+        entry_idx - 1, -- 0-indexed
+        hl.start,
+        hl['end']
+      )
     end
     if self.cursor and entry_idx == self.cursor[1] then
-      self:hl_line_single(entry_idx)
+      utils.hl_line_single(self.buf, 'dropbarMenuCurrentContext', entry_idx)
     end
   end
   vim.bo[self.buf].ma = false
@@ -462,37 +399,20 @@ function dropbar_menu_t:make_buf()
     buffer = self.buf,
     callback = function()
       local cursor = vim.api.nvim_win_get_cursor(self.win)
-      local entry = self.entries and self.entries[cursor[1]]
-      if not entry or not configs.opts.menu.quick_navigation then
-        goto update_hover_hl
+
+      if
+        configs.opts.symbol.preview.enable
+        and not vim.deep_equal(cursor, self.prev_cursor)
+      then
+        self:preview_symbol_at(cursor, true)
       end
 
-      -- Code for quick navigation
-      do
-        local target_component, range
-        if not self.prev_cursor then
-          target_component, range =
-            entry.components and entry.components[1], {
-              start = entry.padding.left,
-              ['end'] = entry.padding.left,
-            }
-        elseif self.prev_cursor[1] == cursor[1] then -- moved inside an entry
-          if cursor[2] > self.prev_cursor[2] then -- moves right
-            target_component, range = entry:next_clickable(self.prev_cursor[2])
-          else -- moves left
-            target_component, range = entry:prev_clickable(self.prev_cursor[2])
-          end
-        end
-        if target_component and range then
-          cursor = { cursor[1], range.start }
-          vim.api.nvim_win_set_cursor(self.win, cursor)
-        end
-        self.prev_cursor = cursor
+      if configs.opts.menu.quick_navigation then
+        self:quick_navigation(cursor)
       end
 
       -- Update hover highlights
-      ::update_hover_hl::
-      self:update_hover_hl(cursor)
+      self:update_hover_hl(self.prev_cursor)
     end,
   })
   vim.api.nvim_create_autocmd('BufLeave', {
@@ -504,23 +424,43 @@ function dropbar_menu_t:make_buf()
   })
 end
 
+---Override menu options
+---@param opts dropbar_menu_t?
+---@return nil
+function dropbar_menu_t:override(opts)
+  if not opts then
+    return
+  end
+  for k, v in pairs(opts) do
+    if type(v) == 'table' then
+      if type(self[k]) == 'table' then
+        self[k] = vim.tbl_extend('force', self[k], v)
+      else
+        self[k] = v
+      end
+    else
+      self[k] = v
+    end
+  end
+end
+
 ---Open the menu
 ---Side effect: change self.win and self.buf
+---@param opts dropbar_menu_t?
 ---@return nil
-function dropbar_menu_t:open()
+function dropbar_menu_t:open(opts)
   if self.is_opened then
     return
   end
+  self:override(opts)
 
-  local parent_menu = _G.dropbar.menus[self.prev_win]
-  if parent_menu then
-    -- if the parent menu has an existing sub-menu, close the sub-menu first
-    if parent_menu.sub_menu then
-      parent_menu.sub_menu:close()
+  self.prev_menu = _G.dropbar.menus[self.prev_win]
+  if self.prev_menu then
+    -- if the prev menu has an existing sub-menu, close the sub-menu first
+    if self.prev_menu.sub_menu then
+      self.prev_menu.sub_menu:close()
     end
-    parent_menu.sub_menu = self
-    self.parent_menu = parent_menu
-    self.prev_win = parent_menu.win
+    self.prev_menu.sub_menu = self
   end
 
   self:eval_win_configs()
@@ -541,39 +481,105 @@ function dropbar_menu_t:open()
 end
 
 ---Close the menu
+---@param restore_view boolean? whether to restore the source win view, default true
 ---@return nil
-function dropbar_menu_t:close()
+function dropbar_menu_t:close(restore_view)
   if not self.is_opened then
     return
   end
   self.is_opened = false
-
+  restore_view = restore_view == nil or restore_view
+  -- Close sub-menus
   if self.sub_menu then
-    self.sub_menu:close()
+    self.sub_menu:close(restore_view)
   end
-  if
-    self.win
-    and self.prev_win
-    and vim.api.nvim_win_is_valid(self.prev_win)
-  then
+  -- Move cursor to the previous window
+  if self.prev_win and vim.api.nvim_win_is_valid(self.prev_win) then
     vim.api.nvim_set_current_win(self.prev_win)
   end
-  _G.dropbar.menus[self.win] = nil
-  if vim.api.nvim_win_is_valid(self.win) then
-    vim.api.nvim_win_close(self.win, true)
-  end
+  -- Close the menu window and dereference it in the lookup table
   if self.win then
+    if vim.api.nvim_win_is_valid(self.win) then
+      vim.api.nvim_win_close(self.win, true)
+    end
+    _G.dropbar.menus[self.win] = nil
     self.win = nil
+  end
+  -- Finish preview
+  if configs.opts.symbol.preview.enable then
+    self:finish_preview(restore_view)
   end
 end
 
----Toggle the menu
+---Preview the symbol at the given position
+---@param pos integer[] 1,0-indexed, byte-indexed position
+---@param look_ahead boolean? whether to look ahead for a component
 ---@return nil
-function dropbar_menu_t:toggle()
+function dropbar_menu_t:preview_symbol_at(pos, look_ahead)
+  if self.prev_cursor then
+    local prev_component = self:get_component_at(self.prev_cursor, look_ahead)
+    if prev_component then
+      prev_component:preview_restore_view()
+    end
+  end
+  local component = self:get_component_at(pos, look_ahead)
+  if component then
+    self.symbol_previewed = component
+    component:preview()
+  end
+end
+
+---Finish the preview in current menu
+---@param restore_view boolean? whether to restore the source win view, default true
+function dropbar_menu_t:finish_preview(restore_view)
+  restore_view = restore_view == nil or restore_view
+  if self.symbol_previewed then
+    self.symbol_previewed:preview_restore_hl()
+    if restore_view then
+      self.symbol_previewed:preview_restore_view()
+    end
+    self.symbol_previewed = nil
+  end
+end
+
+---Set the cursor to the nearest clickable component in the direction of
+---cursor movement
+---@param new_cursor integer[] 1,0-indexed, byte-indexed position
+---@return nil
+function dropbar_menu_t:quick_navigation(new_cursor)
+  local entry = self.entries and self.entries[new_cursor[1]]
+  if not entry then
+    return
+  end
+  local target_component, range
+  if not self.prev_cursor then
+    target_component, range =
+      entry.components and entry.components[1], {
+        start = entry.padding.left,
+        ['end'] = entry.padding.left,
+      }
+  elseif self.prev_cursor[1] == new_cursor[1] then -- moved inside an entry
+    if new_cursor[2] > self.prev_cursor[2] then -- moves right
+      target_component, range = entry:next_clickable(self.prev_cursor[2])
+    else -- moves left
+      target_component, range = entry:prev_clickable(self.prev_cursor[2])
+    end
+  end
+  if target_component and range then
+    new_cursor = { new_cursor[1], range.start }
+    vim.api.nvim_win_set_cursor(self.win, new_cursor)
+  end
+  self.prev_cursor = new_cursor
+end
+
+---Toggle the menu
+---@param opts dropbar_menu_t? menu options passed to self:open()
+---@return nil
+function dropbar_menu_t:toggle(opts)
   if self.is_opened then
     self:close()
   else
-    self:open()
+    self:open(opts)
   end
 end
 

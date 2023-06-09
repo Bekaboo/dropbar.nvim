@@ -42,30 +42,26 @@ local function goto_context_start(count)
     return
   end
   local current_sym = bar.components[#bar.components]
-  if
-    not current_sym.symbol
-    or not current_sym
-    or not current_sym.symbol.range
-  then
+  if not current_sym.range then
     return
   end
   local cursor = vim.api.nvim_win_get_cursor(0)
   if
     count == 0
-    and current_sym.symbol.range.start.line == cursor[1] - 1
-    and current_sym.symbol.range.start.character == cursor[2]
+    and current_sym.range.start.line == cursor[1] - 1
+    and current_sym.range.start.character == cursor[2]
   then
     count = count + 1
   end
   while count > 0 do
     count = count - 1
     local prev_sym = bar.components[current_sym.bar_idx - 1]
-    if not prev_sym or not prev_sym.symbol or not prev_sym.symbol.range then
+    if not prev_sym or not prev_sym.range then
       break
     end
     current_sym = prev_sym
   end
-  current_sym:goto_range_start()
+  current_sym:jump()
 end
 
 ---Open the menu of current context to select the next context

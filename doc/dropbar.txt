@@ -318,15 +318,15 @@ the winbar:
               return {
                 sources.path,
                 {
-                  get_symbols = function(buf, cursor)
+                  get_symbols = function(buf, win, cursor)
                     if vim.bo[buf].ft == 'markdown' then
-                      return sources.markdown.get_symbols(buf, cursor)
+                      return sources.markdown.get_symbols(buf, win, cursor)
                     end
                     for _, source in ipairs({
                       sources.lsp,
                       sources.treesitter,
                     }) do
-                      local symbols = source.get_symbols(buf, cursor)
+                      local symbols = source.get_symbols(buf, win, cursor)
                       if not vim.tbl_isempty(symbols) then
                         return symbols
                       end
@@ -384,9 +384,9 @@ the menu:
                 end
                 local mouse = vim.fn.getmousepos()
                 if mouse.winid ~= menu.win then
-                  local parent_menu = api.get_dropbar_menu(mouse.winid)
-                  if parent_menu and parent_menu.sub_menu then
-                    parent_menu.sub_menu:close()
+                  local prev_menu = api.get_dropbar_menu(mouse.winid)
+                  if prev_menu and prev_menu.sub_menu then
+                    prev_menu.sub_menu:close()
                   end
                   if vim.api.nvim_win_is_valid(mouse.winid) then
                     vim.api.nvim_set_current_win(mouse.winid)
@@ -430,19 +430,19 @@ the menu:
               border = 'none',
               style = 'minimal',
               row = function(menu)
-                return menu.parent_menu
-                    and menu.parent_menu.clicked_at
-                    and menu.parent_menu.clicked_at[1] - vim.fn.line('w')
+                return menu.prev_menu
+                    and menu.prev_menu.clicked_at
+                    and menu.prev_menu.clicked_at[1] - vim.fn.line('w')
                   or 1
               end,
               col = function(menu)
-                return menu.parent_menu and menu.parent_menu._win_configs.width or 0
+                return menu.prev_menu and menu.prev_menu._win_configs.width or 0
               end,
               relative = function(menu)
-                return menu.parent_menu and 'win' or 'mouse'
+                return menu.prev_menu and 'win' or 'mouse'
               end,
               win = function(menu)
-                return menu.parent_menu and menu.parent_menu.win
+                return menu.prev_menu and menu.prev_menu.win
               end,
               height = function(menu)
                 return math.max(
@@ -820,49 +820,49 @@ The flow chart below should well illustrate what does `dropbar` do user moves
 around in their window or clicks at a symbol in the winbar:
 
 >
-                                        ┌──────────────────┐
-                                        │winbar at win 1000│ {k}th symbol clicked
-                                        │ contaning buf 1  ├──────────────────────┐
-                                        └───────┬─▲────────┘                      │
-                                                ▼ │                               │
-                                    _G.dropbar.get_dropbar_str()                  │
-                                                │ ▲                               │
-    ┌──────────────┐                     ┌──────▼─┴──────┐                        │
-    │sources       │                     │_G.dropbar.bars│                        │
-    │ ┌───┐        │                     └──────┬─▲──────┘                        │
-    │ │lsp│        │                 ┌───────┬──▼─┴──┬───────┐                    │
-    │ └───┘        │               ┌─▼─┐   ┌─┴─┐   ┌─┴─┐    ...                   │
-    │ ┌──────────┐ │               │[1]│   │[2]│   │[3]│                          │
-    │ │treesitter│ │               └─┬─┘   └─┬─┘   └─┬─┘                          │
-    │ └──────────┘ │                 │      ...     ...                           │
-    │  ...         │                 └──┬─▲─────────────┬──────┐                  │
-    └─────┬─▲──────┘                  ┌─▼─┴──┐       ┌──┴───┐ ...                 │
-          │ │                         │[1000]│       │[1015]│                     │
-          │ │                         └─┬─▲──┘       └──────┘                     │
-          │ │              __tostring() │ │ return string cache                   │
-          │ │                       ┌───▼─┴───┐                    ┌──────────────▼──────────────┐
-          │ │                       │dropbar_t├────────────────────▶_G.dropbar.on_click_callbacks│
-          │ │    On update events   └───┬─▲───┘  register symbol   └──────────────┬──────────────┘
-          │ │ get_symbols(1, <cursor>)  │ │    on_click() callbacks               │
-          │ └───────────────────────────┘ │                       ┌──────────┬────▼─────┬─────────┐
-          └───────────────────────────────┘                   ┌───▼────┐ ┌───┴────┐ ┌───┴────┐   ...
-      each source returns dropbar_symbol_t[]                  │['buf1']│ │['buf2']│ │['buf3']│
-     dropbar_t adds symbols as its components                 └───┬────┘ └───┬────┘ └───┬────┘
-          dropbar_t flushes string cache                          │         ...        ...
-                                                                  └────────┬───────────────┬─────────┐
-                                                                     ┌─────▼─────┐   ┌─────┴─────┐  ...
-                                                                     │['win1000']│   │['win1015']│
-                                                                     └─────┬─────┘   └─────┬─────┘
-                                                                           │              ...
-                                                            ┌─────────┬────▼────┬─────────┐
-                                                        ┌───┴───┐    ...   ┌────┴────┐   ...
-                                                        │['fn1']│          │['fn{k}']│
-                                                        └───────┘          └────┬────┘
-                                                                                ▼
-                                                invoke _G.dropbar.bars[1][1000].components[k]:on_click()
-                                                                                │
-                                                                                ▼
-                                                               open drop-down menu, goto symbol, etc
+                                              ┌──────────────────┐
+                                              │winbar at win 1000│ {k}th symbol clicked
+                                              │ contaning buf 1  ├──────────────────────┐
+                                              └───────┬─▲────────┘                      │
+                                                      ▼ │                               │
+                                          _G.dropbar.get_dropbar_str()                  │
+                                                      │ ▲                               │
+    ┌──────────────┐                           ┌──────▼─┴──────┐                        │
+    │sources       │                           │_G.dropbar.bars│                        │
+    │ ┌───┐        │                           └──────┬─▲──────┘                        │
+    │ │lsp│        │                       ┌───────┬──▼─┴──┬───────┐                    │
+    │ └───┘        │                     ┌─▼─┐   ┌─┴─┐   ┌─┴─┐    ...                   │
+    │ ┌──────────┐ │                     │[1]│   │[2]│   │[3]│                          │
+    │ │treesitter│ │                     └─┬─┘   └─┬─┘   └─┬─┘                          │
+    │ └──────────┘ │                       │      ...     ...                           │
+    │  ...         │                       └──┬─▲─────────────┬──────┐                  │
+    └─────┬─▲──────┘                        ┌─▼─┴──┐       ┌──┴───┐ ...                 │
+          │ │                               │[1000]│       │[1015]│                     │
+          │ │                               └─┬─▲──┘       └──────┘                     │
+          │ │                    __tostring() │ │ return string cache                   │
+          │ │                             ┌───▼─┴───┐                    ┌──────────────▼──────────────┐
+          │ │                             │dropbar_t├────────────────────▶_G.dropbar.on_click_callbacks│
+          │ │    On update events         └───┬─▲───┘  register symbol   └──────────────┬──────────────┘
+          │ │ get_symbols(1, 1000, <cursor>)  │ │    on_click() callbacks               │
+          │ └─────────────────────────────────┘ │                       ┌──────────┬────▼─────┬─────────┐
+          └─────────────────────────────────────┘                   ┌───▼────┐ ┌───┴────┐ ┌───┴────┐   ...
+      each source returns dropbar_symbol_t[]                        │['buf1']│ │['buf2']│ │['buf3']│
+     dropbar_t adds symbols as its components                       └───┬────┘ └───┬────┘ └───┬────┘
+          dropbar_t flushes string cache                                │         ...        ...
+                                                                        └────────┬───────────────┬─────────┐
+                                                                           ┌─────▼─────┐   ┌─────┴─────┐  ...
+                                                                           │['win1000']│   │['win1015']│
+                                                                           └─────┬─────┘   └─────┬─────┘
+                                                                                 │              ...
+                                                                  ┌─────────┬────▼────┬─────────┐
+                                                              ┌───┴───┐    ...   ┌────┴────┐   ...
+                                                              │['fn1']│          │['fn{k}']│
+                                                              └───────┘          └────┬────┘
+                                                                                      ▼
+                                                      invoke _G.dropbar.bars[1][1000].components[k]:on_click()
+                                                                                      │
+                                                                                      ▼
+                                                                     open drop-down menu, goto symbol, etc
 <
 
 ------------------------------------------------------------------------------
@@ -1008,12 +1008,13 @@ dropbar_t:update()                                        *dropbar_t:update()*
  	Updates dropbar components (`dropbar_t.components`) and redraws the
 	dropbar afterwards
 
-dropbar_t:pick_mode_wrap({fn})                    *dropbar_t:pick_mode_wrap()*
+dropbar_t:pick_mode_wrap({fn}, ...)               *dropbar_t:pick_mode_wrap()*
 
  	Executes {fn} in pick mode
 
 	Parameters ~
 	    • {fn} (fun(): T?): Function to execute in pick mode
+	    • ... (any): Arguments to pass to {fn}
 
  	Returns ~
 	    (T?) The return value of {fn}
@@ -1072,6 +1073,28 @@ dropbar_symbol_t.icon_hl                            *dropbar_symbol_t.icon_hl*
 
 	Type ~
 	    string?
+
+dropbar_symbol_t.win                                    *dropbar_symbol_t.win*
+
+ 	The source window the symbol is shown in
+
+	Type ~
+	    integer?
+
+dropbar_symbol_t.buf                                    *dropbar_symbol_t.buf*
+
+ 	The source buffer the symbol is defined in
+
+	Type ~
+	    integer?
+
+dropbar_symbol_t.view                                  *dropbar_symbol_t.view*
+
+	The original view of the source window, created by |winsaveview()|,
+	used to restore the view after previewing the symbol
+
+	Type ~
+	    table?
 
 dropbar_symbol_t.bar                                    *dropbar_symbol_t.bar*
 
@@ -1138,8 +1161,15 @@ dropbar_symbol_t.sibling_idx                    *dropbar_symbol_t.sibling_idx*
 
  	Index of the symbol in the siblings
 
-  Type ~
-      integer?
+	Type ~
+	    integer?
+
+dropbar_symbol_t.range                                *dropbar_symbol_t.range*
+
+ 	Range of the symbol in the source window
+
+	Type ~
+	    `{start: {line: integer, character: integer}, end: {line: integer, character: integer}}`
 
 dropbar_symbol_t.on_click                          *dropbar_symbol_t.on_click*
 
@@ -1158,13 +1188,6 @@ dropbar_symbol_t.on_click                          *dropbar_symbol_t.on_click*
 		For more information about the parameters, see the description
 		about the execute function label in the help page for
 		'statusline'.
-
-dropbar_symbol_t.actions                            *dropbar_symbol_t.actions*
-
- 	Common actions of a symbol (e.g. select, preview, jump, etc)
-
-  Type ~
-	table<string, fun(this: dropbar_symbol_t)>?
 
 dropbar_symbol_t.data                                  *dropbar_symbol_t.data*
 
@@ -1228,9 +1251,22 @@ dropbar_symbol_t:bytewidth()                    *dropbar_symbol_t:bytewidth()*
 	Returns ~
 	    (integer) The byte width of the symbol
 
-dropbar_symbol_t:goto_range_start()      *dropbar_symbol_t:goto_range_start()*
+dropbar_symbol_t:jump()                              *dropbar_symbol_t:jump()*
 
- 	Moves the cursor to the start of the range of the dropbar symbol
+ 	Jump to the start of the symbol associated with the winbar symbol
+
+dropbar_symbol_t:preview()                        *dropbar_symbol_t:preview()*
+
+ 	Preview the symbol in the source window
+
+dropbar_symbol_t:preview_restore_hl()  *dropbar_symbol_t:preview_restore_hl()*
+
+	Clear the preview highlights in the source window
+
+				     *dropbar_symbol_t:preview_restore_view()*
+dropbar_symbol_t:preview_restore_view()
+
+ 	Restore the view in the source window after previewing the symbol
 
 					       *dropbar_symbol_t:swap_field()*
 dropbar_symbol_t:swap_field({field}, {new_val})
@@ -1324,9 +1360,9 @@ dropbar_menu_t.sub_menu                              *dropbar_menu_t.sub_menu*
 	Type ~
 	    `dropbar_menu_t`?
 
-dropbar_menu_t.parent_menu                        *dropbar_menu_t.parent_menu*
+dropbar_menu_t.prev_menu                            *dropbar_menu_t.prev_menu*
 
-	Parent menu, assigned when calling `dropbar_menu_t:new()` or
+	Previous menu, assigned when calling `dropbar_menu_t:new()` or
 	automatically determined in `dropbar_menu_t:open()`
 
 	Type ~
@@ -1334,7 +1370,7 @@ dropbar_menu_t.parent_menu                        *dropbar_menu_t.parent_menu*
 
 dropbar_menu_t.clicked_at                          *dropbar_menu_t.clicked_at*
 
- 	Last position where the menu was clicked
+ 	Last position where the menu was clicked, 1,0-indexed
 
 	Type ~
 	    integer[]?
@@ -1345,6 +1381,13 @@ dropbar_menu_t.prev_cursor                        *dropbar_menu_t.prev_cursor*
 
 	Type ~
 	    integer[]?
+
+dropbar_menu_t.symbol_previewed              *dropbar_menu_t.symbol_previewed*
+
+ 	Symbol being previewed in the menu
+
+	Type ~
+	    `dropbar_symbol_t`?
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1370,13 +1413,17 @@ dropbar_menu_t:eval_win_configs()
 	Evaluate window configurations |dropbar_menu_t.win_configs| and store
 	the result in |dropbar_menu_t._win_configs|
 
-dropbar_menu_t:get_component_at({pos})     *dropbar_menu_t:get_component_at()*
+					   *dropbar_menu_t:get_component_at()*
+dropbar_menu_t:get_component_at({pos}[, {look_ahead}])
 
  	Get the component at position `pos` and the range it occupies in the
 	menu
 
 	Parameters ~
-	    • {pos} (integer[]): position
+	    • {pos} (integer[]): 1,0-indexed position
+	    • {look_ahead} (boolean?):
+		whether to look ahead to find a component if no component is
+		found at `pos`
 
 	Returns ~
 	    (`dropbar_symbol_t`): the component at `pos`
@@ -1390,7 +1437,7 @@ dropbar_menu_t:click_at({pos}, {min_width}, {n_clicks}, {button}, {modifiers})
  	Simulate a click at position `pos` in the menu
 
 	Parameters ~
-	    • {pos} (integer[]): position
+	    • {pos} (integer[]): 1,0-indexed position
 	    • {min_width} (integer?): minimum width of the menu
 	    • {n_clicks} (integer?): number of clicks
 	    • {button} (string?): mouse button
@@ -1461,17 +1508,47 @@ dropbar_menu_t:make_buf()                          *dropbar_menu_t:make_buf()*
  	Create the menu buffer from the entries
 	|dropbar-developers-classes-dropbar_menu_entry_t|
 
-dropbar_menu_t:open()                                  *dropbar_menu_t:open()*
+dropbar_menu_t:override([{opts}])                  *dropbar_menu_t:override()*
 
-	Open the menu with window configurations |dropbar_menu_t.win_configs|
+ 	Override menu options
 
-dropbar_menu_t:close()                                *dropbar_menu_t:close()*
+	Parameters ~
+	    • {opts} (`dropbar_menu_t`): menu options
+
+dropbar_menu_t:open([{opts}])                         *dropbar_menu_t:open()*
+
+	Open the menu with options {opts}
+
+	Parameters ~
+	    • {opts} (`dropbar_menu_t`): menu options
+
+dropbar_menu_t:close([restore_view])                  *dropbar_menu_t:close()*
 
  	Close the menu
 
-dropbar_menu_t:toggle()                              *dropbar_menu_t:toggle()*
+	Parameters ~
+	    • {restore_view} (boolean?): whether to restore the original
+					 view of the source window, default
+                                         to `true`
+
+					  *dropbar_menu_t:preview_symbol_at()*
+dropbar_menu_t:preview_symbol_at({pos}[, {look_ahead}])
+
+ 	Preview the symbol at position `pos` and the range it occupies in
+	the menu
+
+	Parameters ~
+	    • {pos} (integer[]): 1,0-indexed position
+	    • {look_ahead} (boolean?):
+		whether to look ahead to find a component if no component is
+		found at `pos`
+
+dropbar_menu_t:toggle([{opts}])                      *dropbar_menu_t:toggle()*
 
  	Toggle the menu
+
+	Parameters ~
+	    • {opts} (`dropbar_menu_t`): menu options
 
 ..............................................................................
 DROPBAR_MENU_ENTRY_T         *dropbar-developers-classes-dropbar_menu_entry_t*
@@ -1671,13 +1748,14 @@ Declared in `lua/dropbar/sources/init.lua`.
 `dropbar_source_t` has the following field:
 
 						*dropbar_source_t.get_symbols*
-dropbar_source_t.get_symbols({buf}, {cursor})
+dropbar_source_t.get_symbols({buf}, {win}, {cursor})
 
  	Get the symbols to show in the winbar given buffer number {buf} and
 	cursor position {cursor}
 
 	Parameters ~
 	    • {buf} (integer): buffer number
+	    • {win} (integer): window number
 	    • {cursor} (integer[]): cursor position
 
 	Returns ~
@@ -1688,7 +1766,7 @@ MAKING A NEW SOURCE                       *dropbar-developers-making-a-source*
 
 A `dropbar_source_t` instance is just a table with `get_symbols` field set to
 a function that returns an array of `dropbar_symbol_t` instances given a
-buffer number and a cursor position.
+buffer number, window id, and the cursor position.
 
 We have seen a simple example of a custom source in
 |dropbar-configuration-options-bar| where the second source is set to a
@@ -1704,7 +1782,7 @@ dropbar symbol: >lua
 
     local bar = require('dropbar.bar')
     local custom_source = {
-      get_symbols = function(_, _)
+      get_symbols = function(_, _, _)
         return {
           bar.dropbar_symbol_t:new({
             icon = ' ',
@@ -1747,7 +1825,7 @@ the first symbol having a drop-down menu with a single entry saying 'World':
     local bar = require('dropbar.bar')
     local menu = require('dropbar.menu')
     local custom_source = {
-      get_symbols = function(_, _)
+      get_symbols = function(_, _, _)
 	return {
 	  bar.dropbar_symbol_t:new({
 	    icon = ' ',
@@ -1822,31 +1900,32 @@ callback: >lua
 
     local bar = require('dropbar.bar')
     local custom_source = {
-      get_symbols = function(_, _)
+      get_symbols = function(_, _, _)
 	return {
 	  bar.dropbar_symbol_t:new({
-	    name = 'Lev 1',
+	    name = 'Section 1',
 	    name_hl = 'Keyword',
 	    siblings = {
 	      bar.dropbar_symbol_t:new({
-		name = 'Lev 1.1',
+		name = 'Section 2',
 		name_hl = 'WarningMsg',
 	      }),
 	      bar.dropbar_symbol_t:new({
-		name = 'Lev 1.2',
+		name = 'Section 3',
 		name_hl = 'Error',
 	      }),
 	      bar.dropbar_symbol_t:new({
-		name = 'Lev 1.3',
+		name = 'Section 4',
 		name_hl = 'String',
 		children = {
 		  bar.dropbar_symbol_t:new({
-		    name = 'Lev 1.3.1',
+		    name = 'Section 4.1',
 		    name_hl = 'String',
-		    actions = {
-		      jump = function(_)
-			vim.notify('Jumping to Lev 1.3.1')
-		      end
+		    -- Will jump to line 3, col 4 (0-indexed) when clicked in the
+		    -- menu
+		    range = {
+		      start = { line = 3, character = 4 },
+		      end = { line = 5, character = 6 },
 		    }
 		  }),
 		},
@@ -1868,10 +1947,10 @@ menu is opened: >lua
 
     local bar = require('dropbar.bar')
     local custom_source = {
-      get_symbols = function(_, _)
+      get_symbols = function(buf, win, _)
 	return {
 	  bar.dropbar_symbol_t:new(setmetatable({
-	    name = 'Lev 1',
+	    name = 'Section 1',
 	    name_hl = 'Keyword',
 	  }, {
 	    __index = function(self, key)

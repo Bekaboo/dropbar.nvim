@@ -26,27 +26,22 @@ end
 
 ---Convert a path to a dropbar symbol
 ---@param path string full path
+---@param buf integer buffer handler
+---@param win integer window handler
 ---@return dropbar_symbol_t
-local function convert(path)
+local function convert(path, buf, win)
   local icon, icon_hl = get_icon(path)
   return bar.dropbar_symbol_t:new(setmetatable({
+    buf = buf,
+    win = win,
     name = vim.fs.basename(path),
     icon = icon,
     name_hl = 'DropBarKindFolder',
     icon_hl = icon_hl,
-    actions = {
-      ---@param symbol dropbar_symbol_t
-      jump = function(symbol)
-        if symbol.entry then
-          local current_menu = symbol.entry.menu
-          while current_menu do
-            current_menu:close()
-            current_menu = current_menu.parent_menu
-          end
-          vim.cmd.edit(path)
-        end
-      end,
-    },
+    ---Override the default jump function
+    jump = function(_)
+      vim.cmd.edit(path)
+    end,
   }, {
     ---@param self dropbar_symbol_t
     __index = function(self, k)
@@ -54,7 +49,7 @@ local function convert(path)
         self.children = {}
         for name in vim.fs.dir(path) do
           if configs.opts.sources.path.filter(name) then
-            table.insert(self.children, convert(path .. '/' .. name))
+            table.insert(self.children, convert(path .. '/' .. name, buf, win))
           end
         end
         return self.children
@@ -65,7 +60,10 @@ local function convert(path)
         self.sibling_idx = 1
         for idx, name in vim.iter(vim.fs.dir(parent_dir)):enumerate() do
           if configs.opts.sources.path.filter(name) then
-            table.insert(self.siblings, convert(parent_dir .. '/' .. name))
+            table.insert(
+              self.siblings,
+              convert(parent_dir .. '/' .. name, buf, win)
+            )
             if name == self.name then
               self.sibling_idx = idx
             end
@@ -79,9 +77,10 @@ end
 
 ---Get list of dropbar symbols of the parent directories of given buffer
 ---@param buf integer buffer handler
+---@param win integer window handler
 ---@param _ integer[] cursor position, ignored
 ---@return dropbar_symbol_t[] dropbar symbols
-local function get_symbols(buf, _)
+local function get_symbols(buf, win, _)
   local symbols = {} ---@type dropbar_symbol_t[]
   local current_path = vim.fs.normalize(
     vim.fn.fnamemodify((vim.api.nvim_buf_get_name(buf)), ':p')
@@ -94,7 +93,7 @@ local function get_symbols(buf, _)
         configs.eval(configs.opts.sources.path.relative_to, buf)
       )
   do
-    table.insert(symbols, 1, convert(current_path))
+    table.insert(symbols, 1, convert(current_path, buf, win))
     current_path = vim.fs.dirname(current_path)
   end
   if vim.bo[buf].mod then

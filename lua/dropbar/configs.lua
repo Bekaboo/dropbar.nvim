@@ -16,7 +16,6 @@ M.opts = {
         'CursorMovedI',
         'WinEnter',
         'WinResized',
-        'WinScrolled',
       },
       buf = {
         'BufModifiedSet',
@@ -109,6 +108,23 @@ M.opts = {
       },
     },
   },
+  symbol = {
+    -- When on, preview the symbol in the source window
+    preview = {
+      enable = true,
+      ---Reorient the preview window on previewing a new symbol
+      ---@param win integer source window
+      ---@param range {start: {line: integer}, end: {line: integer}} 0-indexed
+      reorient = function(win, range)
+        if vim.fn.line('w$') <= range['end'].line then
+          local view = vim.fn.winsaveview()
+          view.topline = range.start.line
+            - math.floor(1 / 4 * vim.api.nvim_win_get_height(win))
+          vim.fn.winrestview(view)
+        end
+      end,
+    },
+  },
   bar = {
     ---@type dropbar_source_t[]|fun(buf: integer, win: integer): dropbar_source_t[]
     sources = function(_, _)
@@ -116,15 +132,15 @@ M.opts = {
       return {
         sources.path,
         {
-          get_symbols = function(buf, cursor)
+          get_symbols = function(buf, win, cursor)
             if vim.bo[buf].ft == 'markdown' then
-              return sources.markdown.get_symbols(buf, cursor)
+              return sources.markdown.get_symbols(buf, win, cursor)
             end
             for _, source in ipairs({
               sources.lsp,
               sources.treesitter,
             }) do
-              local symbols = source.get_symbols(buf, cursor)
+              local symbols = source.get_symbols(buf, win, cursor)
               if not vim.tbl_isempty(symbols) then
                 return symbols
               end
@@ -163,9 +179,9 @@ M.opts = {
         end
         local mouse = vim.fn.getmousepos()
         if mouse.winid ~= menu.win then
-          local parent_menu = api.get_dropbar_menu(mouse.winid)
-          if parent_menu and parent_menu.sub_menu then
-            parent_menu.sub_menu:close()
+          local prev_menu = api.get_dropbar_menu(mouse.winid)
+          if prev_menu and prev_menu.sub_menu then
+            prev_menu.sub_menu:close()
           end
           if vim.api.nvim_win_is_valid(mouse.winid) then
             vim.api.nvim_set_current_win(mouse.winid)
@@ -204,19 +220,19 @@ M.opts = {
       border = 'none',
       style = 'minimal',
       row = function(menu)
-        return menu.parent_menu
-            and menu.parent_menu.clicked_at
-            and menu.parent_menu.clicked_at[1] - vim.fn.line('w0')
+        return menu.prev_menu
+            and menu.prev_menu.clicked_at
+            and menu.prev_menu.clicked_at[1] - vim.fn.line('w0')
           or 1
       end,
       col = function(menu)
-        return menu.parent_menu and menu.parent_menu._win_configs.width or 0
+        return menu.prev_menu and menu.prev_menu._win_configs.width or 0
       end,
       relative = function(menu)
-        return menu.parent_menu and 'win' or 'mouse'
+        return menu.prev_menu and 'win' or 'mouse'
       end,
       win = function(menu)
-        return menu.parent_menu and menu.parent_menu.win
+        return menu.prev_menu and menu.prev_menu.win
       end,
       height = function(menu)
         return math.max(

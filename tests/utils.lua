@@ -42,6 +42,7 @@ function test.utils.test_symbol_path_at_test_point(
   return function()
     local symbols = source.get_symbols(
       vim.api.nvim_get_current_buf(),
+      vim.api.nvim_get_current_win(),
       test.utils.get_testpoint(test_point)
     )
     assert.are.same(

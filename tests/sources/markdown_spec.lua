@@ -63,6 +63,7 @@ describe('[source][markdown]', function()
         unpack(
           source_markdown.get_symbols(
             vim.api.nvim_get_current_buf(),
+            vim.api.nvim_get_current_win(),
             test.utils.get_testpoint(0)
           )
         ),
