@@ -68,10 +68,8 @@ highly-customizable 'winbar' with drop-down menu support and mutiple backends.
 - Drop-down menu components that response to mouse/cursor hovering
     This features requires 'mousemoveevent' to be enabled.
 
-TODO
-
-- Preview symbol ranges in original window when hovering over them in the
-    drop-down menu
+- Preview symbols in their source windows when hovering over them in the
+  drop-down menu
 
 ==============================================================================
 REQUIREMENTS                                            *dropbar-requirements*

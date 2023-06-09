@@ -92,8 +92,10 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
     - This features requires `:h mousemoveevent` to be enabled.
 
-- [ ] Preview symbol ranges in original window when hovering over them in the
+- [x] Preview symbols in their source windows when hovering over them in the
   drop-down menu
+
+    ![preview](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/93f33b90-4f42-459c-861a-1e70114ba6f2)
 
 ## Requirements
 
