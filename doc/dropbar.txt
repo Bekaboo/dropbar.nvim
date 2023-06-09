@@ -172,7 +172,6 @@ behavior of the plugin:
 	      'WinEnter',
 	      'WinLeave',
 	      'WinResized',
-	      'WinScrolled',
             }
 <
 - `opts.general.update_events.buf`: `string[]`

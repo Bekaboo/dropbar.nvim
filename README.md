@@ -183,7 +183,6 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           'WinEnter',
           'WinLeave',
           'WinResized',
-          'WinScrolled',
         },
         buf = {
           'BufModifiedSet',
@@ -535,7 +534,6 @@ general behavior of the plugin:
       'WinEnter',
       'WinLeave',
       'WinResized',
-      'WinScrolled',
     }
     ```
 - `opts.general.update_events.buf`: `string[]`
