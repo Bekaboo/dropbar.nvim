@@ -296,23 +296,23 @@ function dropbar_menu_t:click_on(
   end
 end
 
----Update dropbarMenuHover* highlights according to pos
+---Update DroPbarMenuHover* highlights according to pos
 ---@param pos integer[]? byte-indexed, 1,0-indexed cursor/mouse position
 ---@return nil
 function dropbar_menu_t:update_hover_hl(pos)
-  utils.hl_range_single(self.buf, 'dropbarMenuHoverSymbol', nil)
-  utils.hl_range_single(self.buf, 'dropbarMenuHoverIcon', nil)
-  utils.hl_range_single(self.buf, 'dropbarMenuHoverEntry', nil)
+  utils.hl_range_single(self.buf, 'DropBarMenuHoverSymbol', nil)
+  utils.hl_range_single(self.buf, 'DropBarMenuHoverIcon', nil)
+  utils.hl_range_single(self.buf, 'DropBarMenuHoverEntry', nil)
   if not pos then
     return
   end
-  utils.hl_line_single(self.buf, 'dropbarMenuHoverEntry', pos[1])
+  utils.hl_line_single(self.buf, 'DropBarMenuHoverEntry', pos[1])
   local component, range = self:get_component_at({ pos[1], pos[2] })
   if component and component.on_click and range then
     utils.hl_range_single(
       self.buf,
-      component and component.name == '' and 'dropbarMenuHoverIcon'
-        or 'dropbarMenuHoverSymbol',
+      component and component.name == '' and 'DropBarMenuHoverIcon'
+        or 'DropbarMenuHoverSymbol',
       {
         start = {
           line = pos[1] - 1,
@@ -366,7 +366,7 @@ function dropbar_menu_t:make_buf()
       )
     end
     if self.cursor and entry_idx == self.cursor[1] then
-      utils.hl_line_single(self.buf, 'dropbarMenuCurrentContext', entry_idx)
+      utils.hl_line_single(self.buf, 'DropBarMenuCurrentContext', entry_idx)
     end
   end
   vim.bo[self.buf].ma = false
