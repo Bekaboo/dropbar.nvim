@@ -327,6 +327,35 @@ function dropbar_menu_t:update_hover_hl(pos)
   end
 end
 
+---Update highlights for current context according to pos
+---@param linenr integer? 1-indexed line number
+function dropbar_menu_t:update_current_context_hl(linenr)
+  if self.buf then
+    utils.hl_line_single(self.buf, 'DropBarMenuCurrentContext', linenr)
+  end
+end
+
+---Add highlights to the menu buffer
+---@param hl_info dropbar_menu_hl_info_t[][]
+---@return nil
+function dropbar_menu_t:add_hl(hl_info)
+  if not self.buf then
+    return
+  end
+  for linenr, hl_line_info in ipairs(hl_info) do
+    for _, hl_symbol_info in ipairs(hl_line_info) do
+      vim.api.nvim_buf_add_highlight(
+        self.buf,
+        hl_symbol_info.ns or -1,
+        hl_symbol_info.hlgroup,
+        linenr - 1, -- 0-indexed
+        hl_symbol_info.start,
+        hl_symbol_info['end']
+      )
+    end
+  end
+end
+
 ---Make a buffer for the menu and set buffer-local keymaps
 ---Must be called after the popup window is created
 ---Side effect: change self.buf, self.hl_info
@@ -337,7 +366,7 @@ function dropbar_menu_t:make_buf()
   end
   self.buf = vim.api.nvim_create_buf(false, true)
   local lines = {} ---@type string[]
-  local hl_info = {} ---@type {start: integer, end: integer, hlgroup: string, ns: integer?}[][]
+  local hl_info = {} ---@type dropbar_menu_hl_info_t[][]
   for _, entry in ipairs(self.entries) do
     local line, entry_hl_info = entry:cat()
     -- Pad lines with spaces to the width of the window
@@ -354,20 +383,9 @@ function dropbar_menu_t:make_buf()
     table.insert(hl_info, entry_hl_info)
   end
   vim.api.nvim_buf_set_lines(self.buf, 0, -1, false, lines)
-  for entry_idx, entry_hl_info in ipairs(hl_info) do
-    for _, hl in ipairs(entry_hl_info) do
-      vim.api.nvim_buf_add_highlight(
-        self.buf,
-        hl.ns or -1,
-        hl.hlgroup,
-        entry_idx - 1, -- 0-indexed
-        hl.start,
-        hl['end']
-      )
-    end
-    if self.cursor and entry_idx == self.cursor[1] then
-      utils.hl_line_single(self.buf, 'DropBarMenuCurrentContext', entry_idx)
-    end
+  self:add_hl(hl_info)
+  if self.cursor then
+    self:update_current_context_hl(self.cursor[1])
   end
   vim.bo[self.buf].ma = false
   vim.bo[self.buf].ft = 'dropbar_menu'
