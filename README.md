@@ -766,7 +766,7 @@ menu:
   - Padding to use between the menu entry and the menu border
   - Default: `{ left = 1, right = 1 }`
 - `opts.menu.preview`: `boolean`
-  - Whether to enable previewing of menu entries
+  - Whether to enable previewing for menu entries
   - Default: `true`
 - `opts.menu.keymaps`: `table<string, function|string|table<string, function>|table<string, string>>`
   - Buffer-local keymaps in the menu
