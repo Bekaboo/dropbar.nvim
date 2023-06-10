@@ -494,6 +494,7 @@ function dropbar_menu_t:open(opts)
       vim.api.nvim_win_set_cursor(self.win, self.prev_cursor)
     elseif self.cursor then
       vim.api.nvim_win_set_cursor(self.win, self.cursor)
+      vim.cmd.doautocmd('CursorMoved')
     end
   end
 end
