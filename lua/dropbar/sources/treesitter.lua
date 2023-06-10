@@ -76,7 +76,7 @@ local function get_node_siblings(node, buf)
     if valid_node(current, buf) then
       table.insert(siblings, 1, current)
     else
-      for _, sib in get_node_children(current, buf) do
+      for _, sib in ipairs(get_node_children(current, buf)) do
         table.insert(siblings, 1, sib)
       end
     end
