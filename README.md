@@ -100,6 +100,15 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
 - [ ] Add hover highlights and preview for symbols shown in the winbar
 
+- [ ] Add options to reorient the source window after jumping to a symbol
+
+- [ ] Preview symbols (files) from `path` source
+
+- [ ] Add more actions other than `jump` and `preview`, e.g. `rename`,
+  `delete`, `select`, etc.
+
+- [ ] Support visual mode selection to select/delete multiple symbols
+
 ## Requirements
 
 - Neovim **Nightly** (>= 0.10.0-dev)
