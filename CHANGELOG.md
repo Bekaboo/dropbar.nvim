@@ -1,5 +1,42 @@
 # Changelog
 
+## [3.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v2.1.1...v3.0.0) (2023-06-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* **config:** move preview reorient configs under opts.symbol
+* **symbol:** preview symbol in source window
+
+### Features
+
+* **config:** add option to disable icons ([f08ab63](https://github.com/Bekaboo/dropbar.nvim/commit/f08ab6306176813d58cb936b3f2d40a568c8e5cc))
+* **config:** move preview reorient configs under opts.symbol ([e136c7f](https://github.com/Bekaboo/dropbar.nvim/commit/e136c7f381b36ce3164e78aeca26d6cb189cd399))
+* **config:** preview symbol on mouse hovering ([5ec3fa0](https://github.com/Bekaboo/dropbar.nvim/commit/5ec3fa0fa35c68c1387d84fa9aee019f64ec6552))
+* **highlights:** reset hlgroups on ColorScheme ([befe881](https://github.com/Bekaboo/dropbar.nvim/commit/befe88172faf58a2b952b135b5ee2fcaca042e1a))
+* **menu:** enable menu quick navigation by default ([#3](https://github.com/Bekaboo/dropbar.nvim/issues/3)) ([54c1dba](https://github.com/Bekaboo/dropbar.nvim/commit/54c1dbaf4e390f219adc6fd7efd9093a0958b9e3))
+* **menu:** only move cursor to the first symbol on entering a new menu ([ca6741c](https://github.com/Bekaboo/dropbar.nvim/commit/ca6741cb13f2c3580baedcb068952fc79b8f1c03))
+* **symbol:** preview symbol in source window ([3882ee3](https://github.com/Bekaboo/dropbar.nvim/commit/3882ee30a2aa07d735a2747ef7f6e1767aeec725))
+
+
+### Bug Fixes
+
+* **config:** should not disable icons when new_opts.icons.disable is not provided ([#31](https://github.com/Bekaboo/dropbar.nvim/issues/31)) ([1254ba2](https://github.com/Bekaboo/dropbar.nvim/commit/1254ba22a26ad179dffd094f410f0ee32c26c4fa))
+* **highlights:** fix hlgroup names ([f217fde](https://github.com/Bekaboo/dropbar.nvim/commit/f217fdee5f286d93112893c3280b94d69865c8fb))
+* **highlights:** fix hlgroup names (again) ([990cae9](https://github.com/Bekaboo/dropbar.nvim/commit/990cae99d581ff94a746b4f4acb13c85620756c6))
+* **highlights:** update current context highlights correctly ([7367616](https://github.com/Bekaboo/dropbar.nvim/commit/7367616a558d60d4f64bd53a6349adcf4932466b))
+* **menu:** convert mouse.column to 0-based ([04e04cc](https://github.com/Bekaboo/dropbar.nvim/commit/04e04cc10a3f1333d3948138b0faaad61a4bf481))
+* **menu:** cursor not set to first clickable component in current entry ([4ef2dac](https://github.com/Bekaboo/dropbar.nvim/commit/4ef2dacd5889f07f16f097de606c5bde9668c81e))
+* **menu:** drop-down menu position ([1bee80f](https://github.com/Bekaboo/dropbar.nvim/commit/1bee80f8fc142755444a210f93a4ff9a5af0820a))
+* **menu:** fix default keymaps in menu ([1072eff](https://github.com/Bekaboo/dropbar.nvim/commit/1072eff3e0f28d3dc08f2b1782e0f5de6cd814c3))
+* **menu:** pass prev_win on opening/toggling menus ([29e9b76](https://github.com/Bekaboo/dropbar.nvim/commit/29e9b76411f7b22a61a230663527c20f959c7ea3))
+* **menu:** set init cursor pos only on the first time opening a menu ([1e56ced](https://github.com/Bekaboo/dropbar.nvim/commit/1e56ced0596261303f6c6d997494e3b21a715500))
+* **menu:** should set cursor to previous position explicitly ([7d20061](https://github.com/Bekaboo/dropbar.nvim/commit/7d20061c8dd5dc7e8771dd35741e63d18a68a238))
+* **menu:** wrong prev_window if opened from non-current window ([094f34d](https://github.com/Bekaboo/dropbar.nvim/commit/094f34dbf31409c1ba7cf110d982c66143a17584))
+* **sources:** treesitter: add missing call to ipairs() ([d6775ce](https://github.com/Bekaboo/dropbar.nvim/commit/d6775cefc2f7e7fcd5f6febdb4ab89f0556be510))
+* **sources:** treesitter: duplicate current node in siblings list ([eb242a2](https://github.com/Bekaboo/dropbar.nvim/commit/eb242a22959231db844d5c633846a43b13e09d29))
+* **sources:** treesitter: order of siblings is reversed ([94b8d52](https://github.com/Bekaboo/dropbar.nvim/commit/94b8d521aa973034939151cb53013b91e2b3748b))
+
 ## [2.1.1](https://github.com/Bekaboo/dropbar.nvim/compare/v2.1.0...v2.1.1) (2023-06-04)
 
 
