@@ -387,7 +387,7 @@ function M.set(new_opts)
       win = new_opts.general.update_events,
     }
   end
-  if new_opts.icons and not new_opts.icons.enable then
+  if new_opts.icons and new_opts.icons.enable == false then
     local blank_icons = setmetatable({}, {
       __index = function()
         return ' '
