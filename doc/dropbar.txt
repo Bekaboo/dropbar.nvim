@@ -208,6 +208,9 @@ ICONS                                    *dropbar-configuration-options-icons*
 These options live under `opts.icons` and are used to configure the icons used
 by the plugin:
 
+- `opts.icons.enable`: `boolean`
+    - Whether to enable icons
+    - Default: `true`
 - `opts.icons.kinds.use_devicons`: `boolean`
     - Whether to use nvim-web-devicons
       <https://github.com/nvim-tree/nvim-web-devicons> to show icons for

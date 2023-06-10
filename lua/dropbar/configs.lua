@@ -30,6 +30,7 @@ M.opts = {
     },
   },
   icons = {
+    enable = true,
     kinds = {
       use_devicons = true,
       symbols = {
@@ -385,6 +386,17 @@ function M.set(new_opts)
     new_opts.general.update_events = {
       win = new_opts.general.update_events,
     }
+  end
+  if new_opts.icons and not new_opts.icons.enable then
+    local blank_icons = setmetatable({}, {
+      __index = function()
+        return ' '
+      end,
+    })
+    M.opts.icons.kinds.use_devicons = false
+    M.opts.icons.kinds.symbols = blank_icons
+    M.opts.icons.ui.bar = blank_icons
+    M.opts.icons.ui.menu = blank_icons
   end
   M.opts = vim.tbl_deep_extend('force', M.opts, new_opts)
 end

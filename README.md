@@ -199,6 +199,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
       },
     },
     icons = {
+      enable = true,
       kinds = {
         use_devicons = true,
         symbols = {
@@ -593,6 +594,9 @@ general behavior of the plugin:
 These options live under `opts.icons` and are used to configure the icons
 used by the plugin:
 
+- `opts.icons.enable`: `boolean`
+  - Whether to enable icons
+  - Default: `true`
 - `opts.icons.kinds.use_devicons`: `boolean`
   - Whether to use [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons) to show icons for different filetypes
   - Default: `true`
