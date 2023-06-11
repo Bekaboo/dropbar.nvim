@@ -1516,46 +1516,6 @@ dropbar_menu_t:click_on({symbol}, {min_width}, {n_clicks}, {button}, {modifiers}
 	    • {button} (string?): mouse button
 	    • {modifiers} (string?): modifiers
 
-					      *dropbar_menu_t:hl_line_range()*
-dropbar_menu_t:hl_line_range({line}, {hl_info})
-
-	Add highlight to a range in the menu buffer according to the line
-	number and the highlight info
-	|dropbar-developers-classes-dropbar_menu_hl_info_t|
-
-	Parameters ~
-	    • {line} (integer): line number
-	    • {hl_info} (`dropbar_menu_hl_info_t`): highlight info
-
-					     *dropbar_menu_t:hl_line_single()*
-dropbar_menu_t:hl_line_single({line}[, {hlgroup}])
-
-	Add highlight to a single line in the menu buffer
-
-	{hlgroup} defaults to DropBarMenuCurrentContext
-
-	Notice that all highlights with the same hlgroup added by this functions
-	previously will be cleared when this function is called
-
-	Parameters ~
-	    • {line} (integer): line number
-	    • {hlgroup} (string?): highlight group
-
-					    *dropbar_menu_t:hl_range_single()*
-dropbar_menu_t:hl_range_single([{line}, {range}, {hlgroup}])
-
-	Add highlight to a single range in a single line the menu buffer
-
-	{hlgroup} defaults to DropBarMenuHoverSymbol
-
-	Notice that all highlights with the same hlgroup added by this functions
-	previously will be cleared when this function is called
-
-	Parameters ~
-	    • {line} (integer?): line number
-	    • {range} (integer[]): range
-	    • {hlgroup} (string?): highlight group
-
 dropbar_menu_t:udpate_hover_hl([{pos}])     *dropbar_menu_t:udpate_hover_hl()*
 
 	Update the hover highlights (hl-DropBarMenuHover*) assuming the
@@ -1593,6 +1553,36 @@ dropbar_menu_t:override([{opts}])                  *dropbar_menu_t:override()*
 	Parameters ~
 	    • {opts} (`dropbar_menu_t`): menu options
 
+					  *dropbar_menu_t:preview_symbol_at()*
+dropbar_menu_t:preview_symbol_at({pos}[, {look_ahead}])
+
+ 	Preview the symbol at position `pos` and the range it occupies in
+	the menu
+
+	Parameters ~
+	    • {pos} (integer[]): 1,0-indexed position
+	    • {look_ahead} (boolean?):
+		whether to look ahead to find a component if no component is
+		found at `pos`
+
+dropbar_menu_t:finish_preview([restore_view])    *dropbar_menu_t:finish_preview()*
+
+ 	Finish previewing the symbol, preview highlights in the sourec buffer
+        will always be cleared, the original view in the source window will
+        be restored if {restore_view} is set to `true` (default).
+
+	Parameters ~
+	    • {restore_view} (boolean?): whether to restore the original view
+				      of the source window, default to `true`
+
+dropbar_menu_t:quick_navigation(new_cursor)      *dropbar_menu_t:quick_navigation()*
+
+ 	Navigate the cursor the nearest clickable component on the current
+        menu entry in the direction of cursor movement
+
+	Parameters ~
+	    • {new_cursor} (integer[]): new cursor position
+
 dropbar_menu_t:open([{opts}])                         *dropbar_menu_t:open()*
 
 	Open the menu with options {opts}
@@ -1608,18 +1598,6 @@ dropbar_menu_t:close([restore_view])                  *dropbar_menu_t:close()*
 	    • {restore_view} (boolean?): whether to restore the original
 					 view of the source window, default
                                          to `true`
-
-					  *dropbar_menu_t:preview_symbol_at()*
-dropbar_menu_t:preview_symbol_at({pos}[, {look_ahead}])
-
- 	Preview the symbol at position `pos` and the range it occupies in
-	the menu
-
-	Parameters ~
-	    • {pos} (integer[]): 1,0-indexed position
-	    • {look_ahead} (boolean?):
-		whether to look ahead to find a component if no component is
-		found at `pos`
 
 dropbar_menu_t:toggle([{opts}])                      *dropbar_menu_t:toggle()*
 
