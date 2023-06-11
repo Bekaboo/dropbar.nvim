@@ -1615,7 +1615,7 @@ local custom_source = {
                 -- menu
                 range = {
                   start = { line = 3, character = 4 },
-                  end = { line = 5, character = 6 },
+                  ['end'] = { line = 5, character = 6 },
                 }
               }),
             },
