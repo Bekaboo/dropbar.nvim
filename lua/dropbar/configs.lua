@@ -307,7 +307,7 @@ M.opts = {
     treesitter = {
       -- Lua pattern used to extract a short name from the node text
       -- Be aware that the match result must not be nil!
-      name_pattern = string.rep('[#~%w%._%->!]*', 4, '%s*'),
+      name_pattern = string.rep('[#~%*%w%._%->!]*', 4, '%s*'),
       -- The order matters! The first match is used as the type
       -- of the treesitter symbol and used to show the icon
       -- Types listed below must have corresponding icons
