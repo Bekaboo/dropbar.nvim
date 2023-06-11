@@ -244,18 +244,15 @@ function dropbar_symbol_t:preview()
   if not self.win or not self.buf then
     return
   end
-  self.view = utils.win_execute(self.win, vim.fn.winsaveview)
+  self.view = vim.api.nvim_win_call(self.win, vim.fn.winsaveview)
   utils.hl_range_single(self.buf, 'DropBarPreview', self.range)
   vim.api.nvim_win_set_cursor(self.win, {
     self.range.start.line + 1,
     self.range.start.character,
   })
-  utils.win_execute(
-    self.win,
-    configs.opts.symbol.preview.reorient,
-    self.win,
-    self.range
-  )
+  vim.api.nvim_win_call(self.win, function()
+    configs.opts.symbol.preview.reorient(self.win, self.range)
+  end)
 end
 
 ---Clear the preview highlights in the source window
@@ -270,7 +267,9 @@ end
 ---@return nil
 function dropbar_symbol_t:preview_restore_view()
   if self.view and self.win then
-    utils.win_execute(self.win, vim.fn.winrestview, self.view)
+    vim.api.nvim_win_call(self.win, function()
+      vim.fn.winrestview(self.view)
+    end)
   end
 end
 
