@@ -21,10 +21,10 @@ CONTENTS                                           *dropbar-table-of-contents*
     5.1.4 Bar                              |dropbar-configuration-options-bar|
     5.1.5 Menu                            |dropbar-configuration-options-menu|
     5.1.6 Sources                      |dropbar-configuration-options-sources|
-      5.1.5.1 Path                |dropbar-configuration-options-sources-path|
-      5.1.5.2 Treesitter    |dropbar-configuration-options-sources-treesitter|
-      5.1.5.3 LSP                  |dropbar-configuration-options-sources-lsp|
-      5.1.5.4 Markdown        |dropbar-configuration-options-sources-markdown|
+      5.1.6.1 Path                |dropbar-configuration-options-sources-path|
+      5.1.6.2 Treesitter    |dropbar-configuration-options-sources-treesitter|
+      5.1.6.3 LSP                  |dropbar-configuration-options-sources-lsp|
+      5.1.6.4 Markdown        |dropbar-configuration-options-sources-markdown|
   5.2 API                                          |dropbar-configuration-api|
   5.3 Highlighting                        |dropbar-configuration-highlighting|
 6. Developers                                             |dropbar-developers|
