@@ -319,11 +319,12 @@ the symbols:
     - Function to reorient the source window when previewing symbol given
       the source window `win` and the range of the symbol `range`
     - Default: >lua
-	    function(win, range)
-	      if vim.fn.line('w$') <= range['end'].line then
+
+	    function(_, range)
+	      local invisible = range['end'].line - vim.fn.line('w$') + 1
+	      if invisible > 0 then
 		local view = vim.fn.winsaveview()
-		view.topline = range.start.line
-		  - math.floor(1 / 4 * vim.api.nvim_win_get_height(win))
+		view.topline = view.topline + invisible
 		vim.fn.winrestview(view)
 	      end
 	    end

@@ -290,13 +290,13 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
     symbol = {
       preview = {
         ---Reorient the preview window on previewing a new symbol
-        ---@param win integer source window
+        ---@param _ integer source window id, ignored
         ---@param range {start: {line: integer}, end: {line: integer}} 0-indexed
-        reorient = function(win, range)
-          if vim.fn.line('w$') <= range['end'].line then
+        reorient = function(_, range)
+          local invisible = range['end'].line - vim.fn.line('w$') + 1
+          if invisible > 0 then
             local view = vim.fn.winsaveview()
-            view.topline = range.start.line
-              - math.floor(1 / 4 * vim.api.nvim_win_get_height(win))
+            view.topline = view.topline + invisible
             vim.fn.winrestview(view)
           end
         end,
@@ -707,11 +707,11 @@ the symbols:
     the source window `win` and the range of the symbol `range`
   - Default:
     ```lua
-    function(win, range)
-      if vim.fn.line('w$') <= range['end'].line then
+    function(_, range)
+      local invisible = range['end'].line - vim.fn.line('w$') + 1
+      if invisible > 0 then
         local view = vim.fn.winsaveview()
-        view.topline = range.start.line
-          - math.floor(1 / 4 * vim.api.nvim_win_get_height(win))
+        view.topline = view.topline + invisible
         vim.fn.winrestview(view)
       end
     end
