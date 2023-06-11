@@ -98,9 +98,10 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
     ![preview](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/93f33b90-4f42-459c-861a-1e70114ba6f2)
 
+- [x] Reorient the source window on previewing or after jumping to a symbol
+
 - [ ] Add hover highlights and preview for symbols shown in the winbar
 
-- [ ] Add options to reorient the source window after jumping to a symbol
 
 - [ ] Preview symbols (files) from `path` source
 
@@ -297,6 +298,22 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           if invisible > 0 then
             local view = vim.fn.winsaveview()
             view.topline = view.topline + invisible
+            vim.fn.winrestview(view)
+          end
+        end,
+      },
+      jump = {
+        ---@param win integer source window id
+        ---@param range {start: {line: integer}, end: {line: integer}} 0-indexed
+        reorient = function(win, range)
+          local view = vim.fn.winsaveview()
+          local win_height = vim.api.nvim_win_get_height(win)
+          local topline = range.start.line - math.floor(win_height / 4)
+          if
+            topline > view.topline
+            and topline + win_height < vim.fn.line('$')
+          then
+            view.topline = topline
             vim.fn.winrestview(view)
           end
         end,
@@ -715,6 +732,24 @@ the symbols:
         vim.fn.winrestview(view)
       end
     end
+    ```
+- `opts.symbol.jump.reorient`: `fun(win: integer, range: {start: {line: integer, character: integer}, end: {line: integer, character: integer}})`
+  - Function to reorient the source window after jumping to symbol given
+    the source window `win` and the range of the symbol `range`
+  - Default:
+    ```lua
+    function(win, range)
+      local view = vim.fn.winsaveview()
+      local win_height = vim.api.nvim_win_get_height(win)
+      local topline = range.start.line - math.floor(win_height / 4)
+      if
+        topline > view.topline
+        and topline + win_height < vim.fn.line('$')
+      then
+        view.topline = topline
+        vim.fn.winrestview(view)
+      end
+    end,
     ```
 
 #### Bar

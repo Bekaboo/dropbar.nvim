@@ -233,6 +233,9 @@ function dropbar_symbol_t:jump()
     self.range.start.line + 1,
     self.range.start.character,
   })
+  vim.api.nvim_win_call(self.win, function()
+    configs.opts.symbol.jump.reorient(self.win, self.range)
+  end)
 end
 
 ---Preview the symbol in the source window

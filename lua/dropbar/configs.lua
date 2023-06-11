@@ -123,6 +123,22 @@ M.opts = {
         end
       end,
     },
+    jump = {
+      ---@param win integer source window id
+      ---@param range {start: {line: integer}, end: {line: integer}} 0-indexed
+      reorient = function(win, range)
+        local view = vim.fn.winsaveview()
+        local win_height = vim.api.nvim_win_get_height(win)
+        local topline = range.start.line - math.floor(win_height / 4)
+        if
+          topline > view.topline
+          and topline + win_height < vim.fn.line('$')
+        then
+          view.topline = topline
+          vim.fn.winrestview(view)
+        end
+      end,
+    },
   },
   bar = {
     ---@type dropbar_source_t[]|fun(buf: integer, win: integer): dropbar_source_t[]
