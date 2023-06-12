@@ -585,7 +585,7 @@ TREESITTER                  *dropbar-configuration-options-sources-treesitter*
 - `opts.sources.treesitter.name_pattern`: `string`
     - Lua pattern used to extract a short name from the node text
     - Be aware! The matching result must not be nil
-    - Default: `string.rep('[#~%w%._%->!]*', 4, '%s*')`
+    - Default: `string.rep('[#~%*%w%._%->!]*', 4, '%s*')`
 - `opts.sources.treesitter.valid_types:` `string[]`
     - A list of treesitter node types to include in the results
     - Default: >lua

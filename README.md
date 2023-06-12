@@ -486,7 +486,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
       treesitter = {
         -- Lua pattern used to extract a short name from the node text
         -- Be aware that the match result must not be nil!
-        name_pattern = string.rep('[#~%w%._%->!]*', 4, '%s*'),
+        name_pattern = string.rep('[#~%*%w%._%->!]*', 4, '%s*'),
         -- The order matters! The first match is used as the type
         -- of the treesitter symbol and used to show the icon
         -- Types listed below must have corresponding icons
@@ -988,7 +988,7 @@ each sources.
 - `opts.sources.treesitter.name_pattern`: `string`
   - Lua pattern used to extract a short name from the node text
   - Be aware! The matching result must not be nil
-  - Default: `string.rep('[#~%w%._%->!]*', 4, '%s*')`
+  - Default: `string.rep('[#~%*%w%._%->!]*', 4, '%s*')`
 - `opts.sources.treesitter.valid_types:` `string[]`
   - A list of treesitter node types to include in the results
   - Default:
