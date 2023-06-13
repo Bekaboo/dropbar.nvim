@@ -110,6 +110,8 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
 - [ ] Support visual mode selection to select/delete multiple symbols
 
+- [ ] Add scrollbar to the menu when the symbol list is too long
+
 ## Requirements
 
 - Neovim **Nightly** (>= 0.10.0-dev)

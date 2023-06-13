@@ -79,6 +79,7 @@ TODO
 - Add more actions other than `jump` and `preview`, e.g. `rename`,
   `delete`, `select`, etc.
 - Support visual mode selection to select/delete multiple symbols
+- Add scrollbar to the menu when the symbol list is too long
 
 ==============================================================================
 REQUIREMENTS                                            *dropbar-requirements*
