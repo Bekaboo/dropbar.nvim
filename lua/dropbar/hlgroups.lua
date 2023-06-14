@@ -17,7 +17,7 @@ local hlgroups = {
   DropBarIconKindEnumMember        = { link = 'CmpItemKindEnumMember' },
   DropBarIconKindEvent             = { link = 'CmpItemKindEvent' },
   DropBarIconKindField             = { link = 'CmpItemKindField' },
-  DropBarIconKindFile              = { link = 'NormalFloat' },
+  DropBarIconKindFile              = { link = 'Directory' },
   DropBarIconKindFolder            = { link = 'Directory' },
   DropBarIconKindForStatement      = { link = 'Repeat' },
   DropBarIconKindFunction          = { link = 'Function' },

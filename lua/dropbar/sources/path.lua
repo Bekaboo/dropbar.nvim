@@ -6,9 +6,15 @@ local bar = require('dropbar.bar')
 ---@return string icon
 ---@return string? icon_hl
 local function get_icon(path)
-  local icon = configs.opts.icons.kinds.symbols.Folder
-  local icon_hl = 'DropBarIconKindFolder'
+  local icon = configs.opts.icons.kinds.symbols.File
+  local icon_hl = 'DropBarIconKindFile'
   local stat = vim.loop.fs_stat(path)
+  if not stat then
+    return icon, icon_hl
+  elseif stat.type == 'directory' then
+    icon = configs.opts.icons.kinds.symbols.Folder
+    icon_hl = 'DropBarIconKindFolder'
+  end
   if configs.opts.icons.kinds.use_devicons then
     local devicons_ok, devicons = pcall(require, 'nvim-web-devicons')
     if devicons_ok and stat and stat.type ~= 'directory' then
