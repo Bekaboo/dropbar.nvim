@@ -405,18 +405,21 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
             return
           end
           local mouse = vim.fn.getmousepos()
-          if mouse.winid ~= menu.win then
+          -- If mouse is not in the menu window or on the border, end preview
+          -- and clear hover highlights
+          if mouse.winid ~= menu.win or mouse.line <= 0 or mouse.column <= 0 then
             -- Find the root menu
             while menu and menu.prev_menu do
               menu = menu.prev_menu
             end
             if menu then
               menu:finish_preview(true)
+              menu:update_hover_hl()
             end
             return
           end
           if M.opts.menu.preview then
-            menu:preview_symbol_at({ mouse.line, mouse.column - 1 })
+            menu:preview_symbol_at({ mouse.line, mouse.column - 1 }, true)
           end
           menu:update_hover_hl({ mouse.line, mouse.column - 1 })
         end,
@@ -862,18 +865,21 @@ menu:
           return
         end
         local mouse = vim.fn.getmousepos()
-        if mouse.winid ~= menu.win then
+        -- If mouse is not in the menu window or on the border, end preview
+        -- and clear hover highlights
+        if mouse.winid ~= menu.win or mouse.line <= 0 or mouse.column <= 0 then
           -- Find the root menu
           while menu and menu.prev_menu do
             menu = menu.prev_menu
           end
           if menu then
             menu:finish_preview(true)
+            menu:update_hover_hl()
           end
           return
         end
         if M.opts.menu.preview then
-          menu:preview_symbol_at({ mouse.line, mouse.column - 1 })
+          menu:preview_symbol_at({ mouse.line, mouse.column - 1 }, true)
         end
         menu:update_hover_hl({ mouse.line, mouse.column - 1 })
       end,
