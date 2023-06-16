@@ -1,5 +1,24 @@
 # Changelog
 
+## [3.1.0](https://github.com/Bekaboo/dropbar.nvim/compare/v3.0.0...v3.1.0) (2023-06-16)
+
+
+### Features
+
+* **config:** add option to reorient the source window after jump ([4df9092](https://github.com/Bekaboo/dropbar.nvim/commit/4df90921aebf9d51e5772db4901056f61029a0f4))
+* **config:** include '*' in treesitter default name pattern ([a620873](https://github.com/Bekaboo/dropbar.nvim/commit/a620873beb6e581dd83b4d55671710f99ce91a1b))
+
+
+### Bug Fixes
+
+* **menu:** detect if mouse is at the border of the menu window, fix [#39](https://github.com/Bekaboo/dropbar.nvim/issues/39) ([0ba1af6](https://github.com/Bekaboo/dropbar.nvim/commit/0ba1af67c5f93b80e91b03b8eff1b908d66a70f0))
+* **sources:** path: should use file icons for symbols of type 'file' ([190dcc1](https://github.com/Bekaboo/dropbar.nvim/commit/190dcc1c47e8ddb0deea583af58f983423dc8e1b))
+
+
+### Performance Improvements
+
+* **bar:** avoid unnecessary redraw, also fix [#38](https://github.com/Bekaboo/dropbar.nvim/issues/38) ([0ccb5d7](https://github.com/Bekaboo/dropbar.nvim/commit/0ccb5d743c7c6349c50e397504bfb2a331e590d2))
+
 ## [3.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v2.1.1...v3.0.0) (2023-06-10)
 
 
