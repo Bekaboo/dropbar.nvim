@@ -431,7 +431,7 @@ function dropbar_t:update()
     return
   end
   if vim.fn.reg_executing() ~= '' or self.in_pick_mode then
-    return self.string_cache
+    return
   end
 
   local cursor = vim.api.nvim_win_get_cursor(self.win)
