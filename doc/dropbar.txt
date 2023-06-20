@@ -1549,7 +1549,14 @@ dropbar_menu_t:add_hl({hl_info})                     *dropbar_menu_t:add_hl()*
 dropbar_menu_t:make_buf()                          *dropbar_menu_t:make_buf()*
 
  	Create the menu buffer from the entries
-	|dropbar-developers-classes-dropbar_menu_entry_t|
+	|dropbar-developers-classes-dropbar_menu_entry_t|, must be called
+	after |dropbar_menu_t:eval_win_configs()|.
+
+dropbar_menu_t:open_win()                          *dropbar_menu_t:open_win()*
+
+	Open the menu window with window configuration
+	|dropbar_menu_t._win_configs| and set relevant window options,
+	must be called after |dropbar_menu_t:make_buf()|.
 
 dropbar_menu_t:override([{opts}])                  *dropbar_menu_t:override()*
 
