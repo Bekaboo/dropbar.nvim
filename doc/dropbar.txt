@@ -817,7 +817,7 @@ Highlight groups ~
   DropBarMenuHoverSymbol             `{ bold = true }`
   DropBarMenuNormalFloat             `{ link = 'NormalFloat' }`
   DropBarPreview                     `{ link = 'Visual' }`
-  DropbarMenuFloatBorder             `{ link = 'FloatBorder' }`
+  DropBarMenuFloatBorder             `{ link = 'FloatBorder' }`
   DropBarKindArray                   undefined
   DropBarKindBoolean                 undefined
   DropBarKindBreakStatement          undefined
