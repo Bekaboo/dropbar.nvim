@@ -61,9 +61,11 @@ local hlgroups = {
   DropBarIconUISeparator           = { link = 'SpecialChar' },
   DropBarIconUISeparatorMenu       = { link = 'DropBarIconUISeparator' },
   DropBarMenuCurrentContext        = { link = 'PmenuSel' },
+  DropBarMenuFloatBorder           = { link = 'FloatBorder' },
   DropBarMenuHoverEntry            = { link = 'Visual' },
   DropBarMenuHoverIcon             = { reverse = true },
   DropBarMenuHoverSymbol           = { bold = true },
+  DropBarMenuNormalFloat           = { link = 'NormalFloat' },
   DropBarPreview                   = { link = 'Visual' },
 }
 -- stylua: ignore end

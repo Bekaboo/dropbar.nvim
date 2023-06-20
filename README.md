@@ -1106,130 +1106,131 @@ should be self-explanatory:
 <details>
   <summary>Highlight groups</summary>
 
-  | Highlight group                  | Attributes                                       |
-  |----------------------------------|--------------------------------------------------|
-  | DropBarIconKindArray             | `{ link = 'Array' }`                             |
-  | DropBarIconKindBoolean           | `{ link = 'Boolean' }`                           |
-  | DropBarIconKindBreakStatement    | `{ link = 'Error' }`                             |
-  | DropBarIconKindCall              | `{ link = 'Function' }`                          |
-  | DropBarIconKindCaseStatement     | `{ link = 'Conditional' }`                       |
-  | DropBarIconKindClass             | `{ link = 'CmpItemKindClass' }`                  |
-  | DropBarIconKindConstant          | `{ link = 'Constant' }`                          |
-  | DropBarIconKindConstructor       | `{ link = 'CmpItemKindConstructor' }`            |
-  | DropBarIconKindContinueStatement | `{ link = 'Repeat' }`                            |
-  | DropBarIconKindDeclaration       | `{ link = 'CmpItemKindSnippet' }`                |
-  | DropBarIconKindDelete            | `{ link = 'Error' }`                             |
-  | DropBarIconKindDoStatement       | `{ link = 'Repeat' }`                            |
-  | DropBarIconKindElseStatement     | `{ link = 'Conditional' }`                       |
-  | DropBarIconKindEnum              | `{ link = 'CmpItemKindEnum' }`                   |
-  | DropBarIconKindEnumMember        | `{ link = 'CmpItemKindEnumMember' }`             |
-  | DropBarIconKindEvent             | `{ link = 'CmpItemKindEvent' }`                  |
-  | DropBarIconKindField             | `{ link = 'CmpItemKindField' }`                  |
-  | DropBarIconKindFile              | `{ link = 'NormalFloat' }`                       |
-  | DropBarIconKindFolder            | `{ link = 'Directory' }`                         |
-  | DropBarIconKindForStatement      | `{ link = 'Repeat' }`                            |
-  | DropBarIconKindFunction          | `{ link = 'Function' }`                          |
-  | DropBarIconKindIdentifier        | `{ link = 'CmpItemKindVariable' }`               |
-  | DropBarIconKindIfStatement       | `{ link = 'Conditional' }`                       |
-  | DropBarIconKindInterface         | `{ link = 'CmpItemKindInterface' }`              |
-  | DropBarIconKindKeyword           | `{ link = 'Keyword' }`                           |
-  | DropBarIconKindList              | `{ link = 'SpecialChar' }`                       |
-  | DropBarIconKindMacro             | `{ link = 'Macro' }`                             |
-  | DropBarIconKindMarkdownH1        | `{ link = 'markdownH1' }`                        |
-  | DropBarIconKindMarkdownH2        | `{ link = 'markdownH2' }`                        |
-  | DropBarIconKindMarkdownH3        | `{ link = 'markdownH3' }`                        |
-  | DropBarIconKindMarkdownH4        | `{ link = 'markdownH4' }`                        |
-  | DropBarIconKindMarkdownH5        | `{ link = 'markdownH5' }`                        |
-  | DropBarIconKindMarkdownH6        | `{ link = 'markdownH6' }`                        |
-  | DropBarIconKindMethod            | `{ link = 'CmpItemKindMethod' }`                 |
-  | DropBarIconKindModule            | `{ link = 'CmpItemKindModule' }`                 |
-  | DropBarIconKindNamespace         | `{ link = 'NameSpace' }`                         |
-  | DropBarIconKindNull              | `{ link = 'Constant' }`                          |
-  | DropBarIconKindNumber            | `{ link = 'Number' }`                            |
-  | DropBarIconKindObject            | `{ link = 'Statement' }`                         |
-  | DropBarIconKindOperator          | `{ link = 'Operator' }`                          |
-  | DropBarIconKindPackage           | `{ link = 'CmpItemKindModule' }`                 |
-  | DropBarIconKindProperty          | `{ link = 'CmpItemKindProperty' }`               |
-  | DropBarIconKindReference         | `{ link = 'CmpItemKindReference' }`              |
-  | DropBarIconKindRepeat            | `{ link = 'Repeat' }`                            |
-  | DropBarIconKindScope             | `{ link = 'NameSpace' }`                         |
-  | DropBarIconKindSpecifier         | `{ link = 'Specifier' }`                         |
-  | DropBarIconKindStatement         | `{ link = 'Statement' }`                         |
-  | DropBarIconKindString            | `{ link = 'String' }`                            |
-  | DropBarIconKindStruct            | `{ link = 'CmpItemKindStruct' }`                 |
-  | DropBarIconKindSwitchStatement   | `{ link = 'Conditional' }`                       |
-  | DropBarIconKindType              | `{ link = 'CmpItemKindClass' }`                  |
-  | DropBarIconKindTypeParameter     | `{ link = 'CmpItemKindTypeParameter' }`          |
-  | DropBarIconKindUnit              | `{ link = 'CmpItemKindUnit' }`                   |
-  | DropBarIconKindValue             | `{ link = 'Number' }`                            |
-  | DropBarIconKindVariable          | `{ link = 'CmpItemKindVariable' }`               |
-  | DropBarIconKindWhileStatement    | `{ link = 'Repeat' }`                            |
-  | DropBarIconUIIndicator           | `{ link = 'SpecialChar' }`                       |
-  | DropBarIconUIPickPivot           | `{ link = 'Error' }`                             |
-  | DropBarIconUISeparator           | `{ link = 'SpecialChar' }`                       |
-  | DropBarIconUISeparatorMenu       | `{ link = 'DropBarIconUISeparator' }`            |
-  | DropBarMenuCurrentContext        | `{ link = 'PmenuSel' }`                          |
-  | DropBarMenuNormalFloat           | `{ link = 'WinBar' }`                            |
-  | DropBarMenuHoverEntry            | `{ link = 'Visual' }`                            |
-  | DropBarMenuHoverIcon             | `{ reverse = true }`                             |
-  | DropBarMenuHoverSymbol           | `{ bold = true }`                                |
-  | DropBarPreview                   | `{ link = 'Visual' }`                            |
-  | DropBarKindArray                 | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindBoolean               | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindBreakStatement        | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindCall                  | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindCaseStatement         | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindClass                 | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindConstant              | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindConstructor           | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindContinueStatement     | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindDeclaration           | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindDelete                | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindDoStatement           | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindElseStatement         | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindEnum                  | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindEnumMember            | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindEvent                 | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindField                 | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindFile                  | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindFolder                | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindForStatement          | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindFunction              | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindIdentifier            | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindIfStatement           | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindInterface             | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindKeyword               | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindList                  | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindMacro                 | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindMarkdownH1            | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindMarkdownH2            | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindMarkdownH3            | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindMarkdownH4            | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindMarkdownH5            | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindMarkdownH6            | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindMethod                | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindModule                | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindNamespace             | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindNull                  | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindNumber                | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindObject                | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindOperator              | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindPackage               | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindProperty              | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindReference             | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindRepeat                | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindScope                 | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindSpecifier             | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindStatement             | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindString                | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindStruct                | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindSwitchStatement       | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindType                  | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindTypeParameter         | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindUnit                  | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindValue                 | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindVariable              | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
-  | DropBarKindWhileStatement        | undefined, follows `hl-WinBar` and `hl-WinBarNC` |
+  | Highlight group                  | Attributes                              |
+  |----------------------------------|-----------------------------------------|
+  | DropBarIconKindArray             | `{ link = 'Array' }`                    |
+  | DropBarIconKindBoolean           | `{ link = 'Boolean' }`                  |
+  | DropBarIconKindBreakStatement    | `{ link = 'Error' }`                    |
+  | DropBarIconKindCall              | `{ link = 'Function' }`                 |
+  | DropBarIconKindCaseStatement     | `{ link = 'Conditional' }`              |
+  | DropBarIconKindClass             | `{ link = 'CmpItemKindClass' }`         |
+  | DropBarIconKindConstant          | `{ link = 'Constant' }`                 |
+  | DropBarIconKindConstructor       | `{ link = 'CmpItemKindConstructor' }`   |
+  | DropBarIconKindContinueStatement | `{ link = 'Repeat' }`                   |
+  | DropBarIconKindDeclaration       | `{ link = 'CmpItemKindSnippet' }`       |
+  | DropBarIconKindDelete            | `{ link = 'Error' }`                    |
+  | DropBarIconKindDoStatement       | `{ link = 'Repeat' }`                   |
+  | DropBarIconKindElseStatement     | `{ link = 'Conditional' }`              |
+  | DropBarIconKindEnum              | `{ link = 'CmpItemKindEnum' }`          |
+  | DropBarIconKindEnumMember        | `{ link = 'CmpItemKindEnumMember' }`    |
+  | DropBarIconKindEvent             | `{ link = 'CmpItemKindEvent' }`         |
+  | DropBarIconKindField             | `{ link = 'CmpItemKindField' }`         |
+  | DropBarIconKindFile              | `{ link = 'NormalFloat' }`              |
+  | DropBarIconKindFolder            | `{ link = 'Directory' }`                |
+  | DropBarIconKindForStatement      | `{ link = 'Repeat' }`                   |
+  | DropBarIconKindFunction          | `{ link = 'Function' }`                 |
+  | DropBarIconKindIdentifier        | `{ link = 'CmpItemKindVariable' }`      |
+  | DropBarIconKindIfStatement       | `{ link = 'Conditional' }`              |
+  | DropBarIconKindInterface         | `{ link = 'CmpItemKindInterface' }`     |
+  | DropBarIconKindKeyword           | `{ link = 'Keyword' }`                  |
+  | DropBarIconKindList              | `{ link = 'SpecialChar' }`              |
+  | DropBarIconKindMacro             | `{ link = 'Macro' }`                    |
+  | DropBarIconKindMarkdownH1        | `{ link = 'markdownH1' }`               |
+  | DropBarIconKindMarkdownH2        | `{ link = 'markdownH2' }`               |
+  | DropBarIconKindMarkdownH3        | `{ link = 'markdownH3' }`               |
+  | DropBarIconKindMarkdownH4        | `{ link = 'markdownH4' }`               |
+  | DropBarIconKindMarkdownH5        | `{ link = 'markdownH5' }`               |
+  | DropBarIconKindMarkdownH6        | `{ link = 'markdownH6' }`               |
+  | DropBarIconKindMethod            | `{ link = 'CmpItemKindMethod' }`        |
+  | DropBarIconKindModule            | `{ link = 'CmpItemKindModule' }`        |
+  | DropBarIconKindNamespace         | `{ link = 'NameSpace' }`                |
+  | DropBarIconKindNull              | `{ link = 'Constant' }`                 |
+  | DropBarIconKindNumber            | `{ link = 'Number' }`                   |
+  | DropBarIconKindObject            | `{ link = 'Statement' }`                |
+  | DropBarIconKindOperator          | `{ link = 'Operator' }`                 |
+  | DropBarIconKindPackage           | `{ link = 'CmpItemKindModule' }`        |
+  | DropBarIconKindProperty          | `{ link = 'CmpItemKindProperty' }`      |
+  | DropBarIconKindReference         | `{ link = 'CmpItemKindReference' }`     |
+  | DropBarIconKindRepeat            | `{ link = 'Repeat' }`                   |
+  | DropBarIconKindScope             | `{ link = 'NameSpace' }`                |
+  | DropBarIconKindSpecifier         | `{ link = 'Specifier' }`                |
+  | DropBarIconKindStatement         | `{ link = 'Statement' }`                |
+  | DropBarIconKindString            | `{ link = 'String' }`                   |
+  | DropBarIconKindStruct            | `{ link = 'CmpItemKindStruct' }`        |
+  | DropBarIconKindSwitchStatement   | `{ link = 'Conditional' }`              |
+  | DropBarIconKindType              | `{ link = 'CmpItemKindClass' }`         |
+  | DropBarIconKindTypeParameter     | `{ link = 'CmpItemKindTypeParameter' }` |
+  | DropBarIconKindUnit              | `{ link = 'CmpItemKindUnit' }`          |
+  | DropBarIconKindValue             | `{ link = 'Number' }`                   |
+  | DropBarIconKindVariable          | `{ link = 'CmpItemKindVariable' }`      |
+  | DropBarIconKindWhileStatement    | `{ link = 'Repeat' }`                   |
+  | DropBarIconUIIndicator           | `{ link = 'SpecialChar' }`              |
+  | DropBarIconUIPickPivot           | `{ link = 'Error' }`                    |
+  | DropBarIconUISeparator           | `{ link = 'SpecialChar' }`              |
+  | DropBarIconUISeparatorMenu       | `{ link = 'DropBarIconUISeparator' }`   |
+  | DropBarMenuCurrentContext        | `{ link = 'PmenuSel' }`                 |
+  | DropBarMenuFloatBorder           | `{ link = 'FloatBorder' }`              |
+  | DropBarMenuHoverEntry            | `{ link = 'Visual' }`                   |
+  | DropBarMenuHoverIcon             | `{ reverse = true }`                    |
+  | DropBarMenuHoverSymbol           | `{ bold = true }`                       |
+  | DropBarMenuNormalFloat           | `{ link = 'NormalFloat' }`              |
+  | DropBarPreview                   | `{ link = 'Visual' }`                   |
+  | DropBarKindArray                 | undefined                               |
+  | DropBarKindBoolean               | undefined                               |
+  | DropBarKindBreakStatement        | undefined                               |
+  | DropBarKindCall                  | undefined                               |
+  | DropBarKindCaseStatement         | undefined                               |
+  | DropBarKindClass                 | undefined                               |
+  | DropBarKindConstant              | undefined                               |
+  | DropBarKindConstructor           | undefined                               |
+  | DropBarKindContinueStatement     | undefined                               |
+  | DropBarKindDeclaration           | undefined                               |
+  | DropBarKindDelete                | undefined                               |
+  | DropBarKindDoStatement           | undefined                               |
+  | DropBarKindElseStatement         | undefined                               |
+  | DropBarKindEnum                  | undefined                               |
+  | DropBarKindEnumMember            | undefined                               |
+  | DropBarKindEvent                 | undefined                               |
+  | DropBarKindField                 | undefined                               |
+  | DropBarKindFile                  | undefined                               |
+  | DropBarKindFolder                | undefined                               |
+  | DropBarKindForStatement          | undefined                               |
+  | DropBarKindFunction              | undefined                               |
+  | DropBarKindIdentifier            | undefined                               |
+  | DropBarKindIfStatement           | undefined                               |
+  | DropBarKindInterface             | undefined                               |
+  | DropBarKindKeyword               | undefined                               |
+  | DropBarKindList                  | undefined                               |
+  | DropBarKindMacro                 | undefined                               |
+  | DropBarKindMarkdownH1            | undefined                               |
+  | DropBarKindMarkdownH2            | undefined                               |
+  | DropBarKindMarkdownH3            | undefined                               |
+  | DropBarKindMarkdownH4            | undefined                               |
+  | DropBarKindMarkdownH5            | undefined                               |
+  | DropBarKindMarkdownH6            | undefined                               |
+  | DropBarKindMethod                | undefined                               |
+  | DropBarKindModule                | undefined                               |
+  | DropBarKindNamespace             | undefined                               |
+  | DropBarKindNull                  | undefined                               |
+  | DropBarKindNumber                | undefined                               |
+  | DropBarKindObject                | undefined                               |
+  | DropBarKindOperator              | undefined                               |
+  | DropBarKindPackage               | undefined                               |
+  | DropBarKindProperty              | undefined                               |
+  | DropBarKindReference             | undefined                               |
+  | DropBarKindRepeat                | undefined                               |
+  | DropBarKindScope                 | undefined                               |
+  | DropBarKindSpecifier             | undefined                               |
+  | DropBarKindStatement             | undefined                               |
+  | DropBarKindString                | undefined                               |
+  | DropBarKindStruct                | undefined                               |
+  | DropBarKindSwitchStatement       | undefined                               |
+  | DropBarKindType                  | undefined                               |
+  | DropBarKindTypeParameter         | undefined                               |
+  | DropBarKindUnit                  | undefined                               |
+  | DropBarKindValue                 | undefined                               |
+  | DropBarKindVariable              | undefined                               |
+  | DropBarKindWhileStatement        | undefined                               |
 
 </details>
 
