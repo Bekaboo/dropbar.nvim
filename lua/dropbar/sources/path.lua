@@ -37,10 +37,20 @@ end
 ---@return dropbar_symbol_t
 local function convert(path, buf, win)
   local icon, icon_hl = get_icon(path)
+  local name = vim.fs.basename(path)
+  if name == '' then
+    -- We had a separator at the end of the path (because directory?).
+    name = vim.fs.dirname(path)
+    assert(string.sub(name, #name, #name) == '/', '`dirname` had no `/` at the end')
+    if #name > 1 then
+      -- We're on a platform like Windows that has more to a root name than just `/`, trim the `/`.
+      name = string.sub(name, 1, #name - 1)
+    end
+  end
   return bar.dropbar_symbol_t:new(setmetatable({
     buf = buf,
     win = win,
-    name = vim.fs.basename(path),
+    name = name,
     icon = icon,
     name_hl = 'DropBarKindFolder',
     icon_hl = icon_hl,
