@@ -94,11 +94,18 @@ local function get_symbols(buf, win, _)
   local relative_to_path = vim.fs.normalize(
     configs.eval(configs.opts.sources.path.relative_to, buf)
   )
-  while
-    current_path ~= '.'
-    and current_path ~= '/'
-    and current_path ~= relative_to_path
-  do
+
+  local paths_up = function(path)
+    -- append a segment that will get immediately thrown away by `parents`
+    local dotted_path = path .. '/.'
+    return vim.iter(vim.fs.parents(dotted_path))
+  end
+
+  local current_paths_up = paths_up(current_path)
+  for up_path in current_paths_up do
+    if up_path == relative_to_path then
+      break
+    end
     table.insert(symbols, 1, convert(current_path, buf, win))
     current_path = vim.fs.dirname(current_path)
   end
