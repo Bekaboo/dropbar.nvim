@@ -422,7 +422,7 @@ function dropbar_t:redraw()
 end
 
 ---Update dropbar components from sources and redraw dropbar, supposed to be
----called at CursorMoved, CurosrMovedI, TextChanged, and TextChangedI
+---called at CursorMoved, CursorMovedI, TextChanged, and TextChangedI
 ---Not updating when executing a macro
 ---@return nil
 function dropbar_t:update()
