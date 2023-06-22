@@ -80,6 +80,7 @@ TODO
   `delete`, `select`, etc.
 - Support visual mode selection to select/delete multiple symbols
 - Add scrollbar to the menu when the symbol list is too long
+- Ability to hide/show the winbar on each window separately
 
 ==============================================================================
 REQUIREMENTS                                            *dropbar-requirements*

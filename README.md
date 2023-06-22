@@ -112,6 +112,8 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
 - [ ] Add scrollbar to the menu when the symbol list is too long
 
+- [ ] Ability to hide/show the winbar on each window separately
+
 ## Requirements
 
 - Neovim **Nightly** (>= 0.10.0-dev)
