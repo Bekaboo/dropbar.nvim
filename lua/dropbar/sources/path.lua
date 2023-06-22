@@ -91,13 +91,13 @@ local function get_symbols(buf, win, _)
   local current_path = vim.fs.normalize(
     vim.fn.fnamemodify((vim.api.nvim_buf_get_name(buf)), ':p')
   )
+  local relative_to_path = vim.fs.normalize(
+    configs.eval(configs.opts.sources.path.relative_to, buf)
+  )
   while
     current_path ~= '.'
     and current_path ~= '/'
-    and current_path
-      ~= vim.fs.normalize(
-        configs.eval(configs.opts.sources.path.relative_to, buf)
-      )
+    and current_path ~= relative_to_path
   do
     table.insert(symbols, 1, convert(current_path, buf, win))
     current_path = vim.fs.dirname(current_path)
