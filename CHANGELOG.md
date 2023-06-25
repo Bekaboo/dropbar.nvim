@@ -1,5 +1,22 @@
 # Changelog
 
+## [3.2.0](https://github.com/Bekaboo/dropbar.nvim/compare/v3.1.0...v3.2.0) (2023-06-25)
+
+
+### Features
+
+* **highlights:** add hl-DropBarMenu[NormalFloat,FloatBorder] ([#16](https://github.com/Bekaboo/dropbar.nvim/issues/16)) ([54ab3ee](https://github.com/Bekaboo/dropbar.nvim/commit/54ab3ee9134e6787dd7d3ff190c279392600ad1f))
+
+
+### Bug Fixes
+
+* **highlights:** fix hl-DropbarMenuFloatBorder and hl-DropBarMenuNormalFloat mappings ([15f32c0](https://github.com/Bekaboo/dropbar.nvim/commit/15f32c0b1c646b5608b52440599577799ce20425))
+
+
+### Performance Improvements
+
+* provide option to prevent frequent update while scrolling ([9d39fb4](https://github.com/Bekaboo/dropbar.nvim/commit/9d39fb49fb49e85a6d2dd068863e1c16ed35eccb))
+
 ## [3.1.0](https://github.com/Bekaboo/dropbar.nvim/compare/v3.0.0...v3.1.0) (2023-06-16)
 
 
