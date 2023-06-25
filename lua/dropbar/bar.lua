@@ -430,7 +430,12 @@ function dropbar_t:update()
   local request_time = vim.uv.hrtime() / 1e6
   self.last_update_request_time = request_time
   vim.defer_fn(function()
-    if not self.win or not vim.api.nvim_win_is_valid(self.win) then
+    if
+      not self.win
+      or not self.buf
+      or not vim.api.nvim_win_is_valid(self.win)
+      or not vim.api.nvim_buf_is_valid(self.buf)
+    then
       self:del()
       return
     end
