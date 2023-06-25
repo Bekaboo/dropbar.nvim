@@ -193,6 +193,14 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           and vim.api.nvim_buf_get_name(buf) ~= ''
           and not vim.wo[win].diff
       end,
+      -- Wait for a short time before updating the winbar, if another update
+      -- request is received within this time, the previous request will be
+      -- cancelled, this improves the performance when the user is holding
+      -- down a key (e.g. 'j') to scroll the window, default to 0 ms
+      -- If you encounter performance issues when scrolling the window, try
+      -- setting this option to a number slightly larger than
+      -- 1000 / key_repeat_rate
+      update_interval = 0,
       update_events = {
         win = {
           'CursorMoved',
@@ -586,6 +594,15 @@ general behavior of the plugin:
       and not vim.wo[win].diff
     end
     ```
+- `opts.general.update_interval`: `number`
+  - Wait for a short time before updating the winbar, if another update
+    request is received within this time, the previous request will be
+    cancelled, this improves the performance when the user is holding
+    down a key (e.g. `'j'`) to scroll the window
+  - If you encounter performance issues when scrolling the window, try
+    setting this option to a number slightly larger than
+    `1000 / key_repeat_rate`
+  - Default: `0`
 - `opts.general.update_events.win`: `string[]`
   - List of events that should trigger an update on the dropbar attached to
     a single window

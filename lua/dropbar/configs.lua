@@ -10,6 +10,14 @@ M.opts = {
         and vim.api.nvim_buf_get_name(buf) ~= ''
         and not vim.wo[win].diff
     end,
+    -- Wait for a short time before updating the winbar, if another update
+    -- request is received within this time, the previous request will be
+    -- cancelled, this improves the performance when the user is holding
+    -- down a key (e.g. 'j') to scroll the window, default to 0 ms
+    -- If you encounter performance issues when scrolling the window, try
+    -- setting this option to a number slightly larger than
+    -- 1000 / key_repeat_rate
+    update_interval = 0,
     update_events = {
       win = {
         'CursorMoved',

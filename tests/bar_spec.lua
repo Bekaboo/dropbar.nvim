@@ -65,7 +65,7 @@ describe('[bar]', function()
   before_each(function()
     winbar =
       _G.dropbar.bars[vim.api.nvim_get_current_buf()][vim.api.nvim_get_current_win()]
-    winbar:update()
+    vim.wait(10, winbar:update())
   end)
   after_each(function()
     winbar:del()

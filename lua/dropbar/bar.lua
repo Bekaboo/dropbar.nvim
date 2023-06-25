@@ -426,45 +426,63 @@ end
 ---Not updating when executing a macro
 ---@return nil
 function dropbar_t:update()
-  if not self.win or not vim.api.nvim_win_is_valid(self.win) then
-    self:del()
-    return
-  end
-  if vim.fn.reg_executing() ~= '' or self.in_pick_mode then
-    return
-  end
-
-  local cursor = vim.api.nvim_win_get_cursor(self.win)
-  for _, component in ipairs(self.components) do
-    component:del()
-  end
-  self.components = {}
-  _G.dropbar.on_click_callbacks['buf' .. self.buf]['win' .. self.win] = {}
-  for _, source in ipairs(self.sources) do
-    local symbols = source.get_symbols(self.buf, self.win, cursor)
-    for _, symbol in ipairs(symbols) do
-      symbol.bar_idx = #self.components + 1
-      symbol.bar = self
-      table.insert(self.components, symbol)
-      -- Register on_click callback for each symbol
-      if symbol.on_click then
-        ---@param min_width integer 0 if no N specified
-        ---@param n_clicks integer number of clicks
-        ---@param button string mouse button used
-        ---@param modifiers string modifiers used
-        ---@return nil
-        _G.dropbar.on_click_callbacks['buf' .. self.buf]['win' .. self.win]['fn' .. symbol.bar_idx] = function(
-          min_width,
-          n_clicks,
-          button,
-          modifiers
-        )
-          symbol:on_click(min_width, n_clicks, button, modifiers)
+  local request_time = vim.uv.hrtime() / 1e6
+  self.last_update_request_time = request_time
+  vim.defer_fn(function()
+    if not self.win or not vim.api.nvim_win_is_valid(self.win) then
+      self:del()
+      return
+    end
+    if
+      -- Cancel current update if another update request is sent within
+      -- the update interval
+      (
+        self.last_update_request_time
+        -- Compare the last update request time and time when the current
+        -- update request was made to make sure that there is a new update
+        -- request after the current one if we are going to cancel the current
+        -- one
+        and self.last_update_request_time > request_time
+        and vim.uv.hrtime() / 1e6 - self.last_update_request_time
+          < configs.opts.general.update_interval
+      )
+      or vim.fn.reg_executing() ~= ''
+      or self.in_pick_mode
+    then
+      return
+    end
+    local cursor = vim.api.nvim_win_get_cursor(self.win)
+    for _, component in ipairs(self.components) do
+      component:del()
+    end
+    self.components = {}
+    _G.dropbar.on_click_callbacks['buf' .. self.buf]['win' .. self.win] = {}
+    for _, source in ipairs(self.sources) do
+      local symbols = source.get_symbols(self.buf, self.win, cursor)
+      for _, symbol in ipairs(symbols) do
+        symbol.bar_idx = #self.components + 1
+        symbol.bar = self
+        table.insert(self.components, symbol)
+        -- Register on_click callback for each symbol
+        if symbol.on_click then
+          ---@param min_width integer 0 if no N specified
+          ---@param n_clicks integer number of clicks
+          ---@param button string mouse button used
+          ---@param modifiers string modifiers used
+          ---@return nil
+          _G.dropbar.on_click_callbacks['buf' .. self.buf]['win' .. self.win]['fn' .. symbol.bar_idx] = function(
+            min_width,
+            n_clicks,
+            button,
+            modifiers
+          )
+            symbol:on_click(min_width, n_clicks, button, modifiers)
+          end
         end
       end
     end
-  end
-  self:redraw()
+    self:redraw()
+  end, configs.opts.general.update_interval)
 end
 
 ---Execute a function in pick mode
