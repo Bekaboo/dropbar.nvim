@@ -1327,17 +1327,18 @@ which function to call when a symbol is clicked.
 
 `dropbar_t` has the following fields:
 
-| Field          | Type                                      | Description                                                                                     |
-| -------------- | ---------------------------------         | ---------------------------------------------------------------------------------------------   |
-| `buf`          | `integer`                                 | the buffer the dropbar is attached to                                                           |
-| `win`          | `integer`                                 | the window the dropbar is attached to                                                           |
-| `sources`      | [`dropbar_source_t[]`](#dropbar_source_t) | sources<sub>[`dropbar_source_t[]`](#dropbar_source_t)</sub> that provide symbols to the dropbar |
-| `separator`    | [`dropbar_symbol_t`](#dropbar_symbol_t)   | separator<sub>[`dropbar_symbol_t`](#dropbar_symbol_t)</sub> between symbols                     |
-| `padding`      | `{left: integer, right: integer}`         | padding to use between the winbar and the window border                                         |
-| `extends`      | [`dropbar_symbol_t`](#dropbar_symbol_t)   | symbol<sub>[`dropbar_symbol_t`](#dropbar_symbol_t)</sub> to use when a symbol is truncated      |
-| `components`   | [`dropbar_symbol_t[]`](#dropbar_symbol_t) | symbols<sub>[`dropbar_symbol_t[]`](#dropbar_symbol_t)</sub> to render                           |
-| `string_cache` | `string`                                  | string cache of the dropbar                                                                     |
-| `in_pick_mode` | `boolean?`                                | whether the dropbar is in pick mode                                                             |
+| Field                      | Type                                      | Description                                                                                     |
+| --------------             | ---------------------------------         | ---------------------------------------------------------------------------------------------   |
+| `buf`                      | `integer`                                 | the buffer the dropbar is attached to                                                           |
+| `win`                      | `integer`                                 | the window the dropbar is attached to                                                           |
+| `sources`                  | [`dropbar_source_t[]`](#dropbar_source_t) | sources<sub>[`dropbar_source_t[]`](#dropbar_source_t)</sub> that provide symbols to the dropbar |
+| `separator`                | [`dropbar_symbol_t`](#dropbar_symbol_t)   | separator<sub>[`dropbar_symbol_t`](#dropbar_symbol_t)</sub> between symbols                     |
+| `padding`                  | `{left: integer, right: integer}`         | padding to use between the winbar and the window border                                         |
+| `extends`                  | [`dropbar_symbol_t`](#dropbar_symbol_t)   | symbol<sub>[`dropbar_symbol_t`](#dropbar_symbol_t)</sub> to use when a symbol is truncated      |
+| `components`               | [`dropbar_symbol_t[]`](#dropbar_symbol_t) | symbols<sub>[`dropbar_symbol_t[]`](#dropbar_symbol_t)</sub> to render                           |
+| `string_cache`             | `string`                                  | string cache of the dropbar                                                                     |
+| `in_pick_mode`             | `boolean?`                                | whether the dropbar is in pick mode                                                             |
+| `last_update_request_time` | `float?`                                  | timestamp of the last update request in ms, see `:h uv.hrtime()`                                |
 
 
 `dropbar_t` has the following methods:

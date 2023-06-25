@@ -317,6 +317,7 @@ end
 ---@field components dropbar_symbol_t[]
 ---@field string_cache string
 ---@field in_pick_mode boolean?
+---@field last_update_request_time float? timestamp of the last update request in ms, see :h uv.hrtime()
 local dropbar_t = {}
 dropbar_t.__index = dropbar_t
 
