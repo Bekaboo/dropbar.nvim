@@ -289,10 +289,8 @@ function dropbar_menu_t:click_on(
     col = col + component:bytewidth() + symbol.entry.separator:bytewidth()
   end
   self.clicked_at = { row, col }
-  if symbol then
-    if symbol.on_click then
-      symbol:on_click(min_width, n_clicks, button, modifiers)
-    end
+  if symbol and symbol.on_click then
+    symbol:on_click(min_width, n_clicks, button, modifiers)
   end
 end
 
