@@ -17,7 +17,7 @@ local source = {
         buf = buf,
         win = win,
         icon = '󰅩 ',
-        name = 'testing',
+        name = 'sym2',
         icon_hl = 'DropBarIconTest',
         name_hl = 'DropBarNameTest',
         on_click = function(self)
@@ -36,6 +36,36 @@ local source = {
           },
         },
       }),
+      bar.dropbar_symbol_t:new({
+        buf = buf,
+        win = win,
+        name = 'sym3',
+        siblings = {
+          bar.dropbar_symbol_t:new({
+            buf = buf,
+            win = win,
+            name = 'sym3s1',
+          }),
+        },
+      }),
+      bar.dropbar_symbol_t:new(setmetatable({
+        buf = buf,
+        win = win,
+        name = 'sym4',
+      }, {
+        __index = function(self, key)
+          if key == 'siblings' then
+            self.siblings = {
+              bar.dropbar_symbol_t:new({
+                buf = buf,
+                win = win,
+                name = 'sym4s1',
+              }),
+            }
+            return self.siblings
+          end
+        end,
+      })),
     }
   end,
 }
@@ -62,10 +92,18 @@ dropbar.setup({
 
 describe('[bar]', function()
   local winbar = nil ---@type dropbar_t
+  local sym1 = nil ---@type dropbar_symbol_t
+  local sym2 = nil ---@type dropbar_symbol_t
+  local sym3 = nil ---@type dropbar_symbol_t
+  local sym4 = nil ---@type dropbar_symbol_t
   before_each(function()
     winbar =
       _G.dropbar.bars[vim.api.nvim_get_current_buf()][vim.api.nvim_get_current_win()]
     vim.wait(10, winbar:update())
+    sym1 = winbar.components[1]
+    sym2 = winbar.components[2]
+    sym3 = winbar.components[3]
+    sym4 = winbar.components[4]
   end)
   after_each(function()
     winbar:del()
@@ -87,23 +125,33 @@ describe('[bar]', function()
       end
     )
     it('get components from sources on update', function()
-      assert.are.same(2, #winbar.components)
+      assert.are.same(4, #winbar.components)
     end)
     it('concatenates and converts to string', function()
-      local plain_str = ' | 󰅩 testing    '
-      local formatted_str = string.format(
-        '%%#DropBar#%%#DropBarIconUISeparator# | %%*%%@v:lua.dropbar.on_click_callbacks.buf%d.win%d.fn%d@%%#DropBarIconTest#󰅩 %%*%%#DropBarNameTest#testing%%*%%X    %%*',
-        winbar.buf,
-        winbar.win,
-        winbar.components[2].bar_idx
-      )
+      -- stylua: ignore start
+      local plain_str = ' | 󰅩 sym2 | sym3 | sym4    '
+      local start_str = '%#DropBar#'
+      local end_str = '    %*'
+      local sep_str = '%#DropBarIconUISeparator# | %*'
+      local sym2_str = '%@v:lua.dropbar.on_click_callbacks.buf1.win1000.fn2@%#DropBarIconTest#󰅩 %*%#DropBarNameTest#sym2%*%X'
+      local sym3_str = '%@v:lua.dropbar.on_click_callbacks.buf1.win1000.fn3@sym3%X'
+      local sym4_str = '%@v:lua.dropbar.on_click_callbacks.buf1.win1000.fn4@sym4%X'
+      -- stylua: ignore end
+      local representation_str = start_str
+        .. sep_str
+        .. sym2_str
+        .. sep_str
+        .. sym3_str
+        .. sep_str
+        .. sym4_str
+        .. end_str
       assert.are.same(plain_str, winbar:cat(true))
-      assert.are.same(formatted_str, winbar:cat())
-      assert.are.same(formatted_str, tostring(winbar))
+      assert.are.same(representation_str, winbar:cat())
+      assert.are.same(representation_str, tostring(winbar))
     end)
     it('calculates display width', function()
       assert.are.same(
-        vim.fn.strdisplaywidth(' | 󰅩 testing    '),
+        vim.fn.strdisplaywidth(' | 󰅩 sym2 | sym3 | sym4    '),
         winbar:displaywidth()
       )
     end)
@@ -111,7 +159,7 @@ describe('[bar]', function()
       vim.cmd.vsplit()
       vim.api.nvim_win_set_width(winbar.win, 10)
       winbar:truncate()
-      assert.are.same(' | 󰅩 t...    ', winbar:cat(true))
+      assert.are.same(' | 󰅩 sym2 | sym3 | sym4    ', winbar:cat(true))
       vim.api.nvim_win_close(vim.api.nvim_get_current_win(), true)
     end)
     it('sets and restores pick mode correctly', function()
@@ -158,59 +206,90 @@ describe('[bar]', function()
   end)
 
   describe('dropbar_symbol_t', function()
-    local symbol = winbar.components[2]
     it('creates new instances', function()
-      assert.are.same('testing', symbol.name)
-      assert.are.same('󰅩 ', symbol.icon)
-      assert.are.same('DropBarNameTest', symbol.name_hl)
-      assert.are.same('DropBarIconTest', symbol.icon_hl)
-      symbol:on_click()
-      assert.is_true(symbol.data.clicked)
+      assert.are.same('sym2', sym2.name)
+      assert.are.same('󰅩 ', sym2.icon)
+      assert.are.same('DropBarNameTest', sym2.name_hl)
+      assert.are.same('DropBarIconTest', sym2.icon_hl)
+      sym2:on_click()
+      assert.is_true(sym2.data.clicked)
+    end)
+    it(
+      'setting on_click to false suppresses creation of the default on_click callback',
+      function()
+        assert.is_nil(sym1.on_click)
+      end
+    )
+    it(
+      "default on_click() function creates menus according to symbol's siblings",
+      function()
+        sym3:on_click()
+        -- First component: expandable indicator
+        -- Second component: symbol sym3s1
+        assert.are.same('sym3s1', sym3.menu.entries[1].components[2].name)
+        sym4:on_click()
+        assert.are.same('sym4s1', sym4.menu.entries[1].components[2].name)
+      end
+    )
+    it('creates new instances by with merged options', function()
+      local new_symbol = sym2:merge({ name = 'new_symbol', icon = '󰅨 ' })
+      assert.are.same('new_symbol', new_symbol.name)
+      assert.are.same('󰅨 ', new_symbol.icon)
     end)
     it('deletes associated menu when deleting itself', function()
-      local agent = spy.on(symbol.menu, 'del')
-      symbol:del()
+      local agent = spy.on(sym2.menu, 'del')
+      sym2:del()
       assert.spy(agent).was_called()
     end)
     it('concatenates', function()
-      assert.are.same('󰅩 testing', symbol:cat(true))
+      assert.are.same('󰅩 sym2', sym2:cat(true))
       assert.are.same(
-        string.format(
-          '%%@v:lua.dropbar.on_click_callbacks.buf%d.win%d.fn%d@%%#DropBarIconTest#󰅩 %%*%%#DropBarNameTest#testing%%*%%X',
-          symbol.bar.buf,
-          symbol.bar.win,
-          symbol.bar_idx
-        ),
-        symbol:cat()
+        '%@v:lua.dropbar.on_click_callbacks.buf1.win1000.fn2@%#DropBarIconTest#󰅩 %*%#DropBarNameTest#sym2%*%X',
+        sym2:cat()
       )
     end)
     it('calculates display width', function()
-      assert.are.same(
-        vim.fn.strdisplaywidth('󰅩 testing'),
-        symbol:displaywidth()
-      )
+      assert.are.same(vim.fn.strdisplaywidth('󰅩 sym2'), sym2:displaywidth())
     end)
     it('calculates byte width', function()
-      assert.are.same(#'󰅩 testing', symbol:bytewidth())
+      assert.are.same(#'󰅩 sym2', sym2:bytewidth())
     end)
     it(
       'jumps to the start of the range of the associated symbol tree node',
       function()
         vim.cmd.edit('tests/assets/blank.txt')
-        winbar:update()
-        symbol:jump()
+        vim.wait(10, winbar:update())
+        sym2:jump()
         assert.are.same({
-          symbol.range.start.line + 1,
-          symbol.range.start.character,
+          sym2.range.start.line + 1,
+          sym2.range.start.character,
         }, vim.api.nvim_win_get_cursor(0))
       end
     )
+    it(
+      'previews the symbol and restore the orignal view in the source window after preview',
+      function()
+        vim.cmd.edit('tests/assets/blank.txt')
+        vim.wait(10, winbar:update())
+        local orig_view = vim.api.nvim_win_call(1000, vim.fn.winsaveview)
+        sym2:preview()
+        assert.are.same({
+          sym2.range.start.line + 1,
+          sym2.range.start.character,
+        }, vim.api.nvim_win_get_cursor(1000))
+        sym2:preview_restore_view()
+        assert.are.same(
+          orig_view,
+          vim.api.nvim_win_call(1000, vim.fn.winsaveview)
+        )
+      end
+    )
     it('swaps and restores its fields', function()
-      local orig_name = symbol.name
-      symbol:swap_field('name', 'swapped')
-      assert.are.same('swapped', symbol.name)
-      symbol:restore()
-      assert.are.same(orig_name, symbol.name)
+      local orig_name = sym2.name
+      sym2:swap_field('name', 'swapped')
+      assert.are.same('swapped', sym2.name)
+      sym2:restore()
+      assert.are.same(orig_name, sym2.name)
     end)
   end)
 end)
