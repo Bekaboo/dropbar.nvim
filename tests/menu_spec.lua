@@ -237,10 +237,12 @@ describe('[menu]', function()
     before_each(function()
       menu_it.prev_win = vim.api.nvim_get_current_win()
       menu_it:open()
-      sub_menu_it.prev_win = menu_it.win
-      sub_menu_it:open()
-      sub_sub_menu_it.prev_win = sub_menu_it.win
-      sub_sub_menu_it:open()
+      sub_menu_it:open({
+        prev_win = menu_it.win,
+      })
+      sub_sub_menu_it:open({
+        prev_win = sub_menu_it.win,
+      })
     end)
 
     it('creates new instances successfully', function()
