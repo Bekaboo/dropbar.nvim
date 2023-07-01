@@ -187,6 +187,50 @@ describe('[menu]', function()
         )
       )
     end)
+    it('gets the previous clickable component', function()
+      assert.is_nil(entry_it:prev_clickable(0))
+      assert.is_nil(
+        entry_it:prev_clickable(#'    lua  separator 󰊕 fn')
+      )
+      assert.are.equal(
+        entry_it.components[2],
+        entry_it:prev_clickable(#'    lua  separator 󰊕 fn ')
+      )
+      assert.are.equal(
+        entry_it.components[2],
+        entry_it:prev_clickable(
+          #'    lua  separator 󰊕 fn  separator 󰀫 var'
+        )
+      )
+      assert.are.equal(
+        entry_it.components[3],
+        entry_it:prev_clickable(
+          #'    lua  separator 󰊕 fn  separator 󰀫 var '
+        )
+      )
+      it('gets the next clickable component', function()
+        assert.are.equal(entry_it.components[2], entry_it:next_clickable(0))
+        assert.are.equal(
+          entry_it.components[2],
+          entry_it:next_clickable(#'    lua  separator')
+        )
+        assert.are.equal(
+          entry_it.components[3],
+          entry_it:next_clickable(#'    lua  separator ')
+        )
+        assert.are.equal(
+          entry_it.components[3],
+          entry_it:next_clickable(
+            #'    lua  separator 󰊕 fn  separator'
+          )
+        )
+        assert.is_nil(
+          entry_it:next_clickable(
+            #'    lua  separator 󰊕 fn  separator '
+          )
+        )
+      end)
+    end)
   end)
 
   describe('dropbar_menu_t', function()
