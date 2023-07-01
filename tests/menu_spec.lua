@@ -3,6 +3,7 @@ local bar = require('dropbar.bar')
 local spy = require('luassert.spy')
 local match = require('luassert.match')
 
+vim.cmd.edit('tests/assets/blank.txt')
 local source_buf = vim.api.nvim_get_current_buf()
 local source_win = vim.api.nvim_get_current_win()
 
@@ -55,6 +56,16 @@ local menu_it = menu.dropbar_menu_t:new({
           buf = source_buf,
           win = source_win,
           name = '1',
+          range = {
+            ['start'] = {
+              line = 3,
+              character = 4,
+            },
+            ['end'] = {
+              line = 5,
+              character = 6,
+            },
+          },
           on_click = function() end,
         }),
         bar.dropbar_symbol_t:new({
@@ -375,6 +386,17 @@ describe('[menu]', function()
       assert.are.equal(sub_sub_menu_it, sub_menu_it.sub_menu)
       assert.are.equal(menu_it.win, sub_menu_it.prev_win)
       assert.are.equal(sub_menu_it.win, sub_sub_menu_it.prev_win)
+    end)
+    it('previews and restores symbol at {pos}', function()
+      local orig_view =
+        vim.api.nvim_win_call(menu_it.prev_win, vim.fn.winsaveview)
+      menu_it:preview_symbol_at({ 1, 1 }, true)
+      assert.are.same({ 4, 4 }, vim.api.nvim_win_get_cursor(menu_it.prev_win))
+      menu_it:finish_preview()
+      assert.are.same(
+        orig_view,
+        vim.api.nvim_win_call(menu_it.prev_win, vim.fn.winsaveview)
+      )
     end)
     it('close() method always triggers when the window closes', function()
       local agent1 = spy.on(menu_it, 'close')
