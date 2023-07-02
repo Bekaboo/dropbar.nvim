@@ -1,5 +1,27 @@
 # Changelog
 
+## [4.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v3.2.0...v4.0.0) (2023-07-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* **config:** open menu relative to clicked symbol by default, fix #37
+
+### Features
+
+* **bar/highlights:** add current context highlighting to winbar ([36125e5](https://github.com/Bekaboo/dropbar.nvim/commit/36125e51764406f163942f48743d201467325062))
+* **config:** open menu relative to clicked symbol by default, fix [#37](https://github.com/Bekaboo/dropbar.nvim/issues/37) ([a0faad2](https://github.com/Bekaboo/dropbar.nvim/commit/a0faad2b9fb7e5f88a59bc22f9be20445ebc13a1))
+
+
+### Bug Fixes
+
+* **bar:** invalid buffer number after `:bw &lt;buffer&gt;` ([2cc0381](https://github.com/Bekaboo/dropbar.nvim/commit/2cc0381cd7ef1d69d289a36715a3ea817bee2691))
+
+
+### Performance Improvements
+
+* **symbol:** cache string and length for symbols ([2c02b28](https://github.com/Bekaboo/dropbar.nvim/commit/2c02b280b2f4661e634dc07fb287af165512d464))
+
 ## [3.2.0](https://github.com/Bekaboo/dropbar.nvim/compare/v3.1.0...v3.2.0) (2023-06-25)
 
 
