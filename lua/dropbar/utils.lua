@@ -40,7 +40,22 @@ local function hl_line_single(buf, hlgroup, linenr)
   })
 end
 
+---Merge highlight attributes, use values from the right most hl group
+---if there are conflicts
+---@vararg string highlight group names
+---@return table merged highlight attributes
+local function hl_merge(...)
+  local hl_attr = vim.tbl_map(function(hl_name)
+    return vim.api.nvim_get_hl(0, {
+      name = hl_name,
+      link = false,
+    })
+  end, { ... })
+  return vim.tbl_extend('force', unpack(hl_attr))
+end
+
 return {
   hl_range_single = hl_range_single,
   hl_line_single = hl_line_single,
+  hl_merge = hl_merge,
 }
