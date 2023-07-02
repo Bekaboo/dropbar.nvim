@@ -1743,13 +1743,16 @@ dropbar_menu_entry_t:first_clickable([{offset}])
 	    component occupies in the menu
 
 				     *dropbar_menu_entry_t:get_component_at()*
-dropbar_menu_entry_t:get_component_at({col})
+dropbar_menu_entry_t:get_component_at({col}[, {look_ahead}])
 
 	Get the compoenent at column position {col} and the range it occupies
 	in the menu entry
 
 	Parameters ~
 	    • {col} (integer): column number, 1-based, byte-indexed
+	    • {look_ahead} (boolean?):
+		whether to look ahead to find a component if no component is
+		found at {col}
 
 	Returns ~
 	    (`dropbar_symbol_t`?): the component at the position
