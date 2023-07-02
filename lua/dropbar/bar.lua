@@ -111,6 +111,7 @@ function dropbar_symbol_t:new(opts)
               end
               if this.bar.in_pick_mode then
                 win_configs.relative = 'win'
+                win_configs.win = vim.api.nvim_get_current_win()
                 win_configs.row = 0
                 win_configs.col = this.bar.padding.left
                   + _sum(vim.tbl_map(
@@ -593,6 +594,34 @@ function dropbar_t:pick(idx)
       end
     end
   end)
+end
+
+---Get the component at the given position in the winbar
+---@param col integer 0-indexed, byte-indexed
+---@param look_ahead boolean? whether to look ahead for the next component if the given position does not contain a component
+---@return dropbar_symbol_t?
+---@return {start: integer, end: integer}? range of the component in the menu, byte-indexed, 0-indexed, start-inclusive, end-exclusive
+function dropbar_t:get_component_at(col, look_ahead)
+  local col_offset = self.padding.left
+  for _, component in ipairs(self.components) do
+    -- Use display width instead of byte width here because
+    -- vim.fn.getmousepos().wincol is the display width of the mouse position
+    -- and also the menu window needs to be opened with relative to the
+    -- display position of the winbar symbol to be aligned with the symbol
+    -- on the screen
+    local component_len = component:displaywidth()
+    if
+      (look_ahead or col >= col_offset) and col < col_offset + component_len
+    then
+      return component,
+        {
+          start = col_offset,
+          ['end'] = col_offset + component_len,
+        }
+    end
+    col_offset = col_offset + component_len + self.separator:displaywidth()
+  end
+  return nil, nil
 end
 
 ---Get the string representation of the dropbar

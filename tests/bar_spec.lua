@@ -190,6 +190,30 @@ describe('[bar]', function()
       winbar:pick(2)
       assert.spy(agent).was_called()
     end)
+    it('gets the component according to given position', function()
+      -- sym1 has width 0 and is at the beginning of the bar
+      -- thus cannot be picked by get_component_at()
+      local sep_width = winbar.separator:displaywidth()
+      local current_col = 0
+      assert.is_nil(winbar:get_component_at(current_col))
+      assert.are.equal(sym2, winbar:get_component_at(current_col, true))
+      current_col = current_col
+        + winbar.padding.left
+        + sym1:displaywidth()
+        + sep_width
+      assert.are.equal(sym2, winbar:get_component_at(current_col))
+      current_col = current_col + sym2:displaywidth()
+      assert.are.equal(sym3, winbar:get_component_at(current_col, true))
+      current_col = current_col + sep_width
+      assert.are.equal(sym3, winbar:get_component_at(current_col))
+      current_col = current_col + sym3:displaywidth()
+      assert.are.equal(sym4, winbar:get_component_at(current_col, true))
+      current_col = current_col + sep_width
+      assert.are.equal(sym4, winbar:get_component_at(current_col))
+      current_col = current_col + sym4:displaywidth()
+      assert.is_nil(winbar:get_component_at(current_col, true))
+      assert.is_nil(winbar:get_component_at(current_col))
+    end)
     it('deletes itself', function()
       local agents = vim.tbl_map(function(component)
         return spy.on(component, 'del')

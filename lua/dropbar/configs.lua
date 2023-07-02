@@ -261,16 +261,28 @@ M.opts = {
         return menu.prev_menu
             and menu.prev_menu.clicked_at
             and menu.prev_menu.clicked_at[1] - vim.fn.line('w0')
-          or 1
+          or 0
       end,
+      ---@param menu dropbar_menu_t
       col = function(menu)
-        return menu.prev_menu and menu.prev_menu._win_configs.width or 0
+        if menu.prev_menu then
+          return menu.prev_menu._win_configs.width
+        end
+        local mouse = vim.fn.getmousepos()
+        local bar = require('dropbar.api').get_dropbar(
+          vim.api.nvim_win_get_buf(menu.prev_win),
+          menu.prev_win
+        )
+        if not bar then
+          return mouse.wincol
+        end
+        local _, range = bar:get_component_at(math.max(0, mouse.wincol - 1))
+        return range and range.start or mouse.wincol
       end,
-      relative = function(menu)
-        return menu.prev_menu and 'win' or 'mouse'
-      end,
+      relative = 'win',
       win = function(menu)
         return menu.prev_menu and menu.prev_menu.win
+          or vim.fn.getmousepos().winid
       end,
       height = function(menu)
         return math.max(
