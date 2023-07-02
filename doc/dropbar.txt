@@ -1144,6 +1144,17 @@ dropbar_t:get_component_at({col}[, {look_ahead}])
 	    A table with fields `start` and `end` representing the range the
 	    component occupies in the menu
 
+					 *dropbar_t:update_current_context_hl*
+dropbar_t:update_current_context_hl({bar_idx})
+
+	Update the current context highlight hl-DropBarCurrentContext
+	and hl-DropBarIconCurrentContext assuming the {bar_idx} th symbol
+	is clicked in the winbar
+
+	Parameters ~
+	    • {bar_idx} (integer): index of the symbol in the winbar, see
+				   |dropbar_symbol_t.bar_idx|
+
 dropbar_t:__tostring()                                *dropbar_t:__tostring()*
 
  	Meta method to convert dropbar_t to its string representation
