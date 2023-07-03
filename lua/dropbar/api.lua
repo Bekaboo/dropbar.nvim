@@ -1,8 +1,9 @@
 ---Get the dropbar
----@param buf integer
+---@param buf? integer
 ---@param win integer
 ---@return dropbar_t?
 local function get_dropbar(buf, win)
+  buf = buf or vim.api.nvim_win_get_buf(win)
   if rawget(_G.dropbar.bars, buf) then
     return rawget(_G.dropbar.bars[buf], win)
   end

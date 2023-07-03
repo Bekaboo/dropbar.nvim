@@ -1116,7 +1116,7 @@ each sources.
 `dropbar.nvim` exposes a few functions in `lua/dropbar/api.lua` that can be
 used to interact with the winbar or the drop-down menu:
 
-- `get_dropbar(buf: integer, win: integer): dropbar_t?`
+- `get_dropbar(buf: integer?, win: integer): dropbar_t?`
   - Get the dropbar associated with the given buffer and window
   - For more information about the `dropbar_t` type, see
     [`dropbar_t`](#dropbar_t)

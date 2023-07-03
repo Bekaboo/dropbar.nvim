@@ -698,7 +698,8 @@ api.get_dropbar({buf}, {win})                      *dropbar-api-get_dropbar()*
     |dropbar-developers-classes-dropbar_t|
 
     Parameters: ~
-        • {buf} (integer): The buffer number
+        • {buf} (integer?): The buffer number, if nil the buffer associated
+			    with the window {win} be used
         • {win} (integer): The window number
 
     Returns: ~
