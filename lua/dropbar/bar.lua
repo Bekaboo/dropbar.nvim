@@ -627,7 +627,7 @@ function dropbar_t:get_component_at(col, look_ahead)
 end
 
 ---Highlight the symbol at bar_idx as current context
----@param bar_idx integer? see dropbar_symbol_t.bar_idx
+---@param bar_idx integer see dropbar_symbol_t.bar_idx
 ---@return nil
 function dropbar_t:update_current_context_hl(bar_idx)
   local symbol = self.components[bar_idx]
