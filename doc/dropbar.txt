@@ -1149,8 +1149,7 @@ dropbar_t:get_component_at({col}[, {look_ahead}])
 dropbar_t:update_current_context_hl({bar_idx})
 
 	Update the current context highlight hl-DropBarCurrentContext
-	and hl-DropBarIconCurrentContext assuming the {bar_idx} th symbol
-	is clicked in the winbar
+	assuming the {bar_idx} th symbol is clicked in the winbar
 
 	Parameters ~
 	    • {bar_idx} (integer): index of the symbol in the winbar, see
