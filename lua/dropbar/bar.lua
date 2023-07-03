@@ -306,26 +306,29 @@ function dropbar_symbol_t:preview_restore_view()
 end
 
 ---Temporarily change the content of a dropbar symbol
----Does not support replacing nil values
 ---@param field string
 ---@param new_val any
+---@return nil
 function dropbar_symbol_t:swap_field(field, new_val)
   self.data = self.data or {}
   self.data.swap = self.data.swap or {}
+  self.data.swapped = self.data.swapped or {}
   self.data.swap[field] = self.data.swap[field] or self[field]
+  table.insert(self.data.swapped, field)
   self[field] = new_val
 end
 
 ---Restore the content of a dropbar symbol
----Does not support restoring nil values
+---@return nil
 function dropbar_symbol_t:restore()
   if not self.data or not self.data.swap then
     return
   end
-  for field, val in pairs(self.data.swap) do
-    self[field] = val
+  for _, field in ipairs(self.data.swapped) do
+    self[field] = self.data.swap[field]
   end
   self.data.swap = nil
+  self.data.swapped = nil
 end
 
 ---@class dropbar_opts_t
@@ -346,6 +349,7 @@ end
 ---@field components dropbar_symbol_t[]
 ---@field string_cache string
 ---@field in_pick_mode boolean?
+---@field symbol_on_hover dropbar_symbol_t?
 ---@field last_update_request_time float? timestamp of the last update request in ms, see :h uv.hrtime()
 local dropbar_t = {}
 dropbar_t.__index = dropbar_t

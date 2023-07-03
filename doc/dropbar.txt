@@ -1401,7 +1401,6 @@ dropbar_symbol_t:preview_restore_view()
 dropbar_symbol_t:swap_field({field}, {new_val})
 
  	Temporarily change the content of a dropbar symbol
-	Currently does not support replacing `nil` values
 
 	Parameters ~
 	    • {field} (string): The field to change
@@ -1409,9 +1408,8 @@ dropbar_symbol_t:swap_field({field}, {new_val})
 
 dropbar_symbol_t:restore()                        *dropbar_symbol_t:restore()*
 
- 	Restore the content of a dropbar symbol after
-	`dropbar_symbol_t:swap_field()` is called
-	Currently does not support restoring `nil` values
+	Restore the values of the fields of a dropbar symbol changed
+	in `dropbar_symbol_t:swap_field()`
 
 ..............................................................................
 DROPBAR_MENU_T                     *dropbar-developers-classes-dropbar_menu_t*

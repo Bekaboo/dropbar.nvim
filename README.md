@@ -1432,8 +1432,8 @@ basic element of [`dropbar_t`](#dropbar_t) and [`dropbar_menu_entry_t`](#dropbar
 | `dropbar_symbol_t:preview()`                                      | preview the symbol in the source window                                                                                                                                                       |
 | `dropbar_symbol_t:preview_restore_hl()`                           | clear the preview highlights in the source window                                                                                                                                             |
 | `dropbar_symbol_t:preview_restore_view()`                         | restore the view in the source window after previewing the symbol                                                                                                                             |
-| `dropbar_symbol_t:swap_field(field: string, new_val: any)`        | temporarily change the content of a dropbar symbol <br> *does not support replacing nil values                                                                                                |
-| `dropbar_symbol_t:restore()`                                      | restore the content of a dropbar symbol after `dropbar_symbol_t:swap_field()` is called <br> *does not support restoring nil values                                                           |
+| `dropbar_symbol_t:swap_field(field: string, new_val: any)`        | temporarily change the content of a dropbar symbol                                                                                                                                            |
+| `dropbar_symbol_t:restore()`                                      | restore the original value of the fields of a dropbar symbol changed in `dropbar_symbol_t:swap_field()`                                                                                       |
 
 #### `dropbar_menu_t`
 
