@@ -66,7 +66,8 @@ highly-customizable 'winbar' with drop-down menu support and mutiple backends.
     `dropbar.nvim` does not require nvim-lspconfig , nvim-treesitter or any
     third-party UI libraries to work. As long as the language server or the
     treesitter parser is installed, it should work just fine.
-- Drop-down menu components that response to mouse/cursor hovering
+- Drop-down menu components and winbar symbols that response to mouse/cursor
+  hovering
     This features requires 'mousemoveevent' to be enabled.
 - Preview symbols in their source windows when hovering over them in the
   drop-down menu
@@ -74,7 +75,7 @@ highly-customizable 'winbar' with drop-down menu support and mutiple backends.
 
 TODO
 
-- Add hover highlights and preview for symbols shown in the winbar 
+- Add preview for symbols shown in the winbar
 - Preview symbols (files) from `path` source
 - Add more actions other than `jump` and `preview`, e.g. `rename`,
   `delete`, `select`, etc.

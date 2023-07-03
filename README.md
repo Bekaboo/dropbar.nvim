@@ -87,9 +87,10 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
   As long as the language server or the treesitter parser is installed,
   it should work just fine.
 
-- [x] Drop-down menu components that response to mouse/cursor hovering:
+- [x] Drop-down menu components and winbar symbols that response to
+      mouse/cursor hovering:
 
-    ![hover](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/d72ea8b5-264d-413c-9780-79a0da5cc064)
+    ![hover](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/c944d61c-d39b-42e9-8b24-e3e33672b0d2)
 
     - This features requires `:h mousemoveevent` to be enabled.
 
@@ -100,8 +101,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
 - [x] Reorient the source window on previewing or after jumping to a symbol
 
-- [ ] Add hover highlights and preview for symbols shown in the winbar
-
+- [ ] Add preview for symbols shown in the winbar
 
 - [ ] Preview symbols (files) from `path` source
 
