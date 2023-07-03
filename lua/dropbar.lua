@@ -139,6 +139,13 @@ local function setup(opts)
     end,
     desc = 'Remove dropbar from cache on window closed.',
   })
+  if configs.opts.bar.hover then
+    vim.on_key(function(key)
+      if key == vim.keycode('<MouseMove>') then
+        bar.update_hover_hl(vim.fn.getmousepos())
+      end
+    end)
+  end
   vim.g.loaded_dropbar = true
 end
 

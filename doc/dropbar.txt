@@ -365,6 +365,10 @@ BAR                                        *dropbar-configuration-options-bar*
 These options live under `opts.bar` and are used to control the behavior of
 the winbar:
 
+- `opts.bar.hover`:
+    - Whether to highlight the symbol under the cursor
+    - This feature requires 'mousemoveevent' to be enabled
+    - Default: `true`
 - `opts.bar.sources`:
   `dropbar_source_t[]|fun(buf: integer, win: integer): dropbar_source_t[]`
     - List of sources to show in the winbar
@@ -777,6 +781,7 @@ Highlight groups ~
   Highlight group                    Attributes
 
   DropBarCurrentContext              `{ link = 'Visual' }`
+  DropBarHover                       `{ link = 'Visual' }`
   DropBarIconCurrentContext          `{ link = 'Visual' }`
   DropBarIconKindArray               `{ link = 'Array' }`
   DropBarIconKindBoolean             `{ link = 'Boolean' }`
@@ -1047,6 +1052,13 @@ dropbar_t.in_pick_mode                                *dropbar_t.in_pick_mode*
 	Type ~
 	    boolean?
 
+dropbar_t.symbol_on_hover                          *dropbar_t.symbol_on_hover*
+
+	The previous symbol under mouse hovering in the dropbar
+
+	Type ~
+	    dropbar_symbol_t?
+
 dropbar_t.last_update_request_tim         *dropbar_t.last_update_request_time*
 
  	Timestamp of the last update request in ms, see |uv.hrtime()|
@@ -1154,6 +1166,15 @@ dropbar_t:update_current_context_hl({bar_idx})
 	Parameters ~
 	    • {bar_idx} (integer): index of the symbol in the winbar, see
 				   |dropbar_symbol_t.bar_idx|
+
+dropbar_t:update_hover_hl([{col}])                 *dropbar_t:update_hover_hl*
+
+	Highlight the symbol at {col} as if the mouse is hovering on it
+
+	Parameters ~
+	    • {col} (integer?): displaywidth-indexed, 0-indexed mouse
+				position, set to `nil` to clear the hover
+				highlights
 
 dropbar_t:__tostring()                                *dropbar_t:__tostring()*
 

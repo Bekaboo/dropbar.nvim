@@ -655,6 +655,72 @@ function dropbar_t:update_current_context_hl(bar_idx)
   self:redraw()
 end
 
+---Highlight the symbol at col as if the mouse is hovering on it
+---@param col integer? displaywidth-indexed, 0-indexed mouse position, nil to clear the hover highlights
+---@return nil
+function dropbar_t:update_hover_hl(col)
+  if not col then
+    if self.symbol_on_hover then
+      self.symbol_on_hover:restore()
+      self.symbol_on_hover = nil
+      self:redraw()
+    end
+    return
+  end
+  local symbol = self:get_component_at(col)
+  if not symbol or symbol == self.symbol_on_hover then
+    return
+  end
+  local hl_hover_icon = '_DropBarIconHover'
+  local hl_hover_name = '_DropBarHover'
+  vim.api.nvim_set_hl(
+    0,
+    hl_hover_icon,
+    utils.hl_merge('DropBarHover', symbol.icon_hl or 'WinBar')
+  )
+  vim.api.nvim_set_hl(
+    0,
+    hl_hover_name,
+    utils.hl_merge('DropBarHover', symbol.name_hl or 'WinBar')
+  )
+  symbol:swap_field('icon_hl', hl_hover_icon)
+  symbol:swap_field('name_hl', hl_hover_name)
+  if self.symbol_on_hover then
+    self.symbol_on_hover:restore()
+  end
+  self.symbol_on_hover = symbol
+  self:redraw()
+end
+
+---@type dropbar_t?
+local last_hovered_dropbar = nil
+---Update winbar hover highlights given the mouse position
+---@param mouse table
+---@return nil
+local function update_hover_hl(mouse)
+  -- Mouse not on winbar
+  if mouse.winrow ~= 1 or mouse.line ~= 0 then
+    if last_hovered_dropbar then
+      last_hovered_dropbar:update_hover_hl()
+      last_hovered_dropbar = nil
+    end
+    return
+  end
+  local dropbar = require('dropbar.api').get_dropbar(nil, mouse.winid)
+  if not dropbar then
+    if last_hovered_dropbar then
+      last_hovered_dropbar:update_hover_hl()
+      last_hovered_dropbar = nil
+    end
+    return
+  end
+  if last_hovered_dropbar and last_hovered_dropbar ~= dropbar then
+    last_hovered_dropbar:update_hover_hl()
+  end
+  dropbar:update_hover_hl(math.max(0, mouse.wincol - 1))
+  last_hovered_dropbar = dropbar
+end
+
 ---Get the string representation of the dropbar
 ---@return string
 function dropbar_t:__tostring()
@@ -667,4 +733,5 @@ end
 return {
   dropbar_t = dropbar_t,
   dropbar_symbol_t = dropbar_symbol_t,
+  update_hover_hl = update_hover_hl,
 }
