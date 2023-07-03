@@ -639,7 +639,7 @@ function dropbar_t:update_current_context_hl(bar_idx)
   vim.api.nvim_set_hl(
     0,
     hl_currentcontext_icon,
-    utils.hl_merge('DropBarIconCurrentContext', symbol.icon_hl or 'WinBar')
+    utils.hl_merge('DropBarCurrentContext', symbol.icon_hl or 'WinBar')
   )
   vim.api.nvim_set_hl(
     0,

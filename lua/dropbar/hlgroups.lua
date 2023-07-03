@@ -1,7 +1,6 @@
 -- stylua: ignore start
 local hlgroups = {
   DropBarCurrentContext            = { link = 'Visual' },
-  DropBarIconCurrentContext        = { link = 'Visual' },
   DropBarIconKindArray             = { link = 'Array' },
   DropBarIconKindBoolean           = { link = 'Boolean' },
   DropBarIconKindBreakStatement    = { link = 'Error' },
