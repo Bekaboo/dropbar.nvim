@@ -692,6 +692,15 @@ function dropbar_t:update_hover_hl(col)
   self:redraw()
 end
 
+---Get the string representation of the dropbar
+---@return string
+function dropbar_t:__tostring()
+  if vim.tbl_isempty(self.components) then
+    self:update()
+  end
+  return self.string_cache
+end
+
 ---@type dropbar_t?
 local last_hovered_dropbar = nil
 ---Update winbar hover highlights given the mouse position
@@ -719,15 +728,6 @@ local function update_hover_hl(mouse)
   end
   dropbar:update_hover_hl(math.max(0, mouse.wincol - 1))
   last_hovered_dropbar = dropbar
-end
-
----Get the string representation of the dropbar
----@return string
-function dropbar_t:__tostring()
-  if vim.tbl_isempty(self.components) then
-    self:update()
-  end
-  return self.string_cache
 end
 
 return {
