@@ -20,8 +20,8 @@ local function get_node_short_name(node, buf)
   return vim.trim(
     vim.treesitter
       .get_node_text(node, buf)
-      :match(configs.opts.sources.treesitter.name_pattern)
       :gsub('\n.*', '')
+      :match(configs.opts.sources.treesitter.name_pattern) or ''
   )
 end
 
