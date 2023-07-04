@@ -160,7 +160,7 @@ M.opts = {
     hover = true,
     ---@type dropbar_source_t[]|fun(buf: integer, win: integer): dropbar_source_t[]
     sources = function(buf, _)
-      local sources = require('plugin.winbar.sources')
+      local sources = require('dropbar.sources')
       if vim.bo[buf].ft == 'markdown' then
         return {
           sources.path,
