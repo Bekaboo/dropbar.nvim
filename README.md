@@ -1048,7 +1048,7 @@ each sources.
 - `opts.sources.treesitter.name_pattern`: `string`
   - Lua pattern used to extract a short name from the node text
   - Be aware! The matching result must not be nil
-  - Default: `name_pattern = '[#~%*%w%._%->!@:]+%s*' .. string.rep('[#~%*%w%._%->!@:]*', 3, '%s*')`
+  - Default: `'[#~%*%w%._%->!@:]+%s*' .. string.rep('[#~%*%w%._%->!@:]*', 3, '%s*')`
 - `opts.sources.treesitter.valid_types:` `string[]`
   - A list of treesitter node types to include in the results
   - Default:
