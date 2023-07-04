@@ -1,8 +1,10 @@
+local M = {}
+
 ---Highlight text in buffer, clear previous highlight if any exists
 ---@param buf integer
 ---@param hlgroup string
 ---@param range dropbar_symbol_range_t?
-local function hl_range_single(buf, hlgroup, range)
+function M.range_single(buf, hlgroup, range)
   local ns = vim.api.nvim_create_namespace(hlgroup)
   vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
   if range then
@@ -27,8 +29,8 @@ end
 ---@param buf integer
 ---@param hlgroup string
 ---@param linenr integer? 1-indexed line number
-local function hl_line_single(buf, hlgroup, linenr)
-  hl_range_single(buf, hlgroup, linenr and {
+function M.line_single(buf, hlgroup, linenr)
+  M.range_single(buf, hlgroup, linenr and {
     start = {
       line = linenr - 1,
       character = 0,
@@ -44,7 +46,7 @@ end
 ---if there are conflicts
 ---@vararg string highlight group names
 ---@return table merged highlight attributes
-local function hl_merge(...)
+function M.merge(...)
   local hl_attr = vim.tbl_map(function(hl_name)
     return vim.api.nvim_get_hl(0, {
       name = hl_name,
@@ -54,8 +56,4 @@ local function hl_merge(...)
   return vim.tbl_extend('force', unpack(hl_attr))
 end
 
-return {
-  hl_range_single = hl_range_single,
-  hl_line_single = hl_line_single,
-  hl_merge = hl_merge,
-}
+return M

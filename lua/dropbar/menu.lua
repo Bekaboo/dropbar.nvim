@@ -298,16 +298,16 @@ end
 ---@param pos integer[]? byte-indexed, 1,0-indexed cursor/mouse position
 ---@return nil
 function dropbar_menu_t:update_hover_hl(pos)
-  utils.hl_range_single(self.buf, 'DropBarMenuHoverSymbol', nil)
-  utils.hl_range_single(self.buf, 'DropBarMenuHoverIcon', nil)
-  utils.hl_range_single(self.buf, 'DropBarMenuHoverEntry', nil)
+  utils.hl.range_single(self.buf, 'DropBarMenuHoverSymbol', nil)
+  utils.hl.range_single(self.buf, 'DropBarMenuHoverIcon', nil)
+  utils.hl.range_single(self.buf, 'DropBarMenuHoverEntry', nil)
   if not pos then
     return
   end
-  utils.hl_line_single(self.buf, 'DropBarMenuHoverEntry', pos[1])
+  utils.hl.line_single(self.buf, 'DropBarMenuHoverEntry', pos[1])
   local component, range = self:get_component_at({ pos[1], pos[2] })
   if component and component.on_click and range then
-    utils.hl_range_single(
+    utils.hl.range_single(
       self.buf,
       component and component.name == '' and 'DropBarMenuHoverIcon'
         or 'DropBarMenuHoverSymbol',
@@ -329,7 +329,7 @@ end
 ---@param linenr integer? 1-indexed line number
 function dropbar_menu_t:update_current_context_hl(linenr)
   if self.buf then
-    utils.hl_line_single(self.buf, 'DropBarMenuCurrentContext', linenr)
+    utils.hl.line_single(self.buf, 'DropBarMenuCurrentContext', linenr)
   end
 end
 

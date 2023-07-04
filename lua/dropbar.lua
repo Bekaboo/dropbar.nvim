@@ -2,6 +2,7 @@ _G.dropbar = {}
 local hlgroups = require('dropbar.hlgroups')
 local bar = require('dropbar.bar')
 local configs = require('dropbar.configs')
+local utils = require('dropbar.utils')
 
 ---Store the on_click callbacks for each dropbar symbol
 ---Make it assessable from global only because nvim's viml-lua interface
@@ -142,7 +143,7 @@ local function setup(opts)
   if configs.opts.bar.hover then
     vim.on_key(function(key)
       if key == vim.keycode('<MouseMove>') then
-        bar.update_hover_hl(vim.fn.getmousepos())
+        utils.bar.update_hover_hl(vim.fn.getmousepos())
       end
     end)
   end
