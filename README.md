@@ -829,7 +829,7 @@ winbar:
       }
     end,
     ```
-- For more information about sources, see [`dropbar_source_t`](#dropbar_source_t).
+  - For more information about sources, see [`dropbar_source_t`](#dropbar_source_t).
 - `opts.bar.padding`: `{ left: number, right: number }`
   - Padding to use between the winbar and the window border
   - Default: `{ left = 1, right = 1 }`
