@@ -379,7 +379,7 @@ the winbar:
     - Default: >lua
 
             function(buf, _)
-              local sources = require('plugin.winbar.sources')
+              local sources = require('dropbar.sources')
               local utils = require('dropbar.utils')
               if vim.bo[buf].ft == 'markdown' then
                 return {
