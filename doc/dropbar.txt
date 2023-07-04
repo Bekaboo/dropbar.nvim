@@ -284,6 +284,7 @@ by the plugin:
               Object = '󰅩 ',
               Operator = '󰆕 ',
               Package = '󰆦 ',
+              Pair = '󰅪 ',
               Property = ' ',
               Reference = '󰦾 ',
               Regex = ' ',
@@ -651,6 +652,7 @@ TREESITTER                  *dropbar-configuration-options-sources-treesitter*
               'number',
               'operator',
               'package',
+              'pair',
               'property',
               'reference',
               'repeat',
@@ -825,6 +827,7 @@ Highlight groups ~
   DropBarIconKindObject              `{ link = 'Statement' }`
   DropBarIconKindOperator            `{ link = 'Operator' }`
   DropBarIconKindPackage             `{ link = 'CmpItemKindModule' }`
+  DropBarIconPair                    `{ link = 'String' }`
   DropBarIconKindProperty            `{ link = 'CmpItemKindProperty' }`
   DropBarIconKindReference           `{ link = 'CmpItemKindReference' }`
   DropBarIconKindRepeat              `{ link = 'Repeat' }`

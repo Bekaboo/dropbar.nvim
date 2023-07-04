@@ -43,6 +43,7 @@ local hlgroups = {
   DropBarIconKindObject            = { link = 'Statement' },
   DropBarIconKindOperator          = { link = 'Operator' },
   DropBarIconKindPackage           = { link = 'CmpItemKindModule' },
+  DropBarIconKindPair              = { link = 'String' },
   DropBarIconKindProperty          = { link = 'CmpItemKindProperty' },
   DropBarIconKindReference         = { link = 'CmpItemKindReference' },
   DropBarIconKindRepeat            = { link = 'Repeat' },

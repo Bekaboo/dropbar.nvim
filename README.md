@@ -548,6 +548,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           'number',
           'operator',
           'package',
+          'pair',
           'property',
           'reference',
           'repeat',
@@ -712,6 +713,7 @@ used by the plugin:
       Object = '󰅩 ',
       Operator = '󰆕 ',
       Package = '󰆦 ',
+      Pair = '󰅪 ',
       Property = ' ',
       Reference = '󰦾 ',
       Regex = ' ',
@@ -1200,6 +1202,7 @@ should be self-explanatory:
   | DropBarIconKindObject            | `{ link = 'Statement' }`                |
   | DropBarIconKindOperator          | `{ link = 'Operator' }`                 |
   | DropBarIconKindPackage           | `{ link = 'CmpItemKindModule' }`        |
+  | DropBarIconKindPair              | `{ link = 'String' }`                   |
   | DropBarIconKindProperty          | `{ link = 'CmpItemKindProperty' }`      |
   | DropBarIconKindReference         | `{ link = 'CmpItemKindReference' }`     |
   | DropBarIconKindRepeat            | `{ link = 'Repeat' }`                   |
