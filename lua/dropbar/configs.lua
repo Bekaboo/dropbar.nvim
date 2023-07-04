@@ -1,3 +1,4 @@
+local utils = require('dropbar.utils')
 local M = {}
 
 ---@class dropbar_configs_t
@@ -64,6 +65,12 @@ M.opts = {
         Folder = '󰉋 ',
         ForStatement = '󰑖 ',
         Function = '󰊕 ',
+        H1Marker = '󰉫 ',
+        H2Marker = '󰉬 ',
+        H3Marker = '󰉭 ',
+        H4Marker = '󰉮 ',
+        H5Marker = '󰉯 ',
+        H6Marker = '󰉰 ',
         Identifier = '󰀫 ',
         IfStatement = '󰇉 ',
         Interface = ' ',
@@ -152,27 +159,24 @@ M.opts = {
   bar = {
     hover = true,
     ---@type dropbar_source_t[]|fun(buf: integer, win: integer): dropbar_source_t[]
-    sources = function(_, _)
-      local sources = require('dropbar.sources')
+    sources = function(buf, _)
+      local sources = require('plugin.winbar.sources')
+      if vim.bo[buf].ft == 'markdown' then
+        return {
+          sources.path,
+          utils.source.fallback({
+            sources.treesitter,
+            sources.markdown,
+            sources.lsp,
+          }),
+        }
+      end
       return {
         sources.path,
-        {
-          get_symbols = function(buf, win, cursor)
-            if vim.bo[buf].ft == 'markdown' then
-              return sources.markdown.get_symbols(buf, win, cursor)
-            end
-            for _, source in ipairs({
-              sources.lsp,
-              sources.treesitter,
-            }) do
-              local symbols = source.get_symbols(buf, win, cursor)
-              if not vim.tbl_isempty(symbols) then
-                return symbols
-              end
-            end
-            return {}
-          end,
-        },
+        utils.source.fallback({
+          sources.lsp,
+          sources.treesitter,
+        }),
       }
     end,
     padding = {
@@ -354,6 +358,12 @@ M.opts = {
         'event',
         'for_statement',
         'function',
+        'h1_marker',
+        'h2_marker',
+        'h3_marker',
+        'h4_marker',
+        'h5_marker',
+        'h6_marker',
         'if_statement',
         'interface',
         'keyword',

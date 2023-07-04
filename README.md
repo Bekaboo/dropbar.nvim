@@ -333,26 +333,27 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
     },
     bar = {
       ---@type dropbar_source_t[]|fun(buf: integer, win: integer): dropbar_source_t[]
-      sources = function(_, _)
-        local sources = require('dropbar.sources')
+      sources = function(buf, _)
+        local sources = require('plugin.winbar.sources')
+	      local utils = require('dropbar.utils')
+        if vim.bo[buf].ft == 'markdown' then
+          return {
+            sources.path,
+            utils.source.fallback({
+              sources.treesitter,
+              sources.markdown,
+              sources.lsp,
+            }),
+          }
+        end
         return {
           sources.path,
-          {
-            get_symbols = function(buf, win, cursor)
-              if vim.bo[buf].ft == 'markdown' then
-                return sources.markdown.get_symbols(buf, win, cursor)
-              end
-              for _, source in ipairs({
-                sources.lsp,
-                sources.treesitter,
-              }) do
-                local symbols = source.get_symbols(buf, win, cursor)
-                if not vim.tbl_isempty(symbols) then
-                  return symbols
-                end
-              end
-              return {}
-            end,
+          utils.source.fallback({
+            sources.lsp,
+            sources.treesitter,
+          }),
+        }
+      end,
           },
         }
       end,
@@ -806,34 +807,29 @@ winbar:
     winid and should return a list of sources
   - Default:
     ```lua
-    function(_, _)
-      local sources = require('dropbar.sources')
+    function(buf, _)
+      local sources = require('plugin.winbar.sources')
+      local utils = require('dropbar.utils')
+      if vim.bo[buf].ft == 'markdown' then
+        return {
+          sources.path,
+          utils.source.fallback({
+            sources.treesitter,
+            sources.markdown,
+            sources.lsp,
+          }),
+        }
+      end
       return {
         sources.path,
-        {
-          get_symbols = function(buf, win, cursor)
-            if vim.bo[buf].ft == 'markdown' then
-              return sources.markdown.get_symbols(buf, win, cursor)
-            end
-            for _, source in ipairs({
-              sources.lsp,
-              sources.treesitter,
-            }) do
-              local symbols = source.get_symbols(buf, win, cursor)
-              if not vim.tbl_isempty(symbols) then
-                return symbols
-              end
-            end
-            return {}
-          end,
-        },
+        utils.source.fallback({
+          sources.lsp,
+          sources.treesitter,
+        }),
       }
-    end
+    end,
     ```
-  - Notice that in the default config we register the second source as an
-    aggregation of LSP, treesitter, and markdown sources, so that we dynamically
-    choose the best source for the current buffer or window.
-    For more information about sources, see [`dropbar_source_t`](#dropbar_source_t).
+- For more information about sources, see [`dropbar_source_t`](#dropbar_source_t).
 - `opts.bar.padding`: `{ left: number, right: number }`
   - Padding to use between the winbar and the window border
   - Default: `{ left = 1, right = 1 }`
@@ -1571,9 +1567,12 @@ A [`dropbar_source_t`](#dropbar_source_t) instance is just a table with
 window id, and the cursor position.
 
 We have seen a simple example of a custom source in the [default config of
-`opts.bar.sources`](#bar) where the second source is set to a table with its
-field `get_symbols` set to a function that gets symbols from either the
-markdown, LSP, or treesitter sources to achieve fall-back behavior.
+`opts.bar.sources`](#bar) where the second source is set to a combination
+of lsp/treesitter/markdown sources using the `utils.source.fallback()` factory
+function, which simply returns a table containing a `get_symbols()` function
+where each source passed to `utils.source.fallback()` is queried and the first
+non-empty result get from the sources is returned as the result of the combined
+source.
 
 Here is another example of a custom source that will always return two symbols
 saying 'Hello' and 'dropbar' with highlights `'hl-Keyword'` and `'hl-Title'`
