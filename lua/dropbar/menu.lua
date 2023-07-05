@@ -426,13 +426,15 @@ function dropbar_menu_t:make_buf()
 
       if
         configs.opts.menu.preview
-        and not vim.deep_equal(cursor, self.prev_cursor)
+        and not (self.prev_cursor and vim.deep_equal(cursor, self.prev_cursor))
       then
         self:preview_symbol_at(cursor, true)
       end
 
       if configs.opts.menu.quick_navigation then
         self:quick_navigation(cursor)
+      else
+        self.prev_cursor = cursor
       end
 
       -- Update hover highlights
@@ -513,10 +515,11 @@ function dropbar_menu_t:open(opts)
   if self._win_configs.focusable ~= false then
     if self.prev_cursor then
       vim.api.nvim_win_set_cursor(self.win, self.prev_cursor)
+      self.prev_cursor = nil -- to update preview in CursorMoved autocmd
     elseif self.cursor then
       vim.api.nvim_win_set_cursor(self.win, self.cursor)
-      vim.cmd.doautocmd('CursorMoved')
     end
+    vim.cmd.doautocmd('CursorMoved')
   end
 end
 
@@ -535,6 +538,15 @@ function dropbar_menu_t:close(restore_view)
   end
   -- Move cursor to the previous window
   if self.prev_win and vim.api.nvim_win_is_valid(self.prev_win) then
+    local prev_menu = _G.dropbar.menus[self.prev_win]
+    if prev_menu then
+      if prev_menu.cursor then
+        prev_menu:update_current_context_hl(prev_menu.cursor[1])
+      else
+        prev_menu:update_current_context_hl(nil)
+      end
+      prev_menu.prev_cursor = nil
+    end
     vim.api.nvim_set_current_win(self.prev_win)
   end
   -- Close the menu window and dereference it in the lookup table
