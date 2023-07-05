@@ -2,6 +2,7 @@
 local hlgroups = {
   DropBarCurrentContext            = { link = 'Visual' },
   DropBarHover                     = { link = 'Visual' },
+
   DropBarIconKindArray             = { link = 'Array' },
   DropBarIconKindBoolean           = { link = 'Boolean' },
   DropBarIconKindBreakStatement    = { link = 'Error' },
@@ -65,6 +66,7 @@ local hlgroups = {
   DropBarIconKindValue             = { link = 'Number' },
   DropBarIconKindVariable          = { link = 'CmpItemKindVariable' },
   DropBarIconKindWhileStatement    = { link = 'Repeat' },
+
   DropBarIconUIIndicator           = { link = 'SpecialChar' },
   DropBarIconUIPickPivot           = { link = 'Error' },
   DropBarIconUISeparator           = { link = 'SpecialChar' },
@@ -77,14 +79,129 @@ local hlgroups = {
   DropBarMenuNormalFloat           = { link = 'NormalFloat' },
   DropBarPreview                   = { link = 'Visual' },
 }
+
+local kinds = {
+  "Array",
+  "Boolean",
+  "BreakStatement",
+  "Call",
+  "CaseStatement",
+  "Class",
+  "Constant",
+  "Constructor",
+  "ContinueStatement",
+  "Declaration",
+  "Delete",
+  "DoStatement",
+  "ElseStatement",
+  "Enum",
+  "EnumMember",
+  "Event",
+  "Field",
+  "File",
+  "Folder",
+  "ForStatement",
+  "Function",
+  "H1Marker",
+  "H2Marker",
+  "H3Marker",
+  "H4Marker",
+  "H5Marker",
+  "H6Marker",
+  "Identifier",
+  "IfStatement",
+  "Interface",
+  "Keyword",
+  "List",
+  "Macro",
+  "MarkdownH1",
+  "MarkdownH2",
+  "MarkdownH3",
+  "MarkdownH4",
+  "MarkdownH5",
+  "MarkdownH6",
+  "Method",
+  "Module",
+  "Namespace",
+  "Null",
+  "Number",
+  "Object",
+  "Operator",
+  "Package",
+  "Pair",
+  "Property",
+  "Reference",
+  "Repeat",
+  "Scope",
+  "Specifier",
+  "Statement",
+  "String",
+  "Struct",
+  "SwitchStatement",
+  "Type",
+  "TypeParameter",
+  "Unit",
+  "Value",
+  "Variable",
+  "WhileStatement",
+}
 -- stylua: ignore end
 
----Set winbar highlight groups
+---Set winbar highlight groups and override background if needed
 ---@return nil
 local function set_hlgroups()
-  for hl_name, hl_settings in pairs(hlgroups) do
-    hl_settings.default = true
-    vim.api.nvim_set_hl(0, hl_name, hl_settings)
+  local bg_hlgroup = require'dropbar.configs'.opts.highlight.background
+  if type(bg_hlgroup) ~= 'string' then
+    for hl_name, hl_settings in pairs(hlgroups) do
+      hl_settings.default = true
+      vim.api.nvim_set_hl(0, hl_name, hl_settings)
+    end
+    return
+  end
+
+  local bg_color = vim.api.nvim_get_hl(0, {
+    name = bg_hlgroup,
+    link = false,
+  }).bg
+
+  local ignore = {
+    "DropBarMenuFloatBorder",
+
+    "DropBarCurrentContext",
+    "DropBarMenuCurrentContext",
+    "DropBarHover",
+    "DropBarMenuHoverEntry",
+    "DropBarMenuHoverIcon",
+    "DropBarMenuHoverSymbol",
+
+    "DropBarPreview",
+  }
+
+  vim.api.nvim_set_hl(0, "WinBar", { bg = bg_color })
+  vim.api.nvim_set_hl(0, "WinBarNC", { bg = bg_color })
+
+  for hl_name, hl_info in pairs(hlgroups) do
+    if vim.tbl_contains(ignore, hl_name) then
+      hl_info.default = true
+    else
+      if hl_info.link then
+        hl_info = vim.api.nvim_get_hl(0, {
+          name = hl_info.link,
+          link = false,
+        })
+      end
+      hl_info = vim.tbl_extend('force', hl_info, {
+        default = true,
+        bg = bg_color
+      })
+    end
+    vim.api.nvim_set_hl(0, hl_name, hl_info)
+  end
+
+  -- ***note(theofabilous): initializing these groups at the beginning should 
+  -- probably be done regardless of whether or not the background is overridden
+  for _, kind in ipairs(kinds) do
+    vim.api.nvim_set_hl(0, 'DropBarKind' .. kind, { bg = bg_color })
   end
 end
 

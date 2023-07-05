@@ -38,6 +38,10 @@ M.opts = {
       },
     },
   },
+  --***todo(theofabilous): update docs
+  highlight = {
+    background = nil,
+  },
   icons = {
     enable = true,
     kinds = {
