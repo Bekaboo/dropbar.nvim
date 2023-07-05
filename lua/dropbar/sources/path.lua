@@ -56,8 +56,18 @@ local function convert(path, buf, win)
         self.children = {}
         for name in vim.fs.dir(path) do
           if configs.opts.sources.path.filter(name) then
-            table.insert(self.children, convert(path .. '/' .. name, buf, win))
+            table.insert(
+              self.children,
+              convert(vim.fs.joinpath(path, name), buf, win)
+            )
           end
+        end
+        local path_is_dir = 1 == vim.fn.isdirectory(path)
+        if configs.opts.sources.path.filter('..') and path_is_dir then
+          table.insert(
+            self.children,
+            convert(vim.fs.joinpath(path, '..'), buf, win)
+          )
         end
         return self.children
       end
@@ -69,12 +79,18 @@ local function convert(path, buf, win)
           if configs.opts.sources.path.filter(name) then
             table.insert(
               self.siblings,
-              convert(parent_dir .. '/' .. name, buf, win)
+              convert(vim.fs.joinpath(parent_dir, name), buf, win)
             )
             if name == self.name then
               self.sibling_idx = idx
             end
           end
+        end
+        if configs.opts.sources.path.filter('..') then
+          table.insert(
+            self.siblings,
+            convert(vim.fs.joinpath(parent_dir, '..'), buf, win)
+          )
         end
         return self[k]
       end
