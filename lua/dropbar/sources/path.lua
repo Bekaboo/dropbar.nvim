@@ -68,6 +68,17 @@ local function convert(path, buf, win)
             self.children,
             convert(vim.fs.joinpath(path, '..'), buf, win)
           )
+        elseif not path_is_dir and (
+          vim.fs.normalize(path) ==
+          vim.fs.normalize(
+            vim.fn.fnamemodify((vim.api.nvim_buf_get_name(buf)), ':p')
+          )
+        ) then
+          local ts_symbols = require('dropbar.sources.treesitter')
+                            .get_symbols(buf, win, { 0, 0 }, { all_symbols = true })
+          vim.list_extend(self.children, ts_symbols)
+          self.data = self.data or {}
+          self.data.ui_icon_hl_override = 'DropBarIconUISeparatorSpecial'
         end
         return self.children
       end

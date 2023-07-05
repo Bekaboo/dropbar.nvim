@@ -95,6 +95,64 @@ local function get_node_siblings(node, buf)
   return siblings, idx
 end
 
+---Get the first occuring valid top-level TSNode that isn't a chunk
+---@param buf integer buffer handler
+---@return TSNode?
+local function get_first_node(buf)
+  local function get_cols(line)
+    local cols = #vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1]
+    return math.max(0, cols - 2)
+  end
+  local line_count = vim.api.nvim_buf_line_count(buf)
+  if line_count == 0 then return nil end
+  local col_count = get_cols(0)
+  local cursor = {0, 0}
+  local node
+  while node == nil and cursor[1] < line_count do
+    node = vim.treesitter.get_node({
+      bufnr = buf,
+      pos = cursor,
+    })
+    if node and not valid_node(node, buf) then node = nil end
+    cursor[2] = cursor[2] + 1
+    if cursor[2] >= col_count then
+      cursor = { cursor[1] + 1, 0 }
+      col_count = get_cols(cursor[1])
+    end
+  end
+  if node == nil or not valid_node(node, buf) then return nil end
+  local function check_node(node)
+    return node ~= nil and node:type() ~= "chunk"
+  end
+  -- ***note(theofabilous): in theory, getting any node and calling
+  --   node:tree():root() and returning the first child should
+  -- work, but this crashes neovim
+  -- ***todo(theofabilous): investigate/submit bug report on neovim
+  local prev_node = node
+  node = node:parent()
+  if not check_node(node) then return prev_node end
+  while not node:equal(prev_node) do
+    local parent = node:parent()
+    if not check_node(parent) then return node end
+    prev_node = node
+    node = parent
+  end
+  if valid_node(node, buf) then return node end
+
+  -- always prioritize highest level, so push children
+  -- at the end of the queue, checking siblings before
+  local queue = vim.iter(node:iter_children()):totable()
+  while #queue > 0 do
+    node = table.remove(queue, 1) -- pop first element and shift backward
+    if valid_node(node, buf) then
+      return node
+    else
+      vim.list_extend(queue, vim.iter(node:iter_children()):totable())
+    end
+  end
+  return nil
+end
+
 ---Convert TSNode into winbar symbol structure
 ---@param ts_node TSNode
 ---@param buf integer buffer handler
@@ -148,25 +206,32 @@ end
 ---@param buf integer buffer handler
 ---@param win integer window handler
 ---@param cursor integer[] cursor position
+---@param opts table<string, any>? options
 ---@return dropbar_symbol_t[] symbols winbar symbols
-local function get_symbols(buf, win, cursor)
+local function get_symbols(buf, win, cursor, opts)
   if not vim.treesitter.highlighter.active[buf] then
     return {}
   end
 
+  opts = opts or {}
   local symbols = {}
   local prev_type_rank = math.huge
   local prev_row = math.huge
-  local current_node =
-    vim.treesitter.get_node({
-      bufnr = buf,
-      pos = {
-        cursor[1] - 1,
-        cursor[2] - (cursor[2] >= 1 and vim.api
-          .nvim_get_mode().mode
-          :match('^i') and 1 or 0),
-      },
-    })
+  local current_node
+  if opts.all_symbols then
+    current_node = get_first_node(buf)
+  else
+    current_node =
+      vim.treesitter.get_node({
+        bufnr = buf,
+        pos = {
+          cursor[1] - 1,
+          cursor[2] - (cursor[2] >= 1 and vim.api
+            .nvim_get_mode().mode
+            :match('^i') and 1 or 0),
+        },
+      })
+  end
   while current_node do
     local name = get_node_short_name(current_node, buf)
     local type, type_rank = get_node_short_type(current_node)
@@ -195,6 +260,11 @@ local function get_symbols(buf, win, cursor)
       end
     end
     current_node = current_node:parent()
+  end
+  if opts.all_symbols then
+    return vim.iter(symbols):fold({}, function(acc, symbol)
+      return vim.list_extend(acc, symbol.siblings)
+    end)
   end
   return symbols
 end
