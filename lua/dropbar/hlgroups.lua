@@ -147,23 +147,65 @@ local kinds = {
 }
 -- stylua: ignore end
 
+---@type integer?
+local bg_color = nil
+
+---@type table<string, boolean>
+local devicon_hlgroups = {}
+
+---Clear all created devicon highlight groups
+---@return nil
+local function clear_devicon_hlgroups()
+  for hlname, _ in pairs(devicon_hlgroups) do
+    vim.api.nvim_set_hl(0, hlname, {})
+  end
+  devicon_hlgroups = {}
+end
+
+---Get the patched highlight group for the given devicon highlight group or
+---the given highlight group if no background color is set
+---@param hlgroup string The highlight group to patch returned by get_icon()
+---@return string highlight group name
+local function get_devicon_hlgroup(hlgroup)
+  -- devicon hlgroups only need to be patched if a background color is set
+  if not bg_color then
+    return hlgroup
+  end
+  local new_hlgroup = 'DropBar' .. hlgroup
+  if devicon_hlgroups[new_hlgroup] then
+    return new_hlgroup
+  end
+
+  local new_hl_info = require'dropbar.utils.hl'.merge(
+    hlgroup, { bg = bg_color }
+  )
+  vim.api.nvim_set_hl(0, new_hlgroup, new_hl_info)
+  devicon_hlgroups[new_hlgroup] = true
+
+  return new_hlgroup
+end
+
 ---Set winbar highlight groups and override background if needed
 ---@return nil
 local function set_hlgroups()
+  clear_devicon_hlgroups()
+
   local bg_hlgroup = require'dropbar.configs'.opts.highlight.background
   if type(bg_hlgroup) ~= 'string' then
     for hl_name, hl_settings in pairs(hlgroups) do
       hl_settings.default = true
       vim.api.nvim_set_hl(0, hl_name, hl_settings)
     end
+    bg_color = nil
     return
   end
 
-  local bg_color = vim.api.nvim_get_hl(0, {
+  bg_color = vim.api.nvim_get_hl(0, {
     name = bg_hlgroup,
     link = false,
   }).bg
 
+  --- list of hlgroups that should keep their background color
   local ignore = {
     "DropBarMenuFloatBorder",
 
@@ -216,4 +258,5 @@ end
 
 return {
   init = init,
+  get_devicon_hlgroup = get_devicon_hlgroup,
 }

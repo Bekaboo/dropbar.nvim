@@ -1,5 +1,6 @@
 local configs = require('dropbar.configs')
 local bar = require('dropbar.bar')
+local hlgroups = require('dropbar.hlgroups')
 
 ---Get icon and icon highlight group of a path
 ---@param path string
@@ -24,7 +25,7 @@ local function get_icon(path)
         { default = true }
       )
       icon = devicon and devicon .. ' ' or icon
-      icon_hl = devicon_hl
+      icon_hl = hlgroups.get_devicon_hlgroup(devicon_hl)
     end
   end
   return icon, icon_hl
