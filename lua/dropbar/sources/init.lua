@@ -1,12 +1,12 @@
 ---@class dropbar_source_t
----@field get_symbols fun(buf: integer, win: integer, cursor: integer[]): dropbar_symbol_t[]
+---@field get_symbols fun(buf: integer, win: integer, cursor: integer[], ...): dropbar_symbol_t[]
 
 local notified = false
 
 ---For backword compatibility
----@param get_symbols fun(buf: integer, win: integer, cursor: integer[]): dropbar_symbol_t[]
+---@param get_symbols fun(buf: integer, win: integer, cursor: integer[], ...): dropbar_symbol_t[]
 ---@return dropbar_symbol_t[]
-local function check_params(get_symbols, buf, win, cursor)
+local function check_params(get_symbols, buf, win, cursor, ...)
   if
     type(buf) ~= 'number'
     or type(win) ~= 'number'
@@ -28,7 +28,7 @@ local function check_params(get_symbols, buf, win, cursor)
     end
     return {}
   end
-  return get_symbols(buf, win, cursor)
+  return get_symbols(buf, win, cursor, ...)
 end
 
 ---@type table<string, dropbar_source_t>
@@ -36,8 +36,8 @@ return setmetatable({}, {
   __index = function(self, key)
     local source = require('dropbar.sources.' .. key)
     local _get_symbols = source.get_symbols
-    source.get_symbols = function(buf, win, cursor)
-      return check_params(_get_symbols, buf, win, cursor)
+    source.get_symbols = function(buf, win, cursor, ...)
+      return check_params(_get_symbols, buf, win, cursor, ...)
     end
     self[key] = source
     return source
