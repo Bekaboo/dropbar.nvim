@@ -436,7 +436,7 @@ function dropbar_t:cat(plain)
         and result .. self.separator:cat(plain) .. component:cat(plain)
       or component:cat(plain)
   end
-  local padding_left = string.rep(' ', self.padding.left)
+  local padding_left = string.rep(' ', self.padding.left) .. '%<'
   local padding_right = string.rep(' ', self.padding.right)
   result = result and padding_left .. result .. padding_right or ''
   return plain and result or hl(result, 'DropBar')
