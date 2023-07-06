@@ -208,7 +208,9 @@ function dropbar_menu_t:del()
   end
   self:close()
   if self.buf then
-    vim.api.nvim_buf_delete(self.buf, {})
+    if vim.api.nvim_buf_is_valid(self.buf) then
+      vim.api.nvim_buf_delete(self.buf, {})
+    end
     self.buf = nil
   end
   if self.win then
