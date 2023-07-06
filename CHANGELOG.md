@@ -1,5 +1,41 @@
 # Changelog
 
+## [5.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v4.0.0...v5.0.0) (2023-07-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* **sources/config:** treesitter/markdown: perfer treesitter parser
+* **sources/config:** treesitter: improve default name pattern and logic
+* **highlights:** remove hl-DropBarIconCurrentContext
+
+### Features
+
+* **api:** get_dropbar() accepts empty buffer number ([9a94a22](https://github.com/Bekaboo/dropbar.nvim/commit/9a94a2205d0702dc6258ccdcae34da73a08b9e7b))
+* **bar:** add truncate mark after the left padding ([3b7412c](https://github.com/Bekaboo/dropbar.nvim/commit/3b7412c13494ffc23519a4dcc3a29c56a22dd9ab))
+* **bar:** highlight the symbol under mouse hovering in the winbar ([c2f49e8](https://github.com/Bekaboo/dropbar.nvim/commit/c2f49e81156038254fe8789a73d08c76fc4db94d))
+* **bar:** support swapping and restoring nil values in dropbar_symbol_t ([31b6fe0](https://github.com/Bekaboo/dropbar.nvim/commit/31b6fe0a77e7ab39143031d305731db103898762))
+* **sources/config:** treesitter: improve default name pattern and logic ([c72bd7f](https://github.com/Bekaboo/dropbar.nvim/commit/c72bd7f09f6038540a51dd34c0fc52dce469dabd))
+* **sources/config:** treesitter/markdown: perfer treesitter parser ([15115eb](https://github.com/Bekaboo/dropbar.nvim/commit/15115ebbbec87bdf6f2b6891d451309422e37066))
+* **sources:** treesitter: add json pair to valid treesitter types ([5c8bd1a](https://github.com/Bekaboo/dropbar.nvim/commit/5c8bd1a4afe55c211c56b27a0a068ca1ff709c6e))
+* **sources:** treesitter: handle cursor pos in insert mode differently ([c25bef8](https://github.com/Bekaboo/dropbar.nvim/commit/c25bef89bce0300cb3913a51f711502f6b2ca310))
+
+
+### Bug Fixes
+
+* **config:** wrong sources path ([#46](https://github.com/Bekaboo/dropbar.nvim/issues/46)) ([a718484](https://github.com/Bekaboo/dropbar.nvim/commit/a718484ab639c8dc839d2c9c1031052ec6766072))
+* **menu:** error if execute `:bw` in dropbar menu ([62590d6](https://github.com/Bekaboo/dropbar.nvim/commit/62590d609c806563b9ff9a8e8818d3ce60e4a049))
+
+
+### Reverts
+
+* "feat(bar): add truncate mark after the left padding" ([e07ef94](https://github.com/Bekaboo/dropbar.nvim/commit/e07ef941ec496bd5ed5ea353ffeb8be6167110d2))
+
+
+### Code Refactoring
+
+* **highlights:** remove hl-DropBarIconCurrentContext ([24106ff](https://github.com/Bekaboo/dropbar.nvim/commit/24106ff3be3de91c9d455e0bbd0fc505b98b08fc))
+
 ## [4.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v3.2.0...v4.0.0) (2023-07-02)
 
 
