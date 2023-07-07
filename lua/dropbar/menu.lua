@@ -178,6 +178,7 @@ end
 ---@field clicked_at integer[]? last position where the menu was clicked, byte-indexed, 1,0-indexed
 ---@field prev_cursor integer[]? previous cursor position
 ---@field symbol_previewed dropbar_symbol_t? symbol being previewed
+---@field ns integer? highlight namespace
 local dropbar_menu_t = {}
 dropbar_menu_t.__index = dropbar_menu_t
 
@@ -335,22 +336,29 @@ function dropbar_menu_t:update_current_context_hl(linenr)
   end
 end
 
----Add highlights to the menu buffer
+---Add highlights to the menu buffer and create namespace if not yet created
 ---@param hl_info dropbar_menu_hl_info_t[][]
 ---@return nil
 function dropbar_menu_t:add_hl(hl_info)
   if not self.buf then
     return
   end
+  if not self.ns then
+    self.ns =
+      vim.api.nvim_create_namespace('DropBarMenuBuf' .. tostring(self.buf))
+  end
+  vim.api.nvim_buf_clear_namespace(self.buf, self.ns, 0, -1)
   for linenr, hl_line_info in ipairs(hl_info) do
     for _, hl_symbol_info in ipairs(hl_line_info) do
-      vim.api.nvim_buf_add_highlight(
+      vim.highlight.range(
         self.buf,
-        hl_symbol_info.ns or -1,
+        hl_symbol_info.ns or self.ns, ---@diagnostic disable-line:param-type-mismatch
         hl_symbol_info.hlgroup,
-        linenr - 1, -- 0-indexed
-        hl_symbol_info.start,
-        hl_symbol_info['end']
+        { linenr - 1, hl_symbol_info.start },
+        { linenr - 1, hl_symbol_info['end'] },
+        -- the priority is 1 less than the default priority in utils.hl.range_...
+        -- which allows the hover/context highlights to take precedence
+        { priority = vim.highlight.priorities.user, inclusive = false }
       )
     end
   end
