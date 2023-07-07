@@ -418,10 +418,7 @@ function dropbar_menu_t:make_buf()
     callback = function()
       local cursor = vim.api.nvim_win_get_cursor(self.win)
 
-      if
-        configs.opts.menu.preview
-        and not vim.deep_equal(cursor, self.prev_cursor)
-      then
+      if configs.opts.menu.preview then
         self:preview_symbol_at(cursor, true)
       end
 
