@@ -424,6 +424,8 @@ function dropbar_menu_t:make_buf()
 
       if configs.opts.menu.quick_navigation then
         self:quick_navigation(cursor)
+      else
+        self.prev_cursor = cursor
       end
 
       -- Update hover highlights
