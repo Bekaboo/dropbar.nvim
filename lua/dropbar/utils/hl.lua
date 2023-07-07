@@ -4,24 +4,32 @@ local M = {}
 ---@param buf integer
 ---@param hlgroup string
 ---@param range dropbar_symbol_range_t?
-function M.range_single(buf, hlgroup, range)
+---@param priority integer?
+function M.range_single(buf, hlgroup, range, priority)
   local ns = vim.api.nvim_create_namespace(hlgroup)
   vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
   if range then
-    for linenr = range.start.line, range['end'].line do
-      local start_col = linenr == range.start.line and range.start.character
-        or 0
-      local end_col = linenr == range['end'].line and range['end'].character
-        or -1
-      vim.api.nvim_buf_add_highlight(
-        buf,
-        ns,
-        hlgroup,
-        linenr,
-        start_col,
-        end_col
-      )
+    local end_col = range['end'].character
+    if end_col == -1 then
+      end_col = 1
+        + #vim.api.nvim_buf_get_lines(
+          buf,
+          range['end'].line,
+          range['end'].line + 1,
+          false
+        )[1]
     end
+    vim.highlight.range(
+      buf,
+      ns,
+      hlgroup,
+      { range.start.line, range.start.character },
+      { range['end'].line, end_col },
+      {
+        priority = priority or vim.highlight.priorities.user + 1,
+        inclusive = false,
+      }
+    )
   end
 end
 
