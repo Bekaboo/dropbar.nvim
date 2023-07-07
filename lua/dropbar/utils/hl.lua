@@ -52,14 +52,17 @@ end
 
 ---Merge highlight attributes, use values from the right most hl group
 ---if there are conflicts
----@vararg string highlight group names
+---@vararg string|table highlight group names or attribute tables
 ---@return table merged highlight attributes
 function M.merge(...)
-  local hl_attr = vim.tbl_map(function(hl_name)
-    return vim.api.nvim_get_hl(0, {
-      name = hl_name,
-      link = false,
-    })
+  local hl_attr = vim.tbl_map(function(hl_info)
+    if type(hl_info) == 'string' then
+      return vim.api.nvim_get_hl(0, {
+        name = hl_info,
+        link = false,
+      })
+    end
+    return hl_info
   end, { ... })
   return vim.tbl_extend('force', unpack(hl_attr))
 end
