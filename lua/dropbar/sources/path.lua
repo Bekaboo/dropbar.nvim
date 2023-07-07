@@ -83,6 +83,8 @@ local function convert(path, buf, win)
             { all_symbols = true }
           )
           vim.list_extend(self.children, ts_symbols)
+          self.data = self.data or {}
+          self.data.ui_icon_hl_override = 'DropBarIconUISeparatorSpecial'
         end
         return self.children
       end
