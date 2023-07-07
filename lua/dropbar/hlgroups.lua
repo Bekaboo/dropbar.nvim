@@ -77,14 +77,120 @@ local hlgroups = {
   DropBarMenuNormalFloat           = { link = 'NormalFloat' },
   DropBarPreview                   = { link = 'Visual' },
 }
+
+local kinds = {
+  "DropBarKindArray",
+  "DropBarKindBoolean",
+  "DropBarKindBreakStatement",
+  "DropBarKindCall",
+  "DropBarKindCaseStatement",
+  "DropBarKindClass",
+  "DropBarKindConstant",
+  "DropBarKindConstructor",
+  "DropBarKindContinueStatement",
+  "DropBarKindDeclaration",
+  "DropBarKindDelete",
+  "DropBarKindDoStatement",
+  "DropBarKindElseStatement",
+  "DropBarKindEnum",
+  "DropBarKindEnumMember",
+  "DropBarKindEvent",
+  "DropBarKindField",
+  "DropBarKindFile",
+  "DropBarKindFolder",
+  "DropBarKindForStatement",
+  "DropBarKindFunction",
+  "DropBarKindH1Marker",
+  "DropBarKindH2Marker",
+  "DropBarKindH3Marker",
+  "DropBarKindH4Marker",
+  "DropBarKindH5Marker",
+  "DropBarKindH6Marker",
+  "DropBarKindIdentifier",
+  "DropBarKindIfStatement",
+  "DropBarKindInterface",
+  "DropBarKindKeyword",
+  "DropBarKindList",
+  "DropBarKindMacro",
+  "DropBarKindMarkdownH1",
+  "DropBarKindMarkdownH2",
+  "DropBarKindMarkdownH3",
+  "DropBarKindMarkdownH4",
+  "DropBarKindMarkdownH5",
+  "DropBarKindMarkdownH6",
+  "DropBarKindMethod",
+  "DropBarKindModule",
+  "DropBarKindNamespace",
+  "DropBarKindNull",
+  "DropBarKindNumber",
+  "DropBarKindObject",
+  "DropBarKindOperator",
+  "DropBarKindPackage",
+  "DropBarKindPair",
+  "DropBarKindProperty",
+  "DropBarKindReference",
+  "DropBarKindRepeat",
+  "DropBarKindScope",
+  "DropBarKindSpecifier",
+  "DropBarKindStatement",
+  "DropBarKindString",
+  "DropBarKindStruct",
+  "DropBarKindSwitchStatement",
+  "DropBarKindType",
+  "DropBarKindTypeParameter",
+  "DropBarKindUnit",
+  "DropBarKindValue",
+  "DropBarKindVariable",
+  "DropBarKindWhileStatement",
+}
 -- stylua: ignore end
 
----Set winbar highlight groups
+---Set winbar highlight groups and override background if needed
 ---@return nil
 local function set_hlgroups()
-  for hl_name, hl_settings in pairs(hlgroups) do
-    hl_settings.default = true
-    vim.api.nvim_set_hl(0, hl_name, hl_settings)
+  local bg_color = vim.api.nvim_get_hl(0, {
+    name = 'WinBar',
+    link = false,
+  }).bg
+
+  if not bg_color then
+    for hl_name, hl_settings in pairs(hlgroups) do
+      hl_settings.default = true
+      vim.api.nvim_set_hl(0, hl_name, hl_settings)
+    end
+    return
+  end
+
+  local ignore = {
+    'DropBarCurrentContext',
+    'DropBarMenuCurrentContext',
+    'DropBarHover',
+    'DropBarMenuHoverEntry',
+    'DropBarMenuHoverIcon',
+    'DropBarMenuHoverSymbol',
+    'DropBarPreview',
+  }
+
+  for hl_name, hl_info in pairs(hlgroups) do
+    if vim.tbl_contains(ignore, hl_name) then
+      hl_info.default = true
+    else
+      if hl_info.link then
+        hl_info = vim.api.nvim_get_hl(0, {
+          name = hl_info.link,
+          link = false,
+        })
+      end
+      hl_info = vim.tbl_extend('force', hl_info, {
+        default = true,
+        bg = bg_color,
+      })
+    end
+    vim.api.nvim_set_hl(0, hl_name, hl_info)
+  end
+
+  for _, kind in ipairs(kinds) do
+    vim.api.nvim_set_hl(0, kind, { bg = bg_color })
   end
 end
 
