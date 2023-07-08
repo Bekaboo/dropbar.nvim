@@ -115,12 +115,14 @@ local function convert(path, buf, win)
   }))
 end
 
+-- luacheck: push no unused args
 ---Get list of dropbar symbols of the parent directories of given buffer
 ---@param buf integer buffer handler
 ---@param win integer window handler
 ---@param _ integer[] cursor position, ignored
+---@param __ table<string, any>? options, ignored
 ---@return dropbar_symbol_t[] dropbar symbols
-local function get_symbols(buf, win, _)
+local function get_symbols(buf, win, _, __) ---@diagnostic disable-line unused-local
   local symbols = {} ---@type dropbar_symbol_t[]
   local current_path = vim.fs.normalize(
     vim.fn.fnamemodify((vim.api.nvim_buf_get_name(buf)), ':p')
@@ -141,6 +143,7 @@ local function get_symbols(buf, win, _)
   end
   return symbols
 end
+-- luacheck: pop
 
 return {
   get_symbols = get_symbols,
