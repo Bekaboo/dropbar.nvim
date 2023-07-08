@@ -284,9 +284,6 @@ local function update_symbols(buf, client, ttl)
         end, configs.opts.sources.lsp.request.interval)
       else -- Update symbol_list
         lsp_buf_symbols[buf] = unify(symbols)
-        for _, dropbar in pairs(_G.dropbar.bars[buf]) do
-          dropbar:update() -- Redraw dropbar after updating symbols
-        end
       end
     end,
     buf
