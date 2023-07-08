@@ -1191,6 +1191,12 @@ should be self-explanatory:
   | DropBarIconKindFolder            | `{ link = 'Directory' }`                |
   | DropBarIconKindForStatement      | `{ link = 'Repeat' }`                   |
   | DropBarIconKindFunction          | `{ link = 'Function' }`                 |
+  | DropBarIconKindH1Marker          | `{ link = 'markdownH1' }`               |
+  | DropBarIconKindH2Marker          | `{ link = 'markdownH2' }`               |
+  | DropBarIconKindH3Marker          | `{ link = 'markdownH3' }`               |
+  | DropBarIconKindH4Marker          | `{ link = 'markdownH4' }`               |
+  | DropBarIconKindH5Marker          | `{ link = 'markdownH5' }`               |
+  | DropBarIconKindH6Marker          | `{ link = 'markdownH6' }`               |
   | DropBarIconKindIdentifier        | `{ link = 'CmpItemKindVariable' }`      |
   | DropBarIconKindIfStatement       | `{ link = 'Conditional' }`              |
   | DropBarIconKindInterface         | `{ link = 'CmpItemKindInterface' }`     |
@@ -1259,6 +1265,12 @@ should be self-explanatory:
   | DropBarKindFolder                | undefined                               |
   | DropBarKindForStatement          | undefined                               |
   | DropBarKindFunction              | undefined                               |
+  | DropBarKindH1Marker              | undefined                               |
+  | DropBarKindH2Marker              | undefined                               |
+  | DropBarKindH3Marker              | undefined                               |
+  | DropBarKindH4Marker              | undefined                               |
+  | DropBarKindH5Marker              | undefined                               |
+  | DropBarKindH6Marker              | undefined                               |
   | DropBarKindIdentifier            | undefined                               |
   | DropBarKindIfStatement           | undefined                               |
   | DropBarKindInterface             | undefined                               |
