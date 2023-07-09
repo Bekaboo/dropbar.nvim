@@ -89,13 +89,21 @@ local function setup(opts)
     vim.api.nvim_create_autocmd(configs.opts.general.update_events.win, {
       group = groupid,
       callback = function(info)
-        local win = info.event == 'WinScrolled' and tonumber(info.match)
-          or vim.api.nvim_get_current_win()
-        local buf = vim.api.nvim_win_get_buf(win)
-        if
-          rawget(_G.dropbar.bars, buf) and rawget(_G.dropbar.bars[buf], win)
-        then
-          _G.dropbar.bars[buf][win]:update()
+        local windows
+        if info.event == 'WinScrolled' then
+          windows = { tonumber(info.match) }
+        elseif info.event == 'WinResized' then
+          windows = vim.v.event.windows
+        else
+          windows = { vim.api.nvim_get_current_win() }
+        end
+        for _, win in ipairs(windows) do
+          local buf = vim.api.nvim_win_get_buf(win)
+          if
+            rawget(_G.dropbar.bars, buf) and rawget(_G.dropbar.bars[buf], win)
+          then
+            _G.dropbar.bars[buf][win]:update()
+          end
         end
       end,
       desc = 'Update a single winbar.',
