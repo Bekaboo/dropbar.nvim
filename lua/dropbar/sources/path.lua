@@ -37,10 +37,20 @@ end
 ---@return dropbar_symbol_t
 local function convert(path, buf, win)
   local icon, icon_hl = get_icon(path)
+  local name = vim.fs.basename(path)
+  if name == '' then
+    -- We had a separator at the end of the path (because directory?).
+    name = vim.fs.dirname(path)
+    assert(string.sub(name, #name, #name) == '/', '`dirname` had no `/` at the end')
+    if #name > 1 then
+      -- We're on a platform like Windows that has more to a root name than just `/`, trim the `/`.
+      name = string.sub(name, 1, #name - 1)
+    end
+  end
   return bar.dropbar_symbol_t:new(setmetatable({
     buf = buf,
     win = win,
-    name = vim.fs.basename(path),
+    name = name,
     icon = icon,
     name_hl = 'DropBarKindFolder',
     icon_hl = icon_hl,
@@ -91,14 +101,21 @@ local function get_symbols(buf, win, _)
   local current_path = vim.fs.normalize(
     vim.fn.fnamemodify((vim.api.nvim_buf_get_name(buf)), ':p')
   )
-  while
-    current_path ~= '.'
-    and current_path ~= '/'
-    and current_path
-      ~= vim.fs.normalize(
-        configs.eval(configs.opts.sources.path.relative_to, buf)
-      )
-  do
+  local relative_to_path = vim.fs.normalize(
+    configs.eval(configs.opts.sources.path.relative_to, buf)
+  )
+
+  local paths_up = function(path)
+    -- append a segment that will get immediately thrown away by `parents`
+    local dotted_path = path .. '/.'
+    return vim.iter(vim.fs.parents(dotted_path))
+  end
+
+  local current_paths_up = paths_up(current_path)
+  for up_path in current_paths_up do
+    if up_path == relative_to_path then
+      break
+    end
     table.insert(symbols, 1, convert(current_path, buf, win))
     current_path = vim.fs.dirname(current_path)
   end
