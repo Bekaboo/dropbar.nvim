@@ -37,12 +37,14 @@ end
 ---@return dropbar_symbol_t
 local function convert(path, buf, win)
   local icon, icon_hl = get_icon(path)
+  local stat = vim.loop.fs_stat(path)
+
   return bar.dropbar_symbol_t:new(setmetatable({
     buf = buf,
     win = win,
     name = vim.fs.basename(path),
     icon = icon,
-    name_hl = 'DropBarKindFolder',
+    name_hl = (stat and stat.type) == "directory" and "DropBarKindFolder" or "DropBarKindFile",
     icon_hl = icon_hl,
     ---Override the default jump function
     jump = function(_)
