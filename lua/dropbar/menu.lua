@@ -1,6 +1,7 @@
 local bar = require('dropbar.bar')
 local utils = require('dropbar.utils')
 local configs = require('dropbar.configs')
+local hlgroups = require('dropbar.hlgroups')
 local groupid = vim.api.nvim_create_augroup('DropBarMenu', {})
 
 ---Lookup table for dropbar menus
@@ -178,7 +179,6 @@ end
 ---@field clicked_at integer[]? last position where the menu was clicked, byte-indexed, 1,0-indexed
 ---@field prev_cursor integer[]? previous cursor position
 ---@field symbol_previewed dropbar_symbol_t? symbol being previewed
----@field ns integer? highlight namespace
 local dropbar_menu_t = {}
 dropbar_menu_t.__index = dropbar_menu_t
 
@@ -336,23 +336,19 @@ function dropbar_menu_t:update_current_context_hl(linenr)
   end
 end
 
----Add highlights to the menu buffer and create namespace if not yet created
+---Add highlights to the menu buffer
 ---@param hl_info dropbar_menu_hl_info_t[][]
 ---@return nil
 function dropbar_menu_t:add_hl(hl_info)
   if not self.buf then
     return
   end
-  if not self.ns then
-    self.ns =
-      vim.api.nvim_create_namespace('DropBarMenuBuf' .. tostring(self.buf))
-  end
-  vim.api.nvim_buf_clear_namespace(self.buf, self.ns, 0, -1)
+  vim.api.nvim_buf_clear_namespace(self.buf, hlgroups.namespaces.menu, 0, -1)
   for linenr, hl_line_info in ipairs(hl_info) do
     for _, hl_symbol_info in ipairs(hl_line_info) do
       vim.highlight.range(
         self.buf,
-        hl_symbol_info.ns or self.ns, ---@diagnostic disable-line:param-type-mismatch
+        hl_symbol_info.ns or hlgroups.namespaces.menu,
         hl_symbol_info.hlgroup,
         { linenr - 1, hl_symbol_info.start },
         { linenr - 1, hl_symbol_info['end'] },
@@ -462,10 +458,16 @@ function dropbar_menu_t:open_win()
   self.win = vim.api.nvim_open_win(self.buf, true, self._win_configs)
   vim.wo[self.win].scrolloff = 0
   vim.wo[self.win].sidescrolloff = 0
-  vim.wo[self.win].winhl = table.concat({
-    'NormalFloat:DropBarMenuNormalFloat',
-    'FloatBorder:DropBarMenuFloatBorder',
-  }, ',')
+  vim.api.nvim_win_set_hl_ns(self.win, hlgroups.namespaces.menu)
+
+  if not _G.dropbar.menus[self.prev_win] then
+    vim.schedule(function()
+      local buf = vim.api.nvim_win_get_buf(self.prev_win)
+      if _G.dropbar.bars[buf][self.win] then
+        vim.api.nvim_win_set_hl_ns(self.prev_win, hlgroups.namespaces.current)
+      end
+    end)
+  end
 end
 
 ---Override menu options

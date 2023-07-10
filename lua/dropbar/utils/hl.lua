@@ -50,21 +50,44 @@ function M.line_single(buf, hlgroup, linenr)
   })
 end
 
+---Convert `hl_info` to a normalized table of highlight attributes
+---that can be used to create or merge highlight groups, following
+---links if necessary, and optionally copy `hl_info` if it's a table
+---@param hl_info string|table highlight group name or attribute table
+---@param copy boolean? whether to copy `hl_info` if it's a table, default `false`
+---@return table: normalized highlight attributes
+function M.normalize(hl_info, copy)
+  local hl_name = type(hl_info) == 'string' and hl_info or hl_info.link
+  if hl_name then
+    return vim.api.nvim_get_hl(0, {
+      name = hl_name,
+      link = false,
+    })
+  elseif copy then
+    return vim.deepcopy(hl_info) ---@diagnostic disable-line: return-type-mismatch
+  else
+    return hl_info ---@diagnostic disable-line: return-type-mismatch
+  end
+end
+
+---Get highlight attributes, ignoring those in `ignore`
+---@param hl_info string|table highlight group name or attribute table
+---@param ignore string[] highlight attributes to ignore
+---@return table: highlight attributes
+function M.without(hl_info, ignore)
+  hl_info = M.normalize(hl_info, true) -- don't mutate hl_info
+  for _, attr in ipairs(ignore) do
+    hl_info[attr] = nil
+  end
+  return hl_info
+end
+
 ---Merge highlight attributes, use values from the right most hl group
 ---if there are conflicts
 ---@vararg string|table highlight group names or attribute tables
 ---@return table merged highlight attributes
 function M.merge(...)
-  local hl_attr = vim.tbl_map(function(hl_info)
-    if type(hl_info) == 'string' then
-      return vim.api.nvim_get_hl(0, {
-        name = hl_info,
-        link = false,
-      })
-    end
-    return hl_info
-  end, { ... })
-  return vim.tbl_extend('force', unpack(hl_attr))
+  return vim.tbl_extend('force', unpack(vim.tbl_map(M.normalize, { ... })))
 end
 
 return M

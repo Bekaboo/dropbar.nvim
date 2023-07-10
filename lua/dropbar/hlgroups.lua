@@ -1,3 +1,5 @@
+local utils = require('dropbar.utils')
+
 -- stylua: ignore start
 local hlgroups = {
   DropBarCurrentContext            = { link = 'Visual' },
@@ -145,63 +147,103 @@ local kinds = {
 }
 -- stylua: ignore end
 
----@type integer?
-local bg_color = nil
-
----@type table<string, boolean>
-local devicon_hlgroups = {}
+local M = {
+  namespaces = {
+    current = vim.api.nvim_create_namespace('DropBarCurrent'),
+    nc = 0,
+    menu = vim.api.nvim_create_namespace('DropBarMenu'),
+  },
+  dropbar = {
+    ---@type table<string, any>?
+    current = nil,
+    ---@type table<string, any>?
+    nc = nil,
+    ---@type table<string, any>?
+    menu = nil,
+  },
+  ---@type table<string, boolean>
+  devicons = {},
+}
 
 ---Clear all created devicon highlight groups
 ---@return nil
 local function clear_devicon_hlgroups()
-  for hlname, _ in pairs(devicon_hlgroups) do
-    vim.api.nvim_set_hl(0, hlname, {})
+  for hlname, _ in pairs(M.devicons) do
+    for _, ns in pairs(M.namespaces) do
+      vim.api.nvim_set_hl(ns, hlname, {})
+    end
   end
-  devicon_hlgroups = {}
+  M.devicons = {}
+end
+
+---Create a highlight group with name `hl_name` and the given `hl_info`
+---for each namespace
+---@param hl_name string The name of the highlight group to create
+---@param hl_info table<string, any>|string highlight group name to link or highlight attribute table
+local function create_hl(hl_name, hl_info)
+  hl_info = utils.hl.normalize(hl_info, true)
+  for _, e in ipairs({ 'current', 'nc', 'menu' }) do
+    vim.api.nvim_set_hl(
+      M.namespaces[e],
+      hl_name,
+      utils.hl.merge(hl_info, M.dropbar[e])
+    )
+  end
 end
 
 ---Get the patched highlight group for the given devicon highlight group or
 ---the given highlight group if no background color is set
 ---@param hlgroup string The highlight group to patch returned by get_icon()
 ---@return string highlight group name
-local function get_devicon_hlgroup(hlgroup)
-  -- devicon hlgroups only need to be patched if a background color is set
-  if not bg_color then
-    return hlgroup
-  end
+function M.get_devicon_hlgroup(hlgroup)
   local new_hlgroup = 'DropBar' .. hlgroup
-  if devicon_hlgroups[new_hlgroup] then
+  if M.devicons[new_hlgroup] then
     return new_hlgroup
   end
-
-  local new_hl_info =
-    require('dropbar.utils.hl').merge(hlgroup, { bg = bg_color })
-  vim.api.nvim_set_hl(0, new_hlgroup, new_hl_info)
-  devicon_hlgroups[new_hlgroup] = true
-
+  create_hl(new_hlgroup, hlgroup)
+  M.devicons[new_hlgroup] = true
   return new_hlgroup
 end
 
 ---Set winbar highlight groups and override background if needed
 ---@return nil
-local function set_hlgroups()
+function M.set_hlgroups()
   clear_devicon_hlgroups()
 
-  bg_color = vim.api.nvim_get_hl(0, {
-    name = 'WinBar',
-    link = false,
-  }).bg
-
-  if not bg_color then
-    for hl_name, hl_settings in pairs(hlgroups) do
-      hl_settings.default = true
-      vim.api.nvim_set_hl(0, hl_name, hl_settings)
-    end
-    bg_color = nil
-    return
+  M.dropbar.current = utils.hl.without('WinBar', { 'fg', 'nocombine' })
+  if vim.tbl_isempty(M.dropbar.current) then
+    M.dropbar.current = nil
   end
 
-  --- list of hlgroups that should keep their background color
+  M.dropbar.nc = utils.hl.without('WinBarNC', { 'fg', 'nocombine' })
+  if vim.tbl_isempty(M.dropbar.nc) then
+    M.dropbar.nc = nil
+  end
+
+  M.dropbar.menu = utils.hl.without('WinBar', {
+    'fg',
+    'bold',
+    'standout',
+    'underline',
+    'undercurl',
+    'underdouble',
+    'underdotted',
+    'underdashed',
+    'strikethrough',
+    'italic',
+    'reverse',
+    'nocombine',
+  })
+  if vim.tbl_isempty(M.dropbar.menu) then
+    M.dropbar.menu = nil
+  end
+
+  -- hack: set WinBarNC to WinBar in the namespace 'current' so that
+  -- the dropbar is highlighted as if it is the current one even when inside a
+  -- dropbar_menu_t
+  vim.api.nvim_set_hl(M.namespaces.current, 'WinBarNC', M.dropbar.current)
+
+  --- list of hlgroups that should not be overridden
   local ignore = {
     'DropBarCurrentContext',
     'DropBarMenuCurrentContext',
@@ -215,36 +257,35 @@ local function set_hlgroups()
   for hl_name, hl_info in pairs(hlgroups) do
     if vim.tbl_contains(ignore, hl_name) then
       hl_info.default = true
+      vim.api.nvim_set_hl(0, hl_name, hl_info)
     else
-      if hl_info.link then
-        hl_info = vim.api.nvim_get_hl(0, {
-          name = hl_info.link,
-          link = false,
-        })
-      end
-      hl_info = vim.tbl_extend('force', hl_info, {
-        default = true,
-        bg = bg_color,
-      })
+      create_hl(hl_name, hl_info)
     end
-    vim.api.nvim_set_hl(0, hl_name, hl_info)
   end
 
   for _, kind in ipairs(kinds) do
-    vim.api.nvim_set_hl(0, kind, { bg = bg_color })
+    create_hl(kind, {})
   end
+
+  vim.api.nvim_set_hl(
+    M.namespaces.menu,
+    'NormalFloat',
+    { link = 'DropBarMenuNormalFloat', default = true }
+  )
+  vim.api.nvim_set_hl(
+    M.namespaces.menu,
+    'FloatBorder',
+    { link = 'DropBarMenuFloatBorder', default = true }
+  )
 end
 
 ---Initialize highlight groups for dropbar
-local function init()
-  set_hlgroups()
+function M.init()
+  M.set_hlgroups()
   vim.api.nvim_create_autocmd('ColorScheme', {
     group = vim.api.nvim_create_augroup('DropBarHlGroups', {}),
-    callback = set_hlgroups,
+    callback = M.set_hlgroups,
   })
 end
 
-return {
-  init = init,
-  get_devicon_hlgroup = get_devicon_hlgroup,
-}
+return M
