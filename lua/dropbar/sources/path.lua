@@ -1,19 +1,22 @@
 local configs = require('dropbar.configs')
 local bar = require('dropbar.bar')
 
----Get icon and icon highlight group of a path
+---Get icon, icon highlight and name highlight of a path
 ---@param path string
 ---@return string icon
 ---@return string? icon_hl
-local function get_icon(path)
+---@return string? name_hl
+local function get_icon_and_hl(path)
   local icon = configs.opts.icons.kinds.symbols.File
   local icon_hl = 'DropBarIconKindFile'
+  local name_hl = 'DropBarKindFile'
   local stat = vim.loop.fs_stat(path)
   if not stat then
     return icon, icon_hl
   elseif stat.type == 'directory' then
     icon = configs.opts.icons.kinds.symbols.Folder
     icon_hl = 'DropBarIconKindFolder'
+    name_hl = 'DropBarKindFolder'
   end
   if configs.opts.icons.kinds.use_devicons then
     local devicons_ok, devicons = pcall(require, 'nvim-web-devicons')
@@ -27,7 +30,7 @@ local function get_icon(path)
       icon_hl = devicon_hl
     end
   end
-  return icon, icon_hl
+  return icon, icon_hl, name_hl
 end
 
 ---Convert a path to a dropbar symbol
@@ -36,13 +39,13 @@ end
 ---@param win integer window handler
 ---@return dropbar_symbol_t
 local function convert(path, buf, win)
-  local icon, icon_hl = get_icon(path)
+  local icon, icon_hl, name_hl = get_icon_and_hl(path)
   return bar.dropbar_symbol_t:new(setmetatable({
     buf = buf,
     win = win,
     name = vim.fs.basename(path),
     icon = icon,
-    name_hl = 'DropBarKindFolder',
+    name_hl = name_hl,
     icon_hl = icon_hl,
     ---Override the default jump function
     jump = function(_)
