@@ -1,5 +1,15 @@
 # Changelog
 
+## [5.0.1](https://github.com/Bekaboo/dropbar.nvim/compare/v5.0.0...v5.0.1) (2023-07-10)
+
+
+### Bug Fixes
+
+* **dropbar:** WinResized not updating all affected windows ([#56](https://github.com/Bekaboo/dropbar.nvim/issues/56)) ([03bfd62](https://github.com/Bekaboo/dropbar.nvim/commit/03bfd620f4d98a889bc7a0059ddb21dd24abdd7f))
+* **menu:** highlighting issues that occur during menu navigation ([#52](https://github.com/Bekaboo/dropbar.nvim/issues/52)) ([a34d3e6](https://github.com/Bekaboo/dropbar.nvim/commit/a34d3e6d19903d4e81c3bef3c743464117af631f))
+* **sources.path/highlights:** `DropBarKindFile` not used ([dd0a43d](https://github.com/Bekaboo/dropbar.nvim/commit/dd0a43d0bdd2918bef5ed7f42caacb1bbe5d7d92))
+* **sources:** lsp source should not request for winbar update, fix [#55](https://github.com/Bekaboo/dropbar.nvim/issues/55) ([7341bee](https://github.com/Bekaboo/dropbar.nvim/commit/7341beee61e7ab48d504fc5f4989dfa934d2151c))
+
 ## [5.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v4.0.0...v5.0.0) (2023-07-06)
 
 
