@@ -163,6 +163,8 @@ local M = {
   },
   ---@type table<string, boolean>
   devicons = {},
+  ---@type table<string, boolean>
+  managed = {},
 }
 
 ---Clear all created devicon highlight groups
@@ -203,6 +205,17 @@ function M.get_devicon_hlgroup(hlgroup)
   create_hl(new_hlgroup, hlgroup)
   M.devicons[new_hlgroup] = true
   return new_hlgroup
+end
+
+---Register a non-dropbar defined highlight group to be managed by dropbar,
+---for example when setting icon/name highlights for symbols
+---@param hlgroup string
+---@return string: The managed highlight group name
+function M.manage(hlgroup)
+  M.managed[hlgroup] = true
+  local managed_hlgroup = 'DropBarManaged' .. hlgroup
+  create_hl(managed_hlgroup, hlgroup)
+  return managed_hlgroup
 end
 
 ---Set winbar highlight groups and override background if needed
@@ -265,6 +278,10 @@ function M.set_hlgroups()
 
   for _, kind in ipairs(kinds) do
     create_hl(kind, {})
+  end
+
+  for k, _ in pairs(M.managed) do
+    M.manage(k)
   end
 
   vim.api.nvim_set_hl(
