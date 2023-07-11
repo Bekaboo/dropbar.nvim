@@ -643,12 +643,12 @@ function dropbar_t:update_current_context_hl(bar_idx)
   vim.api.nvim_set_hl(
     0,
     hl_currentcontext_icon,
-    utils.hl.merge('DropBarCurrentContext', symbol.icon_hl or 'WinBar')
+    utils.hl.merge(symbol.icon_hl or 'WinBar', 'DropBarCurrentContext')
   )
   vim.api.nvim_set_hl(
     0,
     hl_currentcontext_name,
-    utils.hl.merge('DropBarCurrentContext', symbol.name_hl or 'WinBar')
+    utils.hl.merge(symbol.name_hl or 'WinBar', 'DropBarCurrentContext')
   )
   symbol:swap_field('icon_hl', hl_currentcontext_icon)
   symbol:swap_field('name_hl', hl_currentcontext_name)
@@ -676,12 +676,12 @@ function dropbar_t:update_hover_hl(col)
   vim.api.nvim_set_hl(
     0,
     hl_hover_icon,
-    utils.hl.merge('DropBarHover', symbol.icon_hl or 'WinBar')
+    utils.hl.merge(symbol.icon_hl or 'WinBar', 'DropBarHover')
   )
   vim.api.nvim_set_hl(
     0,
     hl_hover_name,
-    utils.hl.merge('DropBarHover', symbol.name_hl or 'WinBar')
+    utils.hl.merge(symbol.name_hl or 'WinBar', 'DropBarHover')
   )
   symbol:swap_field('icon_hl', hl_hover_icon)
   symbol:swap_field('name_hl', hl_hover_name)

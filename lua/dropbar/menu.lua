@@ -1,6 +1,7 @@
 local bar = require('dropbar.bar')
 local utils = require('dropbar.utils')
 local configs = require('dropbar.configs')
+local hlgroups = require('dropbar.hlgroups')
 local groupid = vim.api.nvim_create_augroup('DropBarMenu', {})
 
 ---Lookup table for dropbar menus
@@ -342,15 +343,18 @@ function dropbar_menu_t:add_hl(hl_info)
   if not self.buf then
     return
   end
+  vim.api.nvim_buf_clear_namespace(self.buf, hlgroups.namespaces.menu, 0, -1)
   for linenr, hl_line_info in ipairs(hl_info) do
     for _, hl_symbol_info in ipairs(hl_line_info) do
-      vim.api.nvim_buf_add_highlight(
+      vim.highlight.range(
         self.buf,
-        hl_symbol_info.ns or -1,
+        hl_symbol_info.ns or hlgroups.namespaces.menu,
         hl_symbol_info.hlgroup,
-        linenr - 1, -- 0-indexed
-        hl_symbol_info.start,
-        hl_symbol_info['end']
+        { linenr - 1, hl_symbol_info.start },
+        { linenr - 1, hl_symbol_info['end'] },
+        -- the priority is 1 less than the default priority in utils.hl.range_...
+        -- which allows the hover/context highlights to take precedence
+        { priority = vim.highlight.priorities.user, inclusive = false }
       )
     end
   end
@@ -454,10 +458,16 @@ function dropbar_menu_t:open_win()
   self.win = vim.api.nvim_open_win(self.buf, true, self._win_configs)
   vim.wo[self.win].scrolloff = 0
   vim.wo[self.win].sidescrolloff = 0
-  vim.wo[self.win].winhl = table.concat({
-    'NormalFloat:DropBarMenuNormalFloat',
-    'FloatBorder:DropBarMenuFloatBorder',
-  }, ',')
+  vim.api.nvim_win_set_hl_ns(self.win, hlgroups.namespaces.menu)
+
+  if not _G.dropbar.menus[self.prev_win] then
+    vim.schedule(function()
+      local buf = vim.api.nvim_win_get_buf(self.prev_win)
+      if _G.dropbar.bars[buf][self.win] then
+        vim.api.nvim_win_set_hl_ns(self.prev_win, hlgroups.namespaces.current)
+      end
+    end)
+  end
 end
 
 ---Override menu options

@@ -62,13 +62,32 @@ local function setup(opts)
       vim.wo.winbar = '%{%v:lua.dropbar.get_dropbar_str()%}'
     end
   end
+  local function _update_ns(buf, win, ns)
+    if configs.eval(configs.opts.general.enable, buf, win) then
+      vim.api.nvim_win_set_hl_ns(0, ns)
+    end
+  end
   for _, win in ipairs(vim.api.nvim_list_wins()) do
     _switch(vim.api.nvim_win_get_buf(win), win)
   end
+  vim.api.nvim_create_autocmd({ 'WinEnter', 'WinLeave' }, {
+    group = groupid,
+    callback = function(info)
+      _update_ns(
+        info.buf,
+        0,
+        info.event == 'WinEnter' and hlgroups.namespaces.current
+          or hlgroups.namespaces.nc
+      )
+    end,
+  })
   vim.api.nvim_create_autocmd({ 'OptionSet', 'BufWinEnter', 'BufWritePost' }, {
     group = groupid,
     callback = function(info)
       _switch(info.buf, 0)
+      if info.event == 'BufWinEnter' then
+        _update_ns(info.buf, 0, hlgroups.namespaces.current)
+      end
     end,
     desc = 'Enable/disable dropbar',
   })
