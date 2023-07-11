@@ -167,17 +167,6 @@ local M = {
   managed = {},
 }
 
----Clear all created devicon highlight groups
----@return nil
-local function clear_devicon_hlgroups()
-  for hlname, _ in pairs(M.devicons) do
-    for _, ns in pairs(M.namespaces) do
-      vim.api.nvim_set_hl(ns, hlname, {})
-    end
-  end
-  M.devicons = {}
-end
-
 ---Create a highlight group with name `hl_name` and the given `hl_info`
 ---for each namespace
 ---@param hl_name string The name of the highlight group to create
@@ -221,8 +210,6 @@ end
 ---Set winbar highlight groups and override background if needed
 ---@return nil
 function M.set_hlgroups()
-  clear_devicon_hlgroups()
-
   M.dropbar.current = utils.hl.without('WinBar', { 'fg', 'nocombine' })
   if vim.tbl_isempty(M.dropbar.current) then
     M.dropbar.current = nil
