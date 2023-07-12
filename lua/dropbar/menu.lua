@@ -178,6 +178,7 @@ end
 ---@field clicked_at integer[]? last position where the menu was clicked, byte-indexed, 1,0-indexed
 ---@field prev_cursor integer[]? previous cursor position
 ---@field symbol_previewed dropbar_symbol_t? symbol being previewed
+---@field data table? any data associated with the menu
 local dropbar_menu_t = {}
 dropbar_menu_t.__index = dropbar_menu_t
 
@@ -356,15 +357,7 @@ function dropbar_menu_t:add_hl(hl_info)
   end
 end
 
----Make a buffer for the menu and set buffer-local keymaps
----Must be called after self:eval_win_configs()
----Side effect: change self.buf, self.hl_info
----@return nil
-function dropbar_menu_t:make_buf()
-  if self.buf then
-    return
-  end
-  self.buf = vim.api.nvim_create_buf(false, true)
+function dropbar_menu_t:fill_buf()
   local lines = {} ---@type string[]
   local hl_info = {} ---@type dropbar_menu_hl_info_t[][]
   for _, entry in ipairs(self.entries) do
@@ -384,6 +377,18 @@ function dropbar_menu_t:make_buf()
   end
   vim.api.nvim_buf_set_lines(self.buf, 0, -1, false, lines)
   self:add_hl(hl_info)
+end
+
+---Make a buffer for the menu and set buffer-local keymaps
+---Must be called after self:eval_win_configs()
+---Side effect: change self.buf, self.hl_info
+---@return nil
+function dropbar_menu_t:make_buf()
+  if self.buf then
+    return
+  end
+  self.buf = vim.api.nvim_create_buf(false, true)
+  self:fill_buf()
   if self.cursor then
     self:update_current_context_hl(self.cursor[1])
   end
