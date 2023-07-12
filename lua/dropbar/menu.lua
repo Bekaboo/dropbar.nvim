@@ -178,6 +178,8 @@ end
 ---@field clicked_at integer[]? last position where the menu was clicked, byte-indexed, 1,0-indexed
 ---@field prev_cursor integer[]? previous cursor position
 ---@field symbol_previewed dropbar_symbol_t? symbol being previewed
+---@field fzf_state fzf_state_t? fuzzy-finding state, or nil if not currently fuzzy-finding
+---@field data table? any data associated with the menu
 local dropbar_menu_t = {}
 dropbar_menu_t.__index = dropbar_menu_t
 
@@ -356,15 +358,7 @@ function dropbar_menu_t:add_hl(hl_info)
   end
 end
 
----Make a buffer for the menu and set buffer-local keymaps
----Must be called after self:eval_win_configs()
----Side effect: change self.buf, self.hl_info
----@return nil
-function dropbar_menu_t:make_buf()
-  if self.buf then
-    return
-  end
-  self.buf = vim.api.nvim_create_buf(false, true)
+function dropbar_menu_t:fill_buf()
   local lines = {} ---@type string[]
   local hl_info = {} ---@type dropbar_menu_hl_info_t[][]
   for _, entry in ipairs(self.entries) do
@@ -384,6 +378,18 @@ function dropbar_menu_t:make_buf()
   end
   vim.api.nvim_buf_set_lines(self.buf, 0, -1, false, lines)
   self:add_hl(hl_info)
+end
+
+---Make a buffer for the menu and set buffer-local keymaps
+---Must be called after self:eval_win_configs()
+---Side effect: change self.buf, self.hl_info
+---@return nil
+function dropbar_menu_t:make_buf()
+  if self.buf then
+    return
+  end
+  self.buf = vim.api.nvim_create_buf(false, true)
+  self:fill_buf()
   if self.cursor then
     self:update_current_context_hl(self.cursor[1])
   end
@@ -611,6 +617,321 @@ function dropbar_menu_t:quick_navigation(new_cursor)
     vim.api.nvim_win_set_cursor(self.win, new_cursor)
   end
   self.prev_cursor = new_cursor
+end
+
+---Restore menu buffer and entries in their original order
+---before modification by fuzzy finding
+---@version JIT
+function dropbar_menu_t:fuzzy_find_restore_entries()
+  if not self.fzf_state then
+    return
+  end
+  self.entries = {}
+  -- the order of the entries is changed as the entries are
+  -- sorted per their fzf score, but the idx field is preserved
+  for _, entry in ipairs(self.fzf_state.menu_entries) do
+    self.entries[entry.idx] = entry
+  end
+  self:fill_buf()
+end
+
+---Stop fuzzy finding and clean up allocated memory, optionally fixing the
+---cursor position to counteract cursor movement caused by entering and leaving
+---insert mode
+---@param fix_cursor boolean?
+---@version JIT
+function dropbar_menu_t:stop_fuzzy_find(fix_cursor)
+  -- todo: handle case when restoring cursor
+  -- that only has one clickable component when
+  -- fixing the cursor (quick navigation?)
+  fix_cursor = fix_cursor == nil and true or fix_cursor
+  if not self.fzf_state then
+    return
+  end
+  if self.is_opened then
+    self:fuzzy_find_restore_entries()
+    vim.bo[self.buf].modifiable = false
+  end
+  local input_win = self.fzf_state.win
+  self.fzf_state:gc()
+  self.fzf_state = nil
+  if vim.api.nvim_win_is_valid(input_win) then
+    vim.cmd('silent! stopinsert')
+    vim.api.nvim_win_close(input_win, false)
+    if fix_cursor and self.is_opened then
+      vim.schedule(function()
+        local cursor = vim.api.nvim_win_get_cursor(0)
+        local new_col = math.min(cursor[2] + 1, vim.fn.col('$') - 2)
+        vim.api.nvim_win_set_cursor(0, { cursor[1], new_col })
+      end)
+    end
+  end
+end
+
+---Click on the currently selected fuzzy find menu entry, choosing the component
+---to click according to `component`.
+---
+---If `component` is a `number`, the `component`-nth symbol is selected, unless
+---`0` or `-1` is supplied, in which case the *first* or *last* clickable component
+---is selected, respectively. If it is a `function`, it receives the `dropbar_menu_entry_t`
+---as an argument and should return the `dropbar_symbol_t` that is to be clicked.
+---@param component? number|fun(entry: dropbar_menu_entry_t):dropbar_symbol_t
+---@version JIT
+function dropbar_menu_t:click_on_fuzzy_find_entry(component)
+  if not self.fzf_state then
+    return
+  end
+  if vim.api.nvim_buf_line_count(self.buf) < 1 then
+    return
+  end
+  local cursor = vim.api.nvim_win_get_cursor(self.win)
+  local menu_entry = self.entries[cursor[1]]
+  if not menu_entry then
+    return
+  end
+  cursor[1] = menu_entry.idx
+  self:stop_fuzzy_find(false)
+  vim.api.nvim_win_set_cursor(self.win, cursor)
+  vim.api.nvim_feedkeys('l', 'nt', false)
+  component = component or 0
+  vim.schedule(function()
+    local target
+    if type(component) == 'number' then
+      if component == -1 then
+        target = menu_entry.components[#menu_entry.components]
+        while target and not target.on_click do
+          target = menu_entry.components[target.entry_idx - 1]
+        end
+      elseif component == 0 then
+        cursor = vim.api.nvim_win_get_cursor(self.win)
+        target = menu_entry:first_clickable(cursor[2])
+      else
+        target = menu_entry.components[component]
+      end
+    elseif type(component) == 'function' then
+      target = component(menu_entry)
+    end
+    if not target or not target.on_click then
+      return
+    end
+    self:click_on(target, nil, 1, 'l')
+  end)
+end
+
+---Enable fuzzy finding mode
+---@param opts? table<string, any>
+---@version JIT
+function dropbar_menu_t:fuzzy_find(opts)
+  opts = vim.tbl_extend('keep', opts or {}, {
+    retain_inner_spaces = true,
+    char_pattern = '[%w%p]',
+    hl = {
+      fg = vim.api.nvim_get_hl(0, { name = 'htmlTag', link = false }).fg,
+      underline = true,
+    },
+    prompt = '%#htmlTag# ',
+  })
+
+  if not jit then
+    vim.notify('Fuzzy finding requires LuaJIT', vim.log.levels.ERROR)
+    return
+  elseif not utils.fzf then
+    vim.notify('fzf-lib is not installed', vim.log.levels.ERROR)
+    return
+  elseif not utils.fzf.load() then
+    vim.notify('Error loading fzf-lib', vim.log.levels.ERROR)
+    return
+  end
+
+  -- cache namespaces and types
+  local fzf_lib = utils.fzf.lib
+  local fzf_native = utils.fzf.native
+  local fzf_entry_array_t = utils.fzf.fzf_entry_array_t
+  local copy_entry = utils.fzf.copy_entry
+  local ffi = require('ffi')
+
+  if self.fzf_state then
+    self:stop_fuzzy_find(false)
+  end
+
+  local ns_name = 'DropBarFzf' .. tostring(self.win)
+  local augroup = vim.api.nvim_create_augroup(ns_name, { clear = true })
+  local ns_id = vim.api.nvim_create_namespace(ns_name)
+
+  vim.api.nvim_set_hl(0, 'DropBarFzfMatch', opts.hl)
+
+  vim.bo[self.buf].modifiable = true
+  local buf = vim.api.nvim_create_buf(false, true)
+  local win = vim.api.nvim_open_win(
+    buf,
+    false,
+    vim.tbl_extend('force', self._win_configs, {
+      row = self._win_configs.row + self._win_configs.height,
+      col = self._win_configs.col - 1,
+      height = 1,
+      border = 'single',
+    }, opts.win_configs or {})
+  )
+  vim.wo[win].stc = opts.prompt
+  local should_preview = configs.opts.menu.preview
+  local function move_cursor(pos)
+    vim.api.nvim_win_set_cursor(self.win, pos)
+    self:update_hover_hl(pos)
+    if should_preview then
+      self:preview_symbol_at(pos)
+    end
+  end
+
+  local num_entries = #self.entries
+
+  -- This is used as a sorting proxy. Instead of sorting the entries directly,
+  -- we sort the proxy array and then use the indices to collect the entries.
+  -- The proxy's element count is twice that of the entries because
+  -- a merge sorting algorithm is used, requiring 2 arrays
+  local proxy_buff = ffi.new('int32_t[?]', num_entries * 2)
+
+  self.fzf_state = utils.fzf.fzf_state_t:new(self, win, opts)
+
+  local keymaps = vim.tbl_extend('force', {
+    ['<Esc>'] = function()
+      self:stop_fuzzy_find(true)
+    end,
+    ['<Enter>'] = function()
+      self:click_on_fuzzy_find_entry(-1)
+    end,
+    ['<S-Enter>'] = function()
+      self:click_on_fuzzy_find_entry(nil)
+    end,
+    ['<Up>'] = function()
+      if vim.api.nvim_buf_line_count(self.buf) <= 1 then
+        return
+      end
+      local cursor = vim.api.nvim_win_get_cursor(self.win)
+      cursor[1] = math.max(1, cursor[1] - 1)
+      move_cursor(cursor)
+    end,
+    ['<Down>'] = function()
+      local line_count = vim.api.nvim_buf_line_count(self.buf)
+      if line_count <= 1 then
+        return
+      end
+      local cursor = vim.api.nvim_win_get_cursor(self.win)
+      cursor[1] = math.min(line_count, cursor[1] + 1)
+      move_cursor(cursor)
+    end,
+  }, opts.keymaps or {})
+
+  for key, func in pairs(keymaps) do
+    vim.keymap.set('i', key, func, { buffer = buf })
+  end
+
+  vim.api.nvim_set_current_win(win)
+  vim.schedule(function()
+    move_cursor({ 1, 1 })
+    vim.cmd('silent! startinsert')
+  end)
+
+  local function on_update()
+    if not self.fzf_state then
+      return true
+    end
+    ---@type fzf_state_t
+    local fzf_state = self.fzf_state
+    local text = vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1]
+    if not text or #text < 1 then
+      vim.schedule(function()
+        self:fuzzy_find_restore_entries()
+        move_cursor({ 1, 1 })
+      end)
+      return
+    end
+    local pattern = fzf_lib.parse_pattern(text, 0, true)
+    for i = 0, num_entries - 1 do
+      local entry = fzf_state.entries[i]
+      entry.score = fzf_lib.get_score(entry.str, pattern, fzf_state.slab)
+      entry.first_position = 0
+      if entry.pos ~= nil then
+        fzf_native.fzf_free_positions(entry.pos)
+        entry.pos = nil
+      end
+      if entry.score > 1 then
+        local positions =
+          fzf_native.fzf_get_positions(entry.str, pattern, fzf_state.slab)
+        if positions and positions.size > 0 then
+          entry.first_position = positions.data[0] + 1
+          entry.pos = positions
+        end
+      end
+    end
+    fzf_lib.free_pattern(pattern)
+
+    local proxy_ptr =
+      utils.fzf.sort_entries(fzf_state.entries, num_entries, proxy_buff)
+    local new_entries = fzf_entry_array_t(num_entries)
+    local old_entries_ptr = fzf_state.entries + 0
+    for i = 0, num_entries - 1 do
+      local fzf_entry = old_entries_ptr[proxy_ptr[i]]
+      copy_entry(new_entries[i], fzf_entry)
+      if fzf_entry.score > 1 then
+        self.entries[i + 1] = fzf_state.menu_entries[fzf_entry.index]
+      else
+        self.entries[i + 1] = nil
+        if fzf_entry.pos ~= nil then
+          fzf_native.fzf_free_positions(fzf_entry.pos)
+          fzf_entry.pos = nil
+          fzf_entry.first_position = 0
+        end
+      end
+    end
+    fzf_state.entries = new_entries
+
+    vim.schedule(function()
+      vim.api.nvim_buf_clear_namespace(self.buf, ns_id, 0, -1)
+      self:fill_buf()
+      for i = 0, num_entries - 1 do
+        local entry = fzf_state.entries[i]
+        -- if score >= 2 then positions is either valid or nil and freed
+        if entry.score >= 2 then
+          local locations = entry.locations
+          local data = entry.pos.data
+          for pos_idx = 0, tonumber(entry.pos.size) - 1 do
+            local pos = locations[data[pos_idx]]
+            vim.api.nvim_buf_set_extmark(self.buf, ns_id, i, pos, {
+              end_col = pos + 1,
+              hl_group = 'DropBarFzfMatch',
+              priority = vim.highlight.priorities.user + 10,
+            })
+          end
+          fzf_native.fzf_free_positions(entry.pos)
+          entry.pos = nil
+        else
+          break
+        end
+      end
+      if #self.entries > 0 then
+        move_cursor({ 1, 1 })
+      else
+        if self.symbol_previewed then
+          self.symbol_previewed:preview_restore_hl()
+          self.symbol_previewed:preview_restore_view()
+          self.symbol_previewed = nil
+          self:update_hover_hl()
+        end
+      end
+    end)
+  end
+
+  vim.api.nvim_buf_attach(buf, false, { on_lines = on_update })
+
+  -- make sure allocated memory is freed (done in fuzzy_find_stop())
+  vim.api.nvim_create_autocmd({ 'BufUnload', 'BufWinLeave', 'WinLeave' }, {
+    group = augroup,
+    buffer = buf,
+    callback = function()
+      self:stop_fuzzy_find(false)
+    end,
+    once = true,
+  })
 end
 
 ---Toggle the menu
