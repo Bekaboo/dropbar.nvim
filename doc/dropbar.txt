@@ -848,6 +848,7 @@ Highlight groups ~
   DropBarIconUIPickPivot             `{ link = 'Error' }`
   DropBarIconUISeparator             `{ link = 'SpecialChar' }`
   DropBarIconUISeparatorMenu         `{ link = 'DropBarIconUISeparator' }`
+  DropBarIconUISeparatorSpecial      `{ link = 'Keyword' }`
   DropBarMenuCurrentContext          `{ link = 'PmenuSel' }`
   DropBarMenuHoverEntry              `{ link = 'Visual' }`
   DropBarMenuHoverIcon               `{ reverse = true }`

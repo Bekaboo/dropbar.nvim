@@ -379,8 +379,9 @@ local function init()
 end
 ---@param win integer window handler
 ---@param cursor integer[] cursor position
+---@param _ table<string, any>? options
 ---@return dropbar_symbol_t[] symbols dropbar symbols
-local function get_symbols(buf, win, cursor)
+local function get_symbols(buf, win, cursor, _)
   if not initialized then
     init()
   end

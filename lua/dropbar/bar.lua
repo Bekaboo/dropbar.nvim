@@ -166,7 +166,8 @@ function dropbar_symbol_t:new(opts)
                     sym:merge({
                       name = '',
                       icon = menu_indicator_icon,
-                      icon_hl = 'DropBarIconUIIndicator',
+                      icon_hl = sym.data and sym.data.ui_icon_hl_override
+                        or 'DropBarIconUIIndicator',
                       on_click = menu_indicator_on_click,
                     }),
                     sym:merge({

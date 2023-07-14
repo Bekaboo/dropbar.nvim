@@ -55,8 +55,36 @@ local function convert(path, buf, win)
         self.children = {}
         for name in vim.fs.dir(path) do
           if configs.opts.sources.path.filter(name) then
-            table.insert(self.children, convert(path .. '/' .. name, buf, win))
+            table.insert(
+              self.children,
+              convert(vim.fs.joinpath(path, name), buf, win)
+            )
           end
+        end
+        local path_is_dir = 1 == vim.fn.isdirectory(path)
+        if configs.opts.sources.path.filter('..') and path_is_dir then
+          table.insert(
+            self.children,
+            convert(vim.fs.joinpath(path, '..'), buf, win)
+          )
+        elseif
+          not path_is_dir
+          and (
+            vim.fs.normalize(path)
+            == vim.fs.normalize(
+              vim.fn.fnamemodify((vim.api.nvim_buf_get_name(buf)), ':p')
+            )
+          )
+        then
+          local ts_symbols = require('dropbar.sources.treesitter').get_symbols(
+            buf,
+            win,
+            { 0, 0 },
+            { all_symbols = true }
+          )
+          vim.list_extend(self.children, ts_symbols)
+          self.data = self.data or {}
+          self.data.ui_icon_hl_override = 'DropBarIconUISeparatorSpecial'
         end
         return self.children
       end
@@ -68,12 +96,18 @@ local function convert(path, buf, win)
           if configs.opts.sources.path.filter(name) then
             table.insert(
               self.siblings,
-              convert(parent_dir .. '/' .. name, buf, win)
+              convert(vim.fs.joinpath(parent_dir, name), buf, win)
             )
             if name == self.name then
               self.sibling_idx = idx
             end
           end
+        end
+        if configs.opts.sources.path.filter('..') then
+          table.insert(
+            self.siblings,
+            convert(vim.fs.joinpath(parent_dir, '..'), buf, win)
+          )
         end
         return self[k]
       end
@@ -81,12 +115,14 @@ local function convert(path, buf, win)
   }))
 end
 
+-- luacheck: push no unused args
 ---Get list of dropbar symbols of the parent directories of given buffer
 ---@param buf integer buffer handler
 ---@param win integer window handler
 ---@param _ integer[] cursor position, ignored
+---@param __ table<string, any>? options, ignored
 ---@return dropbar_symbol_t[] dropbar symbols
-local function get_symbols(buf, win, _)
+local function get_symbols(buf, win, _, __) ---@diagnostic disable-line unused-local
   local symbols = {} ---@type dropbar_symbol_t[]
   local current_path = vim.fs.normalize(
     vim.fn.fnamemodify((vim.api.nvim_buf_get_name(buf)), ':p')
@@ -107,6 +143,7 @@ local function get_symbols(buf, win, _)
   end
   return symbols
 end
+-- luacheck: pop
 
 return {
   get_symbols = get_symbols,

@@ -69,6 +69,7 @@ local hlgroups = {
   DropBarIconUIPickPivot           = { link = 'Error' },
   DropBarIconUISeparator           = { link = 'SpecialChar' },
   DropBarIconUISeparatorMenu       = { link = 'DropBarIconUISeparator' },
+  DropBarIconUISeparatorSpecial    = { link = 'Keyword' },
   DropBarMenuCurrentContext        = { link = 'PmenuSel' },
   DropBarMenuFloatBorder           = { link = 'FloatBorder' },
   DropBarMenuHoverEntry            = { link = 'Visual' },
