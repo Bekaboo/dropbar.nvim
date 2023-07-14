@@ -118,6 +118,9 @@ local function get_first_node(buf)
     cursor[2] = cursor[2] + 1
     if cursor[2] >= col_count then
       cursor = { cursor[1] + 1, 0 }
+      if cursor[1] >= line_count then
+        return nil
+      end
       col_count = get_cols(cursor[1])
     end
   end
