@@ -98,11 +98,14 @@ local function setup(opts)
           windows = { vim.api.nvim_get_current_win() }
         end
         for _, win in ipairs(windows) do
-          local buf = vim.api.nvim_win_get_buf(win)
-          if
-            rawget(_G.dropbar.bars, buf) and rawget(_G.dropbar.bars[buf], win)
-          then
-            _G.dropbar.bars[buf][win]:update()
+          if vim.api.nvim_win_is_valid(win) then
+            local buf = vim.api.nvim_win_get_buf(win)
+            if
+              rawget(_G.dropbar.bars, buf)
+              and rawget(_G.dropbar.bars[buf], win)
+            then
+              _G.dropbar.bars[buf][win]:update()
+            end
           end
         end
       end,
