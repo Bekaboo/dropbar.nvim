@@ -211,15 +211,7 @@ end
 ---@return nil
 function M.set_hlgroups()
   M.dropbar.current = utils.hl.without('WinBar', { 'fg', 'nocombine' })
-  if vim.tbl_isempty(M.dropbar.current) then
-    M.dropbar.current = nil
-  end
-
   M.dropbar.nc = utils.hl.without('WinBarNC', { 'fg', 'nocombine' })
-  if vim.tbl_isempty(M.dropbar.nc) then
-    M.dropbar.nc = nil
-  end
-
   M.dropbar.menu = utils.hl.without('WinBar', {
     'fg',
     'bold',
@@ -234,9 +226,6 @@ function M.set_hlgroups()
     'reverse',
     'nocombine',
   })
-  if vim.tbl_isempty(M.dropbar.menu) then
-    M.dropbar.menu = nil
-  end
 
   -- hack: set WinBarNC to WinBar in the namespace 'current' so that
   -- the dropbar is highlighted as if it is the current one even when inside a
