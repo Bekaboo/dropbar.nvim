@@ -374,7 +374,6 @@ local function sort_entries(fzf_entries, count, proxy_buff)
     src[i] = i
   end
 
-  local switch = false
   local w = 1
   while w < count do
     local r = 0
@@ -389,14 +388,9 @@ local function sort_entries(fzf_entries, count, proxy_buff)
     local tmp = src
     src = dst
     dst = tmp
-    switch = not switch
   end
 
-  if switch then
-    return dst
-  else
-    return src
-  end
+  return src
 end
 M.sort_entries = sort_entries
 
