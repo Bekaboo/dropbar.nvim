@@ -358,6 +358,8 @@ function dropbar_menu_t:add_hl(hl_info)
   end
 end
 
+---Fill the menu buffer with entries in `self.entries` and add
+---highlights to the buffer
 function dropbar_menu_t:fill_buf()
   local lines = {} ---@type string[]
   local hl_info = {} ---@type dropbar_menu_hl_info_t[][]

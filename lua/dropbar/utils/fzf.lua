@@ -11,6 +11,9 @@ local M = {
   loaded = false,
 }
 
+-- If not built with LuaJIT, the ffi module will not be available,
+-- and neither will the fzf-native module (which is written in C and
+-- uses ffi).
 if not jit then
   return nil
 end
@@ -92,6 +95,7 @@ ffi.cdef([[
 ---@param buf integer buffer handle
 ---@param line integer line number, 1-indexed
 ---@return string? line contents, or `nil` if an error occurred
+---@version JIT
 local function buf_get_line(buf, line)
   local error = ffi.new('Error[1]')
   local buf_obj = C.find_buffer_by_handle(buf, error)
@@ -239,6 +243,9 @@ function fzf_state_t:new(menu, win, opts)
   return state
 end
 
+---Free the memory allocated by the fuzzy finder, including `fzf-native`'s `fzf_slab_t`.
+---Sets the `allocated` field to `false` to prevent double-freeing.
+---@version JIT
 function fzf_state_t:gc()
   if self.slab ~= nil then
     fzf_lib.free_slab(self.slab)
@@ -258,6 +265,7 @@ end
 
 ---Fallback loader for *fzf_lib* if the plugin's path cannot be found from
 ---`debug.getinfo`. Currently not implemented.
+---@version JIT
 local function fallback()
   -- for now, not implemented, but we could fallback
   -- to other search paths
@@ -269,6 +277,7 @@ end
 ---to the ffi namespace. Returns `true` if successful, `false` otherwise. If already
 ---loaded, returns `true` immediately. If successful, sets `M.loaded` to `true`.
 ---@return boolean success
+---@version JIT
 function M.load()
   if M.loaded then
     return true
@@ -305,6 +314,7 @@ end
 ---Copy the contents of `src` into `dst`
 ---@param dst fzf_entry_t
 ---@param src fzf_entry_t
+---@version JIT
 local function copy_entry(dst, src)
   -- maybe use memcpy or ffi.copy?
   dst.index = src.index
@@ -321,6 +331,7 @@ M.copy_entry = copy_entry
 ---@param b integer
 ---@param entries fzf_entry_t[]
 ---@return boolean # whether `entries[a]` should be sorted before `entries[b]`
+---@version JIT
 local function compare(a, b, entries)
   local entry_a = entries[a]
   local entry_b = entries[b]
@@ -342,6 +353,7 @@ end
 ---@param target ffi.cdata* array of integers
 ---@param source ffi.cdata* array of integers
 ---@param entries ffi.cdata* array of `fzf_entry_t`
+---@version JIT
 local function merge(left, mid, right, target, source, entries)
   local i = left
   local j = mid
@@ -365,6 +377,7 @@ end
 ---@param count number the number of entries in `fzf_entries`
 ---@param proxy_buff ffi.cdata* array of integers, twice the size of `count`
 ---@return ffi.cdata* pointer to the sorted indices
+---@version JIT
 local function sort_entries(fzf_entries, count, proxy_buff)
   local min = math.min
   local src = proxy_buff + 0
