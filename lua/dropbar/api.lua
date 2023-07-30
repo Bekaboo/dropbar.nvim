@@ -108,7 +108,7 @@ end
 ---`0` or `-1` is supplied, in which case the *first* or *last* clickable component
 ---is selected, respectively. If it is a `function`, it receives the `dropbar_menu_entry_t`
 ---as an argument and should return the `dropbar_symbol_t` that is to be clicked.
----@param component? number|fun(entry: dropbar_menu_entry_t):dropbar_symbol_t
+---@param component? number|dropbar_symbol_t|fun(entry: dropbar_menu_entry_t):dropbar_symbol_t?
 local function fuzzy_find_click(component)
   local menu = get_current_dropbar_menu()
   if not menu or not menu.fzf_state then

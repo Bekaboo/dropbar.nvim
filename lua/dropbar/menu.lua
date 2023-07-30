@@ -678,7 +678,7 @@ end
 ---`0` or `-1` is supplied, in which case the *first* or *last* clickable component
 ---is selected, respectively. If it is a `function`, it receives the `dropbar_menu_entry_t`
 ---as an argument and should return the `dropbar_symbol_t` that is to be clicked.
----@param component? number|fun(entry: dropbar_menu_entry_t):dropbar_symbol_t
+---@param component? number|dropbar_symbol_t|fun(entry: dropbar_menu_entry_t):dropbar_symbol_t?
 ---@version JIT
 function dropbar_menu_t:click_on_fuzzy_find_entry(component)
   if not self.fzf_state then
@@ -798,6 +798,23 @@ function dropbar_menu_t:fuzzy_find(opts)
   self.fzf_state = utils.fzf.fzf_state_t:new(self, win, opts)
 
   local keymaps = vim.tbl_extend('force', {
+    ['<LeftMouse>'] = function()
+      local mouse = vim.fn.getmousepos()
+      if mouse.winid ~= self.win then
+        local default_func = configs.opts.menu.keymaps['<LeftMouse>']
+        if type(default_func) == 'function' then
+          default_func()
+        end
+        self:stop_fuzzy_find(false)
+        return
+      elseif mouse.winrow > vim.api.nvim_buf_line_count(self.buf) then
+        return
+      end
+      vim.api.nvim_win_set_cursor(self.win, { mouse.line, mouse.column - 1 })
+      self:click_on_fuzzy_find_entry(function(entry)
+        return entry:get_component_at(mouse.column - 1, true)
+      end)
+    end,
     ['<Esc>'] = function()
       self:stop_fuzzy_find(true)
     end,
