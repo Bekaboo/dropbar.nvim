@@ -144,8 +144,6 @@ function fzf_state_t:new(menu, win, opts)
   local num_entries = #menu.entries
   local char_pattern = opts.char_pattern
 
-  ---@type fzf_entry_t[]
-  -- local entries = ffi.new('fzf_entry_t[?]', num_entries)
   local entries = fzf_entry_array_t(num_entries)
   local buff_size = 256
   local chars_buff = ffi.new('char[?]', buff_size)
