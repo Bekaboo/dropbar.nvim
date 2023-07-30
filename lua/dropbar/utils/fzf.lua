@@ -394,15 +394,4 @@ local function sort_entries(fzf_entries, count, proxy_buff)
 end
 M.sort_entries = sort_entries
 
-local function sort_entries_inplace(fzf_entries, count, proxy_buff)
-  local proxy_ptr = sort_entries(fzf_entries, count, proxy_buff)
-  local copied_entries = ffi.new('fzf_entry_t[?]', count)
-  ffi.copy(copied_entries, fzf_entries, ffi.sizeof('fzf_entry_t') * count)
-  local copied_entries_ptr = copied_entries + 0
-  for i = 0, count - 1 do
-    copy_entry(fzf_entries[i], copied_entries_ptr[proxy_ptr[i]])
-  end
-end
-M.sort_entries_inplace = sort_entries_inplace
-
 return M
