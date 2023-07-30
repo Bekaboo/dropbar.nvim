@@ -668,6 +668,7 @@ function dropbar_menu_t:stop_fuzzy_find(fix_cursor)
       end)
     end
   end
+  _G.dropbar.menus[input_win] = nil
 end
 
 ---Click on the currently selected fuzzy find menu entry, choosing the component
@@ -775,6 +776,8 @@ function dropbar_menu_t:fuzzy_find(opts)
     }, opts.win_configs or {})
   )
   vim.wo[win].stc = opts.prompt
+  _G.dropbar.menus[win] = self
+
   local should_preview = configs.opts.menu.preview
   local function move_cursor(pos)
     vim.api.nvim_win_set_cursor(self.win, pos)
