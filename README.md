@@ -630,7 +630,6 @@ general behavior of the plugin:
       'CursorMoved',
       'CursorMovedI',
       'WinEnter',
-      'WinLeave',
       'WinResized',
     }
     ```
