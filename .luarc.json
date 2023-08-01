@@ -11,6 +11,10 @@
         ]
     },
     "diagnostics.globals": [
-        "vim"
+        "vim",
+        "it",
+        "describe",
+        "before_each",
+        "after_each",
     ]
 }
