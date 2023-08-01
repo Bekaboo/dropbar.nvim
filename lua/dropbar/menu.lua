@@ -22,8 +22,15 @@ _G.dropbar.menus = {}
 local dropbar_menu_entry_t = {}
 dropbar_menu_entry_t.__index = dropbar_menu_entry_t
 
+---@class dropbar_menu_entry_opts_t
+---@field separator dropbar_symbol_t?
+---@field padding {left: integer, right: integer}?
+---@field components dropbar_symbol_t[]?
+---@field menu dropbar_menu_t? the menu the entry belongs to
+---@field idx integer? the index of the entry in the menu
+
 ---Create a dropbar menu entry instance
----@param opts dropbar_menu_entry_t?
+---@param opts dropbar_menu_entry_opts_t?
 ---@return dropbar_menu_entry_t
 function dropbar_menu_entry_t:new(opts)
   local entry = setmetatable(
@@ -181,8 +188,23 @@ end
 local dropbar_menu_t = {}
 dropbar_menu_t.__index = dropbar_menu_t
 
+---@class dropbar_menu_opts_t
+---@field buf integer?
+---@field win integer?
+---@field is_opened boolean?
+---@field entries dropbar_menu_entry_t[]?
+---@field win_configs table? window configuration, value can be a function
+---@field _win_configs table? evaluated window configuration
+---@field cursor integer[]? initial cursor position
+---@field prev_win integer? previous window, assigned when calling new() or automatically determined in open()
+---@field sub_menu dropbar_menu_t? submenu, assigned when calling new() or automatically determined when a new menu opens
+---@field prev_menu dropbar_menu_t? previous menu, assigned when calling new() or automatically determined in open()
+---@field clicked_at integer[]? last position where the menu was clicked, byte-indexed, 1,0-indexed
+---@field prev_cursor integer[]? previous cursor position
+---@field symbol_previewed dropbar_symbol_t? symbol being previewed
+
 ---Create a dropbar menu instance
----@param opts dropbar_menu_t?
+---@param opts dropbar_menu_opts_t?
 ---@return dropbar_menu_t
 function dropbar_menu_t:new(opts)
   local dropbar_menu = setmetatable(
@@ -460,7 +482,7 @@ function dropbar_menu_t:open_win()
 end
 
 ---Override menu options
----@param opts dropbar_menu_t?
+---@param opts dropbar_menu_opts_t?
 ---@return nil
 function dropbar_menu_t:override(opts)
   if not opts then
@@ -481,7 +503,7 @@ end
 
 ---Open the menu
 ---Side effect: change self.win and self.buf
----@param opts dropbar_menu_t?
+---@param opts dropbar_menu_opts_t?
 ---@return nil
 function dropbar_menu_t:open(opts)
   if self.is_opened then
@@ -614,7 +636,7 @@ function dropbar_menu_t:quick_navigation(new_cursor)
 end
 
 ---Toggle the menu
----@param opts dropbar_menu_t? menu options passed to self:open()
+---@param opts dropbar_menu_opts_t? menu options passed to self:open()
 ---@return nil
 function dropbar_menu_t:toggle(opts)
   if self.is_opened then

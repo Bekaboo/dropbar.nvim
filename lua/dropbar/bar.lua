@@ -40,7 +40,7 @@ end
 ---@field entry_idx integer? index of the symbol in the menu entry
 ---@field sibling_idx integer? index of the symbol in its siblings
 ---@field range dropbar_symbol_range_t?
----@field on_click fun(this: dropbar_symbol_t, min_width: integer?, n_clicks: integer?, button: string?, modifiers: string?)|false? force disable on_click when false
+---@field on_click fun(this: dropbar_symbol_t, min_width: integer?, n_clicks: integer?, button: string?, modifiers: string?)|false|nil force disable on_click when false
 ---@field data table? any data associated with the symbol
 ---@field cache table caches string representation, length, etc. for the symbol
 local dropbar_symbol_t = {}
@@ -62,19 +62,41 @@ function dropbar_symbol_t:__newindex(k, v)
 end
 
 ---Create a new dropbar symbol instance with merged options
----@param opts dropbar_symbol_t
+---@param opts dropbar_symbol_opts_t
 ---@return dropbar_symbol_t
 function dropbar_symbol_t:merge(opts)
   return dropbar_symbol_t:new(
     setmetatable(
       vim.tbl_deep_extend('force', self._, opts),
       getmetatable(self._)
-    )
+    ) --[[@as dropbar_symbol_opts_t]]
   )
 end
 
+---@class dropbar_symbol_opts_t
+---@field _ dropbar_symbol_t?
+---@field name string?
+---@field icon string?
+---@field name_hl string?
+---@field icon_hl string?
+---@field win integer? the source window the symbol is shown in
+---@field buf integer? the source buffer the symbol is defined in
+---@field view table? original view of the source window
+---@field bar dropbar_t? the winbar the symbol belongs to, if the symbol is shown inside a winbar
+---@field menu dropbar_menu_t? menu associated with the winbar symbol, if the symbol is shown inside a winbar
+---@field entry dropbar_menu_entry_t? the dropbar entry the symbol belongs to, if the symbol is shown inside a menu
+---@field children dropbar_symbol_t[]? children of the symbol
+---@field siblings dropbar_symbol_t[]? siblings of the symbol
+---@field bar_idx integer? index of the symbol in the winbar
+---@field entry_idx integer? index of the symbol in the menu entry
+---@field sibling_idx integer? index of the symbol in its siblings
+---@field range dropbar_symbol_range_t?
+---@field on_click fun(this: dropbar_symbol_t, min_width: integer?, n_clicks: integer?, button: string?, modifiers: string?)|false|nil force disable on_click when false
+---@field data table? any data associated with the symbol
+---@field cache table? caches string representation, length, etc. for the symbol
+
 ---Create a dropbar symbol instance
----@param opts dropbar_symbol_t? dropbar symbol structure
+---@param opts dropbar_symbol_opts_t? dropbar symbol structure
 ---@return dropbar_symbol_t
 function dropbar_symbol_t:new(opts)
   return setmetatable({
@@ -350,7 +372,7 @@ end
 ---@field string_cache string
 ---@field in_pick_mode boolean?
 ---@field symbol_on_hover dropbar_symbol_t?
----@field last_update_request_time float? timestamp of the last update request in ms, see :h uv.hrtime()
+---@field last_update_request_time number? timestamp of the last update request in ms, see :h uv.hrtime()
 local dropbar_t = {}
 dropbar_t.__index = dropbar_t
 
