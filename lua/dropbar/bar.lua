@@ -662,15 +662,16 @@ function dropbar_t:update_current_context_hl(bar_idx)
   end
   local hl_currentcontext_icon = '_DropBarIconCurrentContext'
   local hl_currentcontext_name = '_DropBarCurrentContext'
+  symbol:restore()
   vim.api.nvim_set_hl(
     0,
     hl_currentcontext_icon,
-    utils.hl.merge(symbol.icon_hl or 'WinBar', 'DropBarCurrentContext')
+    utils.hl.merge('WinBarNC', symbol.icon_hl, 'DropBarCurrentContext')
   )
   vim.api.nvim_set_hl(
     0,
     hl_currentcontext_name,
-    utils.hl.merge(symbol.name_hl or 'WinBar', 'DropBarCurrentContext')
+    utils.hl.merge('WinBarNC', symbol.name_hl, 'DropBarCurrentContext')
   )
   symbol:swap_field('icon_hl', hl_currentcontext_icon)
   symbol:swap_field('name_hl', hl_currentcontext_name)
@@ -681,6 +682,7 @@ end
 ---@param col integer? displaywidth-indexed, 0-indexed mouse position, nil to clear the hover highlights
 ---@return nil
 function dropbar_t:update_hover_hl(col)
+  print('update_hover_hl')
   if not col then
     if self.symbol_on_hover then
       self.symbol_on_hover:restore()
@@ -695,15 +697,17 @@ function dropbar_t:update_hover_hl(col)
   end
   local hl_hover_icon = '_DropBarIconHover'
   local hl_hover_name = '_DropBarHover'
+  local hl_winbar = vim.api.nvim_get_current_win() == self.win and 'WinBar'
+    or 'WinbarNC'
   vim.api.nvim_set_hl(
     0,
     hl_hover_icon,
-    utils.hl.merge(symbol.icon_hl or 'WinBar', 'DropBarHover')
+    utils.hl.merge(hl_winbar, symbol.icon_hl, 'DropBarHover')
   )
   vim.api.nvim_set_hl(
     0,
     hl_hover_name,
-    utils.hl.merge(symbol.name_hl or 'WinBar', 'DropBarHover')
+    utils.hl.merge(hl_winbar, symbol.name_hl, 'DropBarHover')
   )
   symbol:swap_field('icon_hl', hl_hover_icon)
   symbol:swap_field('name_hl', hl_hover_name)

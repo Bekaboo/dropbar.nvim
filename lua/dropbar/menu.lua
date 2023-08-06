@@ -366,7 +366,7 @@ function dropbar_menu_t:add_hl(hl_info)
   end
   for linenr, hl_line_info in ipairs(hl_info) do
     for _, hl_symbol_info in ipairs(hl_line_info) do
-      vim.api.nvim_buf_add_highlight(
+      utils.hl.buf_add_hl(
         self.buf,
         hl_symbol_info.ns or -1,
         hl_symbol_info.hlgroup,
