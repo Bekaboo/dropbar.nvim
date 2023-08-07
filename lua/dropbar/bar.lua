@@ -682,7 +682,6 @@ end
 ---@param col integer? displaywidth-indexed, 0-indexed mouse position, nil to clear the hover highlights
 ---@return nil
 function dropbar_t:update_hover_hl(col)
-  print('update_hover_hl')
   if not col then
     if self.symbol_on_hover then
       self.symbol_on_hover:restore()
