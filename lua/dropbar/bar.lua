@@ -473,7 +473,7 @@ function dropbar_t:redraw()
   local new_str = self:cat()
   if new_str ~= self.string_cache then
     self.string_cache = new_str
-    vim.cmd('silent! redrawstatus')
+    vim.cmd('silent! redrawstatus!')
   end
 end
 
