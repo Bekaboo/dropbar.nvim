@@ -54,23 +54,23 @@ local function setup(opts)
   configs.set(opts)
   hlgroups.init()
   local groupid = vim.api.nvim_create_augroup('DropBar', {})
-  ---Enable/disable dropbar
+  ---Attach dropbar to window
   ---@param win integer
   ---@param buf integer
-  local function _switch(buf, win)
+  local function attach(buf, win)
     if configs.eval(configs.opts.general.enable, buf, win) then
       vim.wo.winbar = '%{%v:lua.dropbar.get_dropbar_str()%}'
     end
   end
   for _, win in ipairs(vim.api.nvim_list_wins()) do
-    _switch(vim.api.nvim_win_get_buf(win), win)
+    attach(vim.api.nvim_win_get_buf(win), win)
   end
   vim.api.nvim_create_autocmd({ 'OptionSet', 'BufWinEnter', 'BufWritePost' }, {
     group = groupid,
     callback = function(info)
-      _switch(info.buf, 0)
+      attach(info.buf, 0)
     end,
-    desc = 'Enable/disable dropbar',
+    desc = 'Attach dropbar',
   })
   vim.api.nvim_create_autocmd({ 'BufDelete', 'BufUnload', 'BufWipeOut' }, {
     group = groupid,
