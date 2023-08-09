@@ -461,12 +461,10 @@ function dropbar_menu_t:open_win()
   vim.api.nvim_win_set_hl_ns(self.win, hlgroups.namespaces.menu)
 
   if not _G.dropbar.menus[self.prev_win] then
-    vim.schedule(function()
-      local buf = vim.api.nvim_win_get_buf(self.prev_win)
-      if _G.dropbar.bars[buf][self.win] then
-        vim.api.nvim_win_set_hl_ns(self.prev_win, hlgroups.namespaces.current)
-      end
-    end)
+    local buf = vim.api.nvim_win_get_buf(self.prev_win)
+    if _G.dropbar.bars[buf][self.win] then
+      vim.api.nvim_win_set_hl_ns(self.prev_win, hlgroups.namespaces.current)
+    end
   end
 end
 
