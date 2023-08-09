@@ -462,7 +462,7 @@ function dropbar_menu_t:open_win()
 
   if not _G.dropbar.menus[self.prev_win] then
     local buf = vim.api.nvim_win_get_buf(self.prev_win)
-    if _G.dropbar.bars[buf][self.win] then
+    if _G.dropbar.bars[buf][self.prev_win] then
       vim.api.nvim_win_set_hl_ns(self.prev_win, hlgroups.namespaces.current)
     end
   end
