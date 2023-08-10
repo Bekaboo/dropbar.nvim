@@ -101,7 +101,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
 - [x] Reorient the source window on previewing or after jumping to a symbol
 
-- [x] Background color support<super>*</super> thanks @theofabilous
+- [x] Background color support<super>*</super> thanks [@theofabilous](https://github.com/theofabilous)
 
   ![background-color](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/d7794098-9dcf-459e-9763-8b7d9414e035)
 
