@@ -1,5 +1,15 @@
 # Changelog
 
+## [5.0.2](https://github.com/Bekaboo/dropbar.nvim/compare/v5.0.1...v5.0.2) (2023-08-10)
+
+
+### Bug Fixes
+
+* **bar:** hovering highlight not updated for dropbar at non-current windows ([fb97d5e](https://github.com/Bekaboo/dropbar.nvim/commit/fb97d5e4432aba6c14ef1a73c6fbf7091be33fa3))
+* **bar:** remove debug print ([b201f50](https://github.com/Bekaboo/dropbar.nvim/commit/b201f500d19e632cc08b87ca8ad31eef41a7b2fe))
+* **highlights:** current context & hovering highlight priorities in menu ([88d71c6](https://github.com/Bekaboo/dropbar.nvim/commit/88d71c6fc8002b236549052944efb3fa1a6970ed))
+* **highlights:** winbar highlights changed after hovering/clicking if not defined ([4785774](https://github.com/Bekaboo/dropbar.nvim/commit/47857743232f7d97d51da25196724b7657472fd0))
+
 ## [5.0.1](https://github.com/Bekaboo/dropbar.nvim/compare/v5.0.0...v5.0.1) (2023-07-10)
 
 
