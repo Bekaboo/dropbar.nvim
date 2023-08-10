@@ -72,6 +72,12 @@ highly-customizable 'winbar' with drop-down menu support and mutiple backends.
 - Preview symbols in their source windows when hovering over them in the
   drop-down menu
 - Reorient the source window on previewing or after jumping to a symbol
+- Background color support thanks @theofabilous
+  <https://github.com/theofabilous>
+  - This is currently an experimental feature that is only available in branch
+    `feat-winbar-background-highlight`.
+  - To achieve the same effect in branch`master`, see discussions in
+    <https://github.com/Bekaboo/dropbar.nvim/issues/2>
 
 TODO
 
