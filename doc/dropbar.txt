@@ -267,6 +267,12 @@ by the plugin:
               Folder = '󰉋 ',
               ForStatement = '󰑖 ',
               Function = '󰊕 ',
+              H1Marker = '󰉫 ', -- Used by markdown treesitter parser
+              H2Marker = '󰉬 ',
+              H3Marker = '󰉭 ',
+              H4Marker = '󰉮 ',
+              H5Marker = '󰉯 ',
+              H6Marker = '󰉰 ',
               Identifier = '󰀫 ',
               IfStatement = '󰇉 ',
               Interface = ' ',
@@ -275,7 +281,7 @@ by the plugin:
               Log = '󰦪 ',
               Lsp = ' ',
               Macro = '󰁌 ',
-              MarkdownH1 = '󰉫 ',
+              MarkdownH1 = '󰉫 ', -- Used by builtin markdown source
               MarkdownH2 = '󰉬 ',
               MarkdownH3 = '󰉭 ',
               MarkdownH4 = '󰉮 ',
