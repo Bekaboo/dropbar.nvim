@@ -424,6 +424,10 @@ end
 ---Side effect: change dropbar.components
 ---@return nil
 function dropbar_t:truncate()
+  if not self.win or not vim.api.nvim_win_is_valid(self.win) then
+    self:del()
+    return
+  end
   local win_width = vim.api.nvim_win_get_width(self.win)
   local len = self:displaywidth()
   local delta = len - win_width
