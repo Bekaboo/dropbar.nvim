@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.0.3](https://github.com/Bekaboo/dropbar.nvim/compare/v5.0.2...v5.0.3) (2023-08-22)
+
+
+### Bug Fixes
+
+* **bar:** check if buf number is valid before truncating ([8825367](https://github.com/Bekaboo/dropbar.nvim/commit/8825367c86cdcd8577732419ef68258c9ad6d398))
+
 ## [5.0.2](https://github.com/Bekaboo/dropbar.nvim/compare/v5.0.1...v5.0.2) (2023-08-10)
 
 
