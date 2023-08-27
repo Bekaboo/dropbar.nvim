@@ -4,13 +4,18 @@ local M = {}
 ---@class dropbar_configs_t
 M.opts = {
   general = {
-    ---@type boolean|fun(buf: integer, win: integer): boolean
-    enable = function(buf, win)
+    ---@type boolean|fun(buf: integer, win: integer, info: table?): boolean
+    enable = function(buf, win, _)
       return not vim.api.nvim_win_get_config(win).zindex
         and vim.bo[buf].buftype == ''
         and vim.api.nvim_buf_get_name(buf) ~= ''
         and not vim.wo[win].diff
     end,
+    attach_events = {
+      'OptionSet',
+      'BufWinEnter',
+      'BufWritePost',
+    },
     -- Wait for a short time before updating the winbar, if another update
     -- request is received within this time, the previous request will be
     -- cancelled, this improves the performance when the user is holding

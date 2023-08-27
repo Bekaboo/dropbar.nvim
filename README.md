@@ -204,6 +204,11 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           and vim.api.nvim_buf_get_name(buf) ~= ''
           and not vim.wo[win].diff
       end,
+      attach_events = {
+        'OptionSet',
+        'BufWinEnter',
+        'BufWritePost',
+      },
       -- Wait for a short time before updating the winbar, if another update
       -- request is received within this time, the previous request will be
       -- cancelled, this improves the performance when the user is holding
@@ -631,6 +636,17 @@ general behavior of the plugin:
       and vim.api.nvim_buf_get_name(buf) ~= ''
       and not vim.wo[win].diff
     end
+    ```
+- `opts.general.attach_events`: `string[]`
+  - Controls when to evaluate the `enable()` function and attach the plugin
+    to corresponding buffer or window
+  - Default:
+    ```lua
+    {
+      'OptionSet',
+      'BufWinEnter',
+      'BufWritePost',
+    }
     ```
 - `opts.general.update_interval`: `number`
   - Wait for a short time before updating the winbar, if another update

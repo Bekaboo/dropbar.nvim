@@ -182,6 +182,17 @@ behavior of the plugin:
               and not vim.wo[win].diff
             end
 <
+- `opts.general.attach_events`: `string[]`
+    - Controls when to evaluate the `enable()` function and attach the plugin
+      to corresponding buffer or window
+    - Default: >lua
+
+      {
+	'OptionSet',
+	'BufWinEnter',
+	'BufWritePost',
+      }
+<
 - `opts.general.update_interval`: `number`
     - Wait for a short time before updating the winbar, if another update
       request is received within this time, the previous request will be
