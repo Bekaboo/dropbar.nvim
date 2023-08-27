@@ -550,14 +550,6 @@ function dropbar_menu_t:close(restore_view)
   end
   -- Move cursor to the previous window
   if self.prev_win and vim.api.nvim_win_is_valid(self.prev_win) then
-    local prev_menu = _G.dropbar.menus[self.prev_win]
-    if prev_menu then
-      if prev_menu.cursor then
-        prev_menu:update_current_context_hl(prev_menu.cursor[1])
-      else
-        prev_menu:update_current_context_hl(nil)
-      end
-    end
     vim.api.nvim_set_current_win(self.prev_win)
   end
   -- Close the menu window and dereference it in the lookup table
