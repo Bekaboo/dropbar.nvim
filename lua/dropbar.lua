@@ -75,12 +75,7 @@ local function setup(opts)
   vim.api.nvim_create_autocmd({ 'BufDelete', 'BufUnload', 'BufWipeOut' }, {
     group = groupid,
     callback = function(info)
-      if not rawget(_G.dropbar.bars, info.buf) then
-        return
-      end
-      for win, _ in pairs(_G.dropbar.bars[info.buf]) do
-        _G.dropbar.bars[info.buf][win]:del()
-      end
+      utils.bar.exec('del', { buf = info.buf })
       _G.dropbar.bars[info.buf] = nil
     end,
     desc = 'Remove dropbar from cache on buffer delete/unload/wipeout.',
@@ -89,21 +84,15 @@ local function setup(opts)
     vim.api.nvim_create_autocmd(configs.opts.general.update_events.win, {
       group = groupid,
       callback = function(info)
-        local windows
-        if info.event == 'WinScrolled' then
-          windows = { tonumber(info.match) }
-        elseif info.event == 'WinResized' then
-          windows = vim.v.event.windows
-        else
-          windows = { vim.api.nvim_get_current_win() }
-        end
-        for _, win in ipairs(windows) do
-          local buf = vim.api.nvim_win_get_buf(win)
-          if
-            rawget(_G.dropbar.bars, buf) and rawget(_G.dropbar.bars[buf], win)
-          then
-            _G.dropbar.bars[buf][win]:update()
+        if info.event == 'WinResized' then
+          for _, win in ipairs(vim.v.event.windows) do
+            utils.bar.exec('update', { win = win })
           end
+        else
+          utils.bar.exec('update', {
+            win = info.event == 'WinScrolled' and tonumber(info.match)
+              or vim.api.nvim_get_current_win(),
+          })
         end
       end,
       desc = 'Update a single winbar.',
@@ -113,11 +102,7 @@ local function setup(opts)
     vim.api.nvim_create_autocmd(configs.opts.general.update_events.buf, {
       group = groupid,
       callback = function(info)
-        if rawget(_G.dropbar.bars, info.buf) then
-          for win, _ in pairs(_G.dropbar.bars[info.buf]) do
-            _G.dropbar.bars[info.buf][win]:update()
-          end
-        end
+        utils.bar.exec('update', { buf = info.buf })
       end,
       desc = 'Update all winbars associated with buf.',
     })
@@ -125,12 +110,11 @@ local function setup(opts)
   if not vim.tbl_isempty(configs.opts.general.update_events.global) then
     vim.api.nvim_create_autocmd(configs.opts.general.update_events.global, {
       group = groupid,
-      callback = function()
-        for buf, _ in pairs(_G.dropbar.bars) do
-          for win, _ in pairs(_G.dropbar.bars[buf]) do
-            _G.dropbar.bars[buf][win]:update()
-          end
+      callback = function(info)
+        if vim.tbl_isempty(utils.bar.get({ buf = info.buf })) then
+          return
         end
+        utils.bar.exec('update')
       end,
       desc = 'Update all winbars.',
     })
@@ -138,13 +122,7 @@ local function setup(opts)
   vim.api.nvim_create_autocmd({ 'WinClosed' }, {
     group = groupid,
     callback = function(info)
-      if not rawget(_G.dropbar.bars, info.buf) then
-        return
-      end
-      local win = tonumber(info.match)
-      if win then
-        _G.dropbar.bars[info.buf][win]:del()
-      end
+      utils.bar.exec('del', { win = tonumber(info.match) })
     end,
     desc = 'Remove dropbar from cache on window closed.',
   })

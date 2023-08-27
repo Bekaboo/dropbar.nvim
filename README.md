@@ -32,6 +32,9 @@
       - [LSP](#lsp)
       - [Markdown](#markdown)
   - [API](#api)
+  - [Utility Functions](#utility-functions)
+    - [Bar Utility Functions](#bar-utility-functions)
+    - [Menu Utility Functions](#menu-utility-functions)
   - [Highlighting](#highlighting)
 - [Developers](#developers)
   - [Architecture](#architecture)
@@ -393,16 +396,18 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
       ---@type table<string, string|function|table<string, string|function>>
       keymaps = {
         ['<LeftMouse>'] = function()
-          local api = require('dropbar.api')
-          local menu = api.get_current_dropbar_menu()
+          local menu = utils.menu.get_current()
           if not menu then
             return
           end
           local mouse = vim.fn.getmousepos()
           if mouse.winid ~= menu.win then
-            local prev_menu = api.get_dropbar_menu(mouse.winid)
+            local prev_menu = utils.menu.get({ win = mouse.winid })
             if prev_menu and prev_menu.sub_menu then
               prev_menu.sub_menu:close()
+            else
+              utils.menu.exec('close')
+              utils.bar.exec('update_current_context_hl')
             end
             if vim.api.nvim_win_is_valid(mouse.winid) then
               vim.api.nvim_set_current_win(mouse.winid)
@@ -412,7 +417,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           menu:click_at({ mouse.line, mouse.column - 1 }, nil, 1, 'l')
         end,
         ['<CR>'] = function()
-          local menu = require('dropbar.api').get_current_dropbar_menu()
+          local menu = utils.menu.get_current()
           if not menu then
             return
           end
@@ -423,7 +428,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           end
         end,
         ['<MouseMove>'] = function()
-          local menu = require('dropbar.api').get_current_dropbar_menu()
+          local menu = utils.menu.get_current()
           if not menu then
             return
           end
@@ -886,16 +891,18 @@ menu:
     ```lua
     {
       ['<LeftMouse>'] = function()
-        local api = require('dropbar.api')
-        local menu = api.get_current_dropbar_menu()
+        local menu = utils.menu.get_current()
         if not menu then
           return
         end
         local mouse = vim.fn.getmousepos()
         if mouse.winid ~= menu.win then
-          local prev_menu = api.get_dropbar_menu(mouse.winid)
+          local prev_menu = utils.menu.get({ win = mouse.winid })
           if prev_menu and prev_menu.sub_menu then
             prev_menu.sub_menu:close()
+          else
+            utils.menu.exec('close')
+            utils.bar.exec('update_current_context_hl')
           end
           if vim.api.nvim_win_is_valid(mouse.winid) then
             vim.api.nvim_set_current_win(mouse.winid)
@@ -905,7 +912,7 @@ menu:
         menu:click_at({ mouse.line, mouse.column - 1 }, nil, 1, 'l')
       end,
       ['<CR>'] = function()
-        local menu = require('dropbar.api').get_current_dropbar_menu()
+        local menu = utils.menu.get_current()
         if not menu then
           return
         end
@@ -916,7 +923,7 @@ menu:
         end
       end,
       ['<MouseMove>'] = function()
-        local menu = require('dropbar.api').get_current_dropbar_menu()
+        local menu = utils.menu.get_current()
         if not menu then
           return
         end
@@ -1148,17 +1155,21 @@ each sources.
 `dropbar.nvim` exposes a few functions in `lua/dropbar/api.lua` that can be
 used to interact with the winbar or the drop-down menu:
 
-- `get_dropbar(buf: integer?, win: integer): dropbar_t?`
+- ~~`get_dropbar(buf: integer?, win: integer): dropbar_t?`~~
+  prefer [`utils.bar.get()`](#bar-utility-functions)
   - Get the dropbar associated with the given buffer and window
   - For more information about the `dropbar_t` type, see
     [`dropbar_t`](#dropbar_t)
-- `get_current_dropbar(): dropbar_t?`
+- ~~`get_current_dropbar(): dropbar_t?`~~
+  prefer [`utils.bar.get_current()`](#bar-utility-functions)
   - Get the dropbar associated with the current buffer and window
-- `get_dropbar_menu(win: integer): dropbar_menu_t?`
+- ~~`get_dropbar_menu(win: integer): dropbar_menu_t?`~~
+  prefer [`utils.menu.get()`](#menu-utility-functions)
   - Get the drop-down menu associated with the given window
   - For more information about the `dropbar_menu_t` type, see
     [`dropbar_menu_t`](#dropbar_menu_t)
-- `get_current_dropbr_menu(): dropbar_menu_t?`
+- ~~`get_current_dropbr_menu(): dropbar_menu_t?`~~
+  prefer [`utils.menu.get_current()`](#menu-utility-functions)
   - Get the drop-down menu associated with the current window
 - `goto_context_start(count: integer?)`
   - Move the cursor to the start of the current context
@@ -1171,6 +1182,37 @@ used to interact with the winbar or the drop-down menu:
   - Pick a component from current winbar
   - If `idx` is `nil`, enter interactive pick mode to select a component
   - If `idx` is a number, directly pick the component at that index if it exists
+
+### Utility Functions
+
+Here are some utility functions that can be handy when writing your customize
+your config:
+
+#### Bar Utility Functions
+
+Defined in [`lua/dropbar/utils/bar.lua`](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/utils/bar.lua).
+
+- `utils.bar.get(opts?): (dropbar_t?)|table<integer, dropbar_t>|table<integer, table<integer, dropbar_t>>`
+  - Get the dropbar(s) associated with the given buffer and window
+  - If only `opts.win` is specified, return the dropbar attached the window;
+  - If only `opts.buf` is specified, return all dropbars attached the buffer;
+  - If both `opts.win` and `opts.buf` are specified, return the dropbar
+    attached the window that contains the buffer;
+  - If neither `opts.win` nor `opts.buf` is specified, return all dropbars in
+    the form of `table<buf, table<win, dropbar_t>>`
+- `utils.bar.get_current(): dropbar_t?`
+  - Get the dropbar associated with the current buffer and window
+
+#### Menu Utility Functions
+
+Defined in [`lua/dropbar/utils/menu.lua`](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/utils/menu.lua).
+
+- `utils.menu.get(opts): (dropbar_menu_t?)|table<integer, dropbar_menu_t>`
+  - Get dropbar menu
+  - If `opts.win` is specified, return the dropbar menu attached the window;
+  - If `opts.win` is not specified, return all opened dropbar menus
+- `utils.menu.get_current(): dropbar_menu_t?`
+  - Get current dropbar menu
 
 ### Highlighting
 

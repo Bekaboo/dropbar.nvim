@@ -203,16 +203,18 @@ M.opts = {
     ---@type table<string, string|function|table<string, string|function>>
     keymaps = {
       ['<LeftMouse>'] = function()
-        local api = require('dropbar.api')
-        local menu = api.get_current_dropbar_menu()
+        local menu = utils.menu.get_current()
         if not menu then
           return
         end
         local mouse = vim.fn.getmousepos()
         if mouse.winid ~= menu.win then
-          local prev_menu = api.get_dropbar_menu(mouse.winid)
+          local prev_menu = utils.menu.get({ win = mouse.winid })
           if prev_menu and prev_menu.sub_menu then
             prev_menu.sub_menu:close()
+          else
+            utils.menu.exec('close')
+            utils.bar.exec('update_current_context_hl')
           end
           if vim.api.nvim_win_is_valid(mouse.winid) then
             vim.api.nvim_set_current_win(mouse.winid)
@@ -222,7 +224,7 @@ M.opts = {
         menu:click_at({ mouse.line, mouse.column - 1 }, nil, 1, 'l')
       end,
       ['<CR>'] = function()
-        local menu = require('dropbar.api').get_current_dropbar_menu()
+        local menu = utils.menu.get_current()
         if not menu then
           return
         end
@@ -233,7 +235,7 @@ M.opts = {
         end
       end,
       ['<MouseMove>'] = function()
-        local menu = require('dropbar.api').get_current_dropbar_menu()
+        local menu = utils.menu.get_current()
         if not menu then
           return
         end

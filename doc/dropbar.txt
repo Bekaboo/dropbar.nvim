@@ -26,7 +26,10 @@ CONTENTS                                           *dropbar-table-of-contents*
       5.1.6.3 LSP                  |dropbar-configuration-options-sources-lsp|
       5.1.6.4 Markdown        |dropbar-configuration-options-sources-markdown|
   5.2 API                                          |dropbar-configuration-api|
-  5.3 Highlighting                        |dropbar-configuration-highlighting|
+  5.3 Utility Functions              |dropbar-configuration-utility-functions|
+    5.3.1 Bar Utility Functions  |dropbar-configuration-utility-functions-bar|
+    5.3.2 Menu Utility Functions |dropbar-configuration-utility-functions-menu|
+  5.4 Highlighting                        |dropbar-configuration-highlighting|
 6. Developers                                             |dropbar-developers|
   6.1 Architecture                           |dropbar-developers-architecture|
   6.2 Classes                                     |dropbar-developers-classes|
@@ -451,59 +454,61 @@ the menu:
     - Default: >lua
 	    {
 	      ['<LeftMouse>'] = function()
-		local api = require('dropbar.api')
-		local menu = api.get_current_dropbar_menu()
+		local menu = utils.menu.get_current()
 		if not menu then
 		  return
 		end
 		local mouse = vim.fn.getmousepos()
 		if mouse.winid ~= menu.win then
-		  local prev_menu = api.get_dropbar_menu(mouse.winid)
+		  local prev_menu = utils.menu.get({ win = mouse.winid })
 		  if prev_menu and prev_menu.sub_menu then
 		    prev_menu.sub_menu:close()
-		  end
-		  if vim.api.nvim_win_is_valid(mouse.winid) then
-		    vim.api.nvim_set_current_win(mouse.winid)
-		  end
-		  return
+		  else
+		    utils.menu.exec('close')
+		    utils.bar.exec('update_current_context_hl')
 		end
-		menu:click_at({ mouse.line, mouse.column - 1 }, nil, 1, 'l')
-	      end,
-	      ['<CR>'] = function()
-		local menu = require('dropbar.api').get_current_dropbar_menu()
-		if not menu then
-		  return
+		if vim.api.nvim_win_is_valid(mouse.winid) then
+		  vim.api.nvim_set_current_win(mouse.winid)
 		end
-		local cursor = vim.api.nvim_win_get_cursor(menu.win)
-		local component = menu.entries[cursor[1]]:first_clickable(cursor[2])
-		if component then
-		  menu:click_on(component, nil, 1, 'l')
+		return
+	      end
+	      menu:click_at({ mouse.line, mouse.column - 1 }, nil, 1, 'l')
+	    end,
+	    ['<CR>'] = function()
+	      local menu = utils.menu.get_current()
+	      if not menu then
+		return
+	      end
+	      local cursor = vim.api.nvim_win_get_cursor(menu.win)
+	      local component = menu.entries[cursor[1]]:first_clickable(cursor[2])
+	      if component then
+		menu:click_on(component, nil, 1, 'l')
+	      end
+	    end,
+	    ['<MouseMove>'] = function()
+	      local menu = utils.menu.get_current()
+	      if not menu then
+		return
+	      end
+	      local mouse = vim.fn.getmousepos()
+	      -- If mouse is not in the menu window or on the border, end preview
+	      -- and clear hover highlights
+	      if mouse.winid ~= menu.win or mouse.line <= 0 or mouse.column <= 0 then
+		-- Find the root menu
+		while menu and menu.prev_menu do
+		  menu = menu.prev_menu
 		end
-	      end,
-	      ['<MouseMove>'] = function()
-		local menu = require('dropbar.api').get_current_dropbar_menu()
-		if not menu then
-		  return
+		if menu then
+		  menu:finish_preview(true)
+		  menu:update_hover_hl()
 		end
-		local mouse = vim.fn.getmousepos()
-		-- If mouse is not in the menu window or on the border, end preview
-		-- and clear hover highlights
-		if mouse.winid ~= menu.win or mouse.line <= 0 or mouse.column <= 0 then
-		  -- Find the root menu
-		  while menu and menu.prev_menu do
-		    menu = menu.prev_menu
-		  end
-		  if menu then
-		    menu:finish_preview(true)
-		    menu:update_hover_hl()
-		  end
-		  return
-		end
-		if M.opts.menu.preview then
-		  menu:preview_symbol_at({ mouse.line, mouse.column - 1 }, true)
-		end
-		menu:update_hover_hl({ mouse.line, mouse.column - 1 })
-	      end,
+		return
+	      end
+	      if M.opts.menu.preview then
+		menu:preview_symbol_at({ mouse.line, mouse.column - 1 }, true)
+	      end
+	      menu:update_hover_hl({ mouse.line, mouse.column - 1 })
+	    end,
 	    }
 <
 - `opts.menu.win_configs`: `table<string, dropbar_menu_win_config_opts_t>`
@@ -711,49 +716,19 @@ used to interact with the winbar or the drop-down menu:
 
 api.get_dropbar({buf}, {win})                      *dropbar-api-get_dropbar()*
 
-    Get the dropbar associated with the given buffer and window
-
-    For more information about the `dropbar_t` type, see
-    |dropbar-developers-classes-dropbar_t|
-
-    Parameters: ~
-        • {buf} (integer?): The buffer number, if nil the buffer associated
-			    with the window {win} be used
-        • {win} (integer): The window number
-
-    Returns: ~
-	(`dropbar_t`?): The dropbar associated with the given buffer and
-			window
+	DEPRECATED: Use `utils.bar.get()` instead
 
 api.get_current_dropbar()                  *dropbar-api-get_current_dropbar()*
 
-	Get the dropbar associated with the current buffer and window
-
-	Returns: ~
-	    (`dropbar_t`?): The dropbar associated with the current buffer and
-			    window
+ 	DEPRECATED: Use `utils.bar.get_current()` instead
 
 api.get_dropbar_menu({win})                   *dropbar-api-get_dropbar_menu()*
 
-	Get the drop-down menu associated with the given window
-
-	For more information about the `dropbar_menu_t` type, see
-	|dropbar-developers-classes-dropbar_menu_t|
-
-	Parameters: ~
-	    • {win} (integer): The window number
-
-	Returns: ~
-	    (`dropbar_menu_t`?): The drop-down menu associated with the given
-				 window
+	DEPRECATED: Use `utils.menu.get()` instead
 
 api.get_current_dropbar_menu()        *dropbar-api-get_current_dropbar_menu()*
 
-	Get the drop-down menu associated with the current window
-
-	Returns: ~
-	    (`dropbar_menu_t`?): The drop-down menu associated with the
-				 current window
+	DEPRECATED: Use `utils.menu.get_current()` instead
 
 api.goto_context_start([{count}])           *dropbar-api-goto_context_start()*
 
@@ -781,8 +756,73 @@ api.pick([{idx}])                                         *dropbar-api-pick()*
         If {idx} is a number, directly pick the component at that index if it
 	exists
 
-    	Parameters: ~
+	Parameters: ~
 	    • {idx} (integer?): The index of the component to pick
+
+------------------------------------------------------------------------------
+UTILITY FUNCTIONS                    *dropbar-configuration-utility-functions*
+
+..............................................................................
+BAR UTILITY FUNCTIONS            *dropbar-configuration-bar-utility-functions*
+
+Defined in `lua/dropbar/utils/bar.lua`.
+
+utils.bar.get({opts})              *dropbar-utility-functions-utils.bar.get()*
+
+	Get the dropbar(s) associated with the given buffer and window
+
+	If only `opts.win` is specified, return the dropbar attached the window;
+
+	If only `opts.buf` is specified, return all dropbars attached the buffer;
+
+	If both `opts.win` and `opts.buf` are specified, return the dropbar
+	attached the window that contains the buffer;
+
+	If neither `opts.win` nor `opts.buf` is specified, return all dropbars in
+	the form of `table<buf, table<win, dropbar_t>>`
+
+	Parameters ~
+	    • {opts} (table?): Options
+		◦ buf (integer?): The buffer number
+		◦ win (integer?): The window id
+
+	Returns ~
+	    `nil`, `dropbar_t`, `table<winid, dropbar_t`,
+	    or `table<bufnr, table<winid, dropbar_t>>`
+
+utils.bar.get_current()    *dropbar-utility-functions-utils.bar.get_current()*
+
+	Get the dropbar associated with the current buffer and window
+
+	Returns ~
+	    `dropbar_t` or `nil`
+
+..............................................................................
+MENU UTILITY FUNCTIONS          *dropbar-configuration-menu-utility-functions*
+
+Defined in `lua/dropbar/utils/menu.lua`.
+
+utils.menu.get(opts)              *dropbar-utility-functions-utils.menu.get()*
+
+	Get dropbar menu
+
+	If `opts.win` is specified, return the dropbar menu attached the window;
+
+	If `opts.win` is not specified, return all opened dropbar menus
+
+	Parameters ~
+	    • {opts} (table?): Options
+		◦ win (integer?): The window id
+
+	Returns ~
+	    `nil`, `dropbar_menu_t`, or `table<winid, dropbar_menu_t>`
+
+utils.menu.get_current()  *dropbar-utility-functions-utils.menu.get_current()*
+
+	Get current dropbar menu
+
+	Returns ~
+	    `dropbar_menu_t` or `nil`
 
 ------------------------------------------------------------------------------
 HIGHLIGHTING                              *dropbar-configuration-highlighting*
