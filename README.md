@@ -1,16 +1,4 @@
-<h1 align='center'>
-  dropbar.nvim
-</h1>
-
-<p align='center'>
-  <b>IDE-like breadcrumbs, out of the box</b>
-</p>
-
-<p align='center'>
-  <img src=https://github.com/Bekaboo/dropbar.nvim/assets/76579810/28db72ab-d75c-46fe-8a9d-1f06b4440de9 width=500>
-</p>
-
-<p align='center'>
+<h1 
   A polished, IDE-like, highly-customizable winbar for Neovim <br>
   with drop-down menu support and mutiple backends
 </p>
@@ -535,7 +523,6 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
       },
       treesitter = {
         -- Lua pattern used to extract a short name from the node text
-        -- Be aware that the match result must not be nil!
         name_pattern = '[#~%*%w%._%->!@:]+%s*'
           .. string.rep('[#~%*%w%._%->!@:]*', 3, '%s*'),
         -- The order matters! The first match is used as the type
@@ -1086,7 +1073,6 @@ each sources.
 
 - `opts.sources.treesitter.name_pattern`: `string`
   - Lua pattern used to extract a short name from the node text
-  - Be aware! The matching result must not be nil
   - Default: `'[#~%*%w%._%->!@:]+%s*' .. string.rep('[#~%*%w%._%->!@:]*', 3, '%s*')`
 - `opts.sources.treesitter.valid_types:` `string[]`
   - A list of treesitter node types to include in the results
