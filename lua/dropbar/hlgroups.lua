@@ -196,6 +196,14 @@ function M.get_devicon_hlgroup(hlgroup)
   return new_hlgroup
 end
 
+---Update all patched devicon highlight groups to match the current dropbar
+---colors after a colorscheme change.
+local function update_devicon_hlgroups()
+  for created_hlgroup, _ in pairs(M.devicons) do
+    create_hl(created_hlgroup, created_hlgroup:sub(#'DropBar' + 1))
+  end
+end
+
 ---Register a non-dropbar defined highlight group to be managed by dropbar,
 ---for example when setting icon/name highlights for symbols
 ---@param hlgroup string
@@ -270,6 +278,8 @@ function M.set_hlgroups()
     'FloatBorder',
     { link = 'DropBarMenuFloatBorder', default = true }
   )
+
+  update_devicon_hlgroups()
 end
 
 ---Initialize highlight groups for dropbar
@@ -277,7 +287,7 @@ function M.init()
   M.set_hlgroups()
   vim.api.nvim_create_autocmd('ColorScheme', {
     group = vim.api.nvim_create_augroup('DropBarHlGroups', {}),
-    callback = M.set_hlgroups,
+    callback = vim.schedule_wrap(M.set_hlgroups),
   })
 end
 
