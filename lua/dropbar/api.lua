@@ -2,6 +2,7 @@
 ---@param buf? integer
 ---@param win integer
 ---@return dropbar_t?
+---@deprecated
 local function get_dropbar(buf, win)
   buf = buf or vim.api.nvim_win_get_buf(win)
   if rawget(_G.dropbar.bars, buf) then
@@ -11,6 +12,7 @@ end
 
 ---Get current dropbar
 ---@return dropbar_t?
+---@deprecated
 local function get_current_dropbar()
   return get_dropbar(
     vim.api.nvim_get_current_buf(),
@@ -21,12 +23,14 @@ end
 ---Get dropbar menu
 ---@param win integer
 ---@return dropbar_menu_t?
+---@deprecated
 local function get_dropbar_menu(win)
   return _G.dropbar.menus[win]
 end
 
 ---Get current dropbar menu
 ---@return dropbar_menu_t?
+---@deprecated
 local function get_current_dropbar_menu()
   return get_dropbar_menu(vim.api.nvim_get_current_win())
 end
