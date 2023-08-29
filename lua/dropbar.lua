@@ -5,7 +5,7 @@ local configs = require('dropbar.configs')
 local utils = require('dropbar.utils')
 
 ---Store the on_click callbacks for each dropbar symbol
----Make it assessable from global only because nvim's viml-lua interface
+---Make it accessible from global only because nvim's viml-lua interface
 ---(v:lua) only support calling global lua functions
 ---@type table<string, table<string, function>>
 ---@see dropbar_t:update
