@@ -800,9 +800,9 @@ function dropbar_menu_t:fuzzy_find_click_on_entry(component)
     end
     self:click_on(target, nil, 1, 'l')
     if configs.opts.fzf.fuzzy_find_on_click then
-      vim.schedule(function()
+      if target.menu then
         target.menu:fuzzy_find_open()
-      end)
+      end
     end
   end)
 end
