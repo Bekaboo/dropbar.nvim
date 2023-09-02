@@ -889,6 +889,9 @@ function dropbar_menu_t:fuzzy_find_open(opts)
   local keymaps = vim.tbl_extend('force', {
     ['<LeftMouse>'] = function()
       local mouse = vim.fn.getmousepos()
+      if not mouse then
+        return
+      end
       if mouse.winid ~= self.win then
         local default_func = configs.opts.menu.keymaps['<LeftMouse>']
         if type(default_func) == 'function' then
@@ -903,6 +906,39 @@ function dropbar_menu_t:fuzzy_find_open(opts)
       self:fuzzy_find_click_on_entry(function(entry)
         return entry:get_component_at(mouse.column - 1, true)
       end)
+    end,
+    ['<MouseMove>'] = function()
+      ---@type dropbar_menu_t
+      local menu = utils.menu.get_current()
+      if not menu then
+        return
+      end
+      local mouse = vim.fn.getmousepos()
+      if not mouse then
+        return
+      end
+      -- If mouse is not in the menu window or on the border, end preview
+      -- and clear hover highlights
+      if
+        mouse.winid ~= menu.win
+        or mouse.line <= 0
+        or mouse.column <= 0
+        or mouse.winrow > #menu.entries
+      then
+        -- Find the root menu
+        while menu and menu.prev_menu do
+          menu = menu.prev_menu
+        end
+        if menu then
+          menu:finish_preview(true)
+          menu:update_hover_hl()
+        end
+        return
+      end
+      if configs.opts.menu.preview then
+        menu:preview_symbol_at({ mouse.line, mouse.column - 1 }, true)
+      end
+      menu:update_hover_hl({ mouse.line, mouse.column - 1 })
     end,
     ['<Esc>'] = function()
       self:fuzzy_find_close(true)
