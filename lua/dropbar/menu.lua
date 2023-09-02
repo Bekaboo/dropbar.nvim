@@ -853,12 +853,21 @@ function dropbar_menu_t:fuzzy_find_open(opts)
 
   vim.bo[self.buf].modifiable = true
   local buf = vim.api.nvim_create_buf(false, true)
+
+  local col_offset = 0
+  if
+    opts.win_configs
+    and (opts.win_configs.border == 'none' or opts.win_configs.border == false)
+  then
+    col_offset = 0
+  end
+
   local win = vim.api.nvim_open_win(
     buf,
     false,
     vim.tbl_extend('force', self._win_configs, {
       row = self._win_configs.row + self._win_configs.height,
-      col = self._win_configs.col - 1,
+      col = self._win_configs.col - col_offset,
       height = 1,
       border = 'single',
     }, opts.win_configs or {})
