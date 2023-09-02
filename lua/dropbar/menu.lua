@@ -831,6 +831,7 @@ function dropbar_menu_t:fuzzy_find_open(opts)
 
   vim.bo[self.buf].modifiable = true
   local buf = vim.api.nvim_create_buf(false, true)
+  vim.bo[buf].filetype = 'dropbar_menu_fzf'
 
   local col_offset = 0
   if
