@@ -675,6 +675,10 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
       char_pattern = '[%w%p]',
       ---@type boolean
       retain_inner_spaces = true,
+      ---@type boolean
+      -- When opening an entry with a submenu via the fuzzy finder,
+      -- open the submenu in fuzzy finder mode.
+      fuzzy_find_on_click = true
     },
     sources = {
       path = {
@@ -1369,16 +1373,24 @@ appearance of the fuzzy finder interface.
     prompt = '%#htmlTag# '
     ```
 
-- opts.char_pattern
+- opts.fzf.char_pattern
   - Default:
     ```lua
     char_pattern = '[%w%p]'
     ```
 
-- opts.retain_inner_spaces
+- opts.fzf.retain_inner_spaces
   - Default:
     ```lua
     retain_inner_spaces = true
+    ```
+
+- opts.fzf.fuzzy_find_on_click
+  - When opening an entry with a submenu via the fuzzy finder,
+    open the submenu in fuzzy finder mode.
+  - Default:
+    ```lua
+    fuzzy_find_on_click = true
     ```
 
 #### Sources

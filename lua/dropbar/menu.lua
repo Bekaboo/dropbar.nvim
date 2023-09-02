@@ -799,6 +799,11 @@ function dropbar_menu_t:fuzzy_find_click_on_entry(component)
       return
     end
     self:click_on(target, nil, 1, 'l')
+    if configs.opts.fzf.fuzzy_find_on_click then
+      vim.schedule(function()
+        target.menu:fuzzy_find_open()
+      end)
+    end
   end)
 end
 

@@ -465,6 +465,7 @@ M.opts = {
     prompt = '%#htmlTag# ',
     char_pattern = '[%w%p]',
     retain_inner_spaces = true,
+    fuzzy_find_on_click = true,
   },
   sources = {
     path = {
