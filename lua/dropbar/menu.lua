@@ -878,10 +878,8 @@ function dropbar_menu_t:fuzzy_find_open(opts)
   local prev_cursor = vim.api.nvim_win_get_cursor(self.win)
 
   vim.api.nvim_set_current_win(win)
-  vim.schedule(function()
-    move_cursor({ 1, 1 })
-    vim.cmd('silent! startinsert')
-  end)
+  move_cursor({ 1, 1 })
+  vim.cmd('silent! startinsert')
 
   local function on_update()
     if not self.fzf_state then
