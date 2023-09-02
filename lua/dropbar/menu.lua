@@ -865,7 +865,9 @@ function dropbar_menu_t:fuzzy_find_open(opts)
   self.fzf_state = utils.fzf.fzf_state_t:new(self, win, opts)
 
   for key, func in pairs(opts.keymaps) do
-    vim.keymap.set('i', key, func, { buffer = buf })
+    if func then
+      vim.keymap.set('i', key, func, { buffer = buf })
+    end
   end
 
   local prev_cursor = vim.api.nvim_win_get_cursor(self.win)

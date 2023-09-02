@@ -193,8 +193,12 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
   - Inside interactive pick mode, press the corresponding pivot shown before
     each component to select it
 - Fuzzy finder
-  - Use mappings defined in your config to call dropbar_menu_t:fuzzy_find_open()
-  - Interactively filter, select and preview entries
+  - Use dropbar_menu_t:fuzzy_find_open() to interactively
+    filter, select and preview entries using fzf
+  - `<i>`: enter fzf mode from the menu
+  - `<Esc>`: exit fzf mode
+  - `<Up>/<Down>`: move the cursor in fzf mode
+  - `<CR>`: call the on_click callback of the symbol under the cursor
 - Default keymaps in drop-down menu
   - `<LeftMouse>`: call the `on_click` callback of the symbol at the mouse
     click

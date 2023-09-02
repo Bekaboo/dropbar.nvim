@@ -268,6 +268,16 @@ M.opts = {
         end
         menu:update_hover_hl({ mouse.line, mouse.column - 1 })
       end,
+      i = function()
+        if not utils.fzf then
+          return
+        end
+        local menu = utils.menu.get_current()
+        if not menu then
+          return
+        end
+        menu:fuzzy_find_open()
+      end,
     },
     ---@alias dropbar_menu_win_config_opts_t any|fun(menu: dropbar_menu_t):any
     ---@type table<string, dropbar_menu_win_config_opts_t>
@@ -344,7 +354,7 @@ M.opts = {
           if type(default_func) == 'function' then
             default_func()
           end
-          menu:fuzzy_find_close(false)
+          menu:fuzzy_find_close()
           return
         elseif mouse.winrow > vim.api.nvim_buf_line_count(menu.buf) then
           return
@@ -393,7 +403,7 @@ M.opts = {
         if not menu then
           return
         end
-        menu:fuzzy_find_close(true)
+        menu:fuzzy_find_close()
       end,
       ['<Enter>'] = function()
         ---@type dropbar_menu_t
