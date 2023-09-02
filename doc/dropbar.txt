@@ -1139,7 +1139,7 @@ dropbar_t.symbol_on_hover                          *dropbar_t.symbol_on_hover*
 
 dropbar_t.last_update_request_tim         *dropbar_t.last_update_request_time*
 
- 	Timestamp of the last update request in ms, see |uv.hrtime()|
+	Timestamp of the last update request in ms, see |uv.now()|
 
 	Type ~
 	    float?

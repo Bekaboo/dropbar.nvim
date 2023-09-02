@@ -1467,7 +1467,7 @@ which function to call when a symbol is clicked.
 | `string_cache`             | `string`                                  | string cache of the dropbar                                                                                 |
 | `in_pick_mode`             | `boolean?`                                | whether the dropbar is in pick mode                                                                         |
 | `symbol_on_hover`          | [`dropbar_symbol_t`](#dropbar_symbol_t)   | The previous symbol<sub>[`dropbar_symbol_t[]`](#dropbar_symbol_t)</sub> under mouse hovering in the dropbar |
-| `last_update_request_time` | `float?`                                  | timestamp of the last update request in ms, see `:h uv.hrtime()`                                            |
+| `last_update_request_time` | `float?`                                  | timestamp of the last update request in ms, see `:h uv.now()`                                               |
 
 
 `dropbar_t` has the following methods:

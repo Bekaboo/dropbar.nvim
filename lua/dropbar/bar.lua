@@ -372,7 +372,7 @@ end
 ---@field string_cache string
 ---@field in_pick_mode boolean?
 ---@field symbol_on_hover dropbar_symbol_t?
----@field last_update_request_time number? timestamp of the last update request in ms, see :h uv.hrtime()
+---@field last_update_request_time number? timestamp of the last update request in ms, see :h uv.now()
 local dropbar_t = {}
 dropbar_t.__index = dropbar_t
 
@@ -486,7 +486,7 @@ end
 ---Not updating when executing a macro
 ---@return nil
 function dropbar_t:update()
-  local request_time = vim.uv.hrtime() / 1e6
+  local request_time = vim.uv.now()
   self.last_update_request_time = request_time
   vim.defer_fn(function()
     if
@@ -508,7 +508,7 @@ function dropbar_t:update()
         -- request after the current one if we are going to cancel the current
         -- one
         and self.last_update_request_time > request_time
-        and vim.uv.hrtime() / 1e6 - self.last_update_request_time
+        and vim.uv.now() - self.last_update_request_time
           < configs.opts.general.update_interval
       )
       or vim.fn.reg_executing() ~= ''
