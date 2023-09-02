@@ -774,7 +774,7 @@ function dropbar_menu_t:fuzzy_find_click_on_entry(component)
     return
   end
   cursor[1] = menu_entry.idx
-  self:fuzzy_find_close(false)
+  self:fuzzy_find_close()
   vim.api.nvim_win_set_cursor(self.win, cursor)
   vim.api.nvim_feedkeys('l', 'nt', false)
   component = component or 0
@@ -820,7 +820,7 @@ function dropbar_menu_t:fuzzy_find_open(opts)
   local fzf_lib = utils.fzf.fzf_lib
 
   if self.fzf_state then
-    self:fuzzy_find_close(false)
+    self:fuzzy_find_close()
   end
 
   local ns_name = 'DropBarFzf' .. tostring(self.win)
@@ -962,7 +962,7 @@ function dropbar_menu_t:fuzzy_find_open(opts)
     group = augroup,
     buffer = buf,
     callback = function()
-      self:fuzzy_find_close(false)
+      self:fuzzy_find_close()
       if prev_cursor and vim.api.nvim_win_is_valid(self.win) then
         vim.schedule(function()
           vim.api.nvim_win_set_cursor(self.win, prev_cursor)
