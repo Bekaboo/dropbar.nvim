@@ -1,6 +1,18 @@
-<h1 
+<h1 align='center'>
+  dropbar.nvim
+</h1>
+
+<p align='center'>
+  <b>IDE-like breadcrumbs, out of the box</b>
+</p>
+
+<p align='center'>
+  <img src=https://github.com/Bekaboo/dropbar.nvim/assets/76579810/28db72ab-d75c-46fe-8a9d-1f06b4440de9 width=500>
+</p>
+
+<p align='center'>
   A polished, IDE-like, highly-customizable winbar for Neovim <br>
-  with drop-down menu support and mutiple backends
+  with drop-down menu support and multiple backends
 </p>
 
 - [Features](#features)
