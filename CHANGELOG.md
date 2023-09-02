@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.1.0](https://github.com/Bekaboo/dropbar.nvim/compare/v5.0.3...v5.1.0) (2023-08-28)
+
+
+### Features
+
+* **config:** make attach events configurable, fix [#70](https://github.com/Bekaboo/dropbar.nvim/issues/70) ([b2695b7](https://github.com/Bekaboo/dropbar.nvim/commit/b2695b7880fdafe1b270927c13dd6714416d990c))
+
+
+### Bug Fixes
+
+* **menu:** duplicate current-context highlight in the first menu ([348a318](https://github.com/Bekaboo/dropbar.nvim/commit/348a318747b266da13e91636b657a069d26fd942))
+
 ## [5.0.3](https://github.com/Bekaboo/dropbar.nvim/compare/v5.0.2...v5.0.3) (2023-08-22)
 
 
