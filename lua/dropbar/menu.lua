@@ -735,16 +735,9 @@ function dropbar_menu_t:fuzzy_find_restore_entries()
   self:fill_buf()
 end
 
----Stop fuzzy finding and clean up allocated memory, optionally fixing the
----cursor position to counteract cursor movement caused by entering and leaving
----insert mode
----@param fix_cursor boolean?
+---Stop fuzzy finding and clean up allocated memory
 ---@version JIT
-function dropbar_menu_t:fuzzy_find_close(fix_cursor)
-  -- todo: handle case when restoring cursor
-  -- that only has one clickable component when
-  -- fixing the cursor (quick navigation?)
-  fix_cursor = fix_cursor == nil and true or fix_cursor
+function dropbar_menu_t:fuzzy_find_close()
   if not self.fzf_state then
     return
   end
@@ -758,13 +751,6 @@ function dropbar_menu_t:fuzzy_find_close(fix_cursor)
   if vim.api.nvim_win_is_valid(input_win) then
     vim.cmd('silent! stopinsert')
     vim.api.nvim_win_close(input_win, false)
-    if fix_cursor and self.is_opened then
-      vim.schedule(function()
-        local cursor = vim.api.nvim_win_get_cursor(0)
-        local new_col = math.min(cursor[2] + 1, vim.fn.col('$') - 2)
-        vim.api.nvim_win_set_cursor(0, { cursor[1], new_col })
-      end)
-    end
   end
   _G.dropbar.menus[input_win] = nil
 end
@@ -881,6 +867,8 @@ function dropbar_menu_t:fuzzy_find_open(opts)
     vim.keymap.set('i', key, func, { buffer = buf })
   end
 
+  local prev_cursor = vim.api.nvim_win_get_cursor(self.win)
+
   vim.api.nvim_set_current_win(win)
   vim.schedule(function()
     move_cursor({ 1, 1 })
@@ -975,6 +963,11 @@ function dropbar_menu_t:fuzzy_find_open(opts)
     buffer = buf,
     callback = function()
       self:fuzzy_find_close(false)
+      if prev_cursor and vim.api.nvim_win_is_valid(self.win) then
+        vim.schedule(function()
+          vim.api.nvim_win_set_cursor(self.win, prev_cursor)
+        end)
+      end
     end,
     once = true,
   })
