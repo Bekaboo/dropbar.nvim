@@ -31,6 +31,7 @@
       - [Treesitter](#treesitter)
       - [LSP](#lsp)
       - [Markdown](#markdown)
+      - [Terminal](#terminal)
   - [API](#api)
   - [Utility Functions](#utility-functions)
     - [Bar Utility Functions](#bar-utility-functions)
@@ -69,7 +70,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
 - [x] Multiple backends that support fall-backs
 
-  `dropbar.nvim` comes with four builtin sources:
+  `dropbar.nvim` comes with five builtin sources:
 
   - [x] [lsp](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/sources/lsp.lua): gets symbols from language servers using nvim's builtin LSP framework
 
@@ -78,6 +79,8 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
   - [x] [path](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/sources/path.lua): gets current file path
 
   - [x] [treesitter](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/sources/treesitter.lua): gets symbols from treesitter parsers using nvim's builtin treesitter integration
+
+  - [x] [terminal](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/sources/terminal.lua): easily switch terminal buffers using the dropdown menu
 
   To make a new source yourself, see [making a new source](#making-a-new-source).
 
@@ -310,6 +313,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           Value = '󰎠 ',
           Variable = '󰀫 ',
           WhileStatement = '󰑖 ',
+          Terminal = ''
         },
       },
       ui = {
@@ -612,6 +616,23 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           look_ahead = 200,
         },
       },
+      terminal = {
+        ---@type string|fun(buf: integer): string
+        icon = function(buf)
+          local icon = M.opts.icons.kinds.symbols.Terminal
+          if M.opts.icons.kinds.use_devicons then
+            icon = require('nvim-web-devicons').get_icon_by_filetype(
+              vim.bo[buf].filetype
+            ) or icon
+          end
+          return icon
+        end,
+        ---@type string|fun(buf: integer): string
+        name = vim.api.nvim_buf_get_name,
+        ---@type boolean
+        ---Show the current terminal buffer in the menu
+        show_current = true,
+      }
     },
   }
   ```
@@ -831,7 +852,7 @@ the symbols:
         view.topline = topline
         vim.fn.winrestview(view)
       end
-    end,
+    end
     ```
 
 #### Bar
@@ -851,7 +872,6 @@ winbar:
     ```lua
     function(buf, _)
       local sources = require('dropbar.sources')
-      local utils = require('dropbar.utils')
       if vim.bo[buf].ft == 'markdown' then
         return {
           sources.path,
@@ -862,6 +882,11 @@ winbar:
           }),
         }
       end
+      if vim.bo[buf].buftype == 'terminal' then
+        return {
+          sources.terminal,
+        }
+      end
       return {
         sources.path,
         utils.source.fallback({
@@ -869,7 +894,7 @@ winbar:
           sources.treesitter,
         }),
       }
-    end,
+    end
     ```
   - For more information about sources, see [`dropbar_source_t`](#dropbar_source_t).
 - `opts.bar.padding`: `{ left: number, right: number }`
@@ -1164,6 +1189,43 @@ each sources.
   - Number of lines to update when cursor moves out of the parsed range
   - Default: `200`
 
+##### Terminal
+
+- `opts.sources.terminal.icon`: `string` or `fun(buf: integer): string`
+  - Icon to show before terminal names
+  - Default:
+    ```lua
+    icon = function(buf)
+      local icon = M.opts.icons.kinds.symbols.Terminal
+      if M.opts.icons.kinds.use_devicons then
+        icon = require('nvim-web-devicons').get_icon_by_filetype(
+          vim.bo[buf].filetype
+        ) or icon
+      end
+      return icon
+    end
+    ```
+
+- `opts.sources.terminal.name`: `string` or `fun(buf: integer): string`
+  - Easy to integrate with other plugins (for example, [toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim)):
+    ```lua
+    name = function(buf)
+      local name = vim.api.nvim_buf_get_name(buf)
+      -- the second result val is the terminal object
+      local term = select(2, require("toggleterm.terminal").indentify(name))
+      if term then
+        return term.display_name or term.name
+      else
+        return name
+      end
+    end
+    ```
+  - Default: `vim.api.nvim_buf_get_name`
+
+- `opts.sources.terminal.show_current: boolean`
+  - Show the current terminal buffer in the menu
+  - Default: `true`
+
 ### API
 
 `dropbar.nvim` exposes a few functions in `lua/dropbar/api.lua` that can be
@@ -1305,6 +1367,7 @@ should be self-explanatory:
   | DropBarIconKindValue             | `{ link = 'Number' }`                   |
   | DropBarIconKindVariable          | `{ link = 'CmpItemKindVariable' }`      |
   | DropBarIconKindWhileStatement    | `{ link = 'Repeat' }`                   |
+  | DropBarIconKindTerminal          | `{ link = 'Number' }`                   |
   | DropBarIconUIIndicator           | `{ link = 'SpecialChar' }`              |
   | DropBarIconUIPickPivot           | `{ link = 'Error' }`                    |
   | DropBarIconUISeparator           | `{ link = 'SpecialChar' }`              |

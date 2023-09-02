@@ -65,6 +65,7 @@ local hlgroups = {
   DropBarIconKindValue             = { link = 'Number' },
   DropBarIconKindVariable          = { link = 'CmpItemKindVariable' },
   DropBarIconKindWhileStatement    = { link = 'Repeat' },
+  DropBarIconKindTerminal          = { link = 'Number' },
   DropBarIconUIIndicator           = { link = 'SpecialChar' },
   DropBarIconUIPickPivot           = { link = 'Error' },
   DropBarIconUISeparator           = { link = 'SpecialChar' },
