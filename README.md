@@ -1586,6 +1586,17 @@ used to interact with the winbar or the drop-down menu:
   - Pick a component from current winbar
   - If `idx` is `nil`, enter interactive pick mode to select a component
   - If `idx` is a number, directly pick the component at that index if it exists
+- `fuzzy_find_toggle(opts: table?)`
+  - Toggle the fuzzy finder interface for the current dropbar menu
+  - Options override the default / config options for the fuzzy finder
+- `fuzzy_find_click(component: number | (fun(entry: dropbar_menu_entry_t):dropbar_sumbol_t)?)`
+  - If `component` is a `number`, the `component`-nth symbol is selected,
+    unless `0` or `-1` is supplied, in which case the *first* or *last*
+    clickable component is selected, respectively.
+  - If it is a `function`, it receives the `dropbar_menu_entry_t` as an argument
+    and should return the `dropbar_symbol_t` that is to be clicked.
+- `fuzzy_find_navigate(direction: "up" | "down")`
+  - Select the previous/next entry in the menu while fuzzy finding
 
 ### Utility Functions
 
