@@ -94,7 +94,12 @@ function M.update_hover_hl(mouse)
   if last_hovered_dropbar and last_hovered_dropbar ~= dropbar then
     last_hovered_dropbar:update_hover_hl()
   end
-  dropbar:update_hover_hl(math.max(0, mouse.wincol - 1))
+
+  if dropbar:get_component_at(mouse.wincol - 1, false) then
+    dropbar:update_hover_hl(math.max(0, mouse.wincol - 1))
+  else
+    dropbar:update_hover_hl()
+  end
   last_hovered_dropbar = dropbar
 end
 
