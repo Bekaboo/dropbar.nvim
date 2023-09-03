@@ -558,9 +558,9 @@ end
 function dropbar_t:pick_mode_wrap(fn, ...)
   local pick_mode = self.in_pick_mode
   self.in_pick_mode = true
-  local result = fn(...)
+  local results = { fn(...) }
   self.in_pick_mode = pick_mode
-  return result
+  return unpack(results)
 end
 
 ---Pick a component from dropbar
