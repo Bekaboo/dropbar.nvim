@@ -733,6 +733,7 @@ function dropbar_menu_t:fuzzy_find_restore_entries()
     self.entries[entry.idx] = entry
   end
   self:fill_buf()
+  self:update_current_context_hl(self.cursor[1])
 end
 
 ---Stop fuzzy finding and clean up allocated memory
@@ -933,6 +934,18 @@ function dropbar_menu_t:fuzzy_find_open(opts)
     vim.schedule(function()
       vim.api.nvim_buf_clear_namespace(self.buf, ns_id, 0, -1)
       self:fill_buf()
+      local hl_line = vim
+        .iter(self.entries)
+        :enumerate()
+        :find(function(_, entry)
+          if not self.fzf_state.menu_entries[self.cursor[1]] then
+            return false
+          end
+          return entry.idx == self.fzf_state.menu_entries[self.cursor[1]].idx
+        end)
+      if hl_line then
+        self:update_current_context_hl(hl_line)
+      end
       for i, fzf_entry in ipairs(fzf_state.entries) do
         if fzf_entry.score >= 2 then
           for _, pos_idx in ipairs(fzf_entry.pos) do
