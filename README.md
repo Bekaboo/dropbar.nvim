@@ -1191,6 +1191,8 @@ each sources.
 
 ##### Terminal
 
+Thanks [@willothy](https://github.com/willothy) for implementing this.
+
 - `opts.sources.terminal.icon`: `string` or `fun(buf: integer): string`
   - Icon to show before terminal names
   - Default:
