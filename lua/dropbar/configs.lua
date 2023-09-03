@@ -7,7 +7,7 @@ M.opts = {
     ---@type boolean|fun(buf: integer, win: integer, info: table?): boolean
     enable = function(buf, win, _)
       return not vim.api.nvim_win_get_config(win).zindex
-        and vim.bo[buf].buftype == ''
+        and (vim.bo[buf].buftype == '' or vim.bo[buf].buftype == 'terminal')
         and vim.api.nvim_buf_get_name(buf) ~= ''
         and not vim.wo[win].diff
     end,
@@ -174,6 +174,11 @@ M.opts = {
             sources.markdown,
             sources.lsp,
           }),
+        }
+      end
+      if vim.bo[buf].buftype == 'terminal' then
+        return {
+          sources.terminal,
         }
       end
       return {
@@ -418,6 +423,23 @@ M.opts = {
         -- Number of lines to update when cursor moves out of the parsed range
         look_ahead = 200,
       },
+    },
+    terminal = {
+      ---@type string|fun(buf: integer): string
+      icon = function(buf)
+        local icon = M.opts.icons.kinds.symbols.Terminal
+        if M.opts.icons.kinds.use_devicons then
+          icon = require('nvim-web-devicons').get_icon_by_filetype(
+            vim.bo[buf].filetype
+          ) or icon
+        end
+        return icon
+      end,
+      ---@type string|fun(buf: integer): string
+      name = vim.api.nvim_buf_get_name,
+      ---@type boolean
+      ---Show the current terminal buffer in the menu
+      show_current = true,
     },
   },
 }
