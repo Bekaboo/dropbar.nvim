@@ -686,7 +686,8 @@ end
 ---@param col integer? displaywidth-indexed, 0-indexed mouse position, nil to clear the hover highlights
 ---@return nil
 function dropbar_t:update_hover_hl(col)
-  if not col then
+  local symbol = col and self:get_component_at(col)
+  if not symbol then
     if self.symbol_on_hover then
       self.symbol_on_hover:restore()
       self.symbol_on_hover = nil
@@ -694,8 +695,7 @@ function dropbar_t:update_hover_hl(col)
     end
     return
   end
-  local symbol = self:get_component_at(col)
-  if not symbol or symbol == self.symbol_on_hover then
+  if symbol == self.symbol_on_hover then
     return
   end
   local hl_hover_icon = '_DropBarIconHover'
