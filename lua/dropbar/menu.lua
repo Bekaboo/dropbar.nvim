@@ -733,7 +733,9 @@ function dropbar_menu_t:fuzzy_find_restore_entries()
     self.entries[entry.idx] = entry
   end
   self:fill_buf()
-  self:update_current_context_hl(self.cursor[1])
+  if self.cursor then
+    self:update_current_context_hl(self.cursor[1])
+  end
 end
 
 ---Stop fuzzy finding and clean up allocated memory
