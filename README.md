@@ -613,7 +613,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           if not menu then
             return
           end
-          menu:fuzzy_find_click_on_entry(-1)
+          menu:fuzzy_find_click_on_entry()
         end,
         ['<S-Enter>'] = function()
           ---@type dropbar_menu_t
@@ -621,7 +621,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           if not menu then
             return
           end
-          menu:fuzzy_find_click_on_entry(nil)
+          menu:fuzzy_find_click_on_entry(-1)
         end,
         ['<Up>'] = function()
           ---@type dropbar_menu_t
@@ -1297,7 +1297,7 @@ appearance of the fuzzy finder interface.
         if not menu then
           return
         end
-        menu:fuzzy_find_click_on_entry(-1)
+        menu:fuzzy_find_click_on_entry()
       end,
       ['<S-Enter>'] = function()
         ---@type dropbar_menu_t
@@ -1305,7 +1305,7 @@ appearance of the fuzzy finder interface.
         if not menu then
           return
         end
-        menu:fuzzy_find_click_on_entry(nil)
+        menu:fuzzy_find_click_on_entry(-1)
       end,
       ['<Up>'] = function()
         ---@type dropbar_menu_t

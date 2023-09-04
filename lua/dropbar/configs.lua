@@ -411,7 +411,7 @@ M.opts = {
         if not menu then
           return
         end
-        menu:fuzzy_find_click_on_entry(-1)
+        menu:fuzzy_find_click_on_entry()
       end,
       ['<S-Enter>'] = function()
         ---@type dropbar_menu_t
@@ -419,7 +419,7 @@ M.opts = {
         if not menu then
           return
         end
-        menu:fuzzy_find_click_on_entry(nil)
+        menu:fuzzy_find_click_on_entry(-1)
       end,
       ['<Up>'] = function()
         ---@type dropbar_menu_t
