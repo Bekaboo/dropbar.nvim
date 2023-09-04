@@ -25,6 +25,7 @@ CONTENTS                                           *dropbar-table-of-contents*
       5.1.6.2 Treesitter    |dropbar-configuration-options-sources-treesitter|
       5.1.6.3 LSP                  |dropbar-configuration-options-sources-lsp|
       5.1.6.4 Markdown        |dropbar-configuration-options-sources-markdown|
+      5.1.6.5 Terminal        |dropbar-configuration-options-sources-terminal|
   5.2 API                                          |dropbar-configuration-api|
   5.3 Utility Functions              |dropbar-configuration-utility-functions|
     5.3.1 Bar Utility Functions  |dropbar-configuration-utility-functions-bar|
@@ -416,6 +417,11 @@ the winbar:
                   }),
                 }
               end
+              if vim.bo[buf].buftype == 'terminal' then
+                return {
+                  sources.terminal,
+                }
+              end
               return {
                 sources.path,
                 utils.source.fallback({
@@ -717,6 +723,43 @@ MARKDOWN                      *dropbar-configuration-options-sources-markdown*
 - `opts.sources.markdown.parse.look_ahead`: `number`
     - Number of lines to update when cursor moves out of the parsed range
     - Default: `200`
+
+TERMINAL                      *dropbar-configuration-options-sources-markdown*
+
+- `opts.sources.terminal.icon`: `string` or `fun(buf: integer): string`
+  - Icon to show before terminal names
+  - Default: >lua
+
+	  icon = function(buf)
+	    local icon = M.opts.icons.kinds.symbols.Terminal
+	    if M.opts.icons.kinds.use_devicons then
+	      icon = require('nvim-web-devicons').get_icon_by_filetype(
+		vim.bo[buf].filetype
+	      ) or icon
+	    end
+	    return icon
+	  end
+<
+- `opts.sources.terminal.name`: `string` or `fun(buf: integer): string`
+  - Easy to integrate with other plugins, for example,
+    toggleterm.nvim <https://github.com/akinsho/toggleterm.nvim>: >lua
+
+	  name = function(buf)
+	    local name = vim.api.nvim_buf_get_name(buf)
+	    -- the second result val is the terminal object
+	    local term = select(2, require("toggleterm.terminal").indentify(name))
+	    if term then
+	      return term.display_name or term.name
+	    else
+	      return name
+	    end
+	  end
+<
+  - Default: `vim.api.nvim_buf_get_name`
+
+- `opts.sources.terminal.show_current: boolean`
+  - Show the current terminal buffer in the menu
+  - Default: `true`
 
 ------------------------------------------------------------------------------
 API                                                *dropbar-configuration-api*

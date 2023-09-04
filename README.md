@@ -306,6 +306,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           String = '󰉾 ',
           Struct = ' ',
           SwitchStatement = '󰺟 ',
+          Terminal = ' ',
           Text = ' ',
           Type = ' ',
           TypeParameter = '󰆩 ',
@@ -313,7 +314,6 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           Value = '󰎠 ',
           Variable = '󰀫 ',
           WhileStatement = '󰑖 ',
-          Terminal = ''
         },
       },
       ui = {
@@ -872,6 +872,7 @@ winbar:
     ```lua
     function(buf, _)
       local sources = require('dropbar.sources')
+      local utils = require('dropbar.utils')
       if vim.bo[buf].ft == 'markdown' then
         return {
           sources.path,
@@ -1363,13 +1364,13 @@ should be self-explanatory:
   | DropBarIconKindString            | `{ link = 'String' }`                   |
   | DropBarIconKindStruct            | `{ link = 'CmpItemKindStruct' }`        |
   | DropBarIconKindSwitchStatement   | `{ link = 'Conditional' }`              |
+  | DropBarIconKindTerminal          | `{ link = 'Number' }`                   |
   | DropBarIconKindType              | `{ link = 'CmpItemKindClass' }`         |
   | DropBarIconKindTypeParameter     | `{ link = 'CmpItemKindTypeParameter' }` |
   | DropBarIconKindUnit              | `{ link = 'CmpItemKindUnit' }`          |
   | DropBarIconKindValue             | `{ link = 'Number' }`                   |
   | DropBarIconKindVariable          | `{ link = 'CmpItemKindVariable' }`      |
   | DropBarIconKindWhileStatement    | `{ link = 'Repeat' }`                   |
-  | DropBarIconKindTerminal          | `{ link = 'Number' }`                   |
   | DropBarIconUIIndicator           | `{ link = 'SpecialChar' }`              |
   | DropBarIconUIPickPivot           | `{ link = 'Error' }`                    |
   | DropBarIconUISeparator           | `{ link = 'SpecialChar' }`              |
@@ -1437,6 +1438,7 @@ should be self-explanatory:
   | DropBarKindString                | undefined                               |
   | DropBarKindStruct                | undefined                               |
   | DropBarKindSwitchStatement       | undefined                               |
+  | DropBarKindTerminal              | undefined                               |
   | DropBarKindType                  | undefined                               |
   | DropBarKindTypeParameter         | undefined                               |
   | DropBarKindUnit                  | undefined                               |
