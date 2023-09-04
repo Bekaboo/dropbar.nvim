@@ -452,7 +452,7 @@ function dropbar_menu_t:make_buf()
         self:preview_symbol_at(cursor, true)
       end
 
-      if configs.opts.menu.quick_navigation then
+      if configs.opts.menu.quick_navigation and not self.fzf_state then
         self:quick_navigation(cursor)
       else
         self.prev_cursor = cursor
@@ -981,12 +981,12 @@ function dropbar_menu_t:fuzzy_find_open(opts)
     group = augroup,
     buffer = buf,
     callback = function()
-      self:fuzzy_find_close()
       if prev_cursor and vim.api.nvim_win_is_valid(self.win) then
         vim.schedule(function()
-          vim.api.nvim_win_set_cursor(self.win, prev_cursor)
+          move_cursor(prev_cursor)
         end)
       end
+      self:fuzzy_find_close()
     end,
     once = true,
   })
