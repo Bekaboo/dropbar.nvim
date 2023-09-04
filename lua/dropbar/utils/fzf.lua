@@ -2,7 +2,7 @@
 -- and neither will the fzf-native module (which is written in C and
 -- uses ffi).
 if not jit then
-  return nil
+  return false
 end
 
 ---@class fzf_lib_t
@@ -15,13 +15,10 @@ end
 ---@field free_pattern fun(pattern: ffi.cdata*)
 ---@field allocate_slab fun(): ffi.cdata*
 ---@field free_slab fun(slab: ffi.cdata*)
-local fzf_lib = (function()
-  local ok, lib = pcall(require, 'fzf_lib')
-  return ok and lib or nil
-end)()
+local fzf_lib = vim.F.ok_or_nil(pcall(require, 'fzf_lib'))
 
 if not fzf_lib then
-  return nil
+  return false
 end
 
 ---@class fzf_entry_t
