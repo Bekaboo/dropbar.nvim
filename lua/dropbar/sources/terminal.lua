@@ -8,6 +8,7 @@ local function buf_info(buf)
     icon = configs.eval(configs.opts.sources.terminal.icon, buf),
     name = configs.eval(configs.opts.sources.terminal.name, buf),
     icon_hl = 'DropBarIconKindTerminal',
+    name_hl = 'DropBarKindTerminal',
   }
 end
 
