@@ -842,11 +842,17 @@ function dropbar_menu_t:fuzzy_find_open(opts)
   vim.bo[buf].filetype = 'dropbar_menu_fzf'
 
   local col_offset = 0
+  local function has_border(border)
+    return border and border ~= 'none'
+  end
   if
     opts.win_configs
-    and (opts.win_configs.border == 'none' or opts.win_configs.border == false)
+    and (
+      has_border(opts.win_configs.border)
+      and not has_border(self._win_configs.border)
+    )
   then
-    col_offset = 0
+    col_offset = 1
   end
 
   local win = vim.api.nvim_open_win(
