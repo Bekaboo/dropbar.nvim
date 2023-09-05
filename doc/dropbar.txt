@@ -724,7 +724,7 @@ MARKDOWN                      *dropbar-configuration-options-sources-markdown*
     - Number of lines to update when cursor moves out of the parsed range
     - Default: `200`
 
-TERMINAL                      *dropbar-configuration-options-sources-markdown*
+TERMINAL                      *dropbar-configuration-options-sources-terminal*
 
 - `opts.sources.terminal.icon`: `string` or `fun(buf: integer): string`
   - Icon to show before terminal names
