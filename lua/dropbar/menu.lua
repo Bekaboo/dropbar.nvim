@@ -817,10 +817,10 @@ function dropbar_menu_t:fuzzy_find_open(opts)
   opts = vim.tbl_deep_extend('force', configs.opts.fzf, opts or {})
 
   if not jit then
-    vim.notify('Fuzzy finding requires LuaJIT', vim.log.levels.ERROR)
+    vim.notify_once('Fuzzy finding requires LuaJIT', vim.log.levels.ERROR)
     return
   elseif not utils.fzf then
-    vim.notify('fzf-lib is not installed', vim.log.levels.ERROR)
+    vim.notify_once('fzf-lib is not installed', vim.log.levels.ERROR)
     return
   end
 
