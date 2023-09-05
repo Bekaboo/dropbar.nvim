@@ -269,9 +269,6 @@ M.opts = {
         menu:update_hover_hl({ mouse.line, mouse.column - 1 })
       end,
       i = function()
-        if not utils.fzf then
-          return
-        end
         local menu = utils.menu.get_current()
         if not menu then
           return
