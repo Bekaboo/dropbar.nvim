@@ -167,6 +167,7 @@ function dropbar_menu_entry_t:next_clickable(col)
     if col < col_start and component.on_click then
       return component, { start = col_start, ['end'] = col_end }
     end
+
     col_start = col_end + self.separator:bytewidth()
   end
 end
@@ -452,6 +453,16 @@ function dropbar_menu_t:make_buf()
 
       -- Update hover highlights
       self:update_hover_hl(self.prev_cursor)
+
+      -- Update the scrollbar
+      self:update_scrollbar()
+    end,
+  })
+  vim.api.nvim_create_autocmd('WinScrolled', {
+    group = groupid,
+    buffer = self.buf,
+    callback = function()
+      self:update_scrollbar()
     end,
   })
   vim.api.nvim_create_autocmd('BufLeave', {
@@ -479,6 +490,73 @@ function dropbar_menu_t:open_win()
     'NormalFloat:DropBarMenuNormalFloat',
     'FloatBorder:DropBarMenuFloatBorder',
   }, ',')
+end
+
+function dropbar_menu_t:make_scrollbar()
+  local buf_height = vim.api.nvim_buf_line_count(self.buf)
+  if buf_height <= vim.api.nvim_win_get_height(self.win) then
+    return
+  end
+
+  local cursor = vim.api.nvim_win_get_cursor(self.win)
+  local win_height = vim.api.nvim_win_get_height(self.win)
+  local pct = cursor[1] / buf_height
+
+  local thumb_height =
+    math.max(1, math.floor(win_height * win_height / buf_height + 0.5))
+  local offset = math.floor(pct * (win_height - thumb_height))
+  self.scrollbar =
+    vim.api.nvim_open_win(vim.api.nvim_create_buf(false, true), false, {
+      row = offset,
+      col = vim.api.nvim_win_get_width(self.win) - 1,
+      width = 1,
+      height = thumb_height,
+      style = 'minimal',
+      border = 'none',
+      relative = 'win',
+      win = self.win,
+      zindex = (self._win_configs.zindex or 100) + 1,
+    })
+  vim.wo[self.scrollbar].winhl = table.concat({
+    'NormalFloat:DropBarMenuScrollBar',
+  }, ',')
+end
+
+---Update the scrollbar's position and height
+function dropbar_menu_t:update_scrollbar()
+  if self.buf == nil or self.win == nil then
+    return
+  end
+  local buf_height = vim.api.nvim_buf_line_count(self.buf)
+  local win_height = vim.api.nvim_win_get_height(self.win)
+  if self.scrollbar and vim.api.nvim_win_is_valid(self.scrollbar) then
+    if buf_height <= vim.api.nvim_win_get_height(self.win) then
+      self:close_scrollbar()
+      return
+    end
+
+    local cursor = vim.api.nvim_win_get_cursor(self.win)
+    local pct = cursor[1] / buf_height
+
+    local thumb_height =
+      math.max(1, math.floor(win_height * win_height / buf_height + 0.5))
+    local offset = math.floor(pct * (win_height - thumb_height))
+
+    local config = vim.api.nvim_win_get_config(self.scrollbar)
+    config.row = offset
+    config.height = thumb_height
+    vim.api.nvim_win_set_config(self.scrollbar, config)
+  elseif buf_height > vim.api.nvim_win_get_height(self.win) then
+    self:make_scrollbar()
+  end
+end
+
+---Close the scrollbar, if one exists
+function dropbar_menu_t:close_scrollbar()
+  if self.scrollbar and vim.api.nvim_win_is_valid(self.scrollbar) then
+    vim.api.nvim_win_close(self.scrollbar, true)
+  end
+  self.scrollbar = nil
 end
 
 ---Override menu options
@@ -523,6 +601,7 @@ function dropbar_menu_t:open(opts)
   self:eval_win_configs()
   self:make_buf()
   self:open_win()
+  self:make_scrollbar()
   _G.dropbar.menus[self.win] = self
   -- Initialize cursor position
   if self._win_configs.focusable ~= false then
@@ -533,6 +612,9 @@ function dropbar_menu_t:open(opts)
       vim.api.nvim_exec_autocmds('CursorMoved', { buffer = self.buf })
     end
   end
+  vim.schedule(function()
+    self:update_scrollbar()
+  end)
 end
 
 ---Close the menu
@@ -559,6 +641,9 @@ function dropbar_menu_t:close(restore_view)
     end
     _G.dropbar.menus[self.win] = nil
     self.win = nil
+  end
+  if self.scrollbar then
+    self:close_scrollbar()
   end
   -- Finish preview
   if configs.opts.menu.preview then
