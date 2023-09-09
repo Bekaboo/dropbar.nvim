@@ -421,36 +421,29 @@ M.opts = {
       ['<Up>'] = function()
         ---@type dropbar_menu_t
         local menu = utils.menu.get_current()
-        if not menu then
-          return
-        end
-        if vim.api.nvim_buf_line_count(menu.buf) <= 1 then
-          return
-        end
-        local cursor = vim.api.nvim_win_get_cursor(menu.win)
-        cursor[1] = math.max(1, cursor[1] - 1)
-        vim.api.nvim_win_set_cursor(menu.win, cursor)
-        menu:update_hover_hl(cursor)
-        if M.opts.menu.preview then
-          menu:preview_symbol_at(cursor)
+        if menu then
+          menu:fuzzy_find_navigate_up()
         end
       end,
       ['<Down>'] = function()
         ---@type dropbar_menu_t
         local menu = utils.menu.get_current()
-        if not menu then
-          return
+        if menu then
+          menu:fuzzy_find_navigate_down()
         end
-        local line_count = vim.api.nvim_buf_line_count(menu.buf)
-        if line_count <= 1 then
-          return
+      end,
+      ['<C-k>'] = function()
+        ---@type dropbar_menu_t
+        local menu = utils.menu.get_current()
+        if menu then
+          menu:fuzzy_find_navigate_up()
         end
-        local cursor = vim.api.nvim_win_get_cursor(menu.win)
-        cursor[1] = math.min(line_count, cursor[1] + 1)
-        vim.api.nvim_win_set_cursor(menu.win, cursor)
-        menu:update_hover_hl(cursor)
-        if M.opts.menu.preview then
-          menu:preview_symbol_at(cursor)
+      end,
+      ['<C-j>'] = function()
+        ---@type dropbar_menu_t
+        local menu = utils.menu.get_current()
+        if menu then
+          menu:fuzzy_find_navigate_down()
         end
       end,
     },
