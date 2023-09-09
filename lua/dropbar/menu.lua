@@ -597,10 +597,17 @@ function dropbar_menu_t:open(opts)
   self:override(opts)
 
   self.prev_menu = _G.dropbar.menus[self.prev_win]
+  local open_fzf = false
   if self.prev_menu then
     -- if the prev menu has an existing sub-menu, close the sub-menu first
     if self.prev_menu.sub_menu then
       self.prev_menu.sub_menu:close()
+    end
+    if self.prev_menu.fzf_state then
+      self.prev_menu:fuzzy_find_close()
+      if configs.opts.fzf.fuzzy_find_on_click then
+        open_fzf = true
+      end
     end
     self.prev_menu.sub_menu = self
   end
@@ -618,6 +625,9 @@ function dropbar_menu_t:open(opts)
       vim.api.nvim_win_set_cursor(self.win, self.cursor)
       vim.api.nvim_exec_autocmds('CursorMoved', { buffer = self.buf })
     end
+  end
+  if open_fzf then
+    self:fuzzy_find_open()
   end
   vim.schedule(function()
     self:update_scrollbar()
@@ -869,6 +879,7 @@ function dropbar_menu_t:fuzzy_find_open(opts)
   vim.bo[self.buf].modifiable = true
   local buf = vim.api.nvim_create_buf(false, true)
   vim.bo[buf].filetype = 'dropbar_menu_fzf'
+  vim.bo[buf].bufhidden = 'wipe'
 
   local col_offset = 0
   local function has_border(border)
@@ -895,6 +906,7 @@ function dropbar_menu_t:fuzzy_find_open(opts)
   )
   vim.wo[win].stc = opts.prompt
   _G.dropbar.menus[win] = self
+  self.fzf_state = utils.fzf.fzf_state_t:new(self, win, opts)
 
   local should_preview = configs.opts.menu.preview
   local function move_cursor(pos)
@@ -904,8 +916,6 @@ function dropbar_menu_t:fuzzy_find_open(opts)
       self:preview_symbol_at(pos)
     end
   end
-
-  self.fzf_state = utils.fzf.fzf_state_t:new(self, win, opts)
 
   for key, func in pairs(opts.keymaps) do
     if func then
@@ -927,10 +937,8 @@ function dropbar_menu_t:fuzzy_find_open(opts)
     local fzf_state = self.fzf_state
     local text = vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1]
     if not text or #text < 1 then
-      vim.schedule(function()
-        self:fuzzy_find_restore_entries()
-        move_cursor({ 1, 1 })
-      end)
+      self:fuzzy_find_restore_entries()
+      move_cursor({ 1, 1 })
       return
     end
     local pattern = fzf_lib.parse_pattern(text, 0, true)
