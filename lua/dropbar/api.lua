@@ -1,5 +1,3 @@
-local configs = require('dropbar.configs')
-
 ---Get the dropbar
 ---@param buf? integer
 ---@param win integer
@@ -128,23 +126,7 @@ local function fuzzy_find_navigate(direction)
   if not menu or not menu.fzf_state then
     return
   end
-  local line_count = vim.api.nvim_buf_line_count(menu.buf)
-  if line_count <= 1 then
-    return
-  end
-  local cursor = vim.api.nvim_win_get_cursor(menu.win)
-  if direction == 'up' then
-    cursor[1] = math.max(1, cursor[1] - 1)
-  elseif direction == 'down' then
-    cursor[1] = math.min(line_count, cursor[1] + 1)
-  else
-    return
-  end
-  vim.api.nvim_win_set_cursor(menu.win, cursor)
-  menu:update_hover_hl(cursor)
-  if configs.opts.menu.preview then
-    menu:preview_symbol_at(cursor)
-  end
+  menu:fuzzy_find_navigate(direction)
 end
 
 return {

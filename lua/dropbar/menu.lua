@@ -820,31 +820,24 @@ function dropbar_menu_t:fuzzy_find_click_on_entry(component)
   end)
 end
 
----Navigate the fuzzy find menu
-function dropbar_menu_t:fuzzy_find_navigate_up()
+---Select the next / previous entry while fuzzy finding
+---@param dir "up" | "down"
+function dropbar_menu_t:fuzzy_find_navigate(dir)
   if not self.fzf_state then
-    return
-  end
-  if vim.api.nvim_buf_line_count(self.buf) <= 1 then
     return
   end
   local cursor = vim.api.nvim_win_get_cursor(self.win)
-  cursor[1] = math.max(1, cursor[1] - 1)
-  vim.api.nvim_win_set_cursor(self.win, cursor)
-  vim.api.nvim_exec_autocmds('CursorMoved', { buffer = self.buf })
-end
-
----Navigate the fuzzy find menu
-function dropbar_menu_t:fuzzy_find_navigate_down()
-  if not self.fzf_state then
-    return
-  end
   local line_count = vim.api.nvim_buf_line_count(self.buf)
   if line_count <= 1 then
     return
   end
-  local cursor = vim.api.nvim_win_get_cursor(self.win)
-  cursor[1] = math.min(line_count, cursor[1] + 1)
+  if dir == 'up' then
+    cursor[1] = math.max(1, cursor[1] - 1)
+  elseif dir == 'down' then
+    cursor[1] = math.min(line_count, cursor[1] + 1)
+  else
+    return
+  end
   vim.api.nvim_win_set_cursor(self.win, cursor)
   vim.api.nvim_exec_autocmds('CursorMoved', { buffer = self.buf })
 end
@@ -937,8 +930,10 @@ function dropbar_menu_t:fuzzy_find_open(opts)
     local fzf_state = self.fzf_state
     local text = vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1]
     if not text or #text < 1 then
-      self:fuzzy_find_restore_entries()
-      move_cursor({ 1, 1 })
+      vim.schedule(function()
+        self:fuzzy_find_restore_entries()
+        move_cursor({ 1, 1 })
+      end)
       return
     end
     local pattern = fzf_lib.parse_pattern(text, 0, true)

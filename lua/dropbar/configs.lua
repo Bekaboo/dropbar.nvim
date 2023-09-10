@@ -1,4 +1,5 @@
 local utils = require('dropbar.utils')
+local api = require('dropbar.api')
 local M = {}
 
 ---@class dropbar_configs_t
@@ -395,56 +396,25 @@ M.opts = {
         menu:update_hover_hl({ mouse.line, mouse.column - 1 })
       end,
       ['<Esc>'] = function()
-        ---@type dropbar_menu_t
-        local menu = utils.menu.get_current()
-        if not menu then
-          return
-        end
-        menu:fuzzy_find_close()
+        api.fuzzy_find_toggle()
       end,
       ['<Enter>'] = function()
-        ---@type dropbar_menu_t
-        local menu = utils.menu.get_current()
-        if not menu then
-          return
-        end
-        menu:fuzzy_find_click_on_entry()
+        api.fuzzy_find_click()
       end,
       ['<S-Enter>'] = function()
-        ---@type dropbar_menu_t
-        local menu = utils.menu.get_current()
-        if not menu then
-          return
-        end
-        menu:fuzzy_find_click_on_entry(-1)
+        api.fuzzy_find_click(-1)
       end,
       ['<Up>'] = function()
-        ---@type dropbar_menu_t
-        local menu = utils.menu.get_current()
-        if menu then
-          menu:fuzzy_find_navigate_up()
-        end
+        api.fuzzy_find_navigate('up')
       end,
       ['<Down>'] = function()
-        ---@type dropbar_menu_t
-        local menu = utils.menu.get_current()
-        if menu then
-          menu:fuzzy_find_navigate_down()
-        end
+        api.fuzzy_find_navigate('down')
       end,
       ['<C-k>'] = function()
-        ---@type dropbar_menu_t
-        local menu = utils.menu.get_current()
-        if menu then
-          menu:fuzzy_find_navigate_up()
-        end
+        api.fuzzy_find_navigate('up')
       end,
       ['<C-j>'] = function()
-        ---@type dropbar_menu_t
-        local menu = utils.menu.get_current()
-        if menu then
-          menu:fuzzy_find_navigate_down()
-        end
+        api.fuzzy_find_navigate('down')
       end,
     },
     win_configs = {},

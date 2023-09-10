@@ -480,6 +480,13 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           end
           menu:update_hover_hl({ mouse.line, mouse.column - 1 })
         end,
+        i = function()
+          local menu = utils.menu.get_current()
+          if not menu then
+            return
+          end
+          menu:fuzzy_find_open()
+        end,
       },
       ---@alias dropbar_menu_win_config_opts_t any|fun(menu: dropbar_menu_t):any
       ---@type table<string, dropbar_menu_win_config_opts_t>
@@ -600,63 +607,25 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           menu:update_hover_hl({ mouse.line, mouse.column - 1 })
         end,
         ['<Esc>'] = function()
-          ---@type dropbar_menu_t
-          local menu = utils.menu.get_current()
-          if not menu then
-            return
-          end
-          menu:fuzzy_find_close(true)
+          require('dropbar.api').fuzzy_find_toggle()
         end,
         ['<Enter>'] = function()
-          ---@type dropbar_menu_t
-          local menu = utils.menu.get_current()
-          if not menu then
-            return
-          end
-          menu:fuzzy_find_click_on_entry()
+          require('dropbar.api').fuzzy_find_click()
         end,
         ['<S-Enter>'] = function()
-          ---@type dropbar_menu_t
-          local menu = utils.menu.get_current()
-          if not menu then
-            return
-          end
-          menu:fuzzy_find_click_on_entry(-1)
+          require('dropbar.api').fuzzy_find_click(-1)
         end,
         ['<Up>'] = function()
-          ---@type dropbar_menu_t
-          local menu = utils.menu.get_current()
-          if not menu then
-            return
-          end
-          if vim.api.nvim_buf_line_count(menu.buf) <= 1 then
-            return
-          end
-          local cursor = vim.api.nvim_win_get_cursor(menu.win)
-          cursor[1] = math.max(1, cursor[1] - 1)
-          vim.api.nvim_win_set_cursor(menu.win, cursor)
-          menu:update_hover_hl(cursor)
-          if M.opts.menu.preview then
-            menu:preview_symbol_at(cursor)
-          end
+          require('dropbar.api').fuzzy_find_navigate('up')
         end,
         ['<Down>'] = function()
-          ---@type dropbar_menu_t
-          local menu = utils.menu.get_current()
-          if not menu then
-            return
-          end
-          local line_count = vim.api.nvim_buf_line_count(menu.buf)
-          if line_count <= 1 then
-            return
-          end
-          local cursor = vim.api.nvim_win_get_cursor(menu.win)
-          cursor[1] = math.min(line_count, cursor[1] + 1)
-          vim.api.nvim_win_set_cursor(menu.win, cursor)
-          menu:update_hover_hl(cursor)
-          if M.opts.menu.preview then
-            menu:preview_symbol_at(cursor)
-          end
+          require('dropbar.api').fuzzy_find_navigate('down')
+        end,
+        ['<C-k>'] = function()
+          require('dropbar.api').fuzzy_find_navigate('up')
+        end,
+        ['<C-j>'] = function()
+          require('dropbar.api').fuzzy_find_navigate('down')
         end,
       },
       -- Options passed to `:h nvim_open_win`. The fuzzy finder will use its
@@ -1149,6 +1118,13 @@ menu:
         end
         menu:update_hover_hl({ mouse.line, mouse.column - 1 })
       end,
+      i = function()
+        local menu = utils.menu.get_current()
+        if not menu then
+          return
+        end
+        menu:fuzzy_find_open()
+      end,
     }
     ```
 - `opts.menu.win_configs`: `table<string, dropbar_menu_win_config_opts_t>`
@@ -1284,63 +1260,25 @@ appearance of the fuzzy finder interface.
         menu:update_hover_hl({ mouse.line, mouse.column - 1 })
       end,
       ['<Esc>'] = function()
-        ---@type dropbar_menu_t
-        local menu = utils.menu.get_current()
-        if not menu then
-          return
-        end
-        menu:fuzzy_find_close(true)
+        require('dropbar.api').fuzzy_find_toggle()
       end,
       ['<Enter>'] = function()
-        ---@type dropbar_menu_t
-        local menu = utils.menu.get_current()
-        if not menu then
-          return
-        end
-        menu:fuzzy_find_click_on_entry()
+        require('dropbar.api').fuzzy_find_click()
       end,
       ['<S-Enter>'] = function()
-        ---@type dropbar_menu_t
-        local menu = utils.menu.get_current()
-        if not menu then
-          return
-        end
-        menu:fuzzy_find_click_on_entry(-1)
+        require('dropbar.api').fuzzy_find_click(-1)
       end,
       ['<Up>'] = function()
-        ---@type dropbar_menu_t
-        local menu = utils.menu.get_current()
-        if not menu then
-          return
-        end
-        if vim.api.nvim_buf_line_count(menu.buf) <= 1 then
-          return
-        end
-        local cursor = vim.api.nvim_win_get_cursor(menu.win)
-        cursor[1] = math.max(1, cursor[1] - 1)
-        vim.api.nvim_win_set_cursor(menu.win, cursor)
-        menu:update_hover_hl(cursor)
-        if M.opts.menu.preview then
-          menu:preview_symbol_at(cursor)
-        end
+        require('dropbar.api').fuzzy_find_navigate('up')
       end,
       ['<Down>'] = function()
-        ---@type dropbar_menu_t
-        local menu = utils.menu.get_current()
-        if not menu then
-          return
-        end
-        local line_count = vim.api.nvim_buf_line_count(menu.buf)
-        if line_count <= 1 then
-          return
-        end
-        local cursor = vim.api.nvim_win_get_cursor(menu.win)
-        cursor[1] = math.min(line_count, cursor[1] + 1)
-        vim.api.nvim_win_set_cursor(menu.win, cursor)
-        menu:update_hover_hl(cursor)
-        if M.opts.menu.preview then
-          menu:preview_symbol_at(cursor)
-        end
+        require('dropbar.api').fuzzy_find_navigate('down')
+      end,
+      ['<C-k>'] = function()
+        require('dropbar.api').fuzzy_find_navigate('up')
+      end,
+      ['<C-j>'] = function()
+        require('dropbar.api').fuzzy_find_navigate('down')
       end,
     }
     ```
@@ -2011,6 +1949,7 @@ Declared and defined in [`lua/dropbar/menu.lua`](https://github.com/Bekaboo/drop
 | `dropbar_menu_t:fuzzy_find_close()`                                                                                               | stop fuzzy finding and clean up allocated memory
 | `dropbar_menu_t:fuzzy_find_click_on_entry(component: number or fun(dropbar_menu_entry_t):dropbar_symbol_t)`                       | click on the currently selected fuzzy menu entry, choosing the component to click according to component
 | `dropbar_menu_t:fuzzy_find_open(opts: table?)`                                                                                    | open the fuzzy search menu, overriding fzf configuration with opts argument
+| `dropbar_menu_t:fuzzy_find_navigate(direction: "up" or "down")`                                                                   | select the next or previous entry in the menu when the fuzzy search bar is open                                                                                                                         |
 
 #### `dropbar_menu_entry_t`
 
