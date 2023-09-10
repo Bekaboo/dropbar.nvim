@@ -892,6 +892,17 @@ PATH                              *dropbar-configuration-options-sources-path*
 		-- ...
 	      })
 	    end
+- `opts.sources.path.preview`: `boolean|fun(path: string): boolean?|nil`
+  - A boolean or a function that takes a file path and returns whether to
+    preview the file under cursor
+  - Default: >lua
+
+	    function(path)
+	      local stat = vim.uv.fs_stat(path)
+	      return stat and stat.type == 'file'
+		and stat.size <= 524288
+	    end
+<
 
 TREESITTER                  *dropbar-configuration-options-sources-treesitter*
 
@@ -1880,6 +1891,14 @@ dropbar_menu_t.win                                        *dropbar_menu_t.win*
 
 	Type ~
 	    integer
+
+dropbar_menu_t.prev_buf                              *dropbar_menu_t.prev_buf*
+
+  Previous buffer, assigned when calling `new()` or automatically
+  determined in `open()`
+
+  Type ~
+      integer?
 
 dropbar_menu_t.is_opened                            *dropbar_menu_t.is_opened*
 
