@@ -76,6 +76,7 @@ local hlgroups = {
   DropBarMenuHoverIcon             = { reverse = true },
   DropBarMenuHoverSymbol           = { bold = true },
   DropBarMenuNormalFloat           = { link = 'NormalFloat' },
+  DropBarMenuScrollBar             = { link = 'Visual' },
   DropBarPreview                   = { link = 'Visual' },
 }
 -- stylua: ignore end

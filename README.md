@@ -124,8 +124,6 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
 - [ ] Support visual mode selection to select/delete multiple symbols
 
-- [ ] Add scrollbar to the menu when the symbol list is too long
-
 - [ ] Ability to hide/show the winbar on each window separately
 
 ## Requirements
@@ -1381,6 +1379,7 @@ should be self-explanatory:
   | DropBarMenuHoverIcon             | `{ reverse = true }`                    |
   | DropBarMenuHoverSymbol           | `{ bold = true }`                       |
   | DropBarMenuNormalFloat           | `{ link = 'NormalFloat' }`              |
+  | DropBarMenuScrollBar             | `{ link = 'NormalFloat' }`              |
   | DropBarPreview                   | `{ link = 'Visual' }`                   |
   | DropBarKindArray                 | undefined                               |
   | DropBarKindBoolean               | undefined                               |
