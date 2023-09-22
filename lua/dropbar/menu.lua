@@ -908,6 +908,7 @@ function dropbar_menu_t:fuzzy_find_open(opts)
     if should_preview then
       self:preview_symbol_at(pos)
     end
+    self:update_scrollbar()
   end
 
   for key, func in pairs(opts.keymaps) do
