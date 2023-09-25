@@ -93,6 +93,9 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
   As long as the language server or the treesitter parser is installed,
   it should work just fine.
 
+  Optionally, you can install [telescope-fzf-native](https://github.com/nvim-telescope/telescope-fzf-native)
+  to add fuzzy search support to dropbar menus.
+
 - [x] Drop-down menu components and winbar symbols that response to
       mouse/cursor hovering:
 
@@ -131,6 +134,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 - Neovim **Nightly** (>= 0.10.0-dev)
 - Optional
   - [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons), if you want to see icons for different filetypes
+  - [telescope-fzf-native](https://github.com/nvim-telescope/telescope-fzf-native), if you want fuzzy search support
   - Working language server installation for the lsp source to work
   - Working treesitter parser installation for the treesitter source to work
 
@@ -140,7 +144,13 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
   ```lua
   require('lazy').setup({
-    { 'Bekaboo/dropbar.nvim' }
+    {
+      'Bekaboo/dropbar.nvim',
+      -- optional, but required for fuzzy finder support
+      dependencies = {
+        'nvim-telescope/telescope-fzf-native'
+      }
+    }
   })
   ```
 
@@ -148,7 +158,12 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
   ```lua
   require('packer').startup(function(use)
-    use('Bekaboo/dropbar.nvim')
+    use({
+      'Bekaboo/dropbar.nvim',
+      requires = {
+        'nvim-telescope/telescope-fzf-native'
+      }
+    })
   end)
   ```
 
@@ -177,6 +192,13 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
     `idx`.
   - Inside interactive pick mode, press the corresponding pivot shown before
     each component to select it
+- Fuzzy finder
+  - Use dropbar_menu_t:fuzzy_find_open() to interactively
+    filter, select and preview entries using fzf
+  - `<i>`: enter fzf mode from the menu
+  - `<Esc>`: exit fzf mode
+  - `<Up>/<Down>`: move the cursor in fzf mode
+  - `<CR>`: call the on_click callback of the symbol under the cursor
 - Default keymaps in drop-down menu
   - `<LeftMouse>`: call the `on_click` callback of the symbol at the mouse
     click
@@ -458,6 +480,13 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           end
           menu:update_hover_hl({ mouse.line, mouse.column - 1 })
         end,
+        i = function()
+          local menu = utils.menu.get_current()
+          if not menu then
+            return
+          end
+          menu:fuzzy_find_open()
+        end,
       },
       ---@alias dropbar_menu_win_config_opts_t any|fun(menu: dropbar_menu_t):any
       ---@type table<string, dropbar_menu_win_config_opts_t>
@@ -515,6 +544,110 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           )
         end,
       },
+    },
+    fzf = {
+      ---@type table<string, string | fun()>
+      keymaps = {
+        ['<LeftMouse>'] = function()
+          ---@type dropbar_menu_t
+          local menu = utils.menu.get_current()
+          if not menu then
+            return
+          end
+          local mouse = vim.fn.getmousepos()
+          if not mouse then
+            return
+          end
+          if mouse.winid ~= menu.win then
+            local default_func = M.opts.menu.keymaps['<LeftMouse>']
+            if type(default_func) == 'function' then
+              default_func()
+            end
+            menu:fuzzy_find_close(false)
+            return
+          elseif mouse.winrow > vim.api.nvim_buf_line_count(menu.buf) then
+            return
+          end
+          vim.api.nvim_win_set_cursor(menu.win, { mouse.line, mouse.column - 1 })
+          menu:fuzzy_find_click_on_entry(function(entry)
+            return entry:get_component_at(mouse.column - 1, true)
+          end)
+        end,
+        ['<MouseMove>'] = function()
+          ---@type dropbar_menu_t
+          local menu = utils.menu.get_current()
+          if not menu then
+            return
+          end
+          local mouse = vim.fn.getmousepos()
+          if not mouse then
+            return
+          end
+          -- If mouse is not in the menu window or on the border, end preview
+          -- and clear hover highlights
+          if
+            mouse.winid ~= menu.win
+            or mouse.line <= 0
+            or mouse.column <= 0
+            or mouse.winrow > #menu.entries
+          then
+            -- Find the root menu
+            while menu and menu.prev_menu do
+              menu = menu.prev_menu
+            end
+            if menu then
+              menu:finish_preview(true)
+              menu:update_hover_hl()
+            end
+            return
+          end
+          if M.opts.menu.preview then
+            menu:preview_symbol_at({ mouse.line, mouse.column - 1 }, true)
+          end
+          menu:update_hover_hl({ mouse.line, mouse.column - 1 })
+        end,
+        ['<Esc>'] = function()
+          require('dropbar.api').fuzzy_find_toggle()
+        end,
+        ['<Enter>'] = function()
+          require('dropbar.api').fuzzy_find_click()
+        end,
+        ['<S-Enter>'] = function()
+          require('dropbar.api').fuzzy_find_click(-1)
+        end,
+        ['<Up>'] = function()
+          require('dropbar.api').fuzzy_find_navigate('up')
+        end,
+        ['<Down>'] = function()
+          require('dropbar.api').fuzzy_find_navigate('down')
+        end,
+        ['<C-k>'] = function()
+          require('dropbar.api').fuzzy_find_navigate('up')
+        end,
+        ['<C-j>'] = function()
+          require('dropbar.api').fuzzy_find_navigate('down')
+        end,
+      },
+      -- Options passed to `:h nvim_open_win`. The fuzzy finder will use its
+      -- parent window's config by default, but options set here will override those.
+      win_configs = {},
+      ---@type table
+      hl = {
+        ---@type string
+        fg = vim.api.nvim_get_hl(0, { name = 'htmlTag', link = false }).fg,
+        ---@type boolean
+        underline = true,
+      },
+      ---@type string
+      prompt = '%#htmlTag# ',
+      ---@type string
+      char_pattern = '[%w%p]',
+      ---@type boolean
+      retain_inner_spaces = true,
+      ---@type boolean
+      -- When opening an entry with a submenu via the fuzzy finder,
+      -- open the submenu in fuzzy finder mode.
+      fuzzy_find_on_click = true
     },
     sources = {
       path = {
@@ -985,6 +1118,13 @@ menu:
         end
         menu:update_hover_hl({ mouse.line, mouse.column - 1 })
       end,
+      i = function()
+        local menu = utils.menu.get_current()
+        if not menu then
+          return
+        end
+        menu:fuzzy_find_open()
+      end,
     }
     ```
 - `opts.menu.win_configs`: `table<string, dropbar_menu_win_config_opts_t>`
@@ -1048,6 +1188,147 @@ menu:
         )
       end,
     }
+    ```
+
+#### Fzf
+
+These options live under opts.fzf and are used to control the behavior and
+appearance of the fuzzy finder interface.
+
+- opts.fzf.keymaps
+  - The keymaps that will apply in insert mode, in the fzf prompt buffer
+  - Same config as opts.menu.keymaps
+  - Default:
+    ```lua
+    keymaps = {
+      ['<LeftMouse>'] = function()
+        ---@type dropbar_menu_t
+        local menu = utils.menu.get_current()
+        if not menu then
+          return
+        end
+        local mouse = vim.fn.getmousepos()
+        if not mouse then
+          return
+        end
+        if mouse.winid ~= menu.win then
+          local default_func = M.opts.menu.keymaps['<LeftMouse>']
+          if type(default_func) == 'function' then
+            default_func()
+          end
+          menu:fuzzy_find_close(false)
+          return
+        elseif mouse.winrow > vim.api.nvim_buf_line_count(menu.buf) then
+          return
+        end
+        vim.api.nvim_win_set_cursor(menu.win, { mouse.line, mouse.column - 1 })
+        menu:fuzzy_find_click_on_entry(function(entry)
+          return entry:get_component_at(mouse.column - 1, true)
+        end)
+      end,
+      ['<MouseMove>'] = function()
+        ---@type dropbar_menu_t
+        local menu = utils.menu.get_current()
+        if not menu then
+          return
+        end
+        local mouse = vim.fn.getmousepos()
+        if not mouse then
+          return
+        end
+        -- If mouse is not in the menu window or on the border, end preview
+        -- and clear hover highlights
+        if
+          mouse.winid ~= menu.win
+          or mouse.line <= 0
+          or mouse.column <= 0
+          or mouse.winrow > #menu.entries
+        then
+          -- Find the root menu
+          while menu and menu.prev_menu do
+            menu = menu.prev_menu
+          end
+          if menu then
+            menu:finish_preview(true)
+            menu:update_hover_hl()
+          end
+          return
+        end
+        if M.opts.menu.preview then
+          menu:preview_symbol_at({ mouse.line, mouse.column - 1 }, true)
+        end
+        menu:update_hover_hl({ mouse.line, mouse.column - 1 })
+      end,
+      ['<Esc>'] = function()
+        require('dropbar.api').fuzzy_find_toggle()
+      end,
+      ['<Enter>'] = function()
+        require('dropbar.api').fuzzy_find_click()
+      end,
+      ['<S-Enter>'] = function()
+        require('dropbar.api').fuzzy_find_click(-1)
+      end,
+      ['<Up>'] = function()
+        require('dropbar.api').fuzzy_find_navigate('up')
+      end,
+      ['<Down>'] = function()
+        require('dropbar.api').fuzzy_find_navigate('down')
+      end,
+      ['<C-k>'] = function()
+        require('dropbar.api').fuzzy_find_navigate('up')
+      end,
+      ['<C-j>'] = function()
+        require('dropbar.api').fuzzy_find_navigate('down')
+      end,
+    }
+    ```
+
+- opts.fzf.win_configs
+  - Options passed to `:h nvim_open_win`. The fuzzy finder will use its
+    parent window's config by default, but options set here will override those.
+  - Same config as opts.menu.win_configs
+  - Default:
+    ```lua
+    win_configs = {}
+    ```
+
+- opts.fzf.hl
+  - Highlight to use for the fuzzy finder.
+  - Options passed directly to `:h nvim_set_hl`
+  - Default:
+    ```lua
+    hl = {
+      fg = vim.api.nvim_get_hl(0, { name = 'htmlTag', link = false }).fg,
+      underline = true,
+    }
+    ```
+
+- opts.fzf.prompt
+  - Prompt string that will be displayed in the statuscolumn of the fzf input window.
+  - Can include highlight groups
+  - Default:
+    ```lua
+    prompt = '%#htmlTag# '
+    ```
+
+- opts.fzf.char_pattern
+  - Default:
+    ```lua
+    char_pattern = '[%w%p]'
+    ```
+
+- opts.fzf.retain_inner_spaces
+  - Default:
+    ```lua
+    retain_inner_spaces = true
+    ```
+
+- opts.fzf.fuzzy_find_on_click
+  - When opening an entry with a submenu via the fuzzy finder,
+    open the submenu in fuzzy finder mode.
+  - Default:
+    ```lua
+    fuzzy_find_on_click = true
     ```
 
 #### Sources
@@ -1259,6 +1540,17 @@ used to interact with the winbar or the drop-down menu:
   - Pick a component from current winbar
   - If `idx` is `nil`, enter interactive pick mode to select a component
   - If `idx` is a number, directly pick the component at that index if it exists
+- `fuzzy_find_toggle(opts: table?)`
+  - Toggle the fuzzy finder interface for the current dropbar menu
+  - Options override the default / config options for the fuzzy finder
+- `fuzzy_find_click(component: number | (fun(entry: dropbar_menu_entry_t):dropbar_sumbol_t)?)`
+  - If `component` is a `number`, the `component`-nth symbol is selected,
+    unless `0` or `-1` is supplied, in which case the *first* or *last*
+    clickable component is selected, respectively.
+  - If it is a `function`, it receives the `dropbar_menu_entry_t` as an argument
+    and should return the `dropbar_symbol_t` that is to be clicked.
+- `fuzzy_find_navigate(direction: "up" | "down")`
+  - Select the previous/next entry in the menu while fuzzy finding
 
 ### Utility Functions
 
@@ -1653,6 +1945,11 @@ Declared and defined in [`lua/dropbar/menu.lua`](https://github.com/Bekaboo/drop
 | `dropbar_menu_t:open(opts: dropbar_menu_t?)`                                                                                      | open the menu with options `opts`                                                                                                                                           |
 | `dropbar_menu_t:close(restore_view: boolean?)`                                                                                    | close the menu                                                                                                                                                              |
 | `dropbar_menu_t:toggle(opts: dropbar_menu_t?)`                                                                                    | toggle the menu                                                                                                                                                             |
+| `dropbar_menu_t:fuzzy_find_restore_entries()`                                                                                     | restore menu buffer and entries in their original order before modification by fuzzy search
+| `dropbar_menu_t:fuzzy_find_close()`                                                                                               | stop fuzzy finding and clean up allocated memory
+| `dropbar_menu_t:fuzzy_find_click_on_entry(component: number or fun(dropbar_menu_entry_t):dropbar_symbol_t)`                       | click on the currently selected fuzzy menu entry, choosing the component to click according to component
+| `dropbar_menu_t:fuzzy_find_open(opts: table?)`                                                                                    | open the fuzzy search menu, overriding fzf configuration with opts argument
+| `dropbar_menu_t:fuzzy_find_navigate(direction: "up" or "down")`                                                                   | select the next or previous entry in the menu when the fuzzy search bar is open                                                                                                                         |
 
 #### `dropbar_menu_entry_t`
 

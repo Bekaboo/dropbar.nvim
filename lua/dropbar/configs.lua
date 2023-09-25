@@ -1,4 +1,5 @@
 local utils = require('dropbar.utils')
+local api = require('dropbar.api')
 local M = {}
 
 ---@class dropbar_configs_t
@@ -268,6 +269,13 @@ M.opts = {
         end
         menu:update_hover_hl({ mouse.line, mouse.column - 1 })
       end,
+      i = function()
+        local menu = utils.menu.get_current()
+        if not menu then
+          return
+        end
+        menu:fuzzy_find_open()
+      end,
     },
     ---@alias dropbar_menu_win_config_opts_t any|fun(menu: dropbar_menu_t):any
     ---@type table<string, dropbar_menu_win_config_opts_t>
@@ -325,6 +333,99 @@ M.opts = {
         )
       end,
     },
+  },
+  fzf = {
+    ---@type table<string, string | fun()>
+    keymaps = {
+      ['<LeftMouse>'] = function()
+        ---@type dropbar_menu_t
+        local menu = utils.menu.get_current()
+        if not menu then
+          return
+        end
+        local mouse = vim.fn.getmousepos()
+        if not mouse then
+          return
+        end
+        if mouse.winid ~= menu.win then
+          local default_func = M.opts.menu.keymaps['<LeftMouse>']
+          if type(default_func) == 'function' then
+            default_func()
+          end
+          menu:fuzzy_find_close()
+          return
+        elseif mouse.winrow > vim.api.nvim_buf_line_count(menu.buf) then
+          return
+        end
+        vim.api.nvim_win_set_cursor(menu.win, { mouse.line, mouse.column - 1 })
+        menu:fuzzy_find_click_on_entry(function(entry)
+          return entry:get_component_at(mouse.column - 1, true)
+        end)
+      end,
+      ['<MouseMove>'] = function()
+        ---@type dropbar_menu_t
+        local menu = utils.menu.get_current()
+        if not menu then
+          return
+        end
+        local mouse = vim.fn.getmousepos()
+        if not mouse then
+          return
+        end
+        -- If mouse is not in the menu window or on the border, end preview
+        -- and clear hover highlights
+        if
+          mouse.winid ~= menu.win
+          or mouse.line <= 0
+          or mouse.column <= 0
+          or mouse.winrow > #menu.entries
+        then
+          -- Find the root menu
+          while menu and menu.prev_menu do
+            menu = menu.prev_menu
+          end
+          if menu then
+            menu:finish_preview(true)
+            menu:update_hover_hl()
+          end
+          return
+        end
+        if M.opts.menu.preview then
+          menu:preview_symbol_at({ mouse.line, mouse.column - 1 }, true)
+        end
+        menu:update_hover_hl({ mouse.line, mouse.column - 1 })
+      end,
+      ['<Esc>'] = function()
+        api.fuzzy_find_toggle()
+      end,
+      ['<Enter>'] = function()
+        api.fuzzy_find_click()
+      end,
+      ['<S-Enter>'] = function()
+        api.fuzzy_find_click(-1)
+      end,
+      ['<Up>'] = function()
+        api.fuzzy_find_navigate('up')
+      end,
+      ['<Down>'] = function()
+        api.fuzzy_find_navigate('down')
+      end,
+      ['<C-k>'] = function()
+        api.fuzzy_find_navigate('up')
+      end,
+      ['<C-j>'] = function()
+        api.fuzzy_find_navigate('down')
+      end,
+    },
+    win_configs = {},
+    hl = {
+      fg = vim.api.nvim_get_hl(0, { name = 'htmlTag', link = false }).fg,
+      underline = true,
+    },
+    prompt = '%#htmlTag# ',
+    char_pattern = '[%w%p]',
+    retain_inner_spaces = true,
+    fuzzy_find_on_click = true,
   },
   sources = {
     path = {
