@@ -17,6 +17,7 @@ _G.dropbar.menus = {}
 ---@field separator dropbar_symbol_t
 ---@field padding {left: integer, right: integer}
 ---@field components dropbar_symbol_t[]
+---@field virt_text string[][]?
 ---@field menu dropbar_menu_t? the menu the entry belongs to
 ---@field idx integer? the index of the entry in the menu
 local dropbar_menu_entry_t = {}
@@ -26,6 +27,7 @@ dropbar_menu_entry_t.__index = dropbar_menu_entry_t
 ---@field separator dropbar_symbol_t?
 ---@field padding {left: integer, right: integer}?
 ---@field components dropbar_symbol_t[]?
+---@field virt_text string[][]?
 ---@field menu dropbar_menu_t? the menu the entry belongs to
 ---@field idx integer? the index of the entry in the menu
 
@@ -398,8 +400,9 @@ end
 ---highlights to the buffer
 function dropbar_menu_t:fill_buf()
   local lines = {} ---@type string[]
+  local extmarks = {} ---@type table<integer, string[][]>
   local hl_info = {} ---@type dropbar_menu_hl_info_t[][]
-  for _, entry in ipairs(self.entries) do
+  for i, entry in ipairs(self.entries) do
     local line, entry_hl_info = entry:cat()
     -- Pad lines with spaces to the width of the window
     -- This is to make sure hl-DropBarMenuCurrentContext colors
@@ -413,9 +416,29 @@ function dropbar_menu_t:fill_buf()
         )
     )
     table.insert(hl_info, entry_hl_info)
+    if entry.virt_text then
+      table.insert(extmarks, i, entry.virt_text)
+    end
   end
   vim.api.nvim_buf_set_lines(self.buf, 0, -1, false, lines)
   self:add_hl(hl_info)
+
+  local extmark_ns = vim.api.nvim_create_namespace('dropbar_extmarks')
+  vim.api.nvim_buf_clear_namespace(self.buf, extmark_ns, 0, -1)
+
+  for i, virt_text in pairs(extmarks) do
+    if type(i) == 'number' then
+      vim.api.nvim_buf_set_extmark(
+        self.buf,
+        extmark_ns,
+        i - 1, -- 0-indexed
+        0,
+        {
+          virt_lines = { virt_text },
+        }
+      )
+    end
+  end
 end
 
 ---Make a buffer for the menu and set buffer-local keymaps
