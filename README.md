@@ -1671,7 +1671,8 @@ should be self-explanatory:
   | DropBarMenuHoverIcon             | `{ reverse = true }`                    |
   | DropBarMenuHoverSymbol           | `{ bold = true }`                       |
   | DropBarMenuNormalFloat           | `{ link = 'NormalFloat' }`              |
-  | DropBarMenuScrollBar             | `{ link = 'PmenuThumb' }`               |
+  | DropBarMenuSbar                  | `{ link = 'PmenuSbar' }`                |
+  | DropBarMenuThumb                 | `{ link = 'PmenuThumb' }`               |
   | DropBarPreview                   | `{ link = 'Visual' }`                   |
   | DropBarKindArray                 | undefined                               |
   | DropBarKindBoolean               | undefined                               |
