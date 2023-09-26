@@ -320,7 +320,7 @@ function dropbar_menu_t:click_on(
   end
 end
 
----Update DroPbarMenuHover* highlights according to pos
+---Update DropBarMenuHover* highlights according to pos
 ---@param pos integer[]? byte-indexed, 1,0-indexed cursor/mouse position
 ---@return nil
 function dropbar_menu_t:update_hover_hl(pos)
