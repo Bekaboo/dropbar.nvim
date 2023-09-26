@@ -256,6 +256,10 @@ function dropbar_menu_t:eval_win_configs()
       self._win_configs[k] = config
     end
   end
+
+  if self._win_configs.relative ~= 'win' then
+    self._win_configs.win = nil
+  end
 end
 
 ---Get the component at the given position in the dropbar menu
@@ -888,15 +892,20 @@ function dropbar_menu_t:fuzzy_find_open(opts)
     col_offset = 1
   end
 
-  local win = vim.api.nvim_open_win(
-    buf,
-    false,
+  local win_config =
     vim.tbl_extend('force', self._win_configs, opts.win_configs or {}, {
-      row = self._win_configs.row + self._win_configs.height,
-      col = self._win_configs.col - col_offset,
+      relative = 'win',
+      win = self.win,
+      row = self._win_configs.height,
+      col = col_offset,
       height = 1,
     })
-  )
+
+  -- don't show title in the fzf window
+  win_config.title = nil
+  win_config.title_pos = nil
+
+  local win = vim.api.nvim_open_win(buf, false, win_config)
   vim.wo[win].stc = opts.prompt
   _G.dropbar.menus[win] = self
   self.fzf_state = utils.fzf.fzf_state_t:new(self, win, opts)
