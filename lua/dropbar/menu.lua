@@ -257,6 +257,15 @@ function dropbar_menu_t:eval_win_configs()
     end
   end
 
+  -- See https://github.com/Bekaboo/dropbar.nvim/pull/90
+  -- Ensure `win` field is nil if `relative` ~= 'win', else nvim will
+  -- throw error
+  -- Why `win` field is set if `relative` field is not 'win'?
+  -- It's set because the global configs are used when creating windows, and
+  -- overridden by the menu-local settings, but `vim.tbl_deep_extend` will not
+  -- replace non-nil with nil so if the default win config uses
+  -- `relative` = 'win' (which it does), win will be set even if the menu-local
+  -- win config doesn't set it.
   if self._win_configs.relative ~= 'win' then
     self._win_configs.win = nil
   end
