@@ -76,6 +76,7 @@ highly-customizable 'winbar' with drop-down menu support and mutiple backends.
 - Preview symbols in their source windows when hovering over them in the
   drop-down menu
 - Reorient the source window on previewing or after jumping to a symbol
+- Add scrollbar to the menu when the symbol list is too long
 - Background color support thanks @theofabilous
   <https://github.com/theofabilous>
   - This is currently an experimental feature that is only available in branch
@@ -90,7 +91,6 @@ TODO
 - Add more actions other than `jump` and `preview`, e.g. `rename`,
   `delete`, `select`, etc.
 - Support visual mode selection to select/delete multiple symbols
-- Add scrollbar to the menu when the symbol list is too long
 - Ability to hide/show the winbar on each window separately
 
 ==============================================================================
