@@ -506,12 +506,10 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
         col = function(menu)
           if menu.prev_menu then
             return menu.prev_menu._win_configs.width
+              + (menu.prev_menu.scrollbar and 1 or 0)
           end
           local mouse = vim.fn.getmousepos()
-          local bar = require('dropbar.api').get_dropbar(
-            vim.api.nvim_win_get_buf(menu.prev_win),
-            menu.prev_win
-          )
+          local bar = utils.bar.get({ win = menu.prev_win })
           if not bar then
             return mouse.wincol
           end
