@@ -293,6 +293,7 @@ M.opts = {
       col = function(menu)
         if menu.prev_menu then
           return menu.prev_menu._win_configs.width
+            + (menu.prev_menu.scrollbar and 1 or 0)
         end
         local mouse = vim.fn.getmousepos()
         local bar = require('dropbar.api').get_dropbar(

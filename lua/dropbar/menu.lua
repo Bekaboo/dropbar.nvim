@@ -187,6 +187,7 @@ end
 ---@field prev_cursor integer[]? previous cursor position
 ---@field symbol_previewed dropbar_symbol_t? symbol being previewed
 ---@field fzf_state fzf_state_t? fuzzy-finding state, or nil if not currently fuzzy-finding
+---@field scrollbar { thumb: integer, sbar: integer }? scrollbar window handlers
 local dropbar_menu_t = {}
 dropbar_menu_t.__index = dropbar_menu_t
 
@@ -512,68 +513,81 @@ function dropbar_menu_t:open_win()
   }, ',')
 end
 
----Make a scrollbar for the menu
----Side effect: change self.scrollbar
----Must be called after self:open_win()
+---Update the scrollbar's position and height, create a new scrollbar if
+---one does not exist
+---Side effect: can change self.scrollbar
 ---@return nil
-function dropbar_menu_t:make_scrollbar()
+function dropbar_menu_t:update_scrollbar()
+  if
+    not self.win
+    or not self.buf
+    or not vim.api.nvim_win_is_valid(self.win)
+    or not vim.api.nvim_buf_is_valid(self.buf)
+  then
+    return
+  end
+
   local buf_height = vim.api.nvim_buf_line_count(self.buf)
   local win_height = vim.api.nvim_win_get_height(self.win)
   if buf_height <= win_height then
+    self:close_scrollbar()
     return
   end
 
   local topline = vim.fn.line('w0')
   local thumb_height = math.max(1, math.floor(win_height ^ 2 / buf_height))
   local offset = math.floor(win_height * topline / buf_height)
-  self.scrollbar =
-    vim.api.nvim_open_win(vim.api.nvim_create_buf(false, true), false, {
+
+  if self.scrollbar and vim.api.nvim_win_is_valid(self.scrollbar.thumb) then
+    local config = vim.api.nvim_win_get_config(self.scrollbar.thumb)
+    config.row = offset
+    config.height = thumb_height
+    vim.api.nvim_win_set_config(self.scrollbar.thumb, config)
+  else
+    self:close_scrollbar()
+    self.scrollbar = {}
+    local win_configs = {
       row = offset,
-      col = vim.api.nvim_win_get_width(self.win) - 1,
+      col = vim.api.nvim_win_get_width(self.win),
       width = 1,
       height = thumb_height,
       style = 'minimal',
       border = 'none',
       relative = 'win',
       win = self.win,
-      zindex = (self._win_configs.zindex or 100) + 1,
-    })
-  vim.wo[self.scrollbar].winhl = table.concat({
-    'NormalFloat:DropBarMenuScrollBar',
-  }, ',')
-end
+      zindex = 100,
+    }
+    self.scrollbar.thumb = vim.api.nvim_open_win(
+      vim.api.nvim_create_buf(false, true),
+      false,
+      win_configs
+    )
+    vim.wo[self.scrollbar.thumb].winhl = 'NormalFloat:DropBarMenuThumb'
 
----Update the scrollbar's position and height
----@return nil
-function dropbar_menu_t:update_scrollbar()
-  if self.buf == nil or self.win == nil then
-    return
-  end
-  local buf_height = vim.api.nvim_buf_line_count(self.buf)
-  local win_height = vim.api.nvim_win_get_height(self.win)
-  if self.scrollbar and vim.api.nvim_win_is_valid(self.scrollbar) then
-    if buf_height <= vim.api.nvim_win_get_height(self.win) then
-      self:close_scrollbar()
-      return
-    end
-
-    local topline = vim.fn.line('w0')
-    local thumb_height = math.max(1, math.floor(win_height ^ 2 / buf_height))
-    local offset = math.floor(win_height * topline / buf_height)
-
-    local config = vim.api.nvim_win_get_config(self.scrollbar)
-    config.row = offset
-    config.height = thumb_height
-    vim.api.nvim_win_set_config(self.scrollbar, config)
-  elseif buf_height > vim.api.nvim_win_get_height(self.win) then
-    self:make_scrollbar()
+    win_configs.row = 0
+    win_configs.height = win_height
+    win_configs.zindex = win_configs.zindex - 1
+    self.scrollbar.sbar = vim.api.nvim_open_win(
+      vim.api.nvim_create_buf(false, true),
+      false,
+      win_configs
+    )
+    vim.wo[self.scrollbar.sbar].winhl = 'NormalFloat:DropBarMenuSbar'
   end
 end
 
 ---Close the scrollbar, if one exists
+---Side effect: set self.scrollbar to nil
+---@return nil
 function dropbar_menu_t:close_scrollbar()
-  if self.scrollbar and vim.api.nvim_win_is_valid(self.scrollbar) then
-    vim.api.nvim_win_close(self.scrollbar, true)
+  if not self.scrollbar then
+    return
+  end
+  if vim.api.nvim_win_is_valid(self.scrollbar.thumb) then
+    vim.api.nvim_win_close(self.scrollbar.thumb, true)
+  end
+  if vim.api.nvim_win_is_valid(self.scrollbar.sbar) then
+    vim.api.nvim_win_close(self.scrollbar.sbar, true)
   end
   self.scrollbar = nil
 end
@@ -627,7 +641,6 @@ function dropbar_menu_t:open(opts)
   self:eval_win_configs()
   self:make_buf()
   self:open_win()
-  self:make_scrollbar()
   _G.dropbar.menus[self.win] = self
   -- Initialize cursor position
   if self._win_configs.focusable ~= false then
@@ -641,9 +654,7 @@ function dropbar_menu_t:open(opts)
   if open_fzf then
     self:fuzzy_find_open()
   end
-  vim.schedule(function()
-    self:update_scrollbar()
-  end)
+  self:update_scrollbar()
 end
 
 ---Close the menu
