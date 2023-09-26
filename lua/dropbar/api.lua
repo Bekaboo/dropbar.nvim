@@ -97,7 +97,7 @@ local function fuzzy_find_toggle(opts)
     return
   end
   if menu.fzf_state then
-    menu:fuzzy_find_close(true)
+    menu:fuzzy_find_close()
   else
     menu:fuzzy_find_open(opts)
   end
