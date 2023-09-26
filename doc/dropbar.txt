@@ -963,6 +963,7 @@ Highlight groups ~
   DropBarMenuHoverIcon               `{ reverse = true }`
   DropBarMenuHoverSymbol             `{ bold = true }`
   DropBarMenuNormalFloat             `{ link = 'NormalFloat' }`
+  DropBarMenuScrollBar               `{ link = 'PmenuThumb' }`
   DropBarPreview                     `{ link = 'Visual' }`
   DropBarMenuFloatBorder             `{ link = 'FloatBorder' }`
   DropBarKindArray                   undefined
