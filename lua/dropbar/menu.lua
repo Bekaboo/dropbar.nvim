@@ -512,19 +512,20 @@ function dropbar_menu_t:open_win()
   }, ',')
 end
 
+---Make a scrollbar for the menu
+---Side effect: change self.scrollbar
+---Must be called after self:open_win()
+---@return nil
 function dropbar_menu_t:make_scrollbar()
   local buf_height = vim.api.nvim_buf_line_count(self.buf)
-  if buf_height <= vim.api.nvim_win_get_height(self.win) then
+  local win_height = vim.api.nvim_win_get_height(self.win)
+  if buf_height <= win_height then
     return
   end
 
-  local cursor = vim.api.nvim_win_get_cursor(self.win)
-  local win_height = vim.api.nvim_win_get_height(self.win)
-  local pct = cursor[1] / buf_height
-
-  local thumb_height =
-    math.max(1, math.floor(win_height * win_height / buf_height + 0.5))
-  local offset = math.floor(pct * (win_height - thumb_height))
+  local topline = vim.fn.line('w0')
+  local thumb_height = math.max(1, math.floor(win_height ^ 2 / buf_height))
+  local offset = math.floor(win_height * topline / buf_height)
   self.scrollbar =
     vim.api.nvim_open_win(vim.api.nvim_create_buf(false, true), false, {
       row = offset,
@@ -543,6 +544,7 @@ function dropbar_menu_t:make_scrollbar()
 end
 
 ---Update the scrollbar's position and height
+---@return nil
 function dropbar_menu_t:update_scrollbar()
   if self.buf == nil or self.win == nil then
     return
@@ -555,12 +557,9 @@ function dropbar_menu_t:update_scrollbar()
       return
     end
 
-    local cursor = vim.api.nvim_win_get_cursor(self.win)
-    local pct = cursor[1] / buf_height
-
-    local thumb_height =
-      math.max(1, math.floor(win_height * win_height / buf_height + 0.5))
-    local offset = math.floor(pct * (win_height - thumb_height))
+    local topline = vim.fn.line('w0')
+    local thumb_height = math.max(1, math.floor(win_height ^ 2 / buf_height))
+    local offset = math.floor(win_height * topline / buf_height)
 
     local config = vim.api.nvim_win_get_config(self.scrollbar)
     config.row = offset
