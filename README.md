@@ -112,6 +112,8 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
 - [x] Add scrollbar to the menu when the symbol list is too long
 
+  ![scrollbar](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/ace94d9a-e850-4a6b-9ab3-51a290e5af32)
+
 - [x] Background color support<super>*</super> thanks [@theofabilous](https://github.com/theofabilous)
 
   ![background-color](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/d7794098-9dcf-459e-9763-8b7d9414e035)
