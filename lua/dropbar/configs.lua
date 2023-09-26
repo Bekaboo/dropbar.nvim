@@ -378,7 +378,7 @@ M.opts = {
           mouse.winid ~= menu.win
           or mouse.line <= 0
           or mouse.column <= 0
-          or mouse.winrow > #menu.entries
+          or mouse.winrow > (#menu.entries + 1)
         then
           -- Find the root menu
           while menu and menu.prev_menu do
