@@ -256,6 +256,10 @@ function dropbar_menu_t:eval_win_configs()
       self._win_configs[k] = config
     end
   end
+
+  if self._win_configs.relative ~= 'win' then
+    self._win_configs.win = nil
+  end
 end
 
 ---Get the component at the given position in the dropbar menu
@@ -489,10 +493,6 @@ function dropbar_menu_t:open_win()
     return
   end
   self.is_opened = true
-
-  if self._win_configs.relative ~= 'win' then
-    self._win_configs.win = nil
-  end
 
   self.win = vim.api.nvim_open_win(self.buf, true, self._win_configs)
   vim.wo[self.win].scrolloff = 0
