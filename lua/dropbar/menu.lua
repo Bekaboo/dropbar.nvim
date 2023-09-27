@@ -531,12 +531,12 @@ function dropbar_menu_t:update_scrollbar()
     return
   end
 
-  local topline = vim.fn.line('w0')
   local thumb_height = math.max(1, math.floor(win_height ^ 2 / buf_height))
-  local offset = math.min(
-    win_height - thumb_height,
-    math.floor(win_height * topline / buf_height)
-  )
+  local offset = vim.fn.line('w$') == buf_height and win_height - thumb_height
+    or math.min(
+      win_height - thumb_height,
+      math.floor(win_height * vim.fn.line('w0') / buf_height)
+    )
 
   if self.scrollbar and vim.api.nvim_win_is_valid(self.scrollbar.thumb) then
     local config = vim.api.nvim_win_get_config(self.scrollbar.thumb)
