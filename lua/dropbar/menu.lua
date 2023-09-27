@@ -474,6 +474,8 @@ function dropbar_menu_t:make_buf()
 
       -- Update hover highlights
       self:update_hover_hl(self.prev_cursor)
+
+      self:update_scrollbar()
     end,
   })
   vim.api.nvim_create_autocmd('WinScrolled', {
