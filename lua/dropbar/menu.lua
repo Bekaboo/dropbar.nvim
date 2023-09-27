@@ -532,7 +532,8 @@ function dropbar_menu_t:update_scrollbar()
   end
 
   local topline = vim.fn.line('w0')
-  local thumb_height = math.max(1, math.floor(win_height ^ 2 / buf_height))
+  local thumb_height =
+    math.max(1, math.floor((win_height ^ 2 / buf_height) + 0.5))
   local offset = math.min(
     win_height - thumb_height,
     math.floor(win_height * topline / buf_height)
