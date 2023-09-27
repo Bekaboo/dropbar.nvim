@@ -423,7 +423,7 @@ function dropbar_menu_t:fill_buf()
   vim.api.nvim_buf_set_lines(self.buf, 0, -1, false, lines)
   self:add_hl(hl_info)
 
-  local extmark_ns = vim.api.nvim_create_namespace('dropbar_extmarks')
+  local extmark_ns = vim.api.nvim_create_namespace('DropBarExtmarks')
   vim.api.nvim_buf_clear_namespace(self.buf, extmark_ns, 0, -1)
 
   for i, virt_text in pairs(extmarks) do
