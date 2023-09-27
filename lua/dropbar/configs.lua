@@ -209,6 +209,13 @@ M.opts = {
         right = 1,
       },
     },
+    -- Menu scrollbar options
+    scrollbar = {
+      enable = true,
+      -- The background / gutter of the scrollbar
+      -- When false, only the thumb is shown.
+      background = true,
+    },
     ---@type table<string, string|function|table<string, string|function>>
     keymaps = {
       ['<LeftMouse>'] = function()
@@ -281,8 +288,11 @@ M.opts = {
       ---@param menu dropbar_menu_t
       col = function(menu)
         if menu.prev_menu then
-          return menu.prev_menu._win_configs.width
-            + (menu.prev_menu.scrollbar and 1 or 0)
+          local offset = 0
+          if menu.prev_menu.scrollbar and M.opts.menu.scrollbar.background then
+            offset = 1
+          end
+          return menu.prev_menu._win_configs.width + offset
         end
         local mouse = vim.fn.getmousepos()
         local bar = utils.bar.get({ win = menu.prev_win })
