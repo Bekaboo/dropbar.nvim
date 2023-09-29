@@ -525,17 +525,19 @@ function dropbar_menu_t:update_scrollbar()
   end
 
   local buf_height = vim.api.nvim_buf_line_count(self.buf)
-  local win_height = vim.api.nvim_win_get_height(self.win)
-  if buf_height <= win_height then
+  local menu_win_configs = vim.api.nvim_win_get_config(self.win)
+  if buf_height <= menu_win_configs.height then
     self:close_scrollbar()
     return
   end
 
-  local thumb_height = math.max(1, math.floor(win_height ^ 2 / buf_height))
-  local offset = vim.fn.line('w$') == buf_height and win_height - thumb_height
+  local thumb_height =
+    math.max(1, math.floor(menu_win_configs.height ^ 2 / buf_height))
+  local offset = vim.fn.line('w$') == buf_height
+      and menu_win_configs.height - thumb_height
     or math.min(
-      win_height - thumb_height,
-      math.floor(win_height * vim.fn.line('w0') / buf_height)
+      menu_win_configs.height - thumb_height,
+      math.floor(menu_win_configs.height * vim.fn.line('w0') / buf_height)
     )
 
   if self.scrollbar and vim.api.nvim_win_is_valid(self.scrollbar.thumb) then
@@ -548,14 +550,14 @@ function dropbar_menu_t:update_scrollbar()
     self.scrollbar = {}
     local win_configs = {
       row = offset,
-      col = vim.api.nvim_win_get_width(self.win),
+      col = menu_win_configs.width,
       width = 1,
       height = thumb_height,
       style = 'minimal',
       border = 'none',
       relative = 'win',
       win = self.win,
-      zindex = 100,
+      zindex = menu_win_configs.zindex,
     }
     self.scrollbar.thumb = vim.api.nvim_open_win(
       vim.api.nvim_create_buf(false, true),
@@ -565,8 +567,7 @@ function dropbar_menu_t:update_scrollbar()
     vim.wo[self.scrollbar.thumb].winhl = 'NormalFloat:DropBarMenuThumb'
 
     win_configs.row = 0
-    win_configs.height = win_height
-    win_configs.zindex = win_configs.zindex - 1
+    win_configs.height = menu_win_configs.height
     self.scrollbar.sbar = vim.api.nvim_open_win(
       vim.api.nvim_create_buf(false, true),
       false,
