@@ -416,10 +416,6 @@ M.opts = {
       end,
     },
     win_configs = {},
-    hl = {
-      fg = vim.api.nvim_get_hl(0, { name = 'htmlTag', link = false }).fg,
-      underline = true,
-    },
     prompt = '%#htmlTag# ',
     char_pattern = '[%w%p]',
     retain_inner_spaces = true,

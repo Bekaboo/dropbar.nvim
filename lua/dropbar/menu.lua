@@ -914,8 +914,6 @@ function dropbar_menu_t:fuzzy_find_open(opts)
   local augroup = vim.api.nvim_create_augroup(ns_name, { clear = true })
   local ns_id = vim.api.nvim_create_namespace(ns_name)
 
-  vim.api.nvim_set_hl(0, 'DropBarFzfMatch', opts.hl)
-
   vim.bo[self.buf].modifiable = true
   local buf = vim.api.nvim_create_buf(false, true)
   vim.bo[buf].filetype = 'dropbar_menu_fzf'

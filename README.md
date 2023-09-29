@@ -633,13 +633,6 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
       -- Options passed to `:h nvim_open_win`. The fuzzy finder will use its
       -- parent window's config by default, but options set here will override those.
       win_configs = {},
-      ---@type table
-      hl = {
-        ---@type string
-        fg = vim.api.nvim_get_hl(0, { name = 'htmlTag', link = false }).fg,
-        ---@type boolean
-        underline = true,
-      },
       ---@type string
       prompt = '%#htmlTag# ',
       ---@type string
@@ -1294,17 +1287,6 @@ appearance of the fuzzy finder interface.
     win_configs = {}
     ```
 
-- opts.fzf.hl
-  - Highlight to use for the fuzzy finder.
-  - Options passed directly to `:h nvim_set_hl`
-  - Default:
-    ```lua
-    hl = {
-      fg = vim.api.nvim_get_hl(0, { name = 'htmlTag', link = false }).fg,
-      underline = true,
-    }
-    ```
-
 - opts.fzf.prompt
   - Prompt string that will be displayed in the statuscolumn of the fzf input window.
   - Can include highlight groups
@@ -1597,6 +1579,7 @@ should be self-explanatory:
   | Highlight group                  | Attributes                              |
   |----------------------------------|-----------------------------------------|
   | DropBarCurrentContext            | `{ link = 'Visual' }`                   |
+  | DropBarFzfMatch                  | `{ link = 'TelescopeMatching' }`        |
   | DropBarHover                     | `{ link = 'Visual' }`                   |
   | DropBarIconCurrentContext        | `{ link = 'Visual' }`                   |
   | DropBarIconKindArray             | `{ link = 'Array' }`                    |

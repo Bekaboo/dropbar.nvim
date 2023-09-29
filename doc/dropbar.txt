@@ -886,6 +886,7 @@ Highlight groups ~
   Highlight group                    Attributes
 
   DropBarCurrentContext              `{ link = 'Visual' }`
+  DropBarFzfMatch                    `{ link = 'TelescopeMatching' }`
   DropBarHover                       `{ link = 'Visual' }`
   DropBarIconCurrentContext          `{ link = 'Visual' }`
   DropBarIconKindArray               `{ link = 'Array' }`
