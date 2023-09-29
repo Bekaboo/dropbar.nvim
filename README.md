@@ -1973,6 +1973,7 @@ multiple `dropbar_menu_entry_t` instances while a
 | `separator`  | [`dropbar_symbol_t`](#dropbar_symbol_t)   | separator to use in the entry                                               |
 | `padding`    | `{left: integer, right: integer}`         | padding to use between the menu entry and the menu border                   |
 | `components` | [`dropbar_symbol_t[]`](#dropbar_symbol_t) | components<sub>[`dropbar_symbol_t[]`](#dropbar_symbol_t)</sub> in the entry |
+| `virt_text`  | `string[][]?`                             | list of virtual text chunks to display below the entry                      |
 | `menu`       | [`dropbar_menu_t?`](#dropbar_menu_t)      | the menu the entry belongs to                                               |
 | `idx`        | `integer?`                                | the index of the entry in the menu                                          |
 

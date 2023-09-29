@@ -1832,21 +1832,21 @@ contain multiple `dropbar_symbol_t` instances.
 
 `dropbar_menu_entry_t` has the following fields:
 
-dropbar_menu_t.separator                            *dropbar_menu_t.separator*
+dropbar_menu_entry_t.separator                      *dropbar_menu_t.separator*
 
  	Separator to use in the entry
 
 	Type ~
 	    `dropbar_symbol_t`
 
-dropbar_menu_t.padding                                *dropbar_menu_t.padding*
+dropbar_menu_entry_t.padding                          *dropbar_menu_t.padding*
 
  	Padding to use between the menu entry and the menu border
 
 	Type ~
 	    { left: integer, right: integer }
 
-dropbar_menu_t.components                          *dropbar_menu_t.components*
+dropbar_menu_entry_t.components                    *dropbar_menu_t.components*
 
 	Symbols got from sources |dropbar-developers-classes-dropbar_source_t|
 	in the entry
@@ -1854,14 +1854,22 @@ dropbar_menu_t.components                          *dropbar_menu_t.components*
 	Type ~
 	    `dropbar_symbol_t`[]
 
-dropbar_menu_t.menu                                      *dropbar_menu_t.menu*
+dropbar_menu_entry_t.virt_text                      *dropbar_menu_t.virt_text*
+
+	Symbols got from sources |dropbar-developers-classes-dropbar_source_t|
+	in the entry
+
+	Type ~
+	    `string`[][]?
+
+dropbar_menu_entry_t.menu                                *dropbar_menu_t.menu*
 
  	The menu the entry belongs to
 
 	Type ~
 	    `dropbar_menu_t`?
 
-dropbar_menu_t.idx                                        *dropbar_menu_t.idx*
+dropbar_menu_entry_t.idx                                  *dropbar_menu_t.idx*
 
  	The index of the entry in the menu
 
