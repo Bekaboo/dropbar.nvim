@@ -299,7 +299,7 @@ local function attach(buf)
   local function _update()
     local client = vim.tbl_filter(function(client)
       return client.supports_method('textDocument/documentSymbol')
-    end, vim.lsp.get_active_clients({ bufnr = buf }))[1]
+    end, vim.lsp.get_clients({ bufnr = buf }))[1]
     update_symbols(buf, client)
   end
   vim.b[buf].dropbar_lsp_attached = vim.api.nvim_create_autocmd(
@@ -336,7 +336,7 @@ local function init()
   for _, buf in ipairs(vim.api.nvim_list_bufs()) do
     local clients = vim.tbl_filter(function(client)
       return client.supports_method('textDocument/documentSymbol')
-    end, vim.lsp.get_active_clients({ bufnr = buf }))
+    end, vim.lsp.get_clients({ bufnr = buf }))
     if not vim.tbl_isempty(clients) then
       attach(buf)
     end
@@ -360,7 +360,7 @@ local function init()
         vim.tbl_isempty(vim.tbl_filter(function(client)
           return client.supports_method('textDocument/documentSymbol')
             and client.id ~= info.data.client_id
-        end, vim.lsp.get_active_clients({ bufnr = info.buf })))
+        end, vim.lsp.get_clients({ bufnr = info.buf })))
       then
         detach(info.buf)
       end
