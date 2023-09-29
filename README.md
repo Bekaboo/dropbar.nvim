@@ -93,7 +93,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
   As long as the language server or the treesitter parser is installed,
   it should work just fine.
 
-  Optionally, you can install [telescope-fzf-native](https://github.com/nvim-telescope/telescope-fzf-native)
+  Optionally, you can install [telescope-fzf-native](https://github.com/nvim-telescope/telescope-fzf-native.nvim)
   to add fuzzy search support to dropbar menus.
 
 - [x] Drop-down menu components and winbar symbols that response to
