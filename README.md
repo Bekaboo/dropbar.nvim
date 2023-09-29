@@ -197,7 +197,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
   - Inside interactive pick mode, press the corresponding pivot shown before
     each component to select it
 - Fuzzy finder
-  - Use dropbar_menu_t:fuzzy_find_open() to interactively
+  - Use `dropbar_menu_t:fuzzy_find_open()` to interactively
     filter, select and preview entries using fzf
   - `<i>`: enter fzf mode from the menu
   - `<Esc>`: exit fzf mode
@@ -1187,10 +1187,10 @@ menu:
 
 #### Fzf
 
-These options live under opts.fzf and are used to control the behavior and
+These options live under `opts.fzf` and are used to control the behavior and
 appearance of the fuzzy finder interface.
 
-- opts.fzf.keymaps
+- `opts.fzf.keymaps`
   - The keymaps that will apply in insert mode, in the fzf prompt buffer
   - Same config as opts.menu.keymaps
   - Default:
@@ -1278,7 +1278,7 @@ appearance of the fuzzy finder interface.
     }
     ```
 
-- opts.fzf.win_configs
+- `opts.fzf.win_configs`
   - Options passed to `:h nvim_open_win`. The fuzzy finder will use its
     parent window's config by default, but options set here will override those.
   - Same config as opts.menu.win_configs
@@ -1287,7 +1287,7 @@ appearance of the fuzzy finder interface.
     win_configs = {}
     ```
 
-- opts.fzf.prompt
+- `opts.fzf.prompt`
   - Prompt string that will be displayed in the statuscolumn of the fzf input window.
   - Can include highlight groups
   - Default:
@@ -1295,19 +1295,19 @@ appearance of the fuzzy finder interface.
     prompt = '%#htmlTag# '
     ```
 
-- opts.fzf.char_pattern
+- `opts.fzf.char_pattern`
   - Default:
     ```lua
     char_pattern = '[%w%p]'
     ```
 
-- opts.fzf.retain_inner_spaces
+- `opts.fzf.retain_inner_spaces`
   - Default:
     ```lua
     retain_inner_spaces = true
     ```
 
-- opts.fzf.fuzzy_find_on_click
+- `opts.fzf.fuzzy_find_on_click`
   - When opening an entry with a submenu via the fuzzy finder,
     open the submenu in fuzzy finder mode.
   - Default:
