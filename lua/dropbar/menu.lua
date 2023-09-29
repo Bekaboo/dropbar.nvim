@@ -1038,7 +1038,7 @@ function dropbar_menu_t:fuzzy_find_open(opts)
         end
       end
       for i, fzf_entry in ipairs(fzf_state.entries) do
-        if fzf_entry.score >= 2 then
+        if fzf_entry.score >= 2 and fzf_entry.pos then
           for _, pos_idx in ipairs(fzf_entry.pos) do
             local pos = fzf_entry.locations[pos_idx]
             vim.api.nvim_buf_set_extmark(self.buf, ns_id, i - 1, pos - 1, {
