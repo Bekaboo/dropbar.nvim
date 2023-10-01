@@ -138,7 +138,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 - Neovim **Nightly** (>= 0.10.0-dev)
 - Optional
   - [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons), if you want to see icons for different filetypes
-  - [telescope-fzf-native](https://github.com/nvim-telescope/telescope-fzf-native), if you want fuzzy search support
+  - [telescope-fzf-native](https://github.com/nvim-telescope/telescope-fzf-native.nvim), if you want fuzzy search support
   - Working language server installation for the lsp source to work
   - Working treesitter parser installation for the treesitter source to work
 
