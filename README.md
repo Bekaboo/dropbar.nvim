@@ -152,7 +152,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
       'Bekaboo/dropbar.nvim',
       -- optional, but required for fuzzy finder support
       dependencies = {
-        'nvim-telescope/telescope-fzf-native'
+        'nvim-telescope/telescope-fzf-native.nvim'
       }
     }
   })
