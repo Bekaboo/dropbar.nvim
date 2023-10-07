@@ -1,5 +1,47 @@
 # Changelog
 
+## [6.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v5.1.0...v6.0.0) (2023-10-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* **fzf/configs:** remove config option `opts.fzf.hl`
+* **menu:** add background for scrollbar; simplify scrollbar logic
+* **hlgroups:** link `hl-DropBarMenuScrollBar` to `hl-PmenuThumb` by default
+* add builtin source for terminal buffers ([#78](https://github.com/Bekaboo/dropbar.nvim/issues/78))
+
+### Features
+
+* add builtin source for terminal buffers ([#78](https://github.com/Bekaboo/dropbar.nvim/issues/78)) ([6b88dab](https://github.com/Bekaboo/dropbar.nvim/commit/6b88dab5d24b9750f50984e731de9b8bd1fef044))
+* **menu:** add background for scrollbar; simplify scrollbar logic ([eac1b26](https://github.com/Bekaboo/dropbar.nvim/commit/eac1b2661fa139d934215cb20989aaed79861ea1))
+* **menu:** add scrollbar to the menu when the symbol list is too long ([#84](https://github.com/Bekaboo/dropbar.nvim/issues/84)) ([54813b4](https://github.com/Bekaboo/dropbar.nvim/commit/54813b42387535413c5b9f8bd175810559e81d32))
+* **menu:** allow showing virtual text below entries ([#92](https://github.com/Bekaboo/dropbar.nvim/issues/92)) ([3daffc1](https://github.com/Bekaboo/dropbar.nvim/commit/3daffc1215d715a4e9c544e2c71db16aab61d86f))
+* **menu:** fuzzy finding ([#77](https://github.com/Bekaboo/dropbar.nvim/issues/77)) ([8da1555](https://github.com/Bekaboo/dropbar.nvim/commit/8da155550dbd4d2da6740a4a8d6bddb75d6964dd))
+
+
+### Bug Fixes
+
+* always ensure that offset is no larger than ([b4b6b4a](https://github.com/Bekaboo/dropbar.nvim/commit/b4b6b4ab7bfed6dfedc81ced43c67d83dc14a54a))
+* **api:** dropbar_menu_t:fuzzy_find_close() param ([2254b1d](https://github.com/Bekaboo/dropbar.nvim/commit/2254b1d5846d2d83b42beccfc375872435b02ce6))
+* **bar:** potential bug in the return value of dropbar_t:pick_mode_wrap() ([648a19c](https://github.com/Bekaboo/dropbar.nvim/commit/648a19c9002eb36af85d6088727e13032e01f413))
+* **fzf:** ensure `fzf_entry.pos` is non-nil in `on_update` ([#98](https://github.com/Bekaboo/dropbar.nvim/issues/98)) ([9fc12e3](https://github.com/Bekaboo/dropbar.nvim/commit/9fc12e3f16948a82465509f69474544efc5fd23a)), closes [#97](https://github.com/Bekaboo/dropbar.nvim/issues/97)
+* **fzf:** hover highlighting of last entry in fzf ([#91](https://github.com/Bekaboo/dropbar.nvim/issues/91)) ([044dbc7](https://github.com/Bekaboo/dropbar.nvim/commit/044dbc7748025bdcf8562e351b5dc8361ea77f99))
+* highlight current terminal buffer properly in menu ([1869204](https://github.com/Bekaboo/dropbar.nvim/commit/1869204a43203a632beaaaa5bf514e5d428dda6a))
+* **hover:** clear if no component if under mouse, close [#80](https://github.com/Bekaboo/dropbar.nvim/issues/80) ([28436bf](https://github.com/Bekaboo/dropbar.nvim/commit/28436bffad9511d2775e4b44af6ae3bbe8c04c43))
+* **menu-scrollbar:** revert 2debe82 ([#94](https://github.com/Bekaboo/dropbar.nvim/issues/94)) ([7a91b7b](https://github.com/Bekaboo/dropbar.nvim/commit/7a91b7ba15fcf78ba0d0081cbce7e31a73963b1c)), closes [#93](https://github.com/Bekaboo/dropbar.nvim/issues/93)
+* **menu-scrollbar:** scrollbar not at bottom when last line is shown (partially fix [#93](https://github.com/Bekaboo/dropbar.nvim/issues/93)) ([dc11786](https://github.com/Bekaboo/dropbar.nvim/commit/dc11786bc5a57d9317ab70b3bffa5f480f95816d))
+* **menu-scrollbar:** scrollbar should be covered by sub-menus ([5b957d5](https://github.com/Bekaboo/dropbar.nvim/commit/5b957d533673568411eb3532554c9bbce8214154))
+* **menu-scrollbar:** scrollbar underflow ([b4b6b4a](https://github.com/Bekaboo/dropbar.nvim/commit/b4b6b4ab7bfed6dfedc81ced43c67d83dc14a54a))
+* **menu:** allow `relative` win settings other than `win`; improve fzf window placement ([#90](https://github.com/Bekaboo/dropbar.nvim/issues/90)) ([2d383f4](https://github.com/Bekaboo/dropbar.nvim/commit/2d383f40262258b10974e9ae9b3f76b95730de63))
+* **menu:** scrollbar position ([eb61e57](https://github.com/Bekaboo/dropbar.nvim/commit/eb61e57c7c6870ce101e0083afd12adb6b4e105e))
+* **sources:** terminal: add missing name highlight ([2d94c28](https://github.com/Bekaboo/dropbar.nvim/commit/2d94c28264fc43eb65a56c227ee2f4526cd8dfa8))
+
+
+### Code Refactoring
+
+* **fzf/configs:** remove config option `opts.fzf.hl` ([deaa54d](https://github.com/Bekaboo/dropbar.nvim/commit/deaa54dd445275dc51639fa23e648ec3e0dce0f9))
+* **hlgroups:** link `hl-DropBarMenuScrollBar` to `hl-PmenuThumb` by default ([813c032](https://github.com/Bekaboo/dropbar.nvim/commit/813c032cc941e1e470b8b2836d854e1d3fc2fd74))
+
 ## [5.1.0](https://github.com/Bekaboo/dropbar.nvim/compare/v5.0.3...v5.1.0) (2023-08-28)
 
 
