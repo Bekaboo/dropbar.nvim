@@ -49,7 +49,7 @@ setmetatable(lsp_buf_symbols, {
 
 -- Map symbol number to symbol kind
 -- stylua: ignore start
-local symbol_kind_names = {
+local symbol_kind_names = setmetatable({
   [1]  = 'File',
   [2]  = 'Module',
   [3]  = 'Namespace',
@@ -76,7 +76,11 @@ local symbol_kind_names = {
   [24] = 'Event',
   [25] = 'Operator',
   [26] = 'TypeParameter',
-}
+}, {
+  __index = function()
+    return ''
+  end,
+})
 -- stylua: ignore end
 
 ---Return type of the symbol table
