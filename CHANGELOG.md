@@ -1,5 +1,21 @@
 # Changelog
 
+## [7.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v6.0.0...v7.0.0) (2023-10-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* **configs:** use only markdown source for markdown file symbols
+
+### Features
+
+* **configs:** use only markdown source for markdown file symbols ([c8b3013](https://github.com/Bekaboo/dropbar.nvim/commit/c8b30136d18e79228a48db32e090c82428af34c9))
+
+
+### Bug Fixes
+
+* **sources-lsp:** handle out-of-spec lsp symbol number, close [#104](https://github.com/Bekaboo/dropbar.nvim/issues/104) ([6e52712](https://github.com/Bekaboo/dropbar.nvim/commit/6e52712cadded5ecc667930c2559ce10550d8ff9))
+
 ## [6.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v5.1.0...v6.0.0) (2023-10-07)
 
 
