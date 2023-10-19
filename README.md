@@ -390,10 +390,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
         if vim.bo[buf].ft == 'markdown' then
           return {
             sources.path,
-            utils.source.fallback({
-              sources.treesitter,
-              sources.markdown,
-              sources.lsp,
+            sources.markdown,
             }),
           }
         end
@@ -1002,11 +999,7 @@ winbar:
       if vim.bo[buf].ft == 'markdown' then
         return {
           sources.path,
-          utils.source.fallback({
-            sources.treesitter,
-            sources.markdown,
-            sources.lsp,
-          }),
+          sources.markdown,
         }
       end
       if vim.bo[buf].buftype == 'terminal' then

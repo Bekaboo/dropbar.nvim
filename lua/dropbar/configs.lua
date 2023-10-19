@@ -170,11 +170,7 @@ M.opts = {
       if vim.bo[buf].ft == 'markdown' then
         return {
           sources.path,
-          utils.source.fallback({
-            sources.treesitter,
-            sources.markdown,
-            sources.lsp,
-          }),
+          sources.markdown,
         }
       end
       if vim.bo[buf].buftype == 'terminal' then
