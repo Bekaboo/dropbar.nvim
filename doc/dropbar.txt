@@ -716,15 +716,15 @@ of each sources.
 
 PATH                              *dropbar-configuration-options-sources-path*
 
-- `opts.sources.path.relative_to`: `string|fun(buf: integer): string`
+- `opts.sources.path.relative_to`: `string|fun(buf: integer, win: integer): string`
     - The path to use as the root of the relative path
     - If a function is provided, it will be called with the current buffer
-      number as an argument and should return a string to use as the root of
-      the relative path
+      number and window id as arguments and should return a string to be used
+      as the root of the relative path
     - Notice: currently does not support `..` relative paths
     - Default: >lua
-            function(_)
-              return vim.fn.getcwd()
+            function(_, win)
+              return vim.fn.getcwd(vim.api.nvim_win_get_number(win))
             end
 <
 - `opts.sources.path.filter`: `function(name: string): boolean`

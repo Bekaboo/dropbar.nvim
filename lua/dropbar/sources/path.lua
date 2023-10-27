@@ -99,7 +99,7 @@ local function get_symbols(buf, win, _)
     and current_path ~= '/'
     and current_path
       ~= vim.fs.normalize(
-        configs.eval(configs.opts.sources.path.relative_to, buf)
+        configs.eval(configs.opts.sources.path.relative_to, buf, win)
       )
   do
     table.insert(symbols, 1, convert(current_path, buf, win))
