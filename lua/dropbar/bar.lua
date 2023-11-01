@@ -408,7 +408,7 @@ end
 ---@return nil
 function dropbar_t:del()
   _G.dropbar.bars[self.buf][self.win] = nil
-  _G.dropbar.on_click_callbacks[self.buf][self.win] = nil
+  _G.dropbar.on_click_callbacks['buf' .. self.buf]['win' .. self.win] = nil
   for _, component in ipairs(self.components) do
     component:del()
   end

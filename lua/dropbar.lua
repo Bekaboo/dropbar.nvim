@@ -80,6 +80,7 @@ local function setup(opts)
     callback = function(info)
       utils.bar.exec('del', { buf = info.buf })
       _G.dropbar.bars[info.buf] = nil
+      _G.dropbar.on_click_callbacks['buf' .. info.buf] = nil
     end,
     desc = 'Remove dropbar from cache on buffer delete/unload/wipeout.',
   })
