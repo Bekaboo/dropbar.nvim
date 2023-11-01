@@ -421,7 +421,10 @@ M.opts = {
     path = {
       ---@type string|fun(buf: integer, win: integer): string
       relative_to = function(_, win)
-        return vim.fn.getcwd(vim.api.nvim_win_get_number(win))
+        local winnr = vim.api.nvim_win_is_valid(win)
+            and vim.api.nvim_win_get_number(win)
+          or nil
+        return vim.fn.getcwd(winnr)
       end,
       ---Can be used to filter out files or directories
       ---based on their name
