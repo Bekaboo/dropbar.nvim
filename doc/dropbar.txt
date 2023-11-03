@@ -724,7 +724,9 @@ PATH                              *dropbar-configuration-options-sources-path*
     - Notice: currently does not support `..` relative paths
     - Default: >lua
             function(_, win)
-              return vim.fn.getcwd(vim.api.nvim_win_get_number(win))
+              -- Workaround for Vim:E5002: Cannot find window number
+              local ok, cwd = pcall(vim.fn.getcwd, win)
+              return ok and cwd or vim.fn.getcwd()
             end
 <
 - `opts.sources.path.filter`: `function(name: string): boolean`

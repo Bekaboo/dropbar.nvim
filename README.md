@@ -645,7 +645,9 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
       path = {
         ---@type string|fun(buf: integer, win: integer): string
         relative_to = function(_, win)
-          return vim.fn.getcwd(vim.api.nvim_win_get_number(win))
+          -- Workaround for Vim:E5002: Cannot find window number
+          local ok, cwd = pcall(vim.fn.getcwd, win)
+          return ok and cwd or vim.fn.getcwd()
         end,
         ---Can be used to filter out files or directories
         ---based on their name
@@ -1325,7 +1327,9 @@ each sources.
   - Default:
     ```lua
     function(_, win)
-      return vim.fn.getcwd(vim.api.nvim_win_get_number(win))
+      -- Workaround for Vim:E5002: Cannot find window number
+      local ok, cwd = pcall(vim.fn.getcwd, win)
+      return ok and cwd or vim.fn.getcwd()
     end
     ```
 - `opts.sources.path.filter`: `function(name: string): boolean`
