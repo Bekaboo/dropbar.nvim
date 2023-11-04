@@ -1,5 +1,15 @@
 # Changelog
 
+## [7.0.1](https://github.com/Bekaboo/dropbar.nvim/compare/v7.0.0...v7.0.1) (2023-11-03)
+
+
+### Bug Fixes
+
+* **configs:** cannot find winnr (again) ([9f86b27](https://github.com/Bekaboo/dropbar.nvim/commit/9f86b27005031e5a418a8a46633f3db86925b978))
+* **configs:** cannot find winnr (invalid window ID) ([0242c97](https://github.com/Bekaboo/dropbar.nvim/commit/0242c976119a0d115e38930125461082ecff4b55))
+* **memory:** dereference global callbacks correctly ([3435bb8](https://github.com/Bekaboo/dropbar.nvim/commit/3435bb87cb3887d92ecd2675ae7e3ee986c421eb))
+* **sources-path & configs:** should use window-local cwd ([d42a135](https://github.com/Bekaboo/dropbar.nvim/commit/d42a1354d450fa82b341edb04094b2e201cb78bc))
+
 ## [7.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v6.0.0...v7.0.0) (2023-10-19)
 
 
