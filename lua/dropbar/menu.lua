@@ -346,7 +346,7 @@ end
 ---@param pos integer[]? byte-indexed, 1,0-indexed cursor/mouse position
 ---@return nil
 function dropbar_menu_t:update_hover_hl(pos)
-  if not self.buf or not vim.api.nvim_buf_is_valid(self.buf) then
+  if not self.buf then
     return
   end
   utils.hl.range_single(self.buf, 'DropBarMenuHoverSymbol', nil)

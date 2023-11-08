@@ -50,6 +50,9 @@ end
 ---@param hlgroup string
 ---@param range dropbar_symbol_range_t?
 function M.range_single(buf, hlgroup, range)
+  if not vim.api.nvim_buf_is_valid(buf) then
+    return
+  end
   local ns = vim.api.nvim_create_namespace(hlgroup)
   vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
   if range then
