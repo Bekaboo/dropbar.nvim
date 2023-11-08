@@ -371,8 +371,11 @@ the symbols:
 	    function(_, range)
 	      local invisible = range['end'].line - vim.fn.line('w$') + 1
 	      if invisible > 0 then
-		local view = vim.fn.winsaveview()
-		view.topline = view.topline + invisible
+		local view = vim.fn.winsaveview() --[[@as vim.fn.winrestview.dict]]
+		view.topline = math.min(
+		  view.topline + invisible,
+		  math.max(1, range.start.line - vim.wo.scrolloff + 1)
+		)
 		vim.fn.winrestview(view)
 	      end
 	    end
@@ -480,56 +483,44 @@ the menu:
 		  return
 		end
 		local mouse = vim.fn.getmousepos()
-		if mouse.winid ~= menu.win then
-		  local prev_menu = utils.menu.get({ win = mouse.winid })
-		  if prev_menu and prev_menu.sub_menu then
-		    prev_menu.sub_menu:close()
-		  else
-		    utils.menu.exec('close')
-		    utils.bar.exec('update_current_context_hl')
+		local clicked_menu = utils.menu.get({ win = mouse.winid })
+		-- If clicked on a menu, invoke the corresponding click action,
+		-- else close all menus and set the cursor to the clicked window
+		if clicked_menu then
+		  clicked_menu:click_at({
+		    mouse.line,
+		    mouse.column - 1
+		  }, nil, 1, 'l')
+		  return
 		end
+		utils.menu.exec('close')
+		utils.bar.exec('update_current_context_hl')
 		if vim.api.nvim_win_is_valid(mouse.winid) then
 		  vim.api.nvim_set_current_win(mouse.winid)
 		end
-		return
-	      end
-	      menu:click_at({ mouse.line, mouse.column - 1 }, nil, 1, 'l')
-	    end,
-	    ['<CR>'] = function()
-	      local menu = utils.menu.get_current()
-	      if not menu then
-		return
-	      end
-	      local cursor = vim.api.nvim_win_get_cursor(menu.win)
-	      local component = menu.entries[cursor[1]]:first_clickable(cursor[2])
-	      if component then
-		menu:click_on(component, nil, 1, 'l')
-	      end
-	    end,
-	    ['<MouseMove>'] = function()
-	      local menu = utils.menu.get_current()
-	      if not menu then
-		return
-	      end
-	      local mouse = vim.fn.getmousepos()
-	      -- If mouse is not in the menu window or on the border, end preview
-	      -- and clear hover highlights
-	      if mouse.winid ~= menu.win or mouse.line <= 0 or mouse.column <= 0 then
-		-- Find the root menu
-		while menu and menu.prev_menu do
-		  menu = menu.prev_menu
+	      end,
+	      ['<CR>'] = function()
+		local menu = utils.menu.get_current()
+		if not menu then
+		  return
 		end
-		if menu then
-		  menu:finish_preview(true)
-		  menu:update_hover_hl()
+		local cursor = vim.api.nvim_win_get_cursor(menu.win)
+		local component = menu.entries[cursor[1]]:first_clickable(cursor[2])
+		if component then
+		  menu:click_on(component, nil, 1, 'l')
 		end
-		return
-	      end
-	      if M.opts.menu.preview then
-		menu:preview_symbol_at({ mouse.line, mouse.column - 1 }, true)
-	      end
-	      menu:update_hover_hl({ mouse.line, mouse.column - 1 })
-	    end,
+	      end,
+	      ['<MouseMove>'] = function()
+		local menu = utils.menu.get_current()
+		if not menu then
+		  return
+		end
+		local mouse = vim.fn.getmousepos()
+		utils.menu.update_hover_hl(mouse)
+		if M.opts.menu.preview then
+		  utils.menu.update_preview(mouse)
+		end
+	      end,
 	    }
 <
 - `opts.menu.win_configs`: `table<string, dropbar_menu_win_config_opts_t>`

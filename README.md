@@ -222,12 +222,12 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
   ```lua
   ---@class dropbar_configs_t
-  local opts = {
+  M.opts = {
     general = {
-      ---@type boolean|fun(buf: integer, win: integer): boolean
-      enable = function(buf, win)
+      ---@type boolean|fun(buf: integer, win: integer, info: table?): boolean
+      enable = function(buf, win, _)
         return not vim.api.nvim_win_get_config(win).zindex
-          and vim.bo[buf].buftype == ''
+          and (vim.bo[buf].buftype == '' or vim.bo[buf].buftype == 'terminal')
           and vim.api.nvim_buf_get_name(buf) ~= ''
           and not vim.wo[win].diff
       end,
@@ -330,7 +330,6 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           String = '󰉾 ',
           Struct = ' ',
           SwitchStatement = '󰺟 ',
-          Terminal = ' ',
           Text = ' ',
           Type = ' ',
           TypeParameter = '󰆩 ',
@@ -359,8 +358,11 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
         reorient = function(_, range)
           local invisible = range['end'].line - vim.fn.line('w$') + 1
           if invisible > 0 then
-            local view = vim.fn.winsaveview()
-            view.topline = view.topline + invisible
+            local view = vim.fn.winsaveview() --[[@as vim.fn.winrestview.dict]]
+            view.topline = math.min(
+              view.topline + invisible,
+              math.max(1, range.start.line - vim.wo.scrolloff + 1)
+            )
             vim.fn.winrestview(view)
           end
         end,
@@ -383,15 +385,19 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
       },
     },
     bar = {
+      hover = true,
       ---@type dropbar_source_t[]|fun(buf: integer, win: integer): dropbar_source_t[]
       sources = function(buf, _)
         local sources = require('dropbar.sources')
-	      local utils = require('dropbar.utils')
         if vim.bo[buf].ft == 'markdown' then
           return {
             sources.path,
             sources.markdown,
-            }),
+          }
+        end
+        if vim.bo[buf].buftype == 'terminal' then
+          return {
+            sources.terminal,
           }
         end
         return {
@@ -431,20 +437,18 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
             return
           end
           local mouse = vim.fn.getmousepos()
-          if mouse.winid ~= menu.win then
-            local prev_menu = utils.menu.get({ win = mouse.winid })
-            if prev_menu and prev_menu.sub_menu then
-              prev_menu.sub_menu:close()
-            else
-              utils.menu.exec('close')
-              utils.bar.exec('update_current_context_hl')
-            end
-            if vim.api.nvim_win_is_valid(mouse.winid) then
-              vim.api.nvim_set_current_win(mouse.winid)
-            end
+          local clicked_menu = utils.menu.get({ win = mouse.winid })
+          -- If clicked on a menu, invoke the corresponding click action,
+          -- else close all menus and set the cursor to the clicked window
+          if clicked_menu then
+            clicked_menu:click_at({ mouse.line, mouse.column - 1 }, nil, 1, 'l')
             return
           end
-          menu:click_at({ mouse.line, mouse.column - 1 }, nil, 1, 'l')
+          utils.menu.exec('close')
+          utils.bar.exec('update_current_context_hl')
+          if vim.api.nvim_win_is_valid(mouse.winid) then
+            vim.api.nvim_set_current_win(mouse.winid)
+          end
         end,
         ['<CR>'] = function()
           local menu = utils.menu.get_current()
@@ -463,25 +467,12 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
             return
           end
           local mouse = vim.fn.getmousepos()
-          -- If mouse is not in the menu window or on the border, end preview
-          -- and clear hover highlights
-          if mouse.winid ~= menu.win or mouse.line <= 0 or mouse.column <= 0 then
-            -- Find the root menu
-            while menu and menu.prev_menu do
-              menu = menu.prev_menu
-            end
-            if menu then
-              menu:finish_preview(true)
-              menu:update_hover_hl()
-            end
-            return
-          end
+          utils.menu.update_hover_hl(mouse)
           if M.opts.menu.preview then
-            menu:preview_symbol_at({ mouse.line, mouse.column - 1 }, true)
+            utils.menu.update_preview(mouse)
           end
-          menu:update_hover_hl({ mouse.line, mouse.column - 1 })
         end,
-        i = function()
+        ['i'] = function()
           local menu = utils.menu.get_current()
           if not menu then
             return
@@ -562,7 +553,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
             if type(default_func) == 'function' then
               default_func()
             end
-            menu:fuzzy_find_close(false)
+            menu:fuzzy_find_close()
             return
           elseif mouse.winrow > vim.api.nvim_buf_line_count(menu.buf) then
             return
@@ -588,7 +579,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
             mouse.winid ~= menu.win
             or mouse.line <= 0
             or mouse.column <= 0
-            or mouse.winrow > #menu.entries
+            or mouse.winrow > (#menu.entries + 1)
           then
             -- Find the root menu
             while menu and menu.prev_menu do
@@ -606,40 +597,32 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           menu:update_hover_hl({ mouse.line, mouse.column - 1 })
         end,
         ['<Esc>'] = function()
-          require('dropbar.api').fuzzy_find_toggle()
+          api.fuzzy_find_toggle()
         end,
         ['<Enter>'] = function()
-          require('dropbar.api').fuzzy_find_click()
+          api.fuzzy_find_click()
         end,
         ['<S-Enter>'] = function()
-          require('dropbar.api').fuzzy_find_click(-1)
+          api.fuzzy_find_click(-1)
         end,
         ['<Up>'] = function()
-          require('dropbar.api').fuzzy_find_navigate('up')
+          api.fuzzy_find_navigate('up')
         end,
         ['<Down>'] = function()
-          require('dropbar.api').fuzzy_find_navigate('down')
+          api.fuzzy_find_navigate('down')
         end,
         ['<C-k>'] = function()
-          require('dropbar.api').fuzzy_find_navigate('up')
+          api.fuzzy_find_navigate('up')
         end,
         ['<C-j>'] = function()
-          require('dropbar.api').fuzzy_find_navigate('down')
+          api.fuzzy_find_navigate('down')
         end,
       },
-      -- Options passed to `:h nvim_open_win`. The fuzzy finder will use its
-      -- parent window's config by default, but options set here will override those.
       win_configs = {},
-      ---@type string
       prompt = '%#htmlTag# ',
-      ---@type string
       char_pattern = '[%w%p]',
-      ---@type boolean
       retain_inner_spaces = true,
-      ---@type boolean
-      -- When opening an entry with a submenu via the fuzzy finder,
-      -- open the submenu in fuzzy finder mode.
-      fuzzy_find_on_click = true
+      fuzzy_find_on_click = true,
     },
     sources = {
       path = {
@@ -757,7 +740,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
         ---@type boolean
         ---Show the current terminal buffer in the menu
         show_current = true,
-      }
+      },
     },
   }
   ```
@@ -955,30 +938,33 @@ the symbols:
     function(_, range)
       local invisible = range['end'].line - vim.fn.line('w$') + 1
       if invisible > 0 then
-        local view = vim.fn.winsaveview()
-        view.topline = view.topline + invisible
+        local view = vim.fn.winsaveview() --[[@as vim.fn.winrestview.dict]]
+        view.topline = math.min(
+          view.topline + invisible,
+          math.max(1, range.start.line - vim.wo.scrolloff + 1)
+        )
         vim.fn.winrestview(view)
       end
     end
     ```
 - `opts.symbol.jump.reorient`: `fun(win: integer, range: {start: {line: integer, character: integer}, end: {line: integer, character: integer}})`
-  - Function to reorient the source window after jumping to symbol given
-    the source window `win` and the range of the symbol `range`
-  - Default:
-    ```lua
-    function(win, range)
-      local view = vim.fn.winsaveview()
-      local win_height = vim.api.nvim_win_get_height(win)
-      local topline = range.start.line - math.floor(win_height / 4)
-      if
-        topline > view.topline
-        and topline + win_height < vim.fn.line('$')
-      then
-        view.topline = topline
-        vim.fn.winrestview(view)
-      end
+- Function to reorient the source window after jumping to symbol given
+  the source window `win` and the range of the symbol `range`
+- Default:
+  ```lua
+  function(win, range)
+    local view = vim.fn.winsaveview()
+    local win_height = vim.api.nvim_win_get_height(win)
+    local topline = range.start.line - math.floor(win_height / 4)
+    if
+      topline > view.topline
+      and topline + win_height < vim.fn.line('$')
+    then
+      view.topline = topline
+      vim.fn.winrestview(view)
     end
-    ```
+  end
+  ```
 
 #### Bar
 
@@ -1058,20 +1044,18 @@ menu:
           return
         end
         local mouse = vim.fn.getmousepos()
-        if mouse.winid ~= menu.win then
-          local prev_menu = utils.menu.get({ win = mouse.winid })
-          if prev_menu and prev_menu.sub_menu then
-            prev_menu.sub_menu:close()
-          else
-            utils.menu.exec('close')
-            utils.bar.exec('update_current_context_hl')
-          end
-          if vim.api.nvim_win_is_valid(mouse.winid) then
-            vim.api.nvim_set_current_win(mouse.winid)
-          end
+        local clicked_menu = utils.menu.get({ win = mouse.winid })
+        -- If clicked on a menu, invoke the corresponding click action,
+        -- else close all menus and set the cursor to the clicked window
+        if clicked_menu then
+          clicked_menu:click_at({ mouse.line, mouse.column - 1 }, nil, 1, 'l')
           return
         end
-        menu:click_at({ mouse.line, mouse.column - 1 }, nil, 1, 'l')
+        utils.menu.exec('close')
+        utils.bar.exec('update_current_context_hl')
+        if vim.api.nvim_win_is_valid(mouse.winid) then
+          vim.api.nvim_set_current_win(mouse.winid)
+        end
       end,
       ['<CR>'] = function()
         local menu = utils.menu.get_current()
@@ -1090,25 +1074,12 @@ menu:
           return
         end
         local mouse = vim.fn.getmousepos()
-        -- If mouse is not in the menu window or on the border, end preview
-        -- and clear hover highlights
-        if mouse.winid ~= menu.win or mouse.line <= 0 or mouse.column <= 0 then
-          -- Find the root menu
-          while menu and menu.prev_menu do
-            menu = menu.prev_menu
-          end
-          if menu then
-            menu:finish_preview(true)
-            menu:update_hover_hl()
-          end
-          return
-        end
+        utils.menu.update_hover_hl(mouse)
         if M.opts.menu.preview then
-          menu:preview_symbol_at({ mouse.line, mouse.column - 1 }, true)
+          utils.menu.update_preview(mouse)
         end
-        menu:update_hover_hl({ mouse.line, mouse.column - 1 })
       end,
-      i = function()
+      ['i'] = function()
         local menu = utils.menu.get_current()
         if not menu then
           return
