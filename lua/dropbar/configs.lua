@@ -111,6 +111,7 @@ M.opts = {
         String = '󰉾 ',
         Struct = ' ',
         SwitchStatement = '󰺟 ',
+        Terminal = ' ',
         Text = ' ',
         Type = ' ',
         TypeParameter = '󰆩 ',
