@@ -45,4 +45,48 @@ function M.exec(method, opts)
   return results
 end
 
+---@type dropbar_menu_t?
+local last_hovered_menu = nil
+
+---Update menu hover highlights given the mouse position
+---@param mouse table
+---@return nil
+function M.update_hover_hl(mouse)
+  local menu = M.get({ win = mouse.winid })
+  if not menu or mouse.line <= 0 or mouse.column <= 0 then
+    if last_hovered_menu then
+      last_hovered_menu:update_hover_hl()
+      last_hovered_menu = nil
+    end
+    return
+  end
+  if last_hovered_menu and last_hovered_menu ~= menu then
+    last_hovered_menu:update_hover_hl()
+  end
+  menu:update_hover_hl({ mouse.line, mouse.column - 1 })
+  last_hovered_menu = menu
+end
+
+---@type dropbar_menu_t?
+local last_previewed_menu = nil
+
+---Update menu preview given the mouse position
+---@param mouse table
+---@return nil
+function M.update_preview(mouse)
+  local menu = M.get({ win = mouse.winid })
+  if not menu or mouse.line <= 0 or mouse.column <= 0 then
+    if last_previewed_menu then
+      last_previewed_menu:finish_preview()
+      last_previewed_menu = nil
+    end
+    return
+  end
+  if last_previewed_menu and last_previewed_menu ~= menu then
+    last_previewed_menu:finish_preview()
+  end
+  menu:preview_symbol_at({ mouse.line, mouse.column - 1 }, true)
+  last_previewed_menu = menu
+end
+
 return M

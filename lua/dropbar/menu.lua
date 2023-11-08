@@ -298,6 +298,9 @@ end
 ---@param button string?
 ---@param modifiers string?
 function dropbar_menu_t:click_at(pos, min_width, n_clicks, button, modifiers)
+  if self.sub_menu then
+    self.sub_menu:close()
+  end
   self.clicked_at = pos
   vim.api.nvim_win_set_cursor(self.win, pos)
   local component = self:get_component_at(pos)
@@ -322,6 +325,9 @@ function dropbar_menu_t:click_on(
   button,
   modifiers
 )
+  if self.sub_menu then
+    self.sub_menu:close()
+  end
   local row = symbol.entry.idx
   local col = symbol.entry.padding.left
   for idx, component in ipairs(symbol.entry.components) do
@@ -340,6 +346,9 @@ end
 ---@param pos integer[]? byte-indexed, 1,0-indexed cursor/mouse position
 ---@return nil
 function dropbar_menu_t:update_hover_hl(pos)
+  if not self.buf or not vim.api.nvim_buf_is_valid(self.buf) then
+    return
+  end
   utils.hl.range_single(self.buf, 'DropBarMenuHoverSymbol', nil)
   utils.hl.range_single(self.buf, 'DropBarMenuHoverIcon', nil)
   utils.hl.range_single(self.buf, 'DropBarMenuHoverEntry', nil)
@@ -348,22 +357,13 @@ function dropbar_menu_t:update_hover_hl(pos)
   end
   utils.hl.line_single(self.buf, 'DropBarMenuHoverEntry', pos[1])
   local component, range = self:get_component_at({ pos[1], pos[2] })
+  local hlgroup = component and component.name == '' and 'DropBarMenuHoverIcon'
+    or 'DropBarMenuHoverSymbol'
   if component and component.on_click and range then
-    utils.hl.range_single(
-      self.buf,
-      component and component.name == '' and 'DropBarMenuHoverIcon'
-        or 'DropBarMenuHoverSymbol',
-      {
-        start = {
-          line = pos[1] - 1,
-          character = range.start,
-        },
-        ['end'] = {
-          line = pos[1] - 1,
-          character = range['end'],
-        },
-      }
-    )
+    utils.hl.range_single(self.buf, hlgroup, {
+      start = { line = pos[1] - 1, character = range.start },
+      ['end'] = { line = pos[1] - 1, character = range['end'] },
+    })
   end
 end
 
@@ -820,6 +820,9 @@ end
 ---@param component? number|dropbar_symbol_t|fun(entry: dropbar_menu_entry_t):dropbar_symbol_t?
 ---@version JIT
 function dropbar_menu_t:fuzzy_find_click_on_entry(component)
+  if self.sub_menu then
+    self.sub_menu:close()
+  end
   if not self.fzf_state or vim.api.nvim_buf_line_count(self.buf) < 1 then
     return
   end
@@ -891,10 +894,16 @@ function dropbar_menu_t:fuzzy_find_open(opts)
   opts = vim.tbl_deep_extend('force', configs.opts.fzf, opts or {})
 
   if not jit then
-    vim.notify_once('Fuzzy finding requires LuaJIT', vim.log.levels.ERROR)
+    vim.notify_once(
+      '[dropbar.nvim] fuzzy finding requires LuaJIT',
+      vim.log.levels.ERROR
+    )
     return
   elseif not utils.fzf then
-    vim.notify_once('fzf-lib is not installed', vim.log.levels.ERROR)
+    vim.notify_once(
+      '[dropbar.nvim] fzf-lib is not installed',
+      vim.log.levels.ERROR
+    )
     return
   end
 

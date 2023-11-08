@@ -218,20 +218,18 @@ M.opts = {
           return
         end
         local mouse = vim.fn.getmousepos()
-        if mouse.winid ~= menu.win then
-          local prev_menu = utils.menu.get({ win = mouse.winid })
-          if prev_menu and prev_menu.sub_menu then
-            prev_menu.sub_menu:close()
-          else
-            utils.menu.exec('close')
-            utils.bar.exec('update_current_context_hl')
-          end
-          if vim.api.nvim_win_is_valid(mouse.winid) then
-            vim.api.nvim_set_current_win(mouse.winid)
-          end
+        local clicked_menu = utils.menu.get({ win = mouse.winid })
+        -- If clicked on a menu, invoke the corresponding click action,
+        -- else close all menus and set the cursor to the clicked window
+        if clicked_menu then
+          clicked_menu:click_at({ mouse.line, mouse.column - 1 }, nil, 1, 'l')
           return
         end
-        menu:click_at({ mouse.line, mouse.column - 1 }, nil, 1, 'l')
+        utils.menu.exec('close')
+        utils.bar.exec('update_current_context_hl')
+        if vim.api.nvim_win_is_valid(mouse.winid) then
+          vim.api.nvim_set_current_win(mouse.winid)
+        end
       end,
       ['<CR>'] = function()
         local menu = utils.menu.get_current()
@@ -250,25 +248,12 @@ M.opts = {
           return
         end
         local mouse = vim.fn.getmousepos()
-        -- If mouse is not in the menu window or on the border, end preview
-        -- and clear hover highlights
-        if mouse.winid ~= menu.win or mouse.line <= 0 or mouse.column <= 0 then
-          -- Find the root menu
-          while menu and menu.prev_menu do
-            menu = menu.prev_menu
-          end
-          if menu then
-            menu:finish_preview(true)
-            menu:update_hover_hl()
-          end
-          return
-        end
+        utils.menu.update_hover_hl(mouse)
         if M.opts.menu.preview then
-          menu:preview_symbol_at({ mouse.line, mouse.column - 1 }, true)
+          utils.menu.update_preview(mouse)
         end
-        menu:update_hover_hl({ mouse.line, mouse.column - 1 })
       end,
-      i = function()
+      ['i'] = function()
         local menu = utils.menu.get_current()
         if not menu then
           return
