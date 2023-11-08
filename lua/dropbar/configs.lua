@@ -139,8 +139,11 @@ M.opts = {
       reorient = function(_, range)
         local invisible = range['end'].line - vim.fn.line('w$') + 1
         if invisible > 0 then
-          local view = vim.fn.winsaveview()
-          view.topline = view.topline + invisible
+          local view = vim.fn.winsaveview() --[[@as vim.fn.winrestview.dict]]
+          view.topline = math.min(
+            view.topline + invisible,
+            math.max(1, range.start.line - vim.wo.scrolloff + 1)
+          )
           vim.fn.winrestview(view)
         end
       end,
