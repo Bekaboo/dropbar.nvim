@@ -1862,14 +1862,6 @@ dropbar_menu_t:update_current_context_hl([{linenr}])
 	Parameters ~
 	    • {linenr} (integer?): 1-indexed line number
 
-dropbar_menu_t:add_hl({hl_info})                     *dropbar_menu_t:add_hl()*
-
-	Add highlight to the menu buffer according to the highlight info
-	|dropbar-developers-classes-dropbar_menu_hl_info_t|
-
-	Parameters ~
-	    • {hl_info} (`dropbar_menu_hl_info_t[][]`): highlight info
-
 dropbar_menu_t:make_buf()                          *dropbar_menu_t:make_buf()*
 
  	Create the menu buffer from the entries

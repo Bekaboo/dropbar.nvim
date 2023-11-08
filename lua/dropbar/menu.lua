@@ -375,33 +375,13 @@ function dropbar_menu_t:update_current_context_hl(linenr)
   end
 end
 
----Add highlights to the menu buffer
----@param hl_info dropbar_menu_hl_info_t[][]
----@return nil
-function dropbar_menu_t:add_hl(hl_info)
-  if not self.buf then
-    return
-  end
-  for linenr, hl_line_info in ipairs(hl_info) do
-    for _, hl_symbol_info in ipairs(hl_line_info) do
-      utils.hl.buf_add_hl(
-        self.buf,
-        hl_symbol_info.ns or -1,
-        hl_symbol_info.hlgroup,
-        linenr - 1, -- 0-indexed
-        hl_symbol_info.start,
-        hl_symbol_info['end']
-      )
-    end
-  end
-end
-
 ---Fill the menu buffer with entries in `self.entries` and add
 ---highlights to the buffer
+---@return nil
 function dropbar_menu_t:fill_buf()
   local lines = {} ---@type string[]
-  local extmarks = {} ---@type table<integer, string[][]>
   local hl_info = {} ---@type dropbar_menu_hl_info_t[][]
+  local extmarks = {} ---@type table<integer, string[][]>
   for i, entry in ipairs(self.entries) do
     local line, entry_hl_info = entry:cat()
     -- Pad lines with spaces to the width of the window
@@ -420,8 +400,21 @@ function dropbar_menu_t:fill_buf()
       table.insert(extmarks, i, entry.virt_text)
     end
   end
+
+  -- Fill the buffer with lines, then add highlights
   vim.api.nvim_buf_set_lines(self.buf, 0, -1, false, lines)
-  self:add_hl(hl_info)
+  for linenr, hl_line_info in ipairs(hl_info) do
+    for _, hl_symbol_info in ipairs(hl_line_info) do
+      utils.hl.buf_add_hl(
+        self.buf,
+        hl_symbol_info.ns or -1,
+        hl_symbol_info.hlgroup,
+        linenr - 1, -- 0-indexed
+        hl_symbol_info.start,
+        hl_symbol_info['end']
+      )
+    end
+  end
 
   local extmark_ns = vim.api.nvim_create_namespace('DropBarExtmarks')
   vim.api.nvim_buf_clear_namespace(self.buf, extmark_ns, 0, -1)
