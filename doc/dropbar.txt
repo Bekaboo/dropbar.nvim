@@ -95,6 +95,8 @@ TODO
 - Update winbar sources dynamically
 - More responsive mouse clicking & hovering in insert (fzf) mode, like in
   normal mode
+- Better truncation when winbar is still too long after shortening all
+  components
 
 ==============================================================================
 REQUIREMENTS                                            *dropbar-requirements*
