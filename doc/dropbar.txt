@@ -88,10 +88,13 @@ TODO
 
 - Add preview for symbols shown in the winbar
 - Preview symbols (files) from `path` source
-- Add more actions other than `jump` and `preview`, e.g. `rename`,
-  `delete`, `select`, etc.
 - Support visual mode selection to select/delete multiple symbols
 - Ability to hide/show the winbar on each window separately
+- Add more tests for the sources `path`, `lsp`, and `treesitter`
+- Configurable scrollbar appearance
+- Update winbar sources dynamically
+- More responsive mouse clicking & hovering in insert (fzf) mode, like in
+  normal mode
 
 ==============================================================================
 REQUIREMENTS                                            *dropbar-requirements*

@@ -15,7 +15,8 @@
   with drop-down menu support and multiple backends
 </p>
 
-- [Features](#features)
+<!--toc:start-->
+- [Features & TODO](#features-todo)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -26,6 +27,7 @@
     - [Symbol](#symbol)
     - [Bar](#bar)
     - [Menu](#menu)
+    - [Fzf](#fzf)
     - [Sources](#sources)
       - [Path](#path)
       - [Treesitter](#treesitter)
@@ -51,8 +53,9 @@
     - [Default `on_click()` Callback](#default-on_click-callback)
     - [Lazy-Loading Expensive Fields](#lazy-loading-expensive-fields)
 - [Similar Projects](#similar-projects)
+<!--toc:end-->
 
-## Features
+## Features & TODO
 
 https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-b20fc3098c5a
 
@@ -126,12 +129,18 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
 - [ ] Preview symbols (files) from `path` source
 
-- [ ] Add more actions other than `jump` and `preview`, e.g. `rename`,
-  `delete`, `select`, etc.
-
 - [ ] Support visual mode selection to select/delete multiple symbols
 
 - [ ] Ability to hide/show the winbar on each window separately
+
+- [ ] Add more tests for the sources `path`, `lsp`, and `treesitter`
+
+- [ ] Configurable scrollbar appearance
+
+- [ ] Update winbar sources dynamically
+
+- [ ] More responsive mouse clicking & hovering in insert (fzf) mode, like
+      in normal mode
 
 ## Requirements
 
