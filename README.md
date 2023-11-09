@@ -16,7 +16,7 @@
 </p>
 
 <!--toc:start-->
-- [Features & TODO](#features-todo)
+- [Features and TODOs](#features-and-todos)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -55,7 +55,7 @@
 - [Similar Projects](#similar-projects)
 <!--toc:end-->
 
-## Features & TODO
+## Features and TODOs
 
 https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-b20fc3098c5a
 
