@@ -13,7 +13,6 @@ M.opts = {
         and not vim.wo[win].diff
     end,
     attach_events = {
-      'OptionSet',
       'BufWinEnter',
       'BufWritePost',
     },
@@ -29,7 +28,6 @@ M.opts = {
       win = {
         'CursorMoved',
         'CursorMovedI',
-        'WinEnter',
         'WinResized',
       },
       buf = {
