@@ -16,7 +16,7 @@
 </p>
 
 <!--toc:start-->
-- [Features & TODO](#features-todo)
+- [Features and TODOs](#features-and-todos)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -50,12 +50,12 @@
     - [`dropbar_source_t`](#dropbar_source_t)
   - [Making a New Source](#making-a-new-source)
     - [Making a Source With Drop-Down Menus](#making-a-source-with-drop-down-menus)
-    - [Default `on_click()` Callback](#default-on_click-callback)
+    - [Default `on_click()` Callback](#default-on_click()-callback)
     - [Lazy-Loading Expensive Fields](#lazy-loading-expensive-fields)
 - [Similar Projects](#similar-projects)
 <!--toc:end-->
 
-## Features & TODO
+## Features and TODOs
 
 https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-b20fc3098c5a
 
