@@ -2,6 +2,18 @@ local utils = require('dropbar.utils')
 local api = require('dropbar.api')
 local M = {}
 
+local function pick_current()
+  local menu = utils.menu.get_current()
+  if not menu then
+    return
+  end
+  local cursor = vim.api.nvim_win_get_cursor(menu.win)
+  local component = menu.entries[cursor[1]]:first_clickable(cursor[2])
+  if component then
+    menu:click_on(component, nil, 1, 'l')
+  end
+end
+
 ---@class dropbar_configs_t
 M.opts = {
   general = {
@@ -230,17 +242,17 @@ M.opts = {
           vim.api.nvim_set_current_win(mouse.winid)
         end
       end,
-      ['<CR>'] = function()
+      ['<CR>'] = pick_current,
+      ['l'] = pick_current,
+      ['h'] = function()
         local menu = utils.menu.get_current()
         if not menu then
           return
         end
-        local cursor = vim.api.nvim_win_get_cursor(menu.win)
-        local component = menu.entries[cursor[1]]:first_clickable(cursor[2])
-        if component then
-          menu:click_on(component, nil, 1, 'l')
-        end
+        menu:close()
       end,
+      ['q'] = function() utils.menu.exec('close') end,
+      ['<ESC>'] = function() utils.menu.exec('close') end,
       ['<MouseMove>'] = function()
         local menu = utils.menu.get_current()
         if not menu then
