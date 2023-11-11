@@ -1,5 +1,23 @@
 # Changelog
 
+## [7.1.0](https://github.com/Bekaboo/dropbar.nvim/compare/v7.0.1...v7.1.0) (2023-11-10)
+
+
+### Features
+
+* **configs:** improve preview reorient function ([09d2898](https://github.com/Bekaboo/dropbar.nvim/commit/09d289822244bc1dc115d1ee59cf4be9cfc5ddbb))
+* **menu & configs:** more responsive hovering & clicking in normal mode ([927cc56](https://github.com/Bekaboo/dropbar.nvim/commit/927cc566c562db8665ff52dd9e2df0ef6c37b1b2))
+
+
+### Bug Fixes
+
+* **configs & icons:** add missing terminal icon ([76e72ca](https://github.com/Bekaboo/dropbar.nvim/commit/76e72cac6f6cedcc9d09c56a909ae284f5dc62c7))
+
+
+### Performance Improvements
+
+* **configs:** remove some rarely-used events ([68eebfd](https://github.com/Bekaboo/dropbar.nvim/commit/68eebfde164db0d310f134f80600d0979d8e6ece))
+
 ## [7.0.1](https://github.com/Bekaboo/dropbar.nvim/compare/v7.0.0...v7.0.1) (2023-11-03)
 
 
