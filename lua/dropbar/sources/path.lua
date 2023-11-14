@@ -99,8 +99,8 @@ local function get_symbols(buf, win, _)
   while
     current_path
     and current_path ~= '.'
-    and current_path ~= '/'
     and current_path ~= root
+    and current_path ~= vim.fs.dirname(current_path)
   do
     table.insert(symbols, 1, convert(current_path, buf, win))
     current_path = vim.fs.dirname(current_path)
