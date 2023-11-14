@@ -211,7 +211,6 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 - Fuzzy finder
   - Use `dropbar_menu_t:fuzzy_find_open()` to interactively
     filter, select and preview entries using fzf
-  - `i`: enter fzf mode from the menu
   - `<Esc>`: exit fzf mode
   - `<Up>/<Down>`: move the cursor in fzf mode
   - `<CR>`: call the on_click callback of the symbol under the cursor
@@ -220,6 +219,8 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
     click
   - `<CR>`: find the first clickable symbol in the current drop-down menu
     entry and call its `on_click` callback
+  - `i`: enter fzf mode from the menu
+  - `q`: close current menu
   - To disable, remap or add new keymaps in the drop-down menu, see
     [menu options](#menu)
 
@@ -443,56 +444,62 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
         },
       },
       ---@type table<string, string|function|table<string, string|function>>
-      keymaps = {
-        ['<LeftMouse>'] = function()
-          local menu = utils.menu.get_current()
-          if not menu then
-            return
-          end
-          local mouse = vim.fn.getmousepos()
-          local clicked_menu = utils.menu.get({ win = mouse.winid })
-          -- If clicked on a menu, invoke the corresponding click action,
-          -- else close all menus and set the cursor to the clicked window
-          if clicked_menu then
-            clicked_menu:click_at({ mouse.line, mouse.column - 1 }, nil, 1, 'l')
-            return
-          end
-          utils.menu.exec('close')
-          utils.bar.exec('update_current_context_hl')
-          if vim.api.nvim_win_is_valid(mouse.winid) then
-            vim.api.nvim_set_current_win(mouse.winid)
-          end
-        end,
-        ['<CR>'] = function()
-          local menu = utils.menu.get_current()
-          if not menu then
-            return
-          end
-          local cursor = vim.api.nvim_win_get_cursor(menu.win)
-          local component = menu.entries[cursor[1]]:first_clickable(cursor[2])
-          if component then
-            menu:click_on(component, nil, 1, 'l')
-          end
-        end,
-        ['<MouseMove>'] = function()
-          local menu = utils.menu.get_current()
-          if not menu then
-            return
-          end
-          local mouse = vim.fn.getmousepos()
-          utils.menu.update_hover_hl(mouse)
-          if M.opts.menu.preview then
-            utils.menu.update_preview(mouse)
-          end
-        end,
-        ['i'] = function()
-          local menu = utils.menu.get_current()
-          if not menu then
-            return
-          end
-          menu:fuzzy_find_open()
-        end,
-      },
+    keymaps = {
+      ['<LeftMouse>'] = function()
+        local menu = utils.menu.get_current()
+        if not menu then
+          return
+        end
+        local mouse = vim.fn.getmousepos()
+        local clicked_menu = utils.menu.get({ win = mouse.winid })
+        -- If clicked on a menu, invoke the corresponding click action,
+        -- else close all menus and set the cursor to the clicked window
+        if clicked_menu then
+          clicked_menu:click_at({ mouse.line, mouse.column - 1 }, nil, 1, 'l')
+          return
+        end
+        utils.menu.exec('close')
+        utils.bar.exec('update_current_context_hl')
+        if vim.api.nvim_win_is_valid(mouse.winid) then
+          vim.api.nvim_set_current_win(mouse.winid)
+        end
+      end,
+      ['<CR>'] = function()
+        local menu = utils.menu.get_current()
+        if not menu then
+          return
+        end
+        local cursor = vim.api.nvim_win_get_cursor(menu.win)
+        local component = menu.entries[cursor[1]]:first_clickable(cursor[2])
+        if component then
+          menu:click_on(component, nil, 1, 'l')
+        end
+      end,
+      ['<MouseMove>'] = function()
+        local menu = utils.menu.get_current()
+        if not menu then
+          return
+        end
+        local mouse = vim.fn.getmousepos()
+        utils.menu.update_hover_hl(mouse)
+        if M.opts.menu.preview then
+          utils.menu.update_preview(mouse)
+        end
+      end,
+      ['i'] = function()
+        local menu = utils.menu.get_current()
+        if not menu then
+          return
+        end
+        menu:fuzzy_find_open()
+      end,
+      ['q'] = function()
+        local menu = utils.menu.get_current()
+        if menu then
+          menu:close()
+        end
+      end
+    },
       ---@alias dropbar_menu_win_config_opts_t any|fun(menu: dropbar_menu_t):any
       ---@type table<string, dropbar_menu_win_config_opts_t>
       ---@see vim.api.nvim_open_win
@@ -1100,7 +1107,13 @@ menu:
         end
         menu:fuzzy_find_open()
       end,
-    }
+      ['q'] = function()
+        local menu = utils.menu.get_current()
+        if menu then
+          menu:close()
+        end
+      end
+    },
     ```
 - `opts.menu.win_configs`: `table<string, dropbar_menu_win_config_opts_t>`
   - Window configurations for the menu, see `:h nvim_open_win()`

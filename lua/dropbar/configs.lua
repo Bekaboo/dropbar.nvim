@@ -259,6 +259,12 @@ M.opts = {
         end
         menu:fuzzy_find_open()
       end,
+      ['q'] = function()
+        local menu = utils.menu.get_current()
+        if menu then
+          menu:close()
+        end
+      end,
     },
     ---@alias dropbar_menu_win_config_opts_t any|fun(menu: dropbar_menu_t):any
     ---@type table<string, dropbar_menu_win_config_opts_t>
