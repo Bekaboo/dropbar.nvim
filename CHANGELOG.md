@@ -1,5 +1,17 @@
 # Changelog
 
+## [7.2.0](https://github.com/Bekaboo/dropbar.nvim/compare/v7.1.0...v7.2.0) (2023-11-14)
+
+
+### Features
+
+* **configs:** add default keymap `q` to close current menu ([183587d](https://github.com/Bekaboo/dropbar.nvim/commit/183587de8899a8a61edd974ade9c4df73e6b6a49))
+
+
+### Bug Fixes
+
+* **sources-path:** infinate loop finding root on Windows system ([#111](https://github.com/Bekaboo/dropbar.nvim/issues/111)) ([c8a209e](https://github.com/Bekaboo/dropbar.nvim/commit/c8a209ee319bb93e41e4daebc02eb1614409c350))
+
 ## [7.1.0](https://github.com/Bekaboo/dropbar.nvim/compare/v7.0.1...v7.1.0) (2023-11-10)
 
 
