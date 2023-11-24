@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.2.1](https://github.com/Bekaboo/dropbar.nvim/compare/v7.2.0...v7.2.1) (2023-11-24)
+
+
+### Bug Fixes
+
+* **sources-treesitter:** active ts parser ignore if highlight disabled ([c88c4ff](https://github.com/Bekaboo/dropbar.nvim/commit/c88c4ffbb41c10dfd36e3405f4619e355ebee58d))
+
 ## [7.2.0](https://github.com/Bekaboo/dropbar.nvim/compare/v7.1.0...v7.2.0) (2023-11-14)
 
 
