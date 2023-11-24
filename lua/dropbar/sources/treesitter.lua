@@ -150,7 +150,8 @@ end
 ---@param cursor integer[] cursor position
 ---@return dropbar_symbol_t[] symbols winbar symbols
 local function get_symbols(buf, win, cursor)
-  if not vim.treesitter.highlighter.active[buf] then
+  local ts_ok = pcall(vim.treesitter.get_parser, buf or 0, vim.b[buf].ft)
+  if not ts_ok then
     return {}
   end
 
