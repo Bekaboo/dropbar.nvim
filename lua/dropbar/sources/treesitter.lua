@@ -71,7 +71,7 @@ end
 ---@return integer idx index of the node in its siblings
 local function get_node_siblings(node, buf)
   local siblings = {}
-  local current = node
+  local current = node --[[@type TSNode?]]
   while current do
     if valid_node(current, buf) then
       table.insert(siblings, 1, current)
