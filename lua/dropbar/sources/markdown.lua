@@ -30,7 +30,7 @@ end
 ---@field symbols markdown_heading_symbol_t[]
 local markdown_heading_symbols_parsed_list_t = {}
 markdown_heading_symbols_parsed_list_t.__index =
-    markdown_heading_symbols_parsed_list_t
+  markdown_heading_symbols_parsed_list_t
 
 ---Create a new markdown heading symbols parsed object
 ---@param opts markdown_heading_symbols_parsed_list_t?
@@ -49,7 +49,7 @@ local markdown_heading_buf_symbols = {}
 setmetatable(markdown_heading_buf_symbols, {
   __index = function(_, k)
     markdown_heading_buf_symbols[k] =
-        markdown_heading_symbols_parsed_list_t:new()
+      markdown_heading_symbols_parsed_list_t:new()
     return markdown_heading_buf_symbols[k]
   end,
 })
@@ -78,7 +78,7 @@ local function parse_buf(buf, lnum_end, incremental)
   for idx, line in ipairs(lines) do
     if line:match('^```') then
       symbols_parsed['end'].inside_code_block =
-          not symbols_parsed['end'].inside_code_block
+        not symbols_parsed['end'].inside_code_block
     end
     if not symbols_parsed['end'].inside_code_block then
       local _, _, heading_notation, heading_str = line:find('^(#+)%s+(.*)')
