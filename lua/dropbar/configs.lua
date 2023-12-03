@@ -319,6 +319,14 @@ M.opts = {
           end, menu.entries)))
         )
       end,
+      zindex = function(menu)
+        if menu.prev_menu then
+          if menu.prev_menu.scrollbar and menu.prev_menu.scrollbar.thumb then
+            return vim.api.nvim_win_get_config(menu.prev_menu.scrollbar.thumb).zindex
+          end
+          return vim.api.nvim_win_get_config(menu.prev_win).zindex
+        end
+      end,
     },
   },
   fzf = {

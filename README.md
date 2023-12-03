@@ -553,6 +553,14 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
             end, menu.entries)))
           )
         end,
+        zindex = function(menu)
+          if menu.prev_menu then
+            if menu.prev_menu.scrollbar and menu.prev_menu.scrollbar.thumb then
+              return vim.api.nvim_win_get_config(menu.prev_menu.scrollbar.thumb).zindex
+            end
+            return vim.api.nvim_win_get_config(menu.prev_win).zindex
+          end
+        end,
       },
     },
     fzf = {
@@ -1175,6 +1183,14 @@ menu:
             return entry:displaywidth()
           end, menu.entries)))
         )
+      end,
+      zindex = function(menu)
+        if menu.prev_menu then
+          if menu.prev_menu.scrollbar and menu.prev_menu.scrollbar.thumb then
+            return vim.api.nvim_win_get_config(menu.prev_menu.scrollbar.thumb).zindex
+          end
+          return vim.api.nvim_win_get_config(menu.prev_win).zindex
+        end
       end,
     }
     ```
