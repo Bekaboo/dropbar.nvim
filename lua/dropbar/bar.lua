@@ -218,8 +218,8 @@ end
 ---Delete a dropbar symbol instance
 ---@return nil
 function dropbar_symbol_t:del()
-  if self.menu then
-    self.menu:del()
+  if self._.menu then
+    self._.menu:del()
   end
 end
 
