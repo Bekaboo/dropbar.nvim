@@ -1598,6 +1598,13 @@ dropbar_symbol_t.on_click                          *dropbar_symbol_t.on_click*
 		about the execute function label in the help page for
 		'statusline'.
 
+dropbar_symbol_t.opts                                  *dropbar_symbol_t.opts*
+
+	Options passed to `dropbar_symbol_t:new()` when the symbols is created
+
+	Type ~
+	    `dropbar_symbol_opts_t`?
+
 dropbar_symbol_t.data                                  *dropbar_symbol_t.data*
 
  	Any extra data associated with the symbol

@@ -1875,6 +1875,7 @@ basic element of [`dropbar_t`](#dropbar_t) and [`dropbar_menu_entry_t`](#dropbar
 | `sibling_idx` | `integer?`                                                                                                          | index of the symbol in the siblings                                                                                                          |
 | `range`       | `{start: {line: integer, character: integer}, end: {line: integer, character: integer}}`                            | range of the symbol in the source window                                                                                                     |
 | `on_click`    | `fun(this: dropbar_symbol_t, min_width: integer?, n_clicks: integer?, button: string?, modifiers: string?)\|false?` | callback to invoke when the symbol is clicked, force disable `on_click` when the value if set to `false`                                     |
+| `opts`        | `dropbar_symbol_opts_t?`                                                                                            | options passed to `winbar_symbol_t:new()` when the symbols is created                                                                        |
 | `data`        | `table?`                                                                                                            | any extra data associated with the symbol                                                                                                    |
 
 
