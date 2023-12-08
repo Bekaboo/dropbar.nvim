@@ -1139,13 +1139,13 @@ menu:
 - `opts.menu.scrollbar`: `table<string, boolean>`
   - Scrollbar configuration for the menu.
   - Default:
-  ```lua
-  {
-    enable = true,
-    -- if false, only the scrollbar thumb will be shown
-    background = true
-  }
-  ```
+    ```lua
+    {
+      enable = true,
+      -- if false, only the scrollbar thumb will be shown
+      background = true
+    }
+    ```
 
 - `opts.menu.win_configs`: `table<string, dropbar_menu_win_config_opts_t>`
   - Window configurations for the menu, see `:h nvim_open_win()`
