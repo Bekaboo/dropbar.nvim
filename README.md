@@ -443,6 +443,13 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
           right = 1,
         },
       },
+      -- Menu scrollbar options
+      scrollbar = {
+        enable = true,
+        -- The background / gutter of the scrollbar
+        -- When false, only the scrollbar thumb is shown.
+        background = true
+      },
       ---@type table<string, string|function|table<string, string|function>>
     keymaps = {
       ['<LeftMouse>'] = function()
@@ -515,8 +522,13 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
         ---@param menu dropbar_menu_t
         col = function(menu)
           if menu.prev_menu then
-            return menu.prev_menu._win_configs.width
-              + (menu.prev_menu.scrollbar and 1 or 0)
+            local offset = 0
+            if
+              menu.prev_menu.scrollbar and M.opts.menu.scrollbar.background
+            then
+              offset = 1
+            end
+            return menu.prev_menu._win_configs.width + offset
           end
           local mouse = vim.fn.getmousepos()
           local bar = utils.bar.get({ win = menu.prev_win })
@@ -1123,6 +1135,18 @@ menu:
       end
     },
     ```
+
+- `opts.menu.scrollbar`: `table<string, boolean>`
+  - Scrollbar configuration for the menu.
+  - Default:
+  ```lua
+  {
+    enable = true,
+    -- if false, only the scrollbar thumb will be shown
+    background = true
+  }
+  ```
+
 - `opts.menu.win_configs`: `table<string, dropbar_menu_win_config_opts_t>`
   - Window configurations for the menu, see `:h nvim_open_win()`
   - Each config key in `opts.menu.win_configs` accepts either a plain value

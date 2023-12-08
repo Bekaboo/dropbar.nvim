@@ -189,7 +189,7 @@ end
 ---@field prev_cursor integer[]? previous cursor position
 ---@field symbol_previewed dropbar_symbol_t? symbol being previewed
 ---@field fzf_state fzf_state_t? fuzzy-finding state, or nil if not currently fuzzy-finding
----@field scrollbar { thumb: integer, sbar: integer }? scrollbar window handlers
+---@field scrollbar { thumb: integer, background: integer }? scrollbar window handlers
 local dropbar_menu_t = {}
 dropbar_menu_t.__index = dropbar_menu_t
 
@@ -538,6 +538,7 @@ function dropbar_menu_t:update_scrollbar()
     or not self.buf
     or not vim.api.nvim_win_is_valid(self.win)
     or not vim.api.nvim_buf_is_valid(self.buf)
+    or not configs.opts.menu.scrollbar.enable
   then
     return
   end
@@ -568,26 +569,31 @@ function dropbar_menu_t:update_scrollbar()
     self.scrollbar = {}
 
     local win_configs = {
-      row = 0,
-      col = menu_win_configs.width,
+      row = offset,
+      col = menu_win_configs.width
+        - (configs.opts.menu.scrollbar.background and 0 or 1),
       width = 1,
       height = menu_win_configs.height,
       style = 'minimal',
       border = 'none',
       relative = 'win',
       win = self.win,
-      zindex = menu_win_configs.zindex,
+      zindex = menu_win_configs.zindex
+        + (configs.opts.menu.scrollbar.background and 0 or 1),
     }
-    self.scrollbar.sbar = vim.api.nvim_open_win(
-      vim.api.nvim_create_buf(false, true),
-      false,
-      win_configs
-    )
-    vim.wo[self.scrollbar.sbar].winhl = 'NormalFloat:DropBarMenuSbar'
 
-    win_configs.row = offset
-    win_configs.height = thumb_height
-    win_configs.zindex = menu_win_configs.zindex + 1
+    if configs.opts.menu.scrollbar.background then
+      win_configs.row = 0
+      win_configs.height = menu_win_configs.height
+      win_configs.zindex = win_configs.zindex - 1
+      self.scrollbar.background = vim.api.nvim_open_win(
+        vim.api.nvim_create_buf(false, true),
+        false,
+        win_configs
+      )
+      vim.wo[self.scrollbar.background].winhl = 'NormalFloat:DropBarMenuSbar'
+    end
+
     self.scrollbar.thumb = vim.api.nvim_open_win(
       vim.api.nvim_create_buf(false, true),
       false,
@@ -607,8 +613,11 @@ function dropbar_menu_t:close_scrollbar()
   if vim.api.nvim_win_is_valid(self.scrollbar.thumb) then
     vim.api.nvim_win_close(self.scrollbar.thumb, true)
   end
-  if vim.api.nvim_win_is_valid(self.scrollbar.sbar) then
-    vim.api.nvim_win_close(self.scrollbar.sbar, true)
+  if
+    self.scrollbar.background
+    and vim.api.nvim_win_is_valid(self.scrollbar.background)
+  then
+    vim.api.nvim_win_close(self.scrollbar.background, true)
   end
   self.scrollbar = nil
 end
