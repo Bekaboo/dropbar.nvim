@@ -136,6 +136,13 @@ local function setup(opts)
         utils.bar.update_hover_hl(vim.fn.getmousepos())
       end
     end)
+    vim.api.nvim_create_autocmd('FocusLost', {
+      group = groupid,
+      callback = function()
+        utils.bar.update_hover_hl({})
+      end,
+      desc = 'Remove hover highlight on focus lost.',
+    })
   end
   vim.g.loaded_dropbar = true
 end
