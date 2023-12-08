@@ -522,13 +522,13 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
         ---@param menu dropbar_menu_t
         col = function(menu)
           if menu.prev_menu then
-            local offset = 0
-            if
-              menu.prev_menu.scrollbar and M.opts.menu.scrollbar.background
-            then
-              offset = 1
-            end
-            return menu.prev_menu._win_configs.width + offset
+            return menu.prev_menu._win_configs.width
+              + (
+                menu.prev_menu.scrollbar
+                  and menu.prev_menu.scrollbar.background
+                  and 1
+                or 0
+              )
           end
           local mouse = vim.fn.getmousepos()
           local bar = utils.bar.get({ win = menu.prev_win })
