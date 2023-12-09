@@ -30,7 +30,8 @@ CONTENTS                                           *dropbar-table-of-contents*
   5.3 Utility Functions              |dropbar-configuration-utility-functions|
     5.3.1 Bar Utility Functions  |dropbar-configuration-utility-functions-bar|
     5.3.2 Menu Utility Functions |dropbar-configuration-utility-functions-menu|
-  5.4 Highlighting                        |dropbar-configuration-highlighting|
+  5.4 Usage with `vim.ui.select`    |dropbar-configuration-usage-with-ui-select|
+  5.5 Highlighting                        |dropbar-configuration-highlighting|
 6. Developers                                             |dropbar-developers|
   6.1 Architecture                           |dropbar-developers-architecture|
   6.2 Classes                                     |dropbar-developers-classes|
@@ -40,6 +41,7 @@ CONTENTS                                           *dropbar-table-of-contents*
     6.2.5 `dropbar_menu_entry_t` |dropbar-developers-classes-dropbar_menu_entry_t|
     6.2.6 `dropbar_menu_hl_info_t` |dropbar-developers-classes-dropbar_menu_hl_info_t|
     6.2.7 `dropbar_source_t`     |dropbar-developers-classes-dropbar_source_t|
+    6.2.8 `dropbar_select_opts_t` |dropbar-developers-classes-dropbar_select_opts_t|
   6.3 Making a new source             |dropbar-developers-making-a-new-source|
     6.3.1 Making a source with drop-down menus |dropbar-developers-making-a-source-with-drop-down-menus|
     6.3.2 Default `on_click()` callback |dropbar-developers-default-on_click-callback|
@@ -1022,6 +1024,19 @@ utils.menu.get_current()  *dropbar-utility-functions-utils.menu.get_current()*
 
 	Returns ~
 	    `dropbar_menu_t` or `nil`
+
+------------------------------------------------------------------------------
+USAGE WITH `vim.ui.select`          *dropbar-configuration-usage-with-ui-select*
+
+Dropbar can be used as a drop-in replacement for Neovim's builtin
+`vim.ui.select` menu.
+
+To enable this functionality, simply replace `vim.ui.select` with
+`dropbar.utils.menu.select`:
+
+>lua
+vim.ui.select = require("dropbar.utils.menu").select
+<
 
 ------------------------------------------------------------------------------
 HIGHLIGHTING                              *dropbar-configuration-highlighting*
@@ -2189,6 +2204,28 @@ dropbar_source_t.get_symbols({buf}, {win}, {cursor})
 
 	Returns ~
 	    (`dropbar_symbol_t`[]): the symbols to show in the winbar
+
+..............................................................................
+DROPBAR_SELECT_OPTS_T                                  *dropbar_select_opts_t*
+
+Declared in `lua/dropbar/utils/menu.lua`.
+
+`dropbar_select_opts_t` is a class that represents the options passed to `utils.menu.select` (`vim.ui.select` with some extensions).
+
+`dropbar_select_opts_t` has the following field:
+
+						*dropbar_select_opts_t.format_item*
+dropbar_select_opts_t.format_item({item})
+
+  Format an item in the list of items passed to `utils.menu.select` into a
+  string.
+
+	Parameters ~
+      • {item} (any): item in the list of items passed to `utils.menu.select`
+
+	Returns ~
+      (`string`): the text to display for the item
+      (`string`[][]?): optional virtual text to display below the item
 
 ------------------------------------------------------------------------------
 MAKING A NEW SOURCE                       *dropbar-developers-making-a-source*

@@ -151,6 +151,9 @@ local function setup(opts)
       desc = 'Update hover highlight on focus gained.',
     })
   end
+  if configs.opts.menu.ui_select then
+    vim.ui.select = utils.menu.select
+  end
   vim.g.loaded_dropbar = true
 end
 
