@@ -1,5 +1,21 @@
 # Changelog
 
+## [7.3.0](https://github.com/Bekaboo/dropbar.nvim/compare/v7.2.1...v7.3.0) (2023-12-09)
+
+
+### Features
+
+* **menu:** scrollbar customization options ([#96](https://github.com/Bekaboo/dropbar.nvim/issues/96)) ([e68e054](https://github.com/Bekaboo/dropbar.nvim/commit/e68e054db7533822bf3121c24bc92c81745c60cd))
+
+
+### Bug Fixes
+
+* **bar:** should set jumplist before dropbar_symbol_t:jump() ([f54d926](https://github.com/Bekaboo/dropbar.nvim/commit/f54d926d67d66e226b94e3b626e5f13224bc961d))
+* **menu-scrollbar:** scrollbar thumb covered by menu border ([2b7c2d5](https://github.com/Bekaboo/dropbar.nvim/commit/2b7c2d53363cb3d93376904dac3ea6d52dd900c5))
+* remove hover highlight on FocusLost ([#119](https://github.com/Bekaboo/dropbar.nvim/issues/119)) ([50319e2](https://github.com/Bekaboo/dropbar.nvim/commit/50319e295d80241bee284386ad38781fb3411112))
+* **sources-markdown:** check buffer validity, close [#114](https://github.com/Bekaboo/dropbar.nvim/issues/114) ([9885b34](https://github.com/Bekaboo/dropbar.nvim/commit/9885b34a05de6c2dc97d3ceda554a02e33c460ff))
+* update hover highlight on FocusGained ([7b65210](https://github.com/Bekaboo/dropbar.nvim/commit/7b65210700ba3886bfbf8ab8686d50b62f36fc9f))
+
 ## [7.2.1](https://github.com/Bekaboo/dropbar.nvim/compare/v7.2.0...v7.2.1) (2023-11-24)
 
 
