@@ -38,6 +38,7 @@
   - [Utility Functions](#utility-functions)
     - [Bar Utility Functions](#bar-utility-functions)
     - [Menu Utility Functions](#menu-utility-functions)
+  - [Usage with `vim.ui.select`](#usage-with-vimuiselect)
   - [Highlighting](#highlighting)
 - [Developers](#developers)
   - [Architecture](#architecture)
@@ -48,6 +49,7 @@
     - [`dropbar_menu_entry_t`](#dropbar_menu_entry_t)
     - [`dropbar_menu_hl_info_t`](#dropbar_menu_hl_info_t)
     - [`dropbar_source_t`](#dropbar_source_t)
+    - [`dropbar_select_opts_t`](#dropbar_select_opts_t)
   - [Making a New Source](#making-a-new-source)
     - [Making a Source With Drop-Down Menus](#making-a-source-with-drop-down-menus)
     - [Default `on_click()` Callback](#default-on_click-callback)
@@ -1602,6 +1604,19 @@ Defined in [`lua/dropbar/utils/menu.lua`](https://github.com/Bekaboo/dropbar.nvi
   - If `opts.win` is not specified, return all opened dropbar menus
 - `utils.menu.get_current(): dropbar_menu_t?`
   - Get current dropbar menu
+- utils.menu.select(items: any[], opts: table, on_choice: function(item, idx))
+  - Opt-in replacement for `vim.ui.select`
+  - Supports non-string items by formatting via the `opts.format_item` callback
+
+### Usage with `vim.ui.select`
+
+Dropbar can be used as a drop-in replacement for Neovim's builtin `vim.ui.select` menu.
+
+To enable this functionality, simply replace `vim.ui.select` with `dropbar.utils.menu.select`:
+
+```lua
+vim.ui.select = require('dropbar.utils.menu').select
+```
 
 ### Highlighting
 
@@ -2041,6 +2056,21 @@ Declared in [`lua/dropbar/sources/init.lua`](https://github.com/Bekaboo/dropbar.
 | Field         | Type                                                                          | Description                                                                                                                                          |
 | ------        | ------                                                                        | ------                                                                                                                                               |
 | `get_symbols` | `function(buf: integer, win: integer, cursor: integer[]): dropbar_symbol_t[]` | returns the symbols<sub>[`dropbar_symbol_t[]`](#dropbar_symbol_t)</sub> to show in the winbar given buffer number `buf` and cursor position `cursor` |
+
+#### `dropbar_select_opts_t`
+
+Declared in [`lua/dropbar/utils/menu.lua`](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/utils/menu.lua).
+
+---
+
+`dropbar_select_opts_t` is a class that represents the options passed to `utils.menu.select` (`vim.ui.select` with some extensions).
+
+`dropbar_select_opts_t` has the following fields:
+
+| Field         | Type                                                                          | Description                                                                                                                                          |
+| ------        | ------                                                                        | ------                                                                                                                                               |
+| `prompt`      | `string?`                                                                     | determines what will be shown at the top of the select menu.                                                                                         |
+| `format_item` | `fun(item: any): string, string[][]?`                                         | formats the list items for display in the menu, and optionally formats virtual text chunks to be shown below the item.                               |
 
 ### Making a New Source
 
