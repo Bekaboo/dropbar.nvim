@@ -1615,7 +1615,7 @@ Dropbar can be used as a drop-in replacement for Neovim's builtin `vim.ui.select
 To enable this functionality, simply replace `vim.ui.select` with `dropbar.utils.menu.select`:
 
 ```lua
-vim.ui.select = require("dropbar.utils.menu").select
+vim.ui.select = require('dropbar.utils.menu').select
 ```
 
 ### Highlighting

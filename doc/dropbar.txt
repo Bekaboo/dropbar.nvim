@@ -30,7 +30,7 @@ CONTENTS                                           *dropbar-table-of-contents*
   5.3 Utility Functions              |dropbar-configuration-utility-functions|
     5.3.1 Bar Utility Functions  |dropbar-configuration-utility-functions-bar|
     5.3.2 Menu Utility Functions |dropbar-configuration-utility-functions-menu|
-  5.4 Usage with `vim.ui.select`    |dropbar-configuration-usage-with-ui-select|
+  5.4 Usage with `vim.ui.select`  |dropbar-configuration-usage-with-ui-select|
   5.5 Highlighting                        |dropbar-configuration-highlighting|
 6. Developers                                             |dropbar-developers|
   6.1 Architecture                           |dropbar-developers-architecture|
@@ -1026,16 +1026,15 @@ utils.menu.get_current()  *dropbar-utility-functions-utils.menu.get_current()*
 	    `dropbar_menu_t` or `nil`
 
 ------------------------------------------------------------------------------
-USAGE WITH `vim.ui.select`          *dropbar-configuration-usage-with-ui-select*
+USAGE WITH `vim.ui.select`        *dropbar-configuration-usage-with-ui-select*
 
 Dropbar can be used as a drop-in replacement for Neovim's builtin
 `vim.ui.select` menu.
 
 To enable this functionality, simply replace `vim.ui.select` with
-`dropbar.utils.menu.select`:
+`dropbar.utils.menu.select`: >lua
 
->lua
-vim.ui.select = require("dropbar.utils.menu").select
+    vim.ui.select = require('dropbar.utils.menu').select
 <
 
 ------------------------------------------------------------------------------
