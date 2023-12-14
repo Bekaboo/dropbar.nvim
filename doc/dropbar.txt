@@ -1681,7 +1681,13 @@ dropbar_symbol_t:jump()                              *dropbar_symbol_t:jump()*
 
  	Jump to the start of the symbol associated with the winbar symbol
 
-dropbar_symbol_t:preview()                        *dropbar_symbol_t:preview()*
+dropbar_symbol_t:preview([{orig_view}])           *dropbar_symbol_t:preview()*
+
+	Parameters ~
+	    • {orig_view} (table?): Use this win view as the original view of
+				    the source window, see |winsaveview()| and
+				    |winrestview()|. Default to the current
+				    view of the source window
 
  	Preview the symbol in the source window
 

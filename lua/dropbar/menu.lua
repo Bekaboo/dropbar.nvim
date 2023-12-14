@@ -726,17 +726,15 @@ end
 ---@param look_ahead boolean? whether to look ahead for a component
 ---@return nil
 function dropbar_menu_t:preview_symbol_at(pos, look_ahead)
-  if self.prev_cursor then
-    local prev_component = self:get_component_at(self.prev_cursor, look_ahead)
-    if prev_component then
-      prev_component:preview_restore_view()
-    end
+  if not pos then
+    return
   end
   local component = self:get_component_at(pos, look_ahead)
-  if component then
-    self.symbol_previewed = component
-    component:preview()
+  if not component or component == self.symbol_previewed then
+    return
   end
+  component:preview(self.symbol_previewed and self.symbol_previewed.view)
+  self.symbol_previewed = component
 end
 
 ---Finish the preview in current menu
