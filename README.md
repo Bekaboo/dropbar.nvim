@@ -20,6 +20,7 @@
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
+  - [Usage with `vim.ui.select`](#usage-with-vimuiselect)
 - [Configuration](#configuration)
   - [Options](#options)
     - [General](#general)
@@ -38,7 +39,6 @@
   - [Utility Functions](#utility-functions)
     - [Bar Utility Functions](#bar-utility-functions)
     - [Menu Utility Functions](#menu-utility-functions)
-  - [Usage with `vim.ui.select`](#usage-with-vimuiselect)
   - [Highlighting](#highlighting)
 - [Developers](#developers)
   - [Architecture](#architecture)
@@ -225,6 +225,16 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
   - `q`: close current menu
   - To disable, remap or add new keymaps in the drop-down menu, see
     [menu options](#menu)
+
+### Usage with `vim.ui.select`
+
+Dropbar can be used as a drop-in replacement for Neovim's builtin `vim.ui.select` menu.
+
+To enable this functionality, simply replace `vim.ui.select` with `dropbar.utils.menu.select`:
+
+```lua
+vim.ui.select = require('dropbar.utils.menu').select
+```
 
 ## Configuration
 
@@ -1607,16 +1617,6 @@ Defined in [`lua/dropbar/utils/menu.lua`](https://github.com/Bekaboo/dropbar.nvi
 - utils.menu.select(items: any[], opts: table, on_choice: function(item, idx))
   - Opt-in replacement for `vim.ui.select`
   - Supports non-string items by formatting via the `opts.format_item` callback
-
-### Usage with `vim.ui.select`
-
-Dropbar can be used as a drop-in replacement for Neovim's builtin `vim.ui.select` menu.
-
-To enable this functionality, simply replace `vim.ui.select` with `dropbar.utils.menu.select`:
-
-```lua
-vim.ui.select = require('dropbar.utils.menu').select
-```
 
 ### Highlighting
 
