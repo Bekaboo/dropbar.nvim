@@ -1001,23 +1001,23 @@ the symbols:
     end
     ```
 - `opts.symbol.jump.reorient`: `fun(win: integer, range: {start: {line: integer, character: integer}, end: {line: integer, character: integer}})`
-- Function to reorient the source window after jumping to symbol given
-  the source window `win` and the range of the symbol `range`
-- Default:
-  ```lua
-  function(win, range)
-    local view = vim.fn.winsaveview()
-    local win_height = vim.api.nvim_win_get_height(win)
-    local topline = range.start.line - math.floor(win_height / 4)
-    if
-      topline > view.topline
-      and topline + win_height < vim.fn.line('$')
-    then
-      view.topline = topline
-      vim.fn.winrestview(view)
+  - Function to reorient the source window after jumping to symbol given
+    the source window `win` and the range of the symbol `range`
+  - Default:
+    ```lua
+    function(win, range)
+      local view = vim.fn.winsaveview()
+      local win_height = vim.api.nvim_win_get_height(win)
+      local topline = range.start.line - math.floor(win_height / 4)
+      if
+        topline > view.topline
+        and topline + win_height < vim.fn.line('$')
+      then
+        view.topline = topline
+        vim.fn.winrestview(view)
+      end
     end
-  end
-  ```
+    ```
 
 #### Bar
 
