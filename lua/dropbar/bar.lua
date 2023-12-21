@@ -6,7 +6,7 @@ local utils = require('dropbar.utils')
 ---@param hlgroup string?
 ---@return string
 local function hl(str, hlgroup)
-  if not hlgroup or hlgroup:match('^%s*$') then
+  if not hlgroup then
     return str
   end
   return string.format('%%#%s#%s%%*', hlgroup, str or '')
@@ -466,7 +466,9 @@ function dropbar_t:cat(plain)
   local padding_left = string.rep(' ', self.padding.left)
   local padding_right = string.rep(' ', self.padding.right)
   result = result and padding_left .. result .. padding_right or ''
-  return plain and result or hl(result, 'DropBar')
+  -- Must add highlights to padding when `plain` is false, else nvim will
+  -- automatically truncate it
+  return plain and result or hl(result, '')
 end
 
 ---Reevaluate dropbar string from components and redraw dropbar

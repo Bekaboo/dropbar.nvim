@@ -130,7 +130,7 @@ describe('[bar]', function()
     it('concatenates and converts to string', function()
       -- stylua: ignore start
       local plain_str = ' | 󰅩 sym2 | sym3 | sym4    '
-      local start_str = '%#DropBar#'
+      local start_str = '%##'
       local end_str = '    %*'
       local sep_str = '%#DropBarIconUISeparator# | %*'
       local sym2_str = '%@v:lua.dropbar.on_click_callbacks.buf1.win1000.fn2@%#DropBarIconTest#󰅩 %*%#DropBarNameTest#sym2%*%X'
