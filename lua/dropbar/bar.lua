@@ -282,7 +282,7 @@ function dropbar_symbol_t:jump()
   if not self.range or not self.win then
     return
   end
-  vim.cmd("normal! m'")
+  vim.cmd.normal({ "m'", bang = true })
   vim.api.nvim_win_set_cursor(self.win, {
     self.range.start.line + 1,
     self.range.start.character,
@@ -478,7 +478,10 @@ function dropbar_t:redraw()
   local new_str = self:cat()
   if new_str ~= self.string_cache then
     self.string_cache = new_str
-    vim.cmd('silent! redrawstatus!')
+    vim.cmd.redrawstatus({
+      bang = true,
+      mods = { emsg_silent = true },
+    })
   end
 end
 

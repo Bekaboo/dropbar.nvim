@@ -813,7 +813,7 @@ function dropbar_menu_t:fuzzy_find_close()
   self.fzf_state:gc()
   self.fzf_state = nil
   if vim.api.nvim_win_is_valid(input_win) then
-    vim.cmd('silent! stopinsert')
+    vim.cmd.stopinsert({ mods = { emsg_silent = true } })
     vim.api.nvim_win_close(input_win, false)
   end
   _G.dropbar.menus[input_win] = nil
@@ -984,7 +984,7 @@ function dropbar_menu_t:fuzzy_find_open(opts)
 
   vim.api.nvim_set_current_win(win)
   move_cursor({ 1, 1 })
-  vim.cmd('silent! startinsert')
+  vim.cmd.startinsert({ mods = { emsg_silent = true } })
 
   local function on_update()
     if not self.fzf_state then
