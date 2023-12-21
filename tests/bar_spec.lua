@@ -175,10 +175,12 @@ describe('[bar]', function()
     end)
     it('picks in interactive pick mode', function()
       local agent = spy.on(winbar.components[2], 'on_click')
-      -- stubbing vim.fn.getchar to always return the char number of 'b'
+      -- stubbing vim.fn.getchar to always return the char number of 'a'
       -- without user input to simulate selecting the second symbol
+      -- Notice that the first symbol is not clickable so it does not
+      -- get a character assigned to it
       stub(vim.fn, 'getchar', function()
-        return vim.fn.char2nr('b')
+        return vim.fn.char2nr('a')
       end)
       winbar:pick()
       vim.fn.getchar:revert()

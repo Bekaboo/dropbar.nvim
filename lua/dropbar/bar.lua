@@ -448,6 +448,45 @@ function dropbar_t:truncate()
       delta = delta - name_len + vim.fn.strdisplaywidth(component.name)
     end
   end
+
+  -- Return if dropbar already fits in the window
+  -- or there's only one or less symbol in dropbar (cannot truncate)
+  if delta <= 0 or #self.components <= 1 then
+    return
+  end
+
+  -- Consider replacing symbols at the start of the winbar with an extends sign
+  local sym_extends = dropbar_symbol_t:new({
+    icon = configs.opts.icons.ui.bar.extends,
+    icon_hl = 'WinBarIconUIExtends',
+    on_click = false,
+    bar = self,
+  })
+  local extends_width = sym_extends:displaywidth()
+  local sep_width = self.separator:displaywidth()
+  local sym_first = self.components[1]
+  local wdiff = extends_width - sym_first:displaywidth()
+  -- Extends width larger than the first symbol, removing the
+  -- first symbol will not help
+  if wdiff >= 0 then
+    return
+  end
+  -- Replace the first symbol with the extends sign and update delta
+  self.components[1] = sym_extends
+  delta = delta + wdiff
+  sym_first:del()
+  -- Keep removing symbols from the start, notice that self.components[1] is
+  -- the extends symbol
+  while delta > 0 and #self.components > 1 do
+    local sym_remove = self.components[2]
+    table.remove(self.components, 2)
+    delta = delta - sym_remove:displaywidth() - sep_width
+    sym_remove:del()
+  end
+  -- Update bar_idx of each symbol
+  for i, component in ipairs(self.components) do
+    component.bar_idx = i
+  end
 end
 
 ---Concatenate dropbar into a string with separator and highlight
@@ -584,27 +623,37 @@ function dropbar_t:pick(idx)
       end
       return
     end
+
+    ---Clickable symbols
+    ---@type dropbar_symbol_t[]
+    local clickables = vim.tbl_filter(function(component)
+      return component.on_click
+    end, self.components)
+    local n_clickables = #clickables
+
     -- If has only one component, pick it directly
-    if #self.components == 1 then
-      self.components[1]:on_click()
+    if n_clickables == 1 then
+      clickables[1]:on_click()
       return
     end
-    -- Else Assign the chars on each component and wait for user input to pick
+
+    -- Else assign the chars on each component and wait for user input to pick
     local shortcuts = {}
     local pivots = {}
     for i = 1, #configs.opts.bar.pick.pivots do
       table.insert(pivots, configs.opts.bar.pick.pivots:sub(i, i))
     end
-    local n_chars = math.ceil(math.log(#self.components, #pivots))
+    local n_pivots = #pivots
+    local n_chars = math.ceil(math.log(n_clickables, n_pivots))
     for exp = 0, n_chars - 1 do
-      for i = 1, #self.components do
+      for i = 1, n_clickables do
         local new_char =
-          pivots[math.floor((i - 1) / (#pivots) ^ exp) % #pivots + 1]
+          pivots[math.floor((i - 1) / n_pivots ^ exp) % n_pivots + 1]
         shortcuts[i] = new_char .. (shortcuts[i] or '')
       end
     end
     -- Display the chars on each component
-    for i, component in ipairs(self.components) do
+    for i, component in ipairs(clickables) do
       local shortcut = shortcuts[i]
       local icon_width = vim.fn.strdisplaywidth(component.icon)
       component:swap_field(
@@ -620,14 +669,15 @@ function dropbar_t:pick(idx)
       shortcut_read = shortcut_read .. vim.fn.nr2char(vim.fn.getchar())
     end
     -- Restore the original content of each component
-    for _, component in ipairs(self.components) do
+    for _, component in ipairs(clickables) do
       component:restore()
     end
     self:redraw()
     -- Execute the on_click callback of the component
     for i, shortcut in ipairs(shortcuts) do
-      if shortcut == shortcut_read and self.components[i].on_click then
-        self.components[i]:on_click()
+      local sym = clickables[i]
+      if shortcut == shortcut_read and sym.on_click then
+        sym:on_click()
         break
       end
     end
@@ -701,7 +751,7 @@ function dropbar_t:update_hover_hl(col)
     end
     return
   end
-  if symbol == self.symbol_on_hover then
+  if not symbol.on_click or symbol == self.symbol_on_hover then
     return
   end
   local hl_hover_icon = '_DropBarIconHover'

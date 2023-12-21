@@ -73,7 +73,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
     ![auto-truncate](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/c3b03e7f-d6f7-4c60-9c0d-da038529e1c7)
 
-  - [ ] Better truncation when winbar is still too long after shortening
+  - [x] Better truncation when winbar is still too long after shortening
         all components
 
 - [x] Multiple backends that support fall-backs
