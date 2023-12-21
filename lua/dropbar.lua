@@ -9,7 +9,7 @@ local utils = require('dropbar.utils')
 ---(v:lua) only support calling global lua functions
 ---@type table<string, table<string, function>>
 ---@see dropbar_t:update
-_G.dropbar.on_click_callbacks = setmetatable({}, {
+_G.dropbar.callbacks = setmetatable({}, {
   __index = function(self, buf)
     self[buf] = setmetatable({}, {
       __index = function(this, win)
@@ -80,7 +80,7 @@ local function setup(opts)
     callback = function(info)
       utils.bar.exec('del', { buf = info.buf })
       _G.dropbar.bars[info.buf] = nil
-      _G.dropbar.on_click_callbacks['buf' .. info.buf] = nil
+      _G.dropbar.callbacks['buf' .. info.buf] = nil
     end,
     desc = 'Remove dropbar from cache on buffer delete/unload/wipeout.',
   })

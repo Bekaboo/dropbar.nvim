@@ -1802,7 +1802,7 @@ should be self-explanatory:
           │ │                               └─┬─▲──┘       └──────┘                     │
           │ │                    __tostring() │ │ return string cache                   │
           │ │                             ┌───▼─┴───┐                    ┌──────────────▼──────────────┐
-          │ │                             │dropbar_t├────────────────────▶_G.dropbar.on_click_callbacks│
+          │ │                             │dropbar_t├────────────────────▶     _G.dropbar.callbacks    │
           │ │    On update events         └───┬─▲───┘  register symbol   └──────────────┬──────────────┘
           │ │ get_symbols(1, 1000, <cursor>)  │ │    on_click() callbacks               │
           │ └─────────────────────────────────┘ │                       ┌──────────┬────▼─────┬─────────┐
@@ -1844,7 +1844,7 @@ Declared and defined in [`lua/dropbar/bar.lua`](https://github.com/Bekaboo/dropb
 It gets symbols<sub>[`dropbar_symbol_t[]`](#dropbar_symbol_t)</sub> from
 sources<sub>[`dropbar_source_t`](#dropbar_source_t)</sub> and renders them to a
 string. It is also responsible for registering `on_click` callbacks of each
-symbol in the global table `_G.dropbar.on_click_callbacks` so that nvim knows
+symbol in the global table `_G.dropbar.callbacks` so that nvim knows
 which function to call when a symbol is clicked.
 
 

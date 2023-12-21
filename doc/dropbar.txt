@@ -1223,7 +1223,7 @@ around in their window or clicks at a symbol in the winbar:
           │ │                               └─┬─▲──┘       └──────┘                     │
           │ │                    __tostring() │ │ return string cache                   │
           │ │                             ┌───▼─┴───┐                    ┌──────────────▼──────────────┐
-          │ │                             │dropbar_t├────────────────────▶_G.dropbar.on_click_callbacks│
+          │ │                             │dropbar_t├────────────────────▶_G.dropbar.callbacks│
           │ │    On update events         └───┬─▲───┘  register symbol   └──────────────┬──────────────┘
           │ │ get_symbols(1, 1000, <cursor>)  │ │    on_click() callbacks               │
           │ └─────────────────────────────────┘ │                       ┌──────────┬────▼─────┬─────────┐
@@ -1266,7 +1266,7 @@ Declared and defined in `lua/dropbar/bar.lua`.
 It gets symbols (|dropbar-developers-classes-dropbar_symbol_t|) from sources
 (|dropbar-developers-classes-dropbar_source_t|) and renders them to a string.
 It is also responsible for registering `on_click` callbacks of each symbol in
-the global table `_G.dropbar.on_click_callbacks` so that nvim knows which
+the global table `_G.dropbar.callbacks` so that nvim knows which
 function to call when a symbol is clicked.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

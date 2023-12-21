@@ -133,9 +133,9 @@ describe('[bar]', function()
       local start_str = '%##'
       local end_str = '    %*'
       local sep_str = '%#DropBarIconUISeparator# | %*'
-      local sym2_str = '%@v:lua.dropbar.on_click_callbacks.buf1.win1000.fn2@%#DropBarIconTest#󰅩 %*%#DropBarNameTest#sym2%*%X'
-      local sym3_str = '%@v:lua.dropbar.on_click_callbacks.buf1.win1000.fn3@sym3%X'
-      local sym4_str = '%@v:lua.dropbar.on_click_callbacks.buf1.win1000.fn4@sym4%X'
+      local sym2_str = '%@v:lua.dropbar.callbacks.buf1.win1000.fn2@%#DropBarIconTest#󰅩 %*%#DropBarNameTest#sym2%*%X'
+      local sym3_str = '%@v:lua.dropbar.callbacks.buf1.win1000.fn3@sym3%X'
+      local sym4_str = '%@v:lua.dropbar.callbacks.buf1.win1000.fn4@sym4%X'
       -- stylua: ignore end
       local representation_str = start_str
         .. sep_str
@@ -222,9 +222,7 @@ describe('[bar]', function()
       end, winbar.components)
       winbar:del()
       assert.is_nil(rawget(_G.dropbar.bars[winbar.buf], winbar.win))
-      assert.is_nil(
-        rawget(_G.dropbar.on_click_callbacks[winbar.buf], winbar.win)
-      )
+      assert.is_nil(rawget(_G.dropbar.callbacks[winbar.buf], winbar.win))
       for _, agent in ipairs(agents) do
         assert.spy(agent).was_called()
       end
@@ -270,7 +268,7 @@ describe('[bar]', function()
     it('concatenates', function()
       assert.are.same('󰅩 sym2', sym2:cat(true))
       assert.are.same(
-        '%@v:lua.dropbar.on_click_callbacks.buf1.win1000.fn2@%#DropBarIconTest#󰅩 %*%#DropBarNameTest#sym2%*%X',
+        '%@v:lua.dropbar.callbacks.buf1.win1000.fn2@%#DropBarIconTest#󰅩 %*%#DropBarNameTest#sym2%*%X',
         sym2:cat()
       )
     end)
