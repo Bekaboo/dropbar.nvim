@@ -1622,6 +1622,15 @@ dropbar_symbol_t.on_click                          *dropbar_symbol_t.on_click*
 		about the execute function label in the help page for
 		'statusline'.
 
+dropbar_symbol_t.callback_idx                  *dropbar_symbol_t.callback_idx*
+
+	Index of the `on_click()` callback in
+	`_G.dropbar.callbacks[buf][win]`, use this to index callback function
+	because `bar_idx` could change after truncate
+
+	Type ~
+	    integer?
+
 dropbar_symbol_t.opts                                  *dropbar_symbol_t.opts*
 
 	Options passed to `dropbar_symbol_t:new()` when the symbols is created
