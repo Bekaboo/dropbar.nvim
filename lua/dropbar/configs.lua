@@ -218,6 +218,8 @@ M.opts = {
     },
     ---@type table<string, string|function|table<string, string|function>>
     keymaps = {
+      ['q'] = '<C-w>q',
+      ['<Esc>'] = '<C-w>q',
       ['<LeftMouse>'] = function()
         local menu = utils.menu.get_current()
         if not menu then
@@ -265,12 +267,6 @@ M.opts = {
           return
         end
         menu:fuzzy_find_open()
-      end,
-      ['q'] = function()
-        local menu = utils.menu.get_current()
-        if menu then
-          menu:close()
-        end
       end,
     },
     ---@alias dropbar_menu_win_config_opts_t any|fun(menu: dropbar_menu_t):any

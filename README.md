@@ -222,7 +222,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
   - `<CR>`: find the first clickable symbol in the current drop-down menu
     entry and call its `on_click` callback
   - `i`: enter fzf mode from the menu
-  - `q`: close current menu
+  - `q` / `<Esc>`: close current menu
   - To disable, remap or add new keymaps in the drop-down menu, see
     [menu options](#menu)
 
@@ -464,6 +464,8 @@ vim.ui.select = require('dropbar.utils.menu').select
       },
       ---@type table<string, string|function|table<string, string|function>>
     keymaps = {
+      ['q'] = '<C-w>q',
+      ['<Esc>'] = '<C-w>q',
       ['<LeftMouse>'] = function()
         local menu = utils.menu.get_current()
         if not menu then
@@ -512,12 +514,6 @@ vim.ui.select = require('dropbar.utils.menu').select
         end
         menu:fuzzy_find_open()
       end,
-      ['q'] = function()
-        local menu = utils.menu.get_current()
-        if menu then
-          menu:close()
-        end
-      end
     },
       ---@alias dropbar_menu_win_config_opts_t any|fun(menu: dropbar_menu_t):any
       ---@type table<string, dropbar_menu_win_config_opts_t>
@@ -1091,6 +1087,8 @@ menu:
   - Default:
     ```lua
     {
+      ['q'] = '<C-w>q',
+      ['<Esc>'] = '<C-w>q',
       ['<LeftMouse>'] = function()
         local menu = utils.menu.get_current()
         if not menu then
@@ -1139,12 +1137,6 @@ menu:
         end
         menu:fuzzy_find_open()
       end,
-      ['q'] = function()
-        local menu = utils.menu.get_current()
-        if menu then
-          menu:close()
-        end
-      end
     },
     ```
 
