@@ -97,6 +97,8 @@ end
 ---The second return value is a list of virtual text chunks to be displayed below the item. If
 ---nothing is returned for the second value, no virtual text will be displayed.
 ---@field format_item? fun(item: any): string, string[][]?
+---@field preview? fun(self: dropbar_symbol_t, item: any, idx: integer)
+---@field preview_close? fun(self: dropbar_symbol_t, item: any, idx: integer)
 
 ---@param items string[]|table[] list of items to be selected
 ---@param opts dropbar_select_opts_t
@@ -149,6 +151,16 @@ function M.select(items, opts, on_choice)
             ),
             icon_hl = 'DropBarIconUIIndicator',
             name = text,
+            preview = function(self)
+              if opts.preview then
+                opts.preview(self, item, idx)
+              end
+            end,
+            preview_restore_view = function(self)
+              if opts.preview_close then
+                opts.preview_close(self, item, idx)
+              end
+            end,
             on_click = function(self)
               self.entry.menu:close()
               if on_choice then
