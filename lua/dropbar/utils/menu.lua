@@ -122,7 +122,7 @@ function M.select(items, opts, on_choice)
 
       return require('dropbar.menu').dropbar_menu_entry_t:new({
         -- virt_text will only be shown if returned from `format_item`
-        virt_text = virt_text,
+        virt_text = type(virt_text) == 'table' and virt_text,
         components = {
           require('dropbar.bar').dropbar_symbol_t:new({
             icon = ' ',
@@ -140,10 +140,12 @@ function M.select(items, opts, on_choice)
     end)
     :totable()
 
-  local border, title_pos
+  local border
   if opts.prompt then
     border = require('dropbar.configs').opts.menu.win_configs.border
-    title_pos = 'center'
+    if border == 'none' then
+      border = { ' ', ' ', ' ', '', '', '', '', '' }
+    end
   end
 
   local menu = require('dropbar.menu').dropbar_menu_t:new({
@@ -155,7 +157,6 @@ function M.select(items, opts, on_choice)
       row = 1,
       col = 1,
       border = border,
-      title_pos = title_pos,
     },
   })
 
