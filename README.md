@@ -1085,8 +1085,8 @@ menu:
   - Default: `true`
 - `opts.menu.keymaps`: `table<string, function|string|table<string, function>|table<string, string>>`
   - Buffer-local keymaps in the menu
-  - Use `<key> = <function|string>` to map a key in normal mode and visual mode
-    in the menu buffer, or use `<key> = table<mode, function|string>` to map
+  - Use `<key> = <function|string>` to map a key in normal mode in the menu
+    buffer, or use `<key> = table<mode, function|string>` to map
     a key in specific modes.
   - Default:
     ```lua
