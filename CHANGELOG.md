@@ -1,5 +1,33 @@
 # Changelog
 
+## [8.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v7.3.0...v8.0.0) (2023-12-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bar:** make callback indexing more robust
+
+### Features
+
+* **bar:** truncate leading symbols in extreme narrow windows ([053f7f3](https://github.com/Bekaboo/dropbar.nvim/commit/053f7f30fd07e99f4d1c92b7931bcd1f2a6d723e))
+* **configs:** use `&lt;Esc&gt;` in normal mode to close current menu ([ee3a356](https://github.com/Bekaboo/dropbar.nvim/commit/ee3a356254ab494c0e280b809969a7a3a7e38fb7))
+* use dropbar menu for `ui.select` (opt-in) ([#120](https://github.com/Bekaboo/dropbar.nvim/issues/120)) ([86a7736](https://github.com/Bekaboo/dropbar.nvim/commit/86a7736f097f2a3fea7da1fc75c16f4ff1a50914))
+
+
+### Bug Fixes
+
+* **configs & menu:** default mapping in visual mode causes confusion ([10b2873](https://github.com/Bekaboo/dropbar.nvim/commit/10b2873a6aa8fd5046b4c5d752d4e842e5dbbb6c))
+
+
+### Performance Improvements
+
+* **menu:** make preview smoother; reduce unnecessary cursor jumps ([4f22910](https://github.com/Bekaboo/dropbar.nvim/commit/4f22910fe08592ddcc0684bc930538b8ce1fbf8f))
+
+
+### Code Refactoring
+
+* **bar:** make callback indexing more robust ([3dd2c28](https://github.com/Bekaboo/dropbar.nvim/commit/3dd2c282b4fb3410eced46b2debd21e292e6fad1))
+
 ## [7.3.0](https://github.com/Bekaboo/dropbar.nvim/compare/v7.2.1...v7.3.0) (2023-12-09)
 
 
