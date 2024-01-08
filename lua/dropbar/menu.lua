@@ -730,7 +730,7 @@ function dropbar_menu_t:preview_symbol_at(pos, look_ahead)
     return
   end
   local component = self:get_component_at(pos, look_ahead)
-  if not component or component == self.symbol_previewed then
+  if not component then
     return
   end
   component:preview(self.symbol_previewed and self.symbol_previewed.view)
