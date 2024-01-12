@@ -1,5 +1,13 @@
 # Changelog
 
+## [8.0.1](https://github.com/Bekaboo/dropbar.nvim/compare/v8.0.0...v8.0.1) (2024-01-12)
+
+
+### Bug Fixes
+
+* **menu:** preview not updated after returning to prev menu ([bfba257](https://github.com/Bekaboo/dropbar.nvim/commit/bfba257774f78de384cca898d88cc1bb14c5a228))
+* The issue stems from the conditional check in ([bfba257](https://github.com/Bekaboo/dropbar.nvim/commit/bfba257774f78de384cca898d88cc1bb14c5a228))
+
 ## [8.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v7.3.0...v8.0.0) (2023-12-23)
 
 
