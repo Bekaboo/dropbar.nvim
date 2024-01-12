@@ -535,6 +535,17 @@ function dropbar_t:update()
   local request_time = vim.uv.now()
   self.last_update_request_time = request_time
   vim.defer_fn(function()
+    -- Cancel current update if
+    -- 1. another update request is sent within the update interval
+    -- 2. is inside pick mode
+    -- 3. is executing a macro
+    if
+      self.last_update_request_time ~= request_time
+      or self.in_pick_mode
+      or vim.fn.reg_executing() ~= ''
+    then
+      return
+    end
     if
       not self.win
       or not self.buf
@@ -542,24 +553,6 @@ function dropbar_t:update()
       or not vim.api.nvim_buf_is_valid(self.buf)
     then
       self:del()
-      return
-    end
-    if
-      -- Cancel current update if another update request is sent within
-      -- the update interval
-      (
-        self.last_update_request_time
-        -- Compare the last update request time and time when the current
-        -- update request was made to make sure that there is a new update
-        -- request after the current one if we are going to cancel the current
-        -- one
-        and self.last_update_request_time > request_time
-        and vim.uv.now() - self.last_update_request_time
-          < configs.opts.general.update_interval
-      )
-      or vim.fn.reg_executing() ~= ''
-      or self.in_pick_mode
-    then
       return
     end
     local cursor = vim.api.nvim_win_get_cursor(self.win)
