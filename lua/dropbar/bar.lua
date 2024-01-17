@@ -240,9 +240,10 @@ function dropbar_symbol_t:cat(plain)
     return self.cache.plain_str
   end
   -- Escape `%` characters to prevent unintended statusline evaluation
-  local escaped_name = self.name:gsub('%%', '%%%%')
-  local icon_highlighted = hl(self.icon, self.icon_hl)
-  local name_highlighted = hl(escaped_name, self.name_hl)
+  local icon_escaped = self.icon:gsub('%%', '%%%%')
+  local name_escaped = self.name:gsub('%%', '%%%%')
+  local icon_highlighted = hl(icon_escaped, self.icon_hl)
+  local name_highlighted = hl(name_escaped, self.name_hl)
   if self.on_click and self.bar_idx then
     self.cache.decorated_str = make_clickable(
       icon_highlighted .. name_highlighted,
