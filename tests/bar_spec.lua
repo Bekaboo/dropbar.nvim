@@ -255,7 +255,7 @@ describe('[bar]', function()
         assert.are.same('sym4s1', sym4.menu.entries[1].components[2].name)
       end
     )
-    it('creates new instances by with merged options', function()
+    it('creates new instances with merged options', function()
       local new_symbol = sym2:merge({ name = 'new_symbol', icon = '󰅨 ' })
       assert.are.same('new_symbol', new_symbol.name)
       assert.are.same('󰅨 ', new_symbol.icon)
