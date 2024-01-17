@@ -66,6 +66,12 @@ local source = {
           end
         end,
       })),
+      bar.dropbar_symbol_t:new({
+        buf = buf,
+        win = win,
+        icon = '%icon5 ',
+        name = '%sym5',
+      }),
     }
   end,
 }
@@ -96,6 +102,7 @@ describe('[bar]', function()
   local sym2 = nil ---@type dropbar_symbol_t
   local sym3 = nil ---@type dropbar_symbol_t
   local sym4 = nil ---@type dropbar_symbol_t
+  local sym5 = nil ---@type dropbar_symbol_t
   before_each(function()
     winbar =
       _G.dropbar.bars[vim.api.nvim_get_current_buf()][vim.api.nvim_get_current_win()]
@@ -104,6 +111,7 @@ describe('[bar]', function()
     sym2 = winbar.components[2]
     sym3 = winbar.components[3]
     sym4 = winbar.components[4]
+    sym5 = winbar.components[5]
   end)
   after_each(function()
     winbar:del()
@@ -125,17 +133,18 @@ describe('[bar]', function()
       end
     )
     it('get components from sources on update', function()
-      assert.are.same(4, #winbar.components)
+      assert.are.same(5, #winbar.components)
     end)
     it('concatenates and converts to string', function()
       -- stylua: ignore start
-      local plain_str = ' | 󰅩 sym2 | sym3 | sym4    '
+      local plain_str = ' | 󰅩 sym2 | sym3 | sym4 | %icon5 %sym5    '
       local start_str = '%##'
       local end_str = '    %*'
       local sep_str = '%#DropBarIconUISeparator# | %*'
-      local sym2_str = '%@v:lua.dropbar.callbacks.buf1.win1000.fn2@%#DropBarIconTest#󰅩 %*%#DropBarNameTest#sym2%*%X'
-      local sym3_str = '%@v:lua.dropbar.callbacks.buf1.win1000.fn3@sym3%X'
-      local sym4_str = '%@v:lua.dropbar.callbacks.buf1.win1000.fn4@sym4%X'
+      local sym2_str = string.format('%%@v:lua.dropbar.callbacks.buf%d.win%d.fn%d@%%#DropBarIconTest#󰅩 %%*%%#DropBarNameTest#sym2%%*%%X', sym2.buf, sym2.win, sym2.callback_idx)
+      local sym3_str = string.format('%%@v:lua.dropbar.callbacks.buf%d.win%d.fn%d@sym3%%X', sym3.buf, sym3.win, sym3.callback_idx)
+      local sym4_str = string.format('%%@v:lua.dropbar.callbacks.buf%d.win%d.fn%d@sym4%%X', sym4.buf, sym4.win, sym4.callback_idx)
+      local sym5_str = string.format('%%@v:lua.dropbar.callbacks.buf%d.win%d.fn%d@%%%%icon5 %%%%sym5%%X', sym5.buf, sym5.win, sym5.callback_idx)
       -- stylua: ignore end
       local representation_str = start_str
         .. sep_str
@@ -144,6 +153,8 @@ describe('[bar]', function()
         .. sym3_str
         .. sep_str
         .. sym4_str
+        .. sep_str
+        .. sym5_str
         .. end_str
       assert.are.same(plain_str, winbar:cat(true))
       assert.are.same(representation_str, winbar:cat())
@@ -151,7 +162,7 @@ describe('[bar]', function()
     end)
     it('calculates display width', function()
       assert.are.same(
-        vim.fn.strdisplaywidth(' | 󰅩 sym2 | sym3 | sym4    '),
+        vim.fn.strdisplaywidth(' | 󰅩 sym2 | sym3 | sym4 | %icon5 %sym5    '),
         winbar:displaywidth()
       )
     end)
@@ -159,7 +170,10 @@ describe('[bar]', function()
       vim.cmd.vsplit()
       vim.api.nvim_win_set_width(winbar.win, 10)
       winbar:truncate()
-      assert.are.same(' | 󰅩 sym2 | sym3 | sym4    ', winbar:cat(true))
+      assert.are.same(
+        ' | 󰅩 sym2 | sym3 | sym4 | %icon5 %...    ',
+        winbar:cat(true)
+      )
       vim.api.nvim_win_close(vim.api.nvim_get_current_win(), true)
     end)
     it('sets and restores pick mode correctly', function()
@@ -213,6 +227,10 @@ describe('[bar]', function()
       current_col = current_col + sep_width
       assert.are.equal(sym4, winbar:get_component_at(current_col))
       current_col = current_col + sym4:displaywidth()
+      assert.are.equal(sym5, winbar:get_component_at(current_col, true))
+      current_col = current_col + sep_width
+      assert.are.equal(sym5, winbar:get_component_at(current_col))
+      current_col = current_col + sym5:displaywidth()
       assert.is_nil(winbar:get_component_at(current_col, true))
       assert.is_nil(winbar:get_component_at(current_col))
     end)
@@ -268,7 +286,12 @@ describe('[bar]', function()
     it('concatenates', function()
       assert.are.same('󰅩 sym2', sym2:cat(true))
       assert.are.same(
-        '%@v:lua.dropbar.callbacks.buf1.win1000.fn2@%#DropBarIconTest#󰅩 %*%#DropBarNameTest#sym2%*%X',
+        string.format(
+          '%%@v:lua.dropbar.callbacks.buf%d.win%d.fn%d@%%#DropBarIconTest#󰅩 %%*%%#DropBarNameTest#sym2%%*%%X',
+          sym2.buf,
+          sym2.win,
+          sym2.callback_idx
+        ),
         sym2:cat()
       )
     end)
@@ -329,16 +352,16 @@ describe('[bar]', function()
       function()
         vim.cmd.edit('tests/assets/blank.txt')
         vim.wait(10, winbar:update())
-        local orig_view = vim.api.nvim_win_call(1000, vim.fn.winsaveview)
+        local orig_view = vim.fn.winsaveview()
         sym2:preview()
         assert.are.same({
           sym2.range.start.line + 1,
           sym2.range.start.character,
-        }, vim.api.nvim_win_get_cursor(1000))
+        }, vim.api.nvim_win_get_cursor(0))
         sym2:preview_restore_view()
         assert.are.same(
           orig_view,
-          vim.api.nvim_win_call(1000, vim.fn.winsaveview)
+          vim.api.nvim_win_call(0, vim.fn.winsaveview)
         )
       end
     )
