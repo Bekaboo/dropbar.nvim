@@ -17,12 +17,5 @@
              "/usr/share/lua/5.1/?.lua",
              "/usr/share/lua/5.1/?/init.lua"
         ]
-    },
-    "diagnostics.globals": [
-        "vim",
-        "it",
-        "describe",
-        "before_each",
-        "after_each",
-    ]
+    }
 }
