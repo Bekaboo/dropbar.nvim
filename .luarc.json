@@ -2,7 +2,9 @@
     "$schema": "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json",
     "workspace": {
         "library": [
-            "$VIMRUNTIME"
+            "$VIMRUNTIME",
+            "${3rd}/busted/library",
+            "${3rd}/luassert/library"
         ]
     },
     "runtime": {
