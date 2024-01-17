@@ -1,5 +1,13 @@
 # Changelog
 
+## [8.0.2](https://github.com/Bekaboo/dropbar.nvim/compare/v8.0.1...v8.0.2) (2024-01-17)
+
+
+### Bug Fixes
+
+* **bar:** also escape percent signs in icons ([#128](https://github.com/Bekaboo/dropbar.nvim/issues/128)) ([4d8e7ac](https://github.com/Bekaboo/dropbar.nvim/commit/4d8e7acfa2a93835b305df144eae37904aa5ecc1))
+* **bar:** escape percent signs in symbol_t component names ([#128](https://github.com/Bekaboo/dropbar.nvim/issues/128)) ([b1b5979](https://github.com/Bekaboo/dropbar.nvim/commit/b1b59792a26e212a61acf8c78d393e4d4295dfc1))
+
 ## [8.0.1](https://github.com/Bekaboo/dropbar.nvim/compare/v8.0.0...v8.0.1) (2024-01-12)
 
 
