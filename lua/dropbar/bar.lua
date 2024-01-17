@@ -239,8 +239,9 @@ function dropbar_symbol_t:cat(plain)
     self.cache.plain_str = self.icon .. self.name
     return self.cache.plain_str
   end
+  local escaped_name = self.name:gsub('%%', '%%%%')
   local icon_highlighted = hl(self.icon, self.icon_hl)
-  local name_highlighted = hl(self.name, self.name_hl)
+  local name_highlighted = hl(escaped_name, self.name_hl)
   if self.on_click and self.bar_idx then
     self.cache.decorated_str = make_clickable(
       icon_highlighted .. name_highlighted,
