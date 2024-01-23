@@ -956,7 +956,7 @@ function dropbar_menu_t:fuzzy_find_open(opts)
   end
 
   -- make sure that fzf window aligns well with menu window
-  win_config.col = has_left_border and -1 or nil
+  win_config.col = has_left_border and -1 or 0
   win_config.row = self._win_configs.height + (has_bottom_border and 1 or 0)
 
   -- don't show title in the fzf window
