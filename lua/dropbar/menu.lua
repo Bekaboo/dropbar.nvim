@@ -935,6 +935,7 @@ function dropbar_menu_t:fuzzy_find_open(opts)
     vim.tbl_extend('force', self._win_configs, opts.win_configs or {}, {
       relative = 'win',
       win = self.win,
+      anchor = 'NW',
       height = 1,
     })
 
