@@ -931,28 +931,32 @@ function dropbar_menu_t:fuzzy_find_open(opts)
   vim.bo[buf].filetype = 'dropbar_menu_fzf'
   vim.bo[buf].bufhidden = 'wipe'
 
-  local col_offset = 0
-  local function has_border(border)
-    return border and border ~= 'none'
-  end
-  if
-    opts.win_configs
-    and (
-      has_border(opts.win_configs.border)
-      and not has_border(self._win_configs.border)
-    )
-  then
-    col_offset = 1
-  end
-
   local win_config =
     vim.tbl_extend('force', self._win_configs, opts.win_configs or {}, {
       relative = 'win',
       win = self.win,
-      row = self._win_configs.height,
-      col = col_offset,
       height = 1,
     })
+
+  local border = win_config.border
+  local has_left_border = false
+  local has_bottom_border = false
+  if type(border) == 'string' then
+    if border ~= 'shadow' and border ~= 'none' then
+      has_left_border = true
+      has_bottom_border = true
+    end
+  else -- border is non-empty (guaranteed by nvim api) array
+    local len_border = #border
+    has_left_border = border[len_border] ~= ''
+    has_bottom_border = len_border == 1 and border[1] ~= ''
+      or len_border <= 4 and border[2] ~= ''
+      or border[8] ~= ''
+  end
+
+  -- make sure that fzf window aligns well with menu window
+  win_config.col = has_left_border and -1 or nil
+  win_config.row = self._win_configs.height + (has_bottom_border and 1 or 0)
 
   -- don't show title in the fzf window
   win_config.title = nil
