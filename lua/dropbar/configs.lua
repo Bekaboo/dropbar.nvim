@@ -418,7 +418,14 @@ M.opts = {
         api.fuzzy_find_click(-1)
       end,
     },
-    win_configs = {},
+    win_configs = {
+      win = function(self)
+        return self.win
+      end,
+      relative = 'win',
+      anchor = 'NW',
+      height = 1,
+    },
     prompt = '%#htmlTag# ',
     char_pattern = '[%w%p]',
     retain_inner_spaces = true,
