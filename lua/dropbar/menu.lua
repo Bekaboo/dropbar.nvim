@@ -569,7 +569,7 @@ function dropbar_menu_t:update_scrollbar()
     self.scrollbar = {}
 
     local win_configs = {
-      row = offset,
+      row = 0,
       col = menu_win_configs.width
         - (configs.opts.menu.scrollbar.background and 0 or 1),
       width = 1,
@@ -578,14 +578,10 @@ function dropbar_menu_t:update_scrollbar()
       border = 'none',
       relative = 'win',
       win = self.win,
-      zindex = menu_win_configs.zindex
-        + (configs.opts.menu.scrollbar.background and 0 or 1),
+      zindex = menu_win_configs.zindex,
     }
 
     if configs.opts.menu.scrollbar.background then
-      win_configs.row = 0
-      win_configs.height = menu_win_configs.height
-      win_configs.zindex = win_configs.zindex - 1
       self.scrollbar.background = vim.api.nvim_open_win(
         vim.api.nvim_create_buf(false, true),
         false,
@@ -594,6 +590,9 @@ function dropbar_menu_t:update_scrollbar()
       vim.wo[self.scrollbar.background].winhl = 'NormalFloat:DropBarMenuSbar'
     end
 
+    win_configs.row = offset
+    win_configs.height = thumb_height
+    win_configs.zindex = menu_win_configs.zindex + 1
     self.scrollbar.thumb = vim.api.nvim_open_win(
       vim.api.nvim_create_buf(false, true),
       false,
