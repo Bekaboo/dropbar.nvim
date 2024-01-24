@@ -304,10 +304,8 @@ function dropbar_menu_t:click_at(pos, min_width, n_clicks, button, modifiers)
   self.clicked_at = pos
   vim.api.nvim_win_set_cursor(self.win, pos)
   local component = self:get_component_at(pos)
-  if component then
-    if component.on_click then
-      component:on_click(min_width, n_clicks, button, modifiers)
-    end
+  if component and component.on_click then
+    component:on_click(min_width, n_clicks, button, modifiers)
   end
 end
 
