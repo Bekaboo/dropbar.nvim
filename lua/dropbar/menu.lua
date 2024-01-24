@@ -927,33 +927,32 @@ function dropbar_menu_t:fuzzy_find_open(opts)
   vim.bo[buf].filetype = 'dropbar_menu_fzf'
   vim.bo[buf].bufhidden = 'wipe'
 
+  local menu_border = self._win_configs.border
+  local menu_has_left_border = false
+  local menu_has_bottom_border = false
+  if type(menu_border) == 'string' then
+    if menu_border ~= 'shadow' and menu_border ~= 'none' then
+      menu_has_left_border = true
+      menu_has_bottom_border = true
+    end
+  else -- border is non-empty (guaranteed by nvim api) array
+    local len_menu_border = #menu_border
+    menu_has_left_border = menu_border[len_menu_border] ~= ''
+    menu_has_bottom_border = len_menu_border == 1 and menu_border[1] ~= ''
+      or (len_menu_border == 2 or len_menu_border == 4) and menu_border[2] ~= ''
+      or len_menu_border == 8 and menu_border[8] ~= ''
+  end
+
   local win_config =
     vim.tbl_extend('force', self._win_configs, opts.win_configs or {}, {
       relative = 'win',
       win = self.win,
       anchor = 'NW',
       height = 1,
+      -- make sure that fzf window aligns well with menu window
+      col = menu_has_left_border and -1 or 0,
+      row = self._win_configs.height + (menu_has_bottom_border and 1 or 0),
     })
-
-  local border = self._win_configs.border
-  local has_left_border = false
-  local has_bottom_border = false
-  if type(border) == 'string' then
-    if border ~= 'shadow' and border ~= 'none' then
-      has_left_border = true
-      has_bottom_border = true
-    end
-  else -- border is non-empty (guaranteed by nvim api) array
-    local len_border = #border
-    has_left_border = border[len_border] ~= ''
-    has_bottom_border = len_border == 1 and border[1] ~= ''
-      or (len_border == 2 or len_border == 4) and border[2] ~= ''
-      or len_border == 8 and border[8] ~= ''
-  end
-
-  -- make sure that fzf window aligns well with menu window
-  win_config.col = has_left_border and -1 or 0
-  win_config.row = self._win_configs.height + (has_bottom_border and 1 or 0)
 
   -- don't show title in the fzf window
   win_config.title = nil
