@@ -970,6 +970,35 @@ api.pick([{idx}])                                         *dropbar-api-pick()*
 	Parameters: ~
 	    • {idx} (integer?): The index of the component to pick
 
+api.fuzzy_find_toggle([{opts}])                *dropbar-api-fuzzy_find_toggle*
+
+	Toggle fuzzy finding in current dropbar menu
+
+	Parameters: ~
+	    • {opts} (table?): fuzzy find options, ignored if closing fuzzy
+			       find
+
+api.fuzzy_find_navigate({direction})                 *api.fuzzy_find_navigate*
+
+	Navigate to the nth entry above/below in the menu while fuzzy finding
+
+	Parameters: ~
+	    • {direction} ("up"|"down"|integer):
+
+	      - "up":             navigate one entry upwards
+	      - "down":           navigate one entry downwards
+	      - positive integer: navigate to the {direction}-th next entry
+	      - negative integer: navigate to the {direction}-th previous
+				  entry
+
+api.fuzzy_find_prev()                                    *api.fuzzy_find_prev*
+
+	Navigate to the previous entry in the menu while fuzzy finding
+
+api.fuzzy_find_next()                                    *api.fuzzy_find_next*
+
+	Navigate to the next entry in the menu while fuzzy finding
+
 ------------------------------------------------------------------------------
 UTILITY FUNCTIONS                    *dropbar-configuration-utility-functions*
 

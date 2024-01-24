@@ -1,9 +1,13 @@
+local utils = require('dropbar.utils')
+local M = {}
+
+---@diagnostic disable
 ---Get the dropbar
 ---@param buf? integer
 ---@param win integer
 ---@return dropbar_t?
 ---@deprecated
-local function get_dropbar(buf, win)
+function M.get_dropbar(buf, win)
   buf = buf or vim.api.nvim_win_get_buf(win)
   if rawget(_G.dropbar.bars, buf) then
     return rawget(_G.dropbar.bars[buf], win)
@@ -13,8 +17,8 @@ end
 ---Get current dropbar
 ---@return dropbar_t?
 ---@deprecated
-local function get_current_dropbar()
-  return get_dropbar(
+function M.get_current_dropbar()
+  return M.get_dropbar(
     vim.api.nvim_get_current_buf(),
     vim.api.nvim_get_current_win()
   )
@@ -24,25 +28,27 @@ end
 ---@param win integer
 ---@return dropbar_menu_t?
 ---@deprecated
-local function get_dropbar_menu(win)
+function M.get_dropbar_menu(win)
   return _G.dropbar.menus[win]
 end
 
 ---Get current dropbar menu
 ---@return dropbar_menu_t?
 ---@deprecated
-local function get_current_dropbar_menu()
-  return get_dropbar_menu(vim.api.nvim_get_current_win())
+function M.get_current_dropbar_menu()
+  return M.get_dropbar_menu(vim.api.nvim_get_current_win())
 end
+---@diagnostic enable
 
 ---Goto the start of context
 ---If `count` is 0, goto the start of current context, or the start at
 ---prev context if cursor is already at the start of current context;
 ---If `count` is positive, goto the start of `count` prev context
 ---@param count integer? default vim.v.count
-local function goto_context_start(count)
+---@return nil
+function M.goto_context_start(count)
   count = count or vim.v.count
-  local bar = get_current_dropbar()
+  local bar = utils.bar.get_current()
   if not bar or not bar.components or vim.tbl_isempty(bar.components) then
     return
   end
@@ -70,8 +76,9 @@ local function goto_context_start(count)
 end
 
 ---Open the menu of current context to select the next context
-local function select_next_context()
-  local bar = get_current_dropbar()
+---@return nil
+function M.select_next_context()
+  local bar = utils.bar.get_current()
   if not bar or not bar.components or vim.tbl_isempty(bar.components) then
     return
   end
@@ -82,8 +89,9 @@ end
 
 ---Pick a component from current dropbar
 ---@param idx integer?
-local function pick(idx)
-  local bar = get_current_dropbar()
+---@return nil
+function M.pick(idx)
+  local bar = utils.bar.get_current()
   if bar then
     bar:pick(idx)
   end
@@ -91,8 +99,9 @@ end
 
 ---Toggle fuzzy finding in current dropbar menu
 ---@param opts table? fuzzy find options, ignored if closing fuzzy find
-local function fuzzy_find_toggle(opts)
-  local menu = get_current_dropbar_menu()
+---@return nil
+function M.fuzzy_find_toggle(opts)
+  local menu = utils.menu.get_current()
   if not menu then
     return
   end
@@ -110,34 +119,37 @@ end
 ---`0` or `-1` is supplied, in which case the *first* or *last* clickable component
 ---is selected, respectively. If it is a `function`, it receives the `dropbar_menu_entry_t`
 ---as an argument and should return the `dropbar_symbol_t` that is to be clicked.
----@param component? number|dropbar_symbol_t|fun(entry: dropbar_menu_entry_t):dropbar_symbol_t?
-local function fuzzy_find_click(component)
-  local menu = get_current_dropbar_menu()
+---@param component? integer|dropbar_symbol_t|fun(entry: dropbar_menu_entry_t):dropbar_symbol_t?
+---@return nil
+function M.fuzzy_find_click(component)
+  local menu = utils.menu.get_current()
   if not menu or not menu.fzf_state then
     return
   end
   menu:fuzzy_find_click_on_entry(component)
 end
 
----Select the previous/next entry in the menu while fuzzy finding
----@param direction "up" | "down"
-local function fuzzy_find_navigate(direction)
-  local menu = get_current_dropbar_menu()
+---Navigate to the nth entry above/below in the menu while fuzzy finding
+---@param direction 'up'|'down'|integer
+---@return nil
+function M.fuzzy_find_navigate(direction)
+  local menu = utils.menu.get_current()
   if not menu or not menu.fzf_state then
     return
   end
   menu:fuzzy_find_navigate(direction)
 end
 
-return {
-  get_dropbar = get_dropbar,
-  get_current_dropbar = get_current_dropbar,
-  get_dropbar_menu = get_dropbar_menu,
-  get_current_dropbar_menu = get_current_dropbar_menu,
-  goto_context_start = goto_context_start,
-  select_next_context = select_next_context,
-  pick = pick,
-  fuzzy_find_toggle = fuzzy_find_toggle,
-  fuzzy_find_click = fuzzy_find_click,
-  fuzzy_find_navigate = fuzzy_find_navigate,
-}
+---Navigate to the previous entry in the menu while fuzzy finding
+---@return nil
+function M.fuzzy_find_prev()
+  M.fuzzy_find_navigate(-1)
+end
+
+---Navigate to the next entry in the menu while fuzzy finding
+---@return nil
+function M.fuzzy_find_next()
+  M.fuzzy_find_navigate(1)
+end
+
+return M

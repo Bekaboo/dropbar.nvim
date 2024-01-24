@@ -1573,8 +1573,12 @@ used to interact with the winbar or the drop-down menu:
     clickable component is selected, respectively.
   - If it is a `function`, it receives the `dropbar_menu_entry_t` as an argument
     and should return the `dropbar_symbol_t` that is to be clicked.
-- `fuzzy_find_navigate(direction: "up" | "down")`
-  - Select the previous/next entry in the menu while fuzzy finding
+- `fuzzy_find_navigate(direction: 'up'|'down'|integer)`
+  - Navigate to the nth previous/next entry while fuzzy finding
+- `fuzzy_find_prev()`
+  - Navigate to the previous entry while fuzzy finding
+- `fuzzy_find_next()`
+  - Navigate to the next entry while fuzzy finding
 
 ### Utility Functions
 
