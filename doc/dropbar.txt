@@ -1995,6 +1995,53 @@ dropbar_menu_t:toggle([{opts}])                      *dropbar_menu_t:toggle()*
 	Parameters ~
 	    • {opts} (`dropbar_menu_t`): menu options
 
+				   *dropbar_menu_t.fuzzy_find_restore_entries*
+dropbar_menu_t:fuzzy_find_restore_entries()
+
+	Restore menu buffer and entries in their original order before
+	modified by fuzzy search
+
+dropbar_menu_t:fuzzy_find_close()            *dropbar_menu_t:fuzzy_find_close*
+
+	Stop fuzzy finding and clean up allocated memory
+
+				  *dropbar_menu_t:fuzzy_find_click_on_entry()*
+dropbar_menu_t:fuzzy_find_click_on_entry({component})
+
+	Click on the currently selected fuzzy menu entry, choosing the
+	component to click according to component
+
+	Parameters~
+	    • {component}
+	      (integer|fun(`dropbar_menu_entry_t`):`dropbar_symbol_t`):
+
+	      If {component} is a number, the {component}-nth symbol is
+	      selected, unless 0 or -1 is supplied, in which case the first or
+	      last clickable component is selected, respectively.
+
+	      If {component} is a function, it receives the
+	      `dropbar_menu_entry_t` as an argument and should return the
+	      `dropbar_symbol_t` that is to be clicked.
+
+dropbar_menu_t:fuzzy_find_open()              *dropbar_menu_t:fuzzy_find_open*
+
+	Open the fuzzy search menu, overriding fzf configuration with opts
+	argument
+
+				        *dropbar_menu_t:fuzzy_find_navigate()*
+dropbar_menu_t:fuzzy_find_navigate({direction})
+
+	Navigate to the nth previous/next entry while fuzzy finding
+
+	Parameters~
+	    • {direction} ("up"|"down"|integer)
+
+	      - "up":             navigate one entry upwards
+	      - "down":           navigate one entry downwards
+	      - positive integer: navigate to the {direction}-th next entry
+	      - negative integer: navigate to the {direction}-th previous
+		entry
+
 ..............................................................................
 DROPBAR_MENU_ENTRY_T         *dropbar-developers-classes-dropbar_menu_entry_t*
 							*dropbar_menu_entry_t*
