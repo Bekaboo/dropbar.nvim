@@ -935,7 +935,7 @@ function dropbar_menu_t:fuzzy_find_open(opts)
       height = 1,
     })
 
-  local border = win_config.border
+  local border = self._win_configs.border
   local has_left_border = false
   local has_bottom_border = false
   if type(border) == 'string' then
