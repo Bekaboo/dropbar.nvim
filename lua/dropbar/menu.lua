@@ -873,8 +873,9 @@ function dropbar_menu_t:fuzzy_find_click_on_entry(component)
   end)
 end
 
----Select the next / previous entry while fuzzy finding
----@param dir "up" | "down"
+---Navigate to the nth previous/next entry while fuzzy finding
+---@param dir 'up'|'down'|integer
+---@return nil
 function dropbar_menu_t:fuzzy_find_navigate(dir)
   if not self.fzf_state then
     return
@@ -884,13 +885,8 @@ function dropbar_menu_t:fuzzy_find_navigate(dir)
   if line_count <= 1 then
     return
   end
-  if dir == 'up' then
-    cursor[1] = math.max(1, cursor[1] - 1)
-  elseif dir == 'down' then
-    cursor[1] = math.min(line_count, cursor[1] + 1)
-  else
-    return
-  end
+  dir = type(dir) == 'number' and dir or dir == 'up' and -1 or 1
+  cursor[1] = math.max(1, math.min(line_count, cursor[1] + dir))
   vim.api.nvim_win_set_cursor(self.win, cursor)
   vim.api.nvim_exec_autocmds('CursorMoved', { buffer = self.buf })
 end
