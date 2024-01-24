@@ -974,9 +974,9 @@ function dropbar_menu_t:fuzzy_find_open(opts)
     self:update_scrollbar()
   end
 
-  for key, func in pairs(opts.keymaps) do
-    if func then
-      vim.keymap.set('i', key, func, { buffer = buf })
+  for key, rhs in pairs(opts.keymaps) do
+    if rhs then
+      vim.keymap.set('i', key, rhs, { buffer = buf })
     end
   end
 
