@@ -1084,6 +1084,7 @@ function dropbar_menu_t:fuzzy_find_open(opts)
   vim.api.nvim_create_autocmd({ 'BufUnload', 'BufWinLeave', 'WinLeave' }, {
     group = augroup,
     buffer = buf,
+    once = true,
     callback = function()
       if prev_cursor and vim.api.nvim_win_is_valid(self.win) then
         vim.schedule(function()
