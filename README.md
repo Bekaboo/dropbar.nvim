@@ -650,7 +650,6 @@ vim.ui.select = require('dropbar.utils.menu').select
         ['<C-j>'] = api.fuzzy_find_next,
         ['<C-p>'] = api.fuzzy_find_prev,
         ['<C-n>'] = api.fuzzy_find_next,
-        ['<Esc>'] = api.fuzzy_find_toggle,
         ['<Enter>'] = api.fuzzy_find_click,
         ['<S-Enter>'] = function()
           api.fuzzy_find_click(-1)
@@ -1288,7 +1287,6 @@ appearance of the fuzzy finder interface.
       ['<C-j>'] = api.fuzzy_find_next,
       ['<C-p>'] = api.fuzzy_find_prev,
       ['<C-n>'] = api.fuzzy_find_next,
-      ['<Esc>'] = api.fuzzy_find_toggle,
       ['<Enter>'] = api.fuzzy_find_click,
       ['<S-Enter>'] = function()
         api.fuzzy_find_click(-1)

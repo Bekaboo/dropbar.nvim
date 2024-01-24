@@ -1092,7 +1092,15 @@ function dropbar_menu_t:fuzzy_find_open(opts)
       end
       self:fuzzy_find_close()
     end,
-    once = true,
+  })
+
+  -- exit fzf window when leaving insert mode
+  vim.api.nvim_create_autocmd('InsertLeave', {
+    group = augroup,
+    buffer = buf,
+    callback = function()
+      self:fuzzy_find_close()
+    end,
   })
 end
 
