@@ -951,8 +951,8 @@ function dropbar_menu_t:fuzzy_find_open(opts)
     local len_border = #border
     has_left_border = border[len_border] ~= ''
     has_bottom_border = len_border == 1 and border[1] ~= ''
-      or len_border <= 4 and border[2] ~= ''
-      or border[8] ~= ''
+      or (len_border == 2 or len_border == 4) and border[2] ~= ''
+      or len_border == 8 and border[8] ~= ''
   end
 
   -- make sure that fzf window aligns well with menu window
