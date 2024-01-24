@@ -927,6 +927,8 @@ function dropbar_menu_t:fuzzy_find_open(opts)
   vim.bo[buf].filetype = 'dropbar_menu_fzf'
   vim.bo[buf].bufhidden = 'wipe'
 
+  -- check if menu has left or bottom border to adjust fzf window's
+  -- col/row option to align with menu window
   local menu_border = self._win_configs.border
   local menu_has_left_border = false
   local menu_has_bottom_border = false
