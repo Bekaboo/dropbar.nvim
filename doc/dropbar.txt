@@ -2063,13 +2063,13 @@ dropbar_menu_t:fuzzy_find_navigate({direction})
 	Navigate to the nth previous/next entry while fuzzy finding
 
 	Parameters~
-	    • {direction} ("up"|"down"|integer)
+	    • {direction} ("up"|"down"|integer):
 
 	      - "up":             navigate one entry upwards
 	      - "down":           navigate one entry downwards
 	      - positive integer: navigate to the {direction}-th next entry
 	      - negative integer: navigate to the {direction}-th previous
-		entry
+				  entry
 
 ..............................................................................
 DROPBAR_MENU_ENTRY_T         *dropbar-developers-classes-dropbar_menu_entry_t*
