@@ -486,9 +486,7 @@ function dropbar_menu_t:make_buf()
         self.prev_cursor = cursor
       end
 
-      -- Update hover highlights
       self:update_hover_hl(self.prev_cursor)
-
       self:update_scrollbar()
     end,
   })
