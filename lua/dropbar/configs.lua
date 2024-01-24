@@ -398,26 +398,16 @@ M.opts = {
         end
         menu:update_hover_hl({ mouse.line, mouse.column - 1 })
       end,
-      ['<Esc>'] = function()
-        api.fuzzy_find_toggle()
-      end,
-      ['<Enter>'] = function()
-        api.fuzzy_find_click()
-      end,
+      ['<Up>'] = api.fuzzy_find_prev,
+      ['<Down>'] = api.fuzzy_find_next,
+      ['<C-k>'] = api.fuzzy_find_prev,
+      ['<C-j>'] = api.fuzzy_find_next,
+      ['<C-p>'] = api.fuzzy_find_prev,
+      ['<C-n>'] = api.fuzzy_find_next,
+      ['<Esc>'] = api.fuzzy_find_toggle,
+      ['<Enter>'] = api.fuzzy_find_click,
       ['<S-Enter>'] = function()
         api.fuzzy_find_click(-1)
-      end,
-      ['<Up>'] = function()
-        api.fuzzy_find_navigate('up')
-      end,
-      ['<Down>'] = function()
-        api.fuzzy_find_navigate('down')
-      end,
-      ['<C-k>'] = function()
-        api.fuzzy_find_navigate('up')
-      end,
-      ['<C-j>'] = function()
-        api.fuzzy_find_navigate('down')
       end,
     },
     win_configs = {},
