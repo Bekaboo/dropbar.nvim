@@ -347,6 +347,49 @@ M.opts = {
     },
   },
   fzf = {
+    win_configs = {
+      relative = 'win',
+      anchor = 'NW',
+      height = 1,
+      win = function(menu)
+        return menu.win
+      end,
+      row = function(menu)
+        local menu_border = menu._win_configs.border
+        if
+          type(menu_border) == 'string'
+          and menu_border ~= 'shadow'
+          and menu_border ~= 'none'
+        then
+          return menu._win_configs.height + 1
+        end
+        local len_menu_border = #menu_border
+        if
+          len_menu_border == 1 and menu_border[1] ~= ''
+          or (len_menu_border == 2 or len_menu_border == 4) and menu_border[2] ~= ''
+          or len_menu_border == 8 and menu_border[8] ~= ''
+        then
+          return menu._win_configs.height + 1
+        else
+          return menu._win_configs.height
+        end
+      end,
+      col = function(menu)
+        local menu_border = menu._win_configs.border
+        if
+          type(menu_border) == 'string'
+          and menu_border ~= 'shadow'
+          and menu_border ~= 'none'
+        then
+          return -1
+        end
+        if menu_border[#menu_border] ~= '' then
+          return -1
+        else
+          return 0
+        end
+      end,
+    },
     ---@type table<string, string | fun()>
     keymaps = {
       ['<LeftMouse>'] = function()
@@ -417,14 +460,6 @@ M.opts = {
       ['<S-Enter>'] = function()
         api.fuzzy_find_click(-1)
       end,
-    },
-    win_configs = {
-      win = function(self)
-        return self.win
-      end,
-      relative = 'win',
-      anchor = 'NW',
-      height = 1,
     },
     prompt = '%#htmlTag# ',
     char_pattern = '[%w%p]',

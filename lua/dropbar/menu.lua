@@ -179,7 +179,7 @@ end
 ---@field win integer?
 ---@field is_opened boolean?
 ---@field entries dropbar_menu_entry_t[]
----@field win_configs table | fun(self: dropbar_menu_t): table window configuration, value can be a function
+---@field win_configs table window configuration, value can be a function
 ---@field _win_configs table evaluated window configuration
 ---@field cursor integer[]? initial cursor position
 ---@field prev_win integer? previous window, assigned when calling new() or automatically determined in open()
@@ -189,7 +189,7 @@ end
 ---@field prev_cursor integer[]? previous cursor position
 ---@field symbol_previewed dropbar_symbol_t? symbol being previewed
 ---@field fzf_state fzf_state_t? fuzzy-finding state, or nil if not currently fuzzy-finding
----@field fzf_win_configs table | fun(self: dropbar_menu_t): table window configuration, value can be a function
+---@field fzf_win_configs table window configuration, value can be a function
 ---@field scrollbar { thumb: integer, background: integer }? scrollbar window handlers
 local dropbar_menu_t = {}
 dropbar_menu_t.__index = dropbar_menu_t
@@ -905,12 +905,9 @@ function dropbar_menu_t:merge_win_configs(...)
   for i = 1, select('#', ...) do
     local chunk = select(i, ...)
     if chunk then
-      if type(chunk) == 'function' then
-        chunk = chunk(self)
-      end
       for k, v in pairs(chunk) do
         if type(v) == 'function' then
-          merged[k] = v(self)
+          merged[k] = v(self) or merged[k]
         else
           merged[k] = v
         end
@@ -956,33 +953,10 @@ function dropbar_menu_t:fuzzy_find_open(opts)
   vim.bo[buf].filetype = 'dropbar_menu_fzf'
   vim.bo[buf].bufhidden = 'wipe'
 
-  -- check if menu has left or bottom border to adjust fzf window's
-  -- col/row option to align with menu window
-  local menu_border = self._win_configs.border
-  local menu_has_left_border = false
-  local menu_has_bottom_border = false
-  if type(menu_border) == 'string' then
-    if menu_border ~= 'shadow' and menu_border ~= 'none' then
-      menu_has_left_border = true
-      menu_has_bottom_border = true
-    end
-  else -- border is non-empty (guaranteed by nvim api) array
-    local len_menu_border = #menu_border
-    menu_has_left_border = menu_border[len_menu_border] ~= ''
-    menu_has_bottom_border = len_menu_border == 1 and menu_border[1] ~= ''
-      or (len_menu_border == 2 or len_menu_border == 4) and menu_border[2] ~= ''
-      or len_menu_border == 8 and menu_border[8] ~= ''
-  end
-
   local win_config = self:merge_win_configs(
     self.win_configs,
     self.fzf_win_configs,
-    opts.win_configs,
-    {
-      -- make sure that fzf window aligns well with menu window
-      col = menu_has_left_border and -1 or 0,
-      row = self._win_configs.height + (menu_has_bottom_border and 1 or 0),
-    }
+    opts.win_configs
   )
 
   -- don't show title in the fzf window
