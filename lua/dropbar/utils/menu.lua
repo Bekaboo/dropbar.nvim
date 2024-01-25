@@ -169,6 +169,7 @@ function M.select(items, opts, on_choice)
     relative = 'cursor',
     title = opts.prompt,
   }
+  local fzf_win_configs = {}
   -- Change border settings if the default top border is empty
   -- to allow prompt to be displayed
   if opts.prompt then
@@ -176,13 +177,17 @@ function M.select(items, opts, on_choice)
     local border_none_with_prompt = { '', ' ', '', '', '', '', '', '' }
     if border == 'none' or border == 'shadow' then
       win_configs.border = border_none_with_prompt
+      fzf_win_configs.border = 'none'
     elseif type(border) == 'table' then
       if #border == 1 and border[1] == '' then
         win_configs.border = border_none_with_prompt
+        fzf_win_configs.border = 'none'
       elseif #border > 1 and border[2] == '' then
         local border_cp = vim.deepcopy(border)
         border_cp[2] = ' '
         win_configs.border = border_cp
+        -- use the original headerless border for fzf
+        fzf_win_configs.border = border
       end
     end
   end
@@ -200,6 +205,7 @@ function M.select(items, opts, on_choice)
     prev_win = win,
     entries = entries,
     win_configs = win_configs,
+    fzf_win_configs = fzf_win_configs,
   })
 
   smenu:open()
