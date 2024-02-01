@@ -89,7 +89,7 @@ local function setup(opts)
       group = groupid,
       callback = function(info)
         if info.event == 'WinResized' then
-          for _, win in ipairs(vim.v.event.windows) do
+          for _, win in ipairs(vim.v.event.windows or {}) do
             utils.bar.exec('update', { win = win })
           end
         else
