@@ -1,5 +1,27 @@
 # Changelog
 
+## [8.1.0](https://github.com/Bekaboo/dropbar.nvim/compare/v8.0.2...v8.1.0) (2024-01-25)
+
+
+### Features
+
+* **api:** improve fuzzy-find api and doc ([55040ca](https://github.com/Bekaboo/dropbar.nvim/commit/55040ca442447691bab44d3e741a6cf7b730826a))
+* **configs:** new keymap `&lt;C-n&gt;` & `<C-p>` to navigate when fuzzy-find ([ffa36d8](https://github.com/Bekaboo/dropbar.nvim/commit/ffa36d85e245796c0f13c1f89e50970f1084b828))
+* **menu:** `fuzzy_find_navigate()` accepts integer as direction ([b485e43](https://github.com/Bekaboo/dropbar.nvim/commit/b485e43490f52593589309fd567283c383841ddd))
+* **menu:** use autocmd to close fzf window after leaving insert mode ([d197d2c](https://github.com/Bekaboo/dropbar.nvim/commit/d197d2c141571c2eb11321d2a7c6d239ab111a1f))
+* **utils:** menu: improve `ui.select()` function ([0c3b4f6](https://github.com/Bekaboo/dropbar.nvim/commit/0c3b4f6b64af8e24c115f5f4fd7b35c978ee43db))
+
+
+### Bug Fixes
+
+* **menu:** `col` field missing in fzf window config ([eb3c3d8](https://github.com/Bekaboo/dropbar.nvim/commit/eb3c3d86a631d150555ec016cf7feca892584a12))
+* **menu:** `has_bottom_border` is wrong when `border == { "" }` ([bad67c3](https://github.com/Bekaboo/dropbar.nvim/commit/bad67c399a393c2fb1dc59132ba9fadc76d23bba))
+* **menu:** force fzf-window anchor to 'NW' to ensure alignment ([#131](https://github.com/Bekaboo/dropbar.nvim/issues/131)) ([589c1cf](https://github.com/Bekaboo/dropbar.nvim/commit/589c1cf7fc664268b184110a3e1e7f37b91a6323))
+* **menu:** make sure fzf-window aligns with menu window ([#131](https://github.com/Bekaboo/dropbar.nvim/issues/131)) ([a296281](https://github.com/Bekaboo/dropbar.nvim/commit/a29628111535f197aaaffe7bfaf11829d5b55a68))
+* **menu:** scrollbar thumb not visiable (commit e68e054) ([6f01ec8](https://github.com/Bekaboo/dropbar.nvim/commit/6f01ec88413850af9d02a8f1a788d510521141de))
+* **menu:** should align based on menu win's border not fzf win's ([22263e6](https://github.com/Bekaboo/dropbar.nvim/commit/22263e6aa5fe50a6377d61cbae7364a333054ac8))
+* **types:** add `./lua` and `$VIMRUNTIME/lua` to library  in `.luarc.json` ([#134](https://github.com/Bekaboo/dropbar.nvim/issues/134)) ([9a8e498](https://github.com/Bekaboo/dropbar.nvim/commit/9a8e498374276dd0281736c75b42098ef9fb5622))
+
 ## [8.0.2](https://github.com/Bekaboo/dropbar.nvim/compare/v8.0.1...v8.0.2) (2024-01-17)
 
 
