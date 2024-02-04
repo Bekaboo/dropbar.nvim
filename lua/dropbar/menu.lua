@@ -462,6 +462,7 @@ function dropbar_menu_t:make_buf()
 
   -- Set buffer-local autocmds
   vim.api.nvim_create_autocmd('WinClosed', {
+    nested = true,
     group = groupid,
     buffer = self.buf,
     callback = function()

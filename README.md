@@ -251,10 +251,19 @@ vim.ui.select = require('dropbar.utils.menu').select
     general = {
       ---@type boolean|fun(buf: integer, win: integer, info: table?): boolean
       enable = function(buf, win, _)
-        return not vim.api.nvim_win_get_config(win).zindex
-          and (vim.bo[buf].buftype == '' or vim.bo[buf].buftype == 'terminal')
-          and vim.api.nvim_buf_get_name(buf) ~= ''
-          and not vim.wo[win].diff
+        return vim.fn.win_gettype(win) == ''
+          and vim.wo[win].winbar == ''
+          and vim.bo[buf].bt == ''
+          and (
+            vim.bo[buf].ft == 'markdown'
+            or (
+              buf
+                and vim.api.nvim_buf_is_valid(buf)
+                and (pcall(vim.treesitter.get_parser, buf, vim.bo[buf].ft))
+                and true
+              or false
+            )
+          )
       end,
       attach_events = {
         'OptionSet',
@@ -796,10 +805,19 @@ general behavior of the plugin:
   - Default:
     ```lua
     function(buf, win)
-      return not vim.api.nvim_win_get_config(win).zindex
-      and vim.bo[buf].buftype == ''
-      and vim.api.nvim_buf_get_name(buf) ~= ''
-      and not vim.wo[win].diff
+      return vim.fn.win_gettype(win) == ''
+        and vim.wo[win].winbar == ''
+        and vim.bo[buf].bt == ''
+        and (
+          vim.bo[buf].ft == 'markdown'
+          or (
+            buf
+              and vim.api.nvim_buf_is_valid(buf)
+              and (pcall(vim.treesitter.get_parser, buf, vim.bo[buf].ft))
+              and true
+            or false
+          )
+        )
     end
     ```
 - `opts.general.attach_events`: `string[]`
