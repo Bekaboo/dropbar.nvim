@@ -354,6 +354,47 @@ M.opts = {
       win = function(menu)
         return menu.win
       end,
+      width = function(menu)
+        local function border_width(border)
+          if type(border) == 'string' then
+            if border == 'none' then
+              return 0
+            end
+            return 2 -- left and right border
+          end
+
+          local left = (#border == 1 and border[1] == '')
+            or (#border == 4 and border[4] == '')
+            or (#border == 8 and border[8] == '') and 0
+            or 1
+          local right = (#border == 1 and border[1] == '')
+            or (#border == 4 and border[2] == '')
+            or (#border == 8 and border[4] == '') and 0
+            or 1
+          return left + right
+        end
+        local menu_width = menu._win_configs.width
+          + border_width(menu._win_configs.border)
+        local self_width = menu._win_configs.width
+        local self_border = border_width(
+          (
+            M.opts.fzf.win_configs
+            and M.eval(M.opts.fzf.win_configs.border, menu)
+          )
+            or (menu.fzf_win_configs and M.eval(
+              menu.fzf_win_configs.border,
+              menu
+            ))
+            or menu._win_configs.border
+        )
+
+        if self_width + self_border > menu_width then
+          return self_width - self_border
+        elseif self_width + self_border <= menu_width then
+          return menu_width - self_border
+        end
+        return self_width
+      end,
       row = function(menu)
         local menu_border = menu._win_configs.border
         if
