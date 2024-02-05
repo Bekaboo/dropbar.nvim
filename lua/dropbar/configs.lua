@@ -397,10 +397,9 @@ M.opts = {
 
         if self_width + self_border > menu_width then
           return self_width - self_border
-        elseif self_width + self_border <= menu_width then
+        else
           return menu_width - self_border
         end
-        return self_width
       end,
       row = function(menu)
         local menu_border = menu._win_configs.border
