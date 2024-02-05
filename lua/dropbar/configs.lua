@@ -357,11 +357,8 @@ M.opts = {
       width = function(menu)
         local function border_width(border)
           if type(border) == 'string' then
-            if border == 'none' then
+            if border == 'none' or border == 'shadow' then
               return 0
-            end
-            if border == 'shadow' then
-              return 1
             end
             return 2 -- left and right border
           end
