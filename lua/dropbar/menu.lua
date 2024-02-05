@@ -189,6 +189,7 @@ end
 ---@field prev_cursor integer[]? previous cursor position
 ---@field symbol_previewed dropbar_symbol_t? symbol being previewed
 ---@field fzf_state fzf_state_t? fuzzy-finding state, or nil if not currently fuzzy-finding
+---@field fzf_win_configs table window configuration, value can be a function
 ---@field scrollbar { thumb: integer, background: integer }? scrollbar window handlers
 local dropbar_menu_t = {}
 dropbar_menu_t.__index = dropbar_menu_t
@@ -251,14 +252,7 @@ end
 ---@see vim.api.nvim_open_win
 function dropbar_menu_t:eval_win_configs()
   -- Evaluate function-valued window configurations
-  self._win_configs = {}
-  for k, config in pairs(self.win_configs) do
-    if type(config) == 'function' then
-      self._win_configs[k] = config(self)
-    else
-      self._win_configs[k] = config
-    end
-  end
+  self._win_configs = self:merge_win_configs(self.win_configs)
 
   -- See https://github.com/Bekaboo/dropbar.nvim/pull/90
   -- Ensure `win` field is nil if `relative` ~= 'win', else nvim will
@@ -813,6 +807,7 @@ function dropbar_menu_t:fuzzy_find_close()
     vim.api.nvim_win_close(input_win, false)
   end
   _G.dropbar.menus[input_win] = nil
+  self:update_border()
 end
 
 ---Click on the currently selected fuzzy find menu entry, choosing the component
@@ -888,6 +883,40 @@ function dropbar_menu_t:fuzzy_find_navigate(dir)
   vim.api.nvim_exec_autocmds('CursorMoved', { buffer = self.buf })
 end
 
+function dropbar_menu_t:update_border()
+  if self.win_configs.border then
+    local border = self.win_configs.border
+    if type(self.win_configs.border) == 'function' then
+      border = self.win_configs.border(self)
+    end
+    local config = vim.api.nvim_win_get_config(self.win)
+    config.border = border
+    vim.api.nvim_win_set_config(self.win, config)
+    self._win_configs.border = border
+  end
+end
+
+---Merges win configs, with the last one taking precedence.
+---@private
+---@param ... nil | table | fun(self: dropbar_menu_t): table window configuration, value can be a function
+---@return table
+function dropbar_menu_t:merge_win_configs(...)
+  local merged = {}
+  for i = 1, select('#', ...) do
+    local chunk = select(i, ...)
+    if chunk then
+      for k, v in pairs(chunk) do
+        if type(v) == 'function' then
+          merged[k] = v(self) or merged[k]
+        else
+          merged[k] = v
+        end
+      end
+    end
+  end
+  return merged
+end
+
 ---Enable fuzzy finding mode
 ---@param opts? table<string, any>
 ---@version JIT
@@ -924,34 +953,11 @@ function dropbar_menu_t:fuzzy_find_open(opts)
   vim.bo[buf].filetype = 'dropbar_menu_fzf'
   vim.bo[buf].bufhidden = 'wipe'
 
-  -- check if menu has left or bottom border to adjust fzf window's
-  -- col/row option to align with menu window
-  local menu_border = self._win_configs.border
-  local menu_has_left_border = false
-  local menu_has_bottom_border = false
-  if type(menu_border) == 'string' then
-    if menu_border ~= 'shadow' and menu_border ~= 'none' then
-      menu_has_left_border = true
-      menu_has_bottom_border = true
-    end
-  else -- border is non-empty (guaranteed by nvim api) array
-    local len_menu_border = #menu_border
-    menu_has_left_border = menu_border[len_menu_border] ~= ''
-    menu_has_bottom_border = len_menu_border == 1 and menu_border[1] ~= ''
-      or (len_menu_border == 2 or len_menu_border == 4) and menu_border[2] ~= ''
-      or len_menu_border == 8 and menu_border[8] ~= ''
-  end
-
-  local win_config =
-    vim.tbl_extend('force', self._win_configs, opts.win_configs or {}, {
-      relative = 'win',
-      win = self.win,
-      anchor = 'NW',
-      height = 1,
-      -- make sure that fzf window aligns well with menu window
-      col = menu_has_left_border and -1 or 0,
-      row = self._win_configs.height + (menu_has_bottom_border and 1 or 0),
-    })
+  local win_config = self:merge_win_configs(
+    self.win_configs,
+    self.fzf_win_configs,
+    opts.win_configs
+  )
 
   -- don't show title in the fzf window
   win_config.title = nil
@@ -961,6 +967,8 @@ function dropbar_menu_t:fuzzy_find_open(opts)
   vim.wo[win].stc = opts.prompt
   _G.dropbar.menus[win] = self
   self.fzf_state = utils.fzf.fzf_state_t:new(self, win, opts)
+
+  self:update_border()
 
   local should_preview = configs.opts.menu.preview
   local function move_cursor(pos)

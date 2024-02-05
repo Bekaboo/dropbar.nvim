@@ -347,6 +347,99 @@ M.opts = {
     },
   },
   fzf = {
+    win_configs = {
+      relative = 'win',
+      anchor = 'NW',
+      height = 1,
+      win = function(menu)
+        return menu.win
+      end,
+      width = function(menu)
+        local function border_width(border)
+          if type(border) == 'string' then
+            if border == 'none' or border == 'shadow' then
+              return 0
+            end
+            return 2 -- left and right border
+          end
+
+          local left, right = 1, 1
+          if
+            (#border == 1 and border[1] == '')
+            or (#border == 4 and border[4] == '')
+            or (#border == 8 and border[8] == '')
+          then
+            left = 0
+          end
+          if
+            (#border == 1 and border[1] == '')
+            or (#border == 4 and border[4] == '')
+            or (#border == 8 and border[4] == '')
+          then
+            right = 0
+          end
+          return left + right
+        end
+        local menu_width = menu._win_configs.width
+          + border_width(menu._win_configs.border)
+        local self_width = menu._win_configs.width
+        local self_border = border_width(
+          (
+            M.opts.fzf.win_configs
+            and M.eval(M.opts.fzf.win_configs.border, menu)
+          )
+            or (menu.fzf_win_configs and M.eval(
+              menu.fzf_win_configs.border,
+              menu
+            ))
+            or menu._win_configs.border
+        )
+
+        if self_width + self_border > menu_width then
+          return self_width - self_border
+        else
+          return menu_width - self_border
+        end
+      end,
+      row = function(menu)
+        local menu_border = menu._win_configs.border
+        if
+          type(menu_border) == 'string'
+          and menu_border ~= 'shadow'
+          and menu_border ~= 'none'
+        then
+          return menu._win_configs.height + 1
+        elseif menu_border == 'none' then
+          return menu._win_configs.height
+        end
+        local len_menu_border = #menu_border
+        if
+          len_menu_border == 1 and menu_border[1] ~= ''
+          or (len_menu_border == 2 or len_menu_border == 4) and menu_border[2] ~= ''
+          or len_menu_border == 8 and menu_border[8] ~= ''
+        then
+          return menu._win_configs.height + 1
+        else
+          return menu._win_configs.height
+        end
+      end,
+      col = function(menu)
+        local menu_border = menu._win_configs.border
+        if
+          type(menu_border) == 'string'
+          and menu_border ~= 'shadow'
+          and menu_border ~= 'none'
+        then
+          return -1
+        end
+        if
+          type(menu_border) == 'table' and menu_border[#menu_border] ~= ''
+        then
+          return -1
+        end
+        return 0
+      end,
+    },
     ---@type table<string, string | fun()>
     keymaps = {
       ['<LeftMouse>'] = function()
@@ -418,7 +511,6 @@ M.opts = {
         api.fuzzy_find_click(-1)
       end,
     },
-    win_configs = {},
     prompt = '%#htmlTag# ',
     char_pattern = '[%w%p]',
     retain_inner_spaces = true,
