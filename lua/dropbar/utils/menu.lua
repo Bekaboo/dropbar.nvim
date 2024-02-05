@@ -183,9 +183,11 @@ function M.select(items, opts, on_choice)
         win_configs.border = border_none_with_prompt
         fzf_win_configs.border = 'none'
       elseif #border > 1 and border[2] == '' then
-        local border_cp = vim.deepcopy(border)
-        border_cp[2] = ' '
-        win_configs.border = border_cp
+        win_configs.border = vim.deepcopy(border)
+        if #win_configs.border == 4 then
+          vim.list_extend(win_configs.border, win_configs.border)
+        end
+        win_configs.border[2] = ' '
         -- use the original headerless border for fzf
         fzf_win_configs.border = border
       end
