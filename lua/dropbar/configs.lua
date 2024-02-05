@@ -373,7 +373,7 @@ M.opts = {
           end
           if
             (#border == 1 and border[1] == '')
-            or (#border == 4 and border[2] == '')
+            or (#border == 4 and border[4] == '')
             or (#border == 8 and border[4] == '')
           then
             right = 0
