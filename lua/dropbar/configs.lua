@@ -362,6 +362,8 @@ M.opts = {
           and menu_border ~= 'none'
         then
           return menu._win_configs.height + 1
+        elseif menu_border == 'none' then
+          return menu._win_configs.height
         end
         local len_menu_border = #menu_border
         if
@@ -383,11 +385,12 @@ M.opts = {
         then
           return -1
         end
-        if menu_border[#menu_border] ~= '' then
+        if
+          type(menu_border) == 'table' and menu_border[#menu_border] ~= ''
+        then
           return -1
-        else
-          return 0
         end
+        return 0
       end,
     },
     ---@type table<string, string | fun()>
