@@ -360,17 +360,27 @@ M.opts = {
             if border == 'none' then
               return 0
             end
+            if border == 'shadow' then
+              return 1
+            end
             return 2 -- left and right border
           end
 
-          local left = (#border == 1 and border[1] == '')
+          local left, right = 1, 1
+          if
+            (#border == 1 and border[1] == '')
             or (#border == 4 and border[4] == '')
-            or (#border == 8 and border[8] == '') and 0
-            or 1
-          local right = (#border == 1 and border[1] == '')
+            or (#border == 8 and border[8] == '')
+          then
+            left = 0
+          end
+          if
+            (#border == 1 and border[1] == '')
             or (#border == 4 and border[2] == '')
-            or (#border == 8 and border[4] == '') and 0
-            or 1
+            or (#border == 8 and border[4] == '')
+          then
+            right = 0
+          end
           return left + right
         end
         local menu_width = menu._win_configs.width
