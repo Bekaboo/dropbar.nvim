@@ -2296,22 +2296,51 @@ DROPBAR_SELECT_OPTS_T                                  *dropbar_select_opts_t*
 
 Declared in `lua/dropbar/utils/menu.lua`.
 
-`dropbar_select_opts_t` is a class that represents the options passed to `utils.menu.select` (`vim.ui.select` with some extensions).
+`dropbar_select_opts_t` is a class that represents the options passed to
+`utils.menu.select` (`vim.ui.select` with some extensions).
 
-`dropbar_select_opts_t` has the following field:
+`dropbar_select_opts_t` has the following fields:
 
-						*dropbar_select_opts_t.format_item*
-dropbar_select_opts_t.format_item({item})
+dropbar_select_opts_t.prompt                    *dropbar_select_opts_t.prompt*
 
-  Format an item in the list of items passed to `utils.menu.select` into a
-  string.
+	The prompt to show at the top of the menu
+
+	Type ~
+	    string?
+
+dropbar_select_opts_t.format_item({item})  *dropbar_select_opts_t.format_item*
+
+	Format an item in the list of items passed to `utils.menu.select` into
+	a string
 
 	Parameters ~
-      • {item} (any): item in the list of items passed to `utils.menu.select`
+	    • {item} (any): item in the list of items passed to
+	      `utils.menu.select`
 
 	Returns ~
-      (`string`): the text to display for the item
-      (`string`[][]?): optional virtual text to display below the item
+	    (`string`): the text to display for the item
+	    (`string`[][]?): optional virtual text to display below the item
+
+					       *dropbar_select_opts_t.preview*
+dropbar_select_opts_t.preview({self}, {item}, {idx})
+
+	Previews the list item under the cursor
+
+	Parameters ~
+	    • {self} (`dropbar_select_opts_t`): the `dropbar_select_opts_t`
+	    • {item} (any): the item under the cursor
+	    • {idx} (integer): the index of the item under the cursor
+
+					 *dropbar_select_opts_t.preview_close*
+dropbar_select_opts_t.preview_close({self}, {item}, {idx})
+
+	Closes the preview when the menu is closed
+
+	Parameters ~
+	    • {self} (`dropbar_select_opts_t`): the `dropbar_select_opts_t`
+	    • {item} (any): the item under the cursor
+	    • {idx} (integer): the index of the item under the cursor
+
 
 ------------------------------------------------------------------------------
 MAKING A NEW SOURCE                       *dropbar-developers-making-a-source*
