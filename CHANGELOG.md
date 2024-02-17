@@ -1,5 +1,22 @@
 # Changelog
 
+## [8.2.0](https://github.com/Bekaboo/dropbar.nvim/compare/v8.1.0...v8.2.0) (2024-02-17)
+
+
+### Features
+
+* **fzf:** allow fzf win_configs to contain functions, fix vertical offsets ([#131](https://github.com/Bekaboo/dropbar.nvim/issues/131)) ([ef73236](https://github.com/Bekaboo/dropbar.nvim/commit/ef7323643390083177bc9a397c0752d84fd1faf1))
+* **ui-select:** support optional preview of items ([#124](https://github.com/Bekaboo/dropbar.nvim/issues/124)) ([f835519](https://github.com/Bekaboo/dropbar.nvim/commit/f83551969f796dddd05b57782f471dc2a50c35ee))
+
+
+### Bug Fixes
+
+* **autocmd:** add missing setup event `BufNewFile` ([#140](https://github.com/Bekaboo/dropbar.nvim/issues/140)) ([fa43ea3](https://github.com/Bekaboo/dropbar.nvim/commit/fa43ea3546f9e8a8fab5eecc18bce2cfd2946249))
+* **configs:** attach dropbar to both windows in diff (close [#135](https://github.com/Bekaboo/dropbar.nvim/issues/135)) ([4855b9b](https://github.com/Bekaboo/dropbar.nvim/commit/4855b9b74133b138aa09827b41597f17aca3c207))
+* **event:** `vim.v.event.windows` is nil after `:doau WinResized` ([e4fd982](https://github.com/Bekaboo/dropbar.nvim/commit/e4fd98274f3fed310d0085c16353e7e7b3ce86a1))
+* This is because we set the `border[2]` to ' ' (space). ([c3de6fe](https://github.com/Bekaboo/dropbar.nvim/commit/c3de6fee0dbd836568cbacb0f7ce7b312ca03f27))
+* **utils:** menu: `ui.select` menu has thick bottom border ([c3de6fe](https://github.com/Bekaboo/dropbar.nvim/commit/c3de6fee0dbd836568cbacb0f7ce7b312ca03f27))
+
 ## [8.1.0](https://github.com/Bekaboo/dropbar.nvim/compare/v8.0.2...v8.1.0) (2024-01-25)
 
 
