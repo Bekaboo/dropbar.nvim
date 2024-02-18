@@ -15,6 +15,13 @@
   with drop-down menu support and multiple backends
 </p>
 
+<div align='center'>
+
+  [![docs](https://github.com/bekaboo/dropbar.nvim/actions/workflows/tests.yml/badge.svg)](./doc/dropbar.txt)
+  [![luarocks](https://img.shields.io/luarocks/v/bekaboo/dropbar.nvim?logo=lua&color=blue)](https://luarocks.org/modules/bekaboo/dropbar.nvim)
+
+</div>
+
 <!--toc:start-->
 - [Features and TODOs](#features-and-todos)
 - [Requirements](#requirements)
