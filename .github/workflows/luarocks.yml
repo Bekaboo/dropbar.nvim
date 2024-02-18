@@ -28,5 +28,5 @@ jobs:
         with:
           version: ${{ env.LUAROCKS_VERSION }}
           detailed_description: |
-            `dropbar.nvim` provides as polished, IDE-like, highly-customizable
+            `dropbar.nvim` provides a polished, IDE-like, highly-customizable
             winbar for neovim with drop-down menu support and multiple backends.
