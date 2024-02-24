@@ -15,7 +15,7 @@ M.opts = {
           or (
             buf
               and vim.api.nvim_buf_is_valid(buf)
-              and (pcall(vim.treesitter.get_parser, buf, vim.bo[buf].ft))
+              and (pcall(vim.treesitter.get_parser, buf))
               and true
             or false
           )
