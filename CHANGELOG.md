@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.2.1](https://github.com/Bekaboo/dropbar.nvim/compare/v8.2.0...v8.2.1) (2024-02-24)
+
+
+### Bug Fixes
+
+* **configs:** do not pass filetype directly ([#143](https://github.com/Bekaboo/dropbar.nvim/issues/143)) ([a133a7d](https://github.com/Bekaboo/dropbar.nvim/commit/a133a7deed7431496d8e87e8e4cc9c09a9d78945))
+
 ## [8.2.0](https://github.com/Bekaboo/dropbar.nvim/compare/v8.1.0...v8.2.0) (2024-02-17)
 
 
