@@ -1,5 +1,18 @@
 # Changelog
 
+## [8.3.0](https://github.com/Bekaboo/dropbar.nvim/compare/v8.2.1...v8.3.0) (2024-03-03)
+
+
+### Features
+
+* **path:** support file preview for path source ([#86](https://github.com/Bekaboo/dropbar.nvim/issues/86)) ([0a557bd](https://github.com/Bekaboo/dropbar.nvim/commit/0a557bdbe3c8fbf0ba15d773c5d3b19a7214de95))
+* **sources-path & configs:** add `opts.sources.path.preview` ([0a557bd](https://github.com/Bekaboo/dropbar.nvim/commit/0a557bdbe3c8fbf0ba15d773c5d3b19a7214de95))
+
+
+### Bug Fixes
+
+* **sources-path:** indexing nil value when previewing dirs/links, etc. ([0a557bd](https://github.com/Bekaboo/dropbar.nvim/commit/0a557bdbe3c8fbf0ba15d773c5d3b19a7214de95))
+
 ## [8.2.1](https://github.com/Bekaboo/dropbar.nvim/compare/v8.2.0...v8.2.1) (2024-02-24)
 
 
