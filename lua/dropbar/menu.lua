@@ -183,6 +183,7 @@ end
 ---@field _win_configs table evaluated window configuration
 ---@field cursor integer[]? initial cursor position
 ---@field prev_win integer? previous window, assigned when calling new() or automatically determined in open()
+---@field prev_buf integer? previous buffer, assigned when calling new() or automatically determined in open()
 ---@field sub_menu dropbar_menu_t? submenu, assigned when calling new() or automatically determined when a new menu opens
 ---@field prev_menu dropbar_menu_t? previous menu, assigned when calling new() or automatically determined in open()
 ---@field clicked_at integer[]? last position where the menu was clicked, byte-indexed, 1,0-indexed
@@ -301,6 +302,20 @@ function dropbar_menu_t:click_at(pos, min_width, n_clicks, button, modifiers)
   if component and component.on_click then
     component:on_click(min_width, n_clicks, button, modifiers)
   end
+end
+
+---Retrieves the root window of the menu.
+---If `self.prev_menu` is nil then this `self.prev_win`.
+---Otherwise, it is the root window of `self.prev_menu`.
+---@return integer?
+function dropbar_menu_t:root_win()
+  local current = self
+  local win = self.prev_win
+  while current and current.prev_menu do
+    win = current.prev_menu.prev_win
+    current = current.prev_menu
+  end
+  return win
 end
 
 ---"Click" the component in the dropbar menu

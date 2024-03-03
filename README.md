@@ -789,6 +789,11 @@ vim.ui.select = require('dropbar.utils.menu').select
         modified = function(sym)
           return sym
         end,
+        ---@type boolean|fun(path: string): boolean?|nil
+        preview = function(path)
+          local stat = vim.uv.fs_stat(path)
+          return stat and stat.type == 'file' and stat.size <= 524288
+        end,
       },
       treesitter = {
         -- Lua pattern used to extract a short name from the node text
@@ -1596,6 +1601,16 @@ each sources.
       })
     end
     ```
+- `opts.sources.path.preview`: `boolean|fun(path: string): boolean?|nil`
+  - A boolean or a function that takes a file path and returns whether to
+    preview the file under cursor
+  - Default:
+    ```lua
+    function(path)
+      local stat = vim.uv.fs_stat(path)
+      return stat and stat.type == 'file' and stat.size <= 524288
+    end
+    ```
 
 ##### Treesitter
 
@@ -2139,6 +2154,7 @@ Declared and defined in [`lua/dropbar/menu.lua`](https://github.com/Bekaboo/drop
 | `_win_configs`     | `table?`                                          | evaluated window configuration                                                         |
 | `cursor`           | `integer[]?`                                      | initial cursor position                                                                |
 | `prev_win`         | `integer?`                                        | previous window, assigned when calling new() or automatically determined in open()     |
+| `prev_buf`         | `integer?`                                        | previous buffer, assigned when calling new() or automatically determined in open()     |
 | `sub_menu`         | `dropbar_menu_t?`                                 | submenu, assigned when calling new() or automatically determined when a new menu opens |
 | `prev_menu`        | `dropbar_menu_t?`                                 | previous menu, assigned when calling new() or automatically determined in open()       |
 | `clicked_at`       | `integer[]?`                                      | last position where the menu was clicked, 1,0-indexed                                  |

@@ -11,7 +11,7 @@ local function get_icon_and_hl(path)
   local icon = icon_kind_opts.symbols.File
   local icon_hl = 'DropBarIconKindFile'
   local name_hl = 'DropBarKindFile'
-  local stat = vim.loop.fs_stat(path)
+  local stat = vim.uv.fs_stat(path)
   if not stat then
     return icon, icon_hl
   elseif stat.type == 'directory' then
@@ -34,6 +34,82 @@ local function get_icon_and_hl(path)
   return icon, icon_hl, name_hl
 end
 
+---@param self dropbar_symbol_t
+local function preview_prepare_buf(self, path)
+  local stat = vim.uv.fs_stat(path)
+  if not stat or stat.type ~= 'file' then
+    self:preview_restore_view()
+    return
+  end
+  local buf = vim.fn.bufnr(path, false)
+  if buf == nil or buf == -1 then
+    buf = vim.fn.bufadd(path)
+    if not buf then
+      self:preview_restore_view()
+      return
+    end
+    if not vim.api.nvim_buf_is_loaded(buf) then
+      vim.fn.bufload(buf)
+    end
+  end
+  if buf == nil or self.entry.menu == nil or self.entry.menu.win == nil then
+    self:preview_restore_view()
+    return
+  end
+  return buf
+end
+
+---@param self dropbar_symbol_t
+local function preview_open(self, path)
+  if not configs.eval(configs.opts.sources.path.preview, path) then
+    return
+  end
+  local preview_buf = preview_prepare_buf(self, path)
+  if not preview_buf then
+    return
+  end
+  local buflisted = vim.bo[preview_buf].buflisted
+
+  local preview_win = self.entry.menu:root_win()
+  if not preview_win then
+    return
+  end
+  self.entry.menu.prev_buf = self.entry.menu.prev_buf
+    or vim.api.nvim_win_get_buf(preview_win)
+
+  vim.api.nvim_create_autocmd('BufLeave', {
+    buffer = self.entry.menu.buf,
+    callback = function()
+      self:preview_restore_view()
+    end,
+  })
+  vim.api.nvim_win_set_buf(preview_win, preview_buf)
+  -- set cursor to the last exited position in buf (:h '"), if available
+  local last_exit = vim.api.nvim_buf_get_mark(preview_buf, '"')
+  if last_exit[1] ~= 0 then
+    vim.api.nvim_win_set_cursor(preview_win, last_exit)
+  end
+
+  vim.bo[preview_buf].buflisted = buflisted
+
+  -- ensure dropbar still shows then the preview buffer is opened
+  vim.wo[preview_win].winbar = '%{%v:lua.dropbar.get_dropbar_str()%}'
+end
+
+---@param self dropbar_symbol_t
+local function preview_close(self)
+  if self.win then
+    if self.entry.menu.prev_buf then
+      vim.api.nvim_win_set_buf(self.win, self.entry.menu.prev_buf)
+    end
+    if self.view then
+      vim.api.nvim_win_call(self.win, function()
+        vim.fn.winrestview(self.view)
+      end)
+    end
+  end
+end
+
 ---Convert a path to a dropbar symbol
 ---@param path string full path
 ---@param buf integer buffer handler
@@ -42,6 +118,7 @@ end
 local function convert(path, buf, win)
   local path_opts = configs.opts.sources.path
   local icon, icon_hl, name_hl = get_icon_and_hl(path)
+
   return bar.dropbar_symbol_t:new(setmetatable({
     buf = buf,
     win = win,
@@ -53,6 +130,10 @@ local function convert(path, buf, win)
     jump = function(_)
       vim.cmd.edit(path)
     end,
+    preview = vim.schedule_wrap(function(self)
+      preview_open(self, path)
+    end),
+    preview_restore_view = preview_close,
   }, {
     ---@param self dropbar_symbol_t
     __index = function(self, k)
@@ -69,14 +150,16 @@ local function convert(path, buf, win)
         local parent_dir = vim.fs.dirname(path)
         self.siblings = {}
         self.sibling_idx = 1
-        for idx, name in vim.iter(vim.fs.dir(parent_dir)):enumerate() do
-          if path_opts.filter(name) then
-            table.insert(
-              self.siblings,
-              convert(parent_dir .. '/' .. name, buf, win)
-            )
-            if name == self.name then
-              self.sibling_idx = idx
+        if parent_dir then
+          for idx, name in vim.iter(vim.fs.dir(parent_dir)):enumerate() do
+            if path_opts.filter(name) then
+              table.insert(
+                self.siblings,
+                convert(parent_dir .. '/' .. name, buf, win)
+              )
+              if name == self.name then
+                self.sibling_idx = idx
+              end
             end
           end
         end

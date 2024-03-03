@@ -536,6 +536,11 @@ M.opts = {
       modified = function(sym)
         return sym
       end,
+      ---@type boolean|fun(path: string): boolean?|nil
+      preview = function(path)
+        local stat = vim.uv.fs_stat(path)
+        return stat and stat.type == 'file' and stat.size <= 524288
+      end,
     },
     treesitter = {
       -- Lua pattern used to extract a short name from the node text
