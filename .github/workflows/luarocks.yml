@@ -2,8 +2,10 @@ name: push-to-luarocks
 
 on:
   push:
+    branches:
+      - master
     tags:
-      - '*'
+      - 'v*'
   release: 
     types:
       - created # Triggered by release-please
