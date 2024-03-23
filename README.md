@@ -2026,11 +2026,6 @@ should be self-explanatory:
 
 ### Classes
 
-:warning: **Notice**
-
-The plugin is still in its early stage, so the names and fields of classes
-might change in the future without notice.
-
 #### `dropbar_t`
 
 Declared and defined in [`lua/dropbar/bar.lua`](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/bar.lua).

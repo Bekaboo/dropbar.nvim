@@ -1381,11 +1381,6 @@ around in their window or clicks at a symbol in the winbar:
 ------------------------------------------------------------------------------
 CLASSES                                           *dropbar-developers-classes*
 
-NOTICE
-
-The plugin is still in its early stage, so the names and fields of classes
-might change in the future without notice.
-
 ..............................................................................
 DROPBAR_T                               *dropbar-developers-classes-dropbar_t*
 								   *dropbar_t*
