@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.4.0](https://github.com/Bekaboo/dropbar.nvim/compare/v8.3.0...v8.4.0) (2024-03-24)
+
+
+### Features
+
+* **menu:** set &winfixbuf in menu windows ([a5f3d6a](https://github.com/Bekaboo/dropbar.nvim/commit/a5f3d6a172fceadcfed58b8c209ac3211635a3c8))
+
 ## [8.3.0](https://github.com/Bekaboo/dropbar.nvim/compare/v8.2.1...v8.3.0) (2024-03-03)
 
 
