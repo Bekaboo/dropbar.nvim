@@ -12,7 +12,7 @@ jobs:
             release-build: nvim-linux64.tar.gz
             version: nightly
           - os: macos-12
-            release-build: nvim-macos.tar.gz
+            release-build: nvim-macos-x86_64.tar.gz
             version: nightly
     steps:
       - uses: actions/checkout@v3
