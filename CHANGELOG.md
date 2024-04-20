@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.5.0](https://github.com/Bekaboo/dropbar.nvim/compare/v8.4.0...v8.5.0) (2024-04-20)
+
+
+### Features
+
+* **configs:** show warning messages when file is too large to preview ([e3c7de9](https://github.com/Bekaboo/dropbar.nvim/commit/e3c7de9f733587373959b220d5a1970c476a3d9f))
+
 ## [8.4.0](https://github.com/Bekaboo/dropbar.nvim/compare/v8.3.0...v8.4.0) (2024-03-24)
 
 
