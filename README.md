@@ -792,7 +792,20 @@ vim.ui.select = require('dropbar.utils.menu').select
         ---@type boolean|fun(path: string): boolean?|nil
         preview = function(path)
           local stat = vim.uv.fs_stat(path)
-          return stat and stat.type == 'file' and stat.size <= 524288
+          if not stat or stat.type ~= 'file' then
+            return false
+          end
+          if stat.size > 524288 then
+            vim.notify(
+              string.format(
+                '[dropbar.nvim] file "%s" too large to preview',
+                path
+              ),
+              vim.log.levels.WARN
+            )
+            return false
+          end
+          return true
         end,
       },
       treesitter = {
@@ -1608,8 +1621,21 @@ each sources.
     ```lua
     function(path)
       local stat = vim.uv.fs_stat(path)
-      return stat and stat.type == 'file' and stat.size <= 524288
-    end
+      if not stat or stat.type ~= 'file' then
+        return false
+      end
+      if stat.size > 524288 then
+        vim.notify(
+          string.format(
+            '[dropbar.nvim] file "%s" too large to preview',
+            path
+          ),
+          vim.log.levels.WARN
+        )
+        return false
+      end
+      return true
+    end,
     ```
 
 ##### Treesitter
