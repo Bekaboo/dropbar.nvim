@@ -658,8 +658,10 @@ M.opts = {
 ---@param new_opts dropbar_configs_t?
 function M.set(new_opts)
   new_opts = new_opts or {}
+
+  local islist = vim.islist or vim.tbl_islist
   -- Notify deprecated options
-  if new_opts.general and vim.tbl_islist(new_opts.general.update_events) then
+  if new_opts.general and islist(new_opts.general.update_events) then
     vim.api.nvim_echo({
       { '[dropbar.nvim] ', 'Normal' },
       { 'opts.general.update_events', 'WarningMsg' },
