@@ -103,7 +103,7 @@ TODO
 ==============================================================================
 REQUIREMENTS                                            *dropbar-requirements*
 
-- Neovim nightly (>= 0.10.0-dev)
+- Neovim >= 0.10.0
 - Optional
     - nvim-web-devicons <https://github.com/nvim-tree/nvim-web-devicons>, if
       you want to see icons for different filetypes

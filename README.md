@@ -156,7 +156,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
 ## Requirements
 
-- Neovim **Nightly** (>= 0.10.0-dev)
+- Neovim >= 0.10.0
 - Optional
   - [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons), if you want to see icons for different filetypes
   - [telescope-fzf-native](https://github.com/nvim-telescope/telescope-fzf-native.nvim), if you want fuzzy search support
