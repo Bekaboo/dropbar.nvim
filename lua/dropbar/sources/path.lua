@@ -127,9 +127,9 @@ local function convert(path, buf, win)
     name_hl = name_hl,
     icon_hl = icon_hl,
     ---Override the default jump function
-    jump = function(_)
+    jump = vim.schedule_wrap(function(_)
       vim.cmd.edit(path)
-    end,
+    end),
     preview = vim.schedule_wrap(function(self)
       preview_open(self, path)
     end),
