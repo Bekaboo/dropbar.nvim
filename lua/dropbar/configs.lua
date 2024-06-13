@@ -506,7 +506,7 @@ M.opts = {
       ['<C-j>'] = api.fuzzy_find_next,
       ['<C-p>'] = api.fuzzy_find_prev,
       ['<C-n>'] = api.fuzzy_find_next,
-      ['<Enter>'] = api.fuzzy_find_click,
+      ['<CR>'] = api.fuzzy_find_click,
       ['<S-Enter>'] = function()
         api.fuzzy_find_click(-1)
       end,
