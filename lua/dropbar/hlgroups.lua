@@ -92,6 +92,24 @@ local function set_hlgroups()
   end
 end
 
+---Set WinBar & WinBarNC background to Normal background
+---@return nil
+local function clear_winbar_bg()
+  ---@param name string
+  ---@return nil
+  local function _clear_bg(name)
+    local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
+    if hl.bg or hl.ctermbg then
+      hl.bg = nil
+      hl.ctermbg = nil
+      vim.api.nvim_set_hl(0, name, hl)
+    end
+  end
+
+  _clear_bg('WinBar')
+  _clear_bg('WinBarNC')
+end
+
 ---Initialize highlight groups for dropbar
 local function init()
   local groupid = vim.api.nvim_create_augroup('DropBarHlGroups', {})
@@ -105,25 +123,6 @@ local function init()
   -- Remove winbar background as a workaround for
   -- https://github.com/Bekaboo/dropbar.nvim/issues/118, also see
   -- https://github.com/neovim/neovim/issues/26037#issuecomment-1838548013
-
-  ---Set WinBar & WinBarNC background to Normal background
-  ---@return nil
-  local function clear_winbar_bg()
-    ---@param name string
-    ---@return nil
-    local function _clear_bg(name)
-      local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
-      if hl.bg or hl.ctermbg then
-        hl.bg = nil
-        hl.ctermbg = nil
-        vim.api.nvim_set_hl(0, name, hl)
-      end
-    end
-
-    _clear_bg('WinBar')
-    _clear_bg('WinBarNC')
-  end
-
   clear_winbar_bg()
   vim.api.nvim_create_autocmd('ColorScheme', {
     desc = 'Remove WinBar background color as a workaround.',
