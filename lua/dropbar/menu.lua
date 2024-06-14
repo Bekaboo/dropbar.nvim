@@ -814,6 +814,9 @@ function dropbar_menu_t:fuzzy_find_close()
   if self.is_opened then
     self:fuzzy_find_restore_entries()
     vim.bo[self.buf].modifiable = false
+    if self.prev_cursor then
+      vim.api.nvim_win_set_cursor(self.win, self.prev_cursor)
+    end
   end
   local input_win = self.fzf_state.win
   self.fzf_state:gc()
