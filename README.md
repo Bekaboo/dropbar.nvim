@@ -61,6 +61,8 @@
     - [Making a Source With Drop-Down Menus](#making-a-source-with-drop-down-menus)
     - [Default `on_click()` Callback](#default-on_click-callback)
     - [Lazy-Loading Expensive Fields](#lazy-loading-expensive-fields)
+    - [Practical Examples](#practical-examples)
+      - [Highlight File Name Using Custom Highlight Group `DropBarFileName`](#highlight-file-name-using-custom-highlight-group-dropbarfilename)
 - [Similar Projects](#similar-projects)
 <!--toc:end-->
 
@@ -2511,6 +2513,55 @@ local custom_source = {
 
 To see concrete examples of lazy-loading see
 [`lua/dropbar/sources`](https://github.com/Bekaboo/dropbar.nvim/tree/master/lua/dropbar/sources).
+
+#### Practical Examples
+
+##### Highlight File Name Using Custom Highlight Group `DropBarFileName`
+
+```lua
+local dropbar = require('dropbar')
+local sources = require('dropbar.source')
+local utils = require('dropbar.sources')
+
+vim.api.nvim_set_hl(0, 'DropBarFileName', { fg = '#FFFFFF', italic = true })
+
+local custom_path = {
+  get_symbols = function(buff, win, cursor)
+    local symbols = sources.path.get_symbols(buff, win, cursor)
+    symbols[#symbols].name_hl = 'DropBarFileName'
+    if vim.bo[buff].modified then
+      symbols[#symbols].name = symbols[#symbols].name .. ' [+]'
+      symbols[#symbols].name_hl = 'DiffAdded'
+    end
+    return symbols
+  end,
+}
+
+dropbar.setup({
+  bar = {
+    sources = function(buf, _)
+      if vim.bo[buf].ft == 'markdown' then
+        return {
+          custom_path,
+          sources.markdown,
+        }
+      end
+      if vim.bo[buf].buftype == 'terminal' then
+        return {
+          sources.terminal,
+        }
+      end
+      return {
+        custom_path,
+        utils.source.fallback {
+          sources.lsp,
+          sources.treesitter,
+        },
+      }
+    end,
+  },
+})
+```
 
 ## Similar Projects
 
