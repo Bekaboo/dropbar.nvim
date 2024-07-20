@@ -361,7 +361,7 @@ end
 ---@class dropbar_opts_t
 ---@field buf integer?
 ---@field win integer?
----@field sources dropbar_source_t[]?
+---@field sources (dropbar_source_t[]|fun(buf: integer, win: integer):dropbar_source_t[])?
 ---@field separator dropbar_symbol_t?
 ---@field extends dropbar_symbol_t?
 ---@field padding {left: integer, right: integer}?
