@@ -11,10 +11,8 @@ M.opts = {
         and vim.api.nvim_win_is_valid(win)
         and vim.wo[win].winbar == ''
         and vim.fn.win_gettype(win) == ''
-        and (
-          (pcall(vim.treesitter.get_parser, buf, vim.bo[buf].ft)) and true
-          or false
-        )
+        and vim.bo[buf].ft ~= 'help'
+        and ((pcall(vim.treesitter.get_parser, buf)) and true or false)
     end,
     attach_events = {
       'BufWinEnter',
