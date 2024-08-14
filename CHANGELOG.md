@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.6.1](https://github.com/Bekaboo/dropbar.nvim/compare/v8.6.0...v8.6.1) (2024-07-25)
+
+
+### Bug Fixes
+
+* **configs:** winbar attached to floating windows ([6567d50](https://github.com/Bekaboo/dropbar.nvim/commit/6567d50fd792056e2001663f5cd4d8bfb6840604))
+
 ## [8.6.0](https://github.com/Bekaboo/dropbar.nvim/compare/v8.5.0...v8.6.0) (2024-06-14)
 
 
