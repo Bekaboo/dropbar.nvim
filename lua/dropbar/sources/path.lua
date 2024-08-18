@@ -169,6 +169,26 @@ local function convert(path, buf, win)
   }))
 end
 
+local normalize = vim.fs.normalize
+if vim.uv.os_uname().sysname:find('Windows', 1, true) then
+  ---Normalize path on Windows, see #174
+  ---In addition to normalizing the path with `vim.fs.normalize()`, we convert
+  ---the drive letter to uppercase.
+  ---This is a workaround for the issue that the path is case-insensitive on
+  ---Windows, as a result `vim.api.nvim_buf_get_name()` and `vim.fn.getcwd()`
+  ---can return the same drive letter with different cases, e.g. 'C:' and 'c:'.
+  ---To standardize this, we convert the drive letter to uppercase.
+  ---@param path string full path
+  ---@return string: path with uppercase drive letter
+  function normalize(path)
+    return (
+      string.gsub(vim.fs.normalize(path), '^([a-zA-Z]):', function(c)
+        return c:upper() .. ':'
+      end)
+    )
+  end
+end
+
 ---Get list of dropbar symbols of the parent directories of given buffer
 ---@param buf integer buffer handler
 ---@param win integer window handler
@@ -177,8 +197,8 @@ end
 local function get_symbols(buf, win, _)
   local path_opts = configs.opts.sources.path
   local symbols = {} ---@type dropbar_symbol_t[]
-  local current_path = vim.fs.normalize((vim.api.nvim_buf_get_name(buf)))
-  local root = vim.fs.normalize(configs.eval(path_opts.relative_to, buf, win))
+  local current_path = normalize((vim.api.nvim_buf_get_name(buf)))
+  local root = normalize(configs.eval(path_opts.relative_to, buf, win))
   while
     current_path
     and current_path ~= '.'
