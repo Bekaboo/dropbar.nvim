@@ -61,7 +61,12 @@ local function setup(opts)
     vim.api.nvim_create_autocmd(configs.opts.general.attach_events, {
       group = groupid,
       callback = function(info)
-        utils.bar.attach(info.buf, 0, info)
+        -- Try attaching dropbar to all windows containing the buffer
+        -- Notice that we cannot simply let `win=0` here since the current
+        -- buffer isn't necessarily the window containing the buffer
+        for _, win in ipairs(vim.fn.win_findbuf(info.buf)) do
+          utils.bar.attach(info.buf, win, info)
+        end
       end,
       desc = 'Attach dropbar',
     })
