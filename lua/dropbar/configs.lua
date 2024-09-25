@@ -47,6 +47,7 @@ M.opts = {
   icons = {
     enable = true,
     kinds = {
+      use_mini_icons = false,
       use_devicons = true,
       symbols = {
         Array = '󰅪 ',
@@ -699,6 +700,7 @@ function M.set(new_opts)
         return ' '
       end,
     })
+    M.opts.icons.kinds.use_mini_icons = false
     M.opts.icons.kinds.use_devicons = false
     M.opts.icons.kinds.symbols = blank_icons
     M.opts.icons.ui.bar = blank_icons
