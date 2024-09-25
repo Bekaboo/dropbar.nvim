@@ -22,10 +22,13 @@ local function get_icon_and_hl(path)
   if icon_kind_opts.use_devicons then
     local devicons_ok, devicons = pcall(require, 'nvim-web-devicons')
     if devicons_ok and stat and stat.type ~= 'directory' then
+      -- Try to find icon using the filename, explicitly disable the
+      -- default icon so that we can try to find the icon using the
+      -- filetype if the filename does not have a corresponding icon
       local devicon, devicon_hl = devicons.get_icon(
         vim.fs.basename(path),
         vim.fn.fnamemodify(path, ':e'),
-        { default = true }
+        { default = false }
       )
       -- No corresponding devicon found using the filename, try finding icon
       -- with filetype if the file is loaded as a buf in nvim
