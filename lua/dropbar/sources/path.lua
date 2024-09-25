@@ -27,8 +27,10 @@ local function get_icon_and_hl(path)
         vim.fn.fnamemodify(path, ':e'),
         { default = true }
       )
+      -- No corresponding devicon found using the filename, try finding icon
+      -- with filetype if the file is loaded as a buf in nvim
       if devicon == nil then
-        ---@type integer|nil
+        ---@type integer?
         local buf = vim.iter(vim.api.nvim_list_bufs()):find(function(buf)
           return vim.api.nvim_buf_get_name(buf) == path
         end)
