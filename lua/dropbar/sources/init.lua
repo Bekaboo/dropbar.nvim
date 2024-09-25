@@ -33,13 +33,12 @@ end
 
 ---@type table<string, dropbar_source_t>
 return setmetatable({}, {
-  __index = function(self, key)
+  __index = function(_, key)
     local source = require('dropbar.sources.' .. key)
     local _get_symbols = source.get_symbols
     source.get_symbols = function(buf, win, cursor)
       return check_params(_get_symbols, buf, win, cursor)
     end
-    self[key] = source
     return source
   end,
 })
