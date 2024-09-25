@@ -912,9 +912,9 @@ PATH                              *dropbar-configuration-options-sources-path*
 
 TREESITTER                  *dropbar-configuration-options-sources-treesitter*
 
-- `opts.sources.treesitter.name_pattern`: `string`
-    - Lua pattern used to extract a short name from the node text
-    - Default: `'[#~%*%w%._%->!@:]+%s*' .. string.rep('[#~%*%w%._%->!@:]*', 3, '%s*')`
+- `opts.sources.treesitter.name_regex`: `string`
+    - Vim regex used to extract a short name from the node text
+    - Default: `[=[[#~!@\*&.]*[[:keyword:]]\+!\?\(\(\(->\)\+\|-\+\|\.\+\|:\+\|\s\+\)\?[#~!@\*&.]*[[:keyword:]]\+!\?\)*]=]`
 - `opts.sources.treesitter.valid_types:` `string[]`
     - A list of treesitter node types to include in the results
     - Default: >lua

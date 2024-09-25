@@ -805,9 +805,11 @@ vim.ui.select = require('dropbar.utils.menu').select
         end,
       },
       treesitter = {
-        -- Lua pattern used to extract a short name from the node text
-        name_pattern = '[#~%*%w%._%->!@:]+%s*'
-          .. string.rep('[#~%*%w%._%->!@:]*', 3, '%s*'),
+        -- Vim regex used to extract a short name from the node text
+        -- word with optional prefix and suffix: [#~!@\*&.]*[[:keyword:]]\+!\?
+        -- word separators: \(->\)\+\|-\+\|\.\+\|:\+\|\s\+
+        name_regex = [=[[#~!@\*&.]*[[:keyword:]]\+!\?]=]
+          .. [=[\(\(\(->\)\+\|-\+\|\.\+\|:\+\|\s\+\)\?[#~!@\*&.]*[[:keyword:]]\+!\?\)*]=],
         -- The order matters! The first match is used as the type
         -- of the treesitter symbol and used to show the icon
         -- Types listed below must have corresponding icons
@@ -1629,9 +1631,9 @@ each sources.
 
 ##### Treesitter
 
-- `opts.sources.treesitter.name_pattern`: `string`
-  - Lua pattern used to extract a short name from the node text
-  - Default: `'[#~%*%w%._%->!@:]+%s*' .. string.rep('[#~%*%w%._%->!@:]*', 3, '%s*')`
+- `opts.sources.treesitter.name_regex`: `string`
+  - Vim regex used to extract a short name from the node text
+  - Default: `[=[[#~!@\*&.]*[[:keyword:]]\+!\?\(\(\(->\)\+\|-\+\|\.\+\|:\+\|\s\+\)\?[#~!@\*&.]*[[:keyword:]]\+!\?\)*]=]`
 - `opts.sources.treesitter.valid_types:` `string[]`
   - A list of treesitter node types to include in the results
   - Default:

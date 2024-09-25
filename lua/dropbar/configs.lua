@@ -549,9 +549,11 @@ M.opts = {
       end,
     },
     treesitter = {
-      -- Lua pattern used to extract a short name from the node text
-      name_pattern = '[#~%*%w%._%->!@:]+%s*'
-        .. string.rep('[#~%*%w%._%->!@:]*', 3, '%s*'),
+      -- Vim regex used to extract a short name from the node text
+      -- word with optional prefix and suffix: [#~!@\*&.]*[[:keyword:]]\+!\?
+      -- word separators: \(->\)\+\|-\+\|\.\+\|:\+\|\s\+
+      name_regex = [=[[#~!@\*&.]*[[:keyword:]]\+!\?]=]
+        .. [=[\(\(\(->\)\+\|-\+\|\.\+\|:\+\|\s\+\)\?[#~!@\*&.]*[[:keyword:]]\+!\?\)*]=],
       -- The order matters! The first match is used as the type
       -- of the treesitter symbol and used to show the icon
       -- Types listed below must have corresponding icons
@@ -672,6 +674,20 @@ function M.set(new_opts)
       win = new_opts.general.update_events,
     }
   end
+
+  if ((new_opts.sources or {}).treesitter or {}).name_pattern then
+    vim.api.nvim_echo({
+      { '[dropbar.nvim] ', 'Normal' },
+      { 'opts.sources.treesitter.name_pattern', 'WarningMsg' },
+      { ' is deprecated.\n', 'Normal' },
+      { '[dropbar.nvim] ', 'Normal' },
+      { 'Please use ', 'Normal' },
+      { 'opts.sources.treesitter.name_regex ', 'WarningMsg' },
+      { 'instead to match ts node names with vim regex.\n', 'Normal' },
+    }, true, {})
+    new_opts.sources.treesitter.name_pattern = nil
+  end
+
   if new_opts.icons and new_opts.icons.enable == false then
     local blank_icons = setmetatable({}, {
       __index = function()
