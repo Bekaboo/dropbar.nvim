@@ -19,6 +19,8 @@
 
 [![docs](https://github.com/bekaboo/dropbar.nvim/actions/workflows/tests.yml/badge.svg)](./doc/dropbar.txt)
 [![luarocks](https://img.shields.io/luarocks/v/bekaboo/dropbar.nvim?logo=lua&color=blue)](https://luarocks.org/modules/bekaboo/dropbar.nvim)
+[![docs](https://github.com/bekaboo/dropbar.nvim/actions/workflows/tests.yml/badge.svg)](./doc/dropbar.txt)
+[![luarocks](https://img.shields.io/luarocks/v/bekaboo/dropbar.nvim?logo=lua&color=blue)](https://luarocks.org/modules/bekaboo/dropbar.nvim)
 
 </div>
 
@@ -731,37 +733,37 @@ M.opts = {
             return 2 -- left and right border
           end
 
-        local left, right = 1, 1
-        if
-          (#border == 1 and border[1] == '')
-          or (#border == 4 and border[4] == '')
-          or (#border == 8 and border[8] == '')
-        then
-          left = 0
-        end
-        if
-          (#border == 1 and border[1] == '')
-          or (#border == 4 and border[4] == '')
-          or (#border == 8 and border[4] == '')
-        then
-          right = 0
-        end
-        return left + right
-      end
-      local menu_width = menu._win_configs.width
-        + border_width(menu._win_configs.border)
-      local self_width = menu._win_configs.width
-      local self_border = border_width(
-        (
-          M.opts.fzf.win_configs
-          and M.eval(M.opts.fzf.win_configs.border, menu)
-        )
-          or (menu.fzf_win_configs and M.eval(
-            menu.fzf_win_configs.border,
-            menu
-          ))
-          or menu._win_configs.border
-      )
+            local left, right = 1, 1
+            if
+              (#border == 1 and border[1] == '')
+              or (#border == 4 and border[4] == '')
+              or (#border == 8 and border[8] == '')
+            then
+              left = 0
+            end
+            if
+              (#border == 1 and border[1] == '')
+              or (#border == 4 and border[4] == '')
+              or (#border == 8 and border[4] == '')
+            then
+              right = 0
+            end
+            return left + right
+          end
+          local menu_width = menu._win_configs.width
+            + border_width(menu._win_configs.border)
+          local self_width = menu._win_configs.width
+          local self_border = border_width(
+            (
+              M.opts.fzf.win_configs
+              and M.eval(M.opts.fzf.win_configs.border, menu)
+            )
+              or (menu.fzf_win_configs and M.eval(
+                menu.fzf_win_configs.border,
+                menu
+              ))
+              or menu._win_configs.border
+          )
 
         if self_width + self_border > menu_width then
           return self_width - self_border
@@ -1028,6 +1030,160 @@ winbar:
       'VimResized',
     }
     ```
+
+#### Icons
+
+These options live under `opts.icons` and are used to configure the icons
+used by the plugin:
+
+- `opts.icons.enable`: `boolean`
+  - Whether to enable icons
+  - Default: `true`
+- `opts.icons.kinds.use_devicons`: `boolean`
+  - Whether to use [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons) to show icons for different filetypes
+  - Default: `true`
+- `opts.icons.kinds.symbols`: `table<string, string>`
+  - Table mapping the different kinds of symbols to their corresponding icons
+  - Default:
+    ```lua
+    {
+      Array = '󰅪 ',
+      Boolean = ' ',
+      BreakStatement = '󰙧 ',
+      Call = '󰃷 ',
+      CaseStatement = '󱃙 ',
+      Class = ' ',
+      Color = '󰏘 ',
+      Constant = '󰏿 ',
+      Constructor = ' ',
+      ContinueStatement = '→ ',
+      Copilot = ' ',
+      Declaration = '󰙠 ',
+      Delete = '󰩺 ',
+      DoStatement = '󰑖 ',
+      Enum = ' ',
+      EnumMember = ' ',
+      Event = ' ',
+      Field = ' ',
+      File = '󰈔 ',
+      Folder = '󰉋 ',
+      ForStatement = '󰑖 ',
+      Function = '󰊕 ',
+      H1Marker = '󰉫 ', -- Used by markdown treesitter parser
+      H2Marker = '󰉬 ',
+      H3Marker = '󰉭 ',
+      H4Marker = '󰉮 ',
+      H5Marker = '󰉯 ',
+      H6Marker = '󰉰 ',
+      Identifier = '󰀫 ',
+      IfStatement = '󰇉 ',
+      Interface = ' ',
+      Keyword = '󰌋 ',
+      List = '󰅪 ',
+      Log = '󰦪 ',
+      Lsp = ' ',
+      Macro = '󰁌 ',
+      MarkdownH1 = '󰉫 ', -- Used by builtin markdown source
+      MarkdownH2 = '󰉬 ',
+      MarkdownH3 = '󰉭 ',
+      MarkdownH4 = '󰉮 ',
+      MarkdownH5 = '󰉯 ',
+      MarkdownH6 = '󰉰 ',
+      Method = '󰆧 ',
+      Module = '󰏗 ',
+      Namespace = '󰅩 ',
+      Null = '󰢤 ',
+      Number = '󰎠 ',
+      Object = '󰅩 ',
+      Operator = '󰆕 ',
+      Package = '󰆦 ',
+      Pair = '󰅪 ',
+      Property = ' ',
+      Reference = '󰦾 ',
+      Regex = ' ',
+      Repeat = '󰑖 ',
+      Scope = '󰅩 ',
+      Snippet = '󰩫 ',
+      Specifier = '󰦪 ',
+      Statement = '󰅩 ',
+      String = '󰉾 ',
+      Struct = ' ',
+      SwitchStatement = '󰺟 ',
+      Terminal = ' ',
+      Text = ' ',
+      Type = ' ',
+      TypeParameter = '󰆩 ',
+      Unit = ' ',
+      Value = '󰎠 ',
+      Variable = '󰀫 ',
+      WhileStatement = '󰑖 ',
+    }
+    ```
+- `opts.icons.ui.bar`: `table<string, string>`
+  - Controls the icons used in the winbar UI
+  - Default:
+    ```lua
+    {
+      separator = ' ',
+      extends = '…',
+    }
+    ```
+- `opts.icons.ui.menu`: `table<string, string>`
+  - Controls the icons used in the menu UI
+  - Default:
+    ```lua
+    {
+      separator = ' ',
+      indicator = ' ',
+    }
+    ```
+
+#### Symbol
+
+These options live under `opts.symbol` and are used to control the behavior of
+the symbols:
+
+- `opts.symbol.preview.reorient`: `fun(win: integer, range: {start: {line: integer, character: integer}, end: {line: integer, character: integer}})`
+  - Function to reorient the source window when previewing symbol given
+    the source window `win` and the range of the symbol `range`
+  - Default:
+    ```lua
+    function(_, range)
+      local invisible = range['end'].line - vim.fn.line('w$') + 1
+      if invisible > 0 then
+        local view = vim.fn.winsaveview() --[[@as vim.fn.winrestview.dict]]
+        view.topline = math.min(
+          view.topline + invisible,
+          math.max(1, range.start.line - vim.wo.scrolloff + 1)
+        )
+        vim.fn.winrestview(view)
+      end
+    end
+    ```
+- `opts.symbol.jump.reorient`: `fun(win: integer, range: {start: {line: integer, character: integer}, end: {line: integer, character: integer}})`
+  - Function to reorient the source window after jumping to symbol given
+    the source window `win` and the range of the symbol `range`
+  - Default:
+    ```lua
+    function(win, range)
+      local view = vim.fn.winsaveview()
+      local win_height = vim.api.nvim_win_get_height(win)
+      local topline = range.start.line - math.floor(win_height / 4)
+      if
+        topline > view.topline
+        and topline + win_height < vim.fn.line('$')
+      then
+        view.topline = topline
+        vim.fn.winrestview(view)
+      end
+    end
+    ```
+
+#### Bar
+
+These options live under `opts.bar` and are used to control the behavior of the
+winbar:
+
 - `opts.bar.hover`: `boolean`
   - Whether to highlight the symbol under the cursor
   - This feature requires `'mousemoveevent'` to be enabled
@@ -1777,7 +1933,7 @@ each sources.
 
 Thanks [@willothy](https://github.com/willothy) for implementing this.
 
-- `opts.sources.terminal.icon`: `string` or `fun(buf: integer): string`
+- `opts.sources.terminal.icon`: `string|fun(buf: integer): string`
 
   - Icon to show before terminal names
   - Default:
