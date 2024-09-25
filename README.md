@@ -303,6 +303,7 @@ vim.ui.select = require('dropbar.utils.menu').select
     icons = {
       enable = true,
       kinds = {
+        use_mini_icons = false,
         use_devicons = true,
         symbols = {
           Array = '󰅪 ',
@@ -888,6 +889,9 @@ vim.ui.select = require('dropbar.utils.menu').select
         ---@type string|fun(buf: integer): string
         icon = function(buf)
           local icon = M.opts.icons.kinds.symbols.Terminal
+          if M.opts.icons.kinds.use_mini_icons and _G.MiniIcons then
+            icon = require('mini.icons').get('filetype', vim.bo[buf].filetype) or icon
+          end
           if M.opts.icons.kinds.use_devicons then
             icon = require('nvim-web-devicons').get_icon_by_filetype(
               vim.bo[buf].filetype
@@ -990,6 +994,9 @@ used by the plugin:
 - `opts.icons.enable`: `boolean`
   - Whether to enable icons
   - Default: `true`
+- `opts.icons.kinds.use_mini_icons`: `boolean`
+  - Whether to use [mini.icons](https://github.com/echasnovski/mini.icons) to show icons for different filetypes
+  - Default: `false`
 - `opts.icons.kinds.use_devicons`: `boolean`
   - Whether to use [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons) to show icons for different filetypes
   - Default: `true`

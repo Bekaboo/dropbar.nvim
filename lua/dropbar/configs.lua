@@ -47,6 +47,7 @@ M.opts = {
   icons = {
     enable = true,
     kinds = {
+      use_mini_icons = false,
       use_devicons = true,
       symbols = {
         Array = '󰅪 ',
@@ -634,6 +635,9 @@ M.opts = {
       ---@type string|fun(buf: integer): string
       icon = function(buf)
         local icon = M.opts.icons.kinds.symbols.Terminal
+        if M.opts.icons.kinds.use_mini_icons and _G.MiniIcons then
+          icon = require('mini.icons').get('filetype', vim.bo[buf].filetype) or icon
+        end
         if M.opts.icons.kinds.use_devicons then
           icon = require('nvim-web-devicons').get_icon_by_filetype(
             vim.bo[buf].filetype
@@ -696,6 +700,7 @@ function M.set(new_opts)
         return ' '
       end,
     })
+    M.opts.icons.kinds.use_mini_icons = false
     M.opts.icons.kinds.use_devicons = false
     M.opts.icons.kinds.symbols = blank_icons
     M.opts.icons.ui.bar = blank_icons
