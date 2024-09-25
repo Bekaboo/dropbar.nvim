@@ -23,39 +23,57 @@ local function get_icon_and_hl(path)
     return icon, icon_hl, name_hl
   end
 
-  if not icon_kind_opts.use_devicons then
-    return icon, icon_hl, name_hl
-  end
+  if icon_kind_opts.use_mini_icons then
+    local mini_icons_ok, mini_icons = pcall(require, 'mini.icons')
+    ---@diagnostic disable-next-line: undefined-field
+    if _G.MiniIcons then -- `_G.MiniIcons` is a better check to see if the module is setup
+      local mini_icon, mini_icon_hl = mini_icons.get('file', vim.fs.basename(path))
 
-  local devicons_ok, devicons = pcall(require, 'nvim-web-devicons')
-  if not devicons_ok then
-    return icon, icon_hl, name_hl
-  end
+      -- No corresponding devicon found using the filename, try finding icon
+      -- with filetype if the file is loaded as a buf in nvim
+      if not mini_icon then
+        ---@type integer?
+        local buf = vim.iter(vim.api.nvim_list_bufs()):find(function(buf)
+          return vim.api.nvim_buf_get_name(buf) == path
+        end)
+        if buf then
+          local filetype = vim.api.nvim_get_option_value('filetype', { buf = buf })
+          mini_icon, mini_icon_hl = mini_icons.get('filetype', filetype)
+        end
+      end
 
-  -- Try to find icon using the filename, explicitly disable the
-  -- default icon so that we can try to find the icon using the
-  -- filetype if the filename does not have a corresponding icon
-  local devicon, devicon_hl = devicons.get_icon(
-    vim.fs.basename(path),
-    vim.fn.fnamemodify(path, ':e'),
-    { default = false }
-  )
-
-  -- No corresponding devicon found using the filename, try finding icon
-  -- with filetype if the file is loaded as a buf in nvim
-  if not devicon then
-    ---@type integer?
-    local buf = vim.iter(vim.api.nvim_list_bufs()):find(function(buf)
-      return vim.api.nvim_buf_get_name(buf) == path
-    end)
-    if buf then
-      local filetype = vim.api.nvim_get_option_value('filetype', { buf = buf })
-      devicon, devicon_hl = devicons.get_icon_by_filetype(filetype)
+      icon = mini_icon and mini_icon .. ' ' or icon
+      icon_hl = mini_icon_hl
     end
   end
 
-  icon = devicon and devicon .. ' ' or icon
-  icon_hl = devicon_hl
+  if icon_kind_opts.use_devicons then
+    local devicons_ok, devicons = pcall(require, 'nvim-web-devicons')
+    if devicons_ok then
+      -- Try to find icon using the filename, explicitly disable the
+      -- default icon so that we can try to find the icon using the
+      -- filetype if the filename does not have a corresponding icon
+      local devicon, devicon_hl = devicons.get_icon(
+        vim.fs.basename(path),
+        vim.fn.fnamemodify(path, ':e'),
+        { default = false }
+      )
+
+      if not devicon then
+        ---@type integer?
+        local buf = vim.iter(vim.api.nvim_list_bufs()):find(function(buf)
+          return vim.api.nvim_buf_get_name(buf) == path
+        end)
+        if buf then
+          local filetype = vim.api.nvim_get_option_value('filetype', { buf = buf })
+          devicon, devicon_hl = devicons.get_icon_by_filetype(filetype)
+        end
+      end
+
+      icon = devicon and devicon .. ' ' or icon
+      icon_hl = devicon_hl
+    end
+  end
 
   return icon, icon_hl, name_hl
 end
