@@ -8,28 +8,24 @@ local bar = require('dropbar.bar')
 ---@return string? name_hl
 local function get_icon_and_hl(path)
   local icon_kind_opts = configs.opts.icons.kinds
-  local icon = icon_kind_opts.symbols.File
-  local icon_hl = 'DropBarIconKindFile'
-  local name_hl = 'DropBarKindFile'
   local stat = vim.uv.fs_stat(path)
-  if not stat then
-    return icon, icon_hl, name_hl
+
+  if stat and stat.type == 'directory' then
+    return icon_kind_opts.symbols.Folder,
+      'DropBarIconKindFolder',
+      'DropBarKindFolder'
   end
 
-  if stat.type == 'directory' then
-    icon = icon_kind_opts.symbols.Folder
-    icon_hl = 'DropBarIconKindFolder'
-    name_hl = 'DropBarKindFolder'
-    return icon, icon_hl, name_hl
-  end
-
-  if not icon_kind_opts.use_devicons then
-    return icon, icon_hl, name_hl
+  local file_icon = icon_kind_opts.symbols.File
+  local file_icon_hl = 'DropBarIconKindFile'
+  local file_name_hl = 'DropBarKindFile'
+  if not stat or not icon_kind_opts.use_devicons then
+    return file_icon, file_icon_hl, file_name_hl
   end
 
   local devicons_ok, devicons = pcall(require, 'nvim-web-devicons')
   if not devicons_ok then
-    return icon, icon_hl, name_hl
+    return file_icon, file_icon_hl, file_name_hl
   end
 
   -- Try to find icon using the filename, explicitly disable the
@@ -54,10 +50,10 @@ local function get_icon_and_hl(path)
     end
   end
 
-  icon = devicon and devicon .. ' ' or icon
-  icon_hl = devicon_hl
+  file_icon = devicon and devicon .. ' ' or file_icon
+  file_icon_hl = devicon_hl
 
-  return icon, icon_hl, name_hl
+  return file_icon, file_icon_hl, file_name_hl
 end
 
 ---@param self dropbar_symbol_t
