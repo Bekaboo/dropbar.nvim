@@ -1,5 +1,37 @@
 # Changelog
 
+## [9.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v8.6.1...v9.0.0) (2024-10-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* **hlgroups:** link to ts hl instead of regex syntax hl
+* **hlgroups:** don't depend on cmp hlgroups
+* **sources-treesitter & configs:** use vim regex to match ts node name
+
+### Features
+
+* **configs:** more sensible treesitter valid node types ([5186097](https://github.com/Bekaboo/dropbar.nvim/commit/5186097fe4896a571f9b009fd0159a416933f44a))
+* **sources-path:** add filetype devicon as fallback ([#185](https://github.com/Bekaboo/dropbar.nvim/issues/185)) ([ede945e](https://github.com/Bekaboo/dropbar.nvim/commit/ede945efd60893b7b25a854c93a749c7b0d11241))
+* **sources-treesitter & configs:** use vim regex to match ts node name ([678a59c](https://github.com/Bekaboo/dropbar.nvim/commit/678a59cb4b43d56e67939a37c065fc0d96c106fa))
+* **sources-treesitter:** reduce consecutive spaces in ts symbol name ([35988af](https://github.com/Bekaboo/dropbar.nvim/commit/35988affc74c0cebb1484bcdfccfed523c0e7267))
+
+
+### Bug Fixes
+
+* **configs & hlgroups:** missing icons and hlgroups for ts types ([a12869f](https://github.com/Bekaboo/dropbar.nvim/commit/a12869f34f8cd236dc708fb2815ccf1663000bf4))
+* **setup:** avoid setup twice when using lazy.nvim ([#181](https://github.com/Bekaboo/dropbar.nvim/issues/181)) ([b7b0cd2](https://github.com/Bekaboo/dropbar.nvim/commit/b7b0cd2670cfab298afc955f2531206218736766))
+* **setup:** dropbar attaches to wrong window ([6156e07](https://github.com/Bekaboo/dropbar.nvim/commit/6156e07759fd8c7cbf764414f583aa7e47470368))
+* **sources-path:** `get_symbols()` error caused by drive name on Windows ([#175](https://github.com/Bekaboo/dropbar.nvim/issues/175)) ([d26bf92](https://github.com/Bekaboo/dropbar.nvim/commit/d26bf92161cd70e049dc138b44ffa0246dbf7178))
+* **sources-path:** file icons not selected using filetype as fallback ([01ed539](https://github.com/Bekaboo/dropbar.nvim/commit/01ed539822237652e94ea076f78a44c50bdd634c))
+* This is because `default` is set when calling `get_icon()` with ([01ed539](https://github.com/Bekaboo/dropbar.nvim/commit/01ed539822237652e94ea076f78a44c50bdd634c))
+
+
+### Code Refactoring
+
+* **hlgroups:** don't depend on cmp hlgroups ([5f0da7f](https://github.com/Bekaboo/dropbar.nvim/commit/5f0da7fa51e4e884e9ab1dc02cd32509252cdf19))
+* **hlgroups:** link to ts hl instead of regex syntax hl ([9b58487](https://github.com/Bekaboo/dropbar.nvim/commit/9b58487682f446a9451fb3aa6da1cb017f12fa45))
+
 ## [8.6.1](https://github.com/Bekaboo/dropbar.nvim/compare/v8.6.0...v8.6.1) (2024-07-25)
 
 
