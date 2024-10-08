@@ -1184,148 +1184,155 @@ Highlight groups ~
 
   Highlight group                    Attributes
 
-  DropBarCurrentContext              `{ link = 'Visual' }`
-  DropBarFzfMatch                    `{ link = 'TelescopeMatching' }`
-  DropBarHover                       `{ link = 'Visual' }`
-  DropBarIconCurrentContext          `{ link = 'Visual' }`
-  DropBarIconKindArray               `{ link = 'Array' }`
-  DropBarIconKindBoolean             `{ link = 'Boolean' }`
-  DropBarIconKindBreakStatement      `{ link = 'Error' }`
-  DropBarIconKindCall                `{ link = 'Function' }`
-  DropBarIconKindCaseStatement       `{ link = 'Conditional' }`
-  DropBarIconKindClass               `{ link = 'CmpItemKindClass' }`
-  DropBarIconKindConstant            `{ link = 'Constant' }`
-  DropBarIconKindConstructor         `{ link = 'CmpItemKindConstructor' }`
-  DropBarIconKindContinueStatement   `{ link = 'Repeat' }`
-  DropBarIconKindDeclaration         `{ link = 'CmpItemKindSnippet' }`
-  DropBarIconKindDelete              `{ link = 'Error' }`
-  DropBarIconKindDoStatement         `{ link = 'Repeat' }`
-  DropBarIconKindElseStatement       `{ link = 'Conditional' }`
-  DropBarIconKindEnum                `{ link = 'CmpItemKindEnum' }`
-  DropBarIconKindEnumMember          `{ link = 'CmpItemKindEnumMember' }`
-  DropBarIconKindEvent               `{ link = 'CmpItemKindEvent' }`
-  DropBarIconKindField               `{ link = 'CmpItemKindField' }`
-  DropBarIconKindFile                `{ link = 'NormalFloat' }`
-  DropBarIconKindFolder              `{ link = 'Directory' }`
-  DropBarIconKindForStatement        `{ link = 'Repeat' }`
-  DropBarIconKindFunction            `{ link = 'Function' }`
-  DropBarIconKindH1Marker            `{ link = 'markdownH1' }`
-  DropBarIconKindH2Marker            `{ link = 'markdownH2' }`
-  DropBarIconKindH3Marker            `{ link = 'markdownH3' }`
-  DropBarIconKindH4Marker            `{ link = 'markdownH4' }`
-  DropBarIconKindH5Marker            `{ link = 'markdownH5' }`
-  DropBarIconKindH6Marker            `{ link = 'markdownH6' }`
-  DropBarIconKindIdentifier          `{ link = 'CmpItemKindVariable' }`
-  DropBarIconKindIfStatement         `{ link = 'Conditional' }`
-  DropBarIconKindInterface           `{ link = 'CmpItemKindInterface' }`
-  DropBarIconKindKeyword             `{ link = 'Keyword' }`
-  DropBarIconKindList                `{ link = 'SpecialChar' }`
-  DropBarIconKindMacro               `{ link = 'Macro' }`
-  DropBarIconKindMarkdownH1          `{ link = 'markdownH1' }`
-  DropBarIconKindMarkdownH2          `{ link = 'markdownH2' }`
-  DropBarIconKindMarkdownH3          `{ link = 'markdownH3' }`
-  DropBarIconKindMarkdownH4          `{ link = 'markdownH4' }`
-  DropBarIconKindMarkdownH5          `{ link = 'markdownH5' }`
-  DropBarIconKindMarkdownH6          `{ link = 'markdownH6' }`
-  DropBarIconKindMethod              `{ link = 'CmpItemKindMethod' }`
-  DropBarIconKindModule              `{ link = 'CmpItemKindModule' }`
-  DropBarIconKindNamespace           `{ link = 'NameSpace' }`
-  DropBarIconKindNull                `{ link = 'Constant' }`
-  DropBarIconKindNumber              `{ link = 'Number' }`
-  DropBarIconKindObject              `{ link = 'Statement' }`
-  DropBarIconKindOperator            `{ link = 'Operator' }`
-  DropBarIconKindPackage             `{ link = 'CmpItemKindModule' }`
-  DropBarIconKindProperty            `{ link = 'CmpItemKindProperty' }`
-  DropBarIconKindReference           `{ link = 'CmpItemKindReference' }`
-  DropBarIconKindRepeat              `{ link = 'Repeat' }`
-  DropBarIconKindScope               `{ link = 'NameSpace' }`
-  DropBarIconKindSpecifier           `{ link = 'Specifier' }`
-  DropBarIconKindStatement           `{ link = 'Statement' }`
-  DropBarIconKindString              `{ link = 'String' }`
-  DropBarIconKindStruct              `{ link = 'CmpItemKindStruct' }`
-  DropBarIconKindSwitchStatement     `{ link = 'Conditional' }`
-  DropBarIconKindType                `{ link = 'CmpItemKindClass' }`
-  DropBarIconKindTypeParameter       `{ link = 'CmpItemKindTypeParameter' }`
-  DropBarIconKindUnit                `{ link = 'CmpItemKindUnit' }`
-  DropBarIconKindValue               `{ link = 'Number' }`
-  DropBarIconKindVariable            `{ link = 'CmpItemKindVariable' }`
-  DropBarIconKindWhileStatement      `{ link = 'Repeat' }`
-  DropBarIconPair                    `{ link = 'String' }`
-  DropBarIconUIIndicator             `{ link = 'SpecialChar' }`
-  DropBarIconUIPickPivot             `{ link = 'Error' }`
-  DropBarIconUISeparator             `{ link = 'SpecialChar' }`
-  DropBarIconUISeparatorMenu         `{ link = 'DropBarIconUISeparator' }`
-  DropBarMenuCurrentContext          `{ link = 'PmenuSel' }`
-  DropBarMenuHoverEntry              `{ link = 'Visual' }`
-  DropBarMenuHoverIcon               `{ reverse = true }`
-  DropBarMenuHoverSymbol             `{ bold = true }`
-  DropBarMenuNormalFloat             `{ link = 'NormalFloat' }`
-  DropBarMenuSbar                    `{ link = 'PmenuSbar' }`
-  DropBarMenuThumb                   `{ link = 'PmenuThumb' }`
-  DropBarPreview                     `{ link = 'Visual' }`
-  DropBarMenuFloatBorder             `{ link = 'FloatBorder' }`
-  DropBarKindArray                   undefined
-  DropBarKindBoolean                 undefined
-  DropBarKindBreakStatement          undefined
-  DropBarKindCall                    undefined
-  DropBarKindCaseStatement           undefined
-  DropBarKindClass                   undefined
-  DropBarKindConstant                undefined
-  DropBarKindConstructor             undefined
-  DropBarKindContinueStatement       undefined
-  DropBarKindDeclaration             undefined
-  DropBarKindDelete                  undefined
-  DropBarKindDoStatement             undefined
-  DropBarKindElseStatement           undefined
-  DropBarKindEnum                    undefined
-  DropBarKindEnumMember              undefined
-  DropBarKindEvent                   undefined
-  DropBarKindField                   undefined
-  DropBarKindFile                    undefined
-  DropBarKindFolder                  undefined
-  DropBarKindForStatement            undefined
-  DropBarKindFunction                undefined
-  DropBarKindH1Marker                undefined
-  DropBarKindH2Marker                undefined
-  DropBarKindH3Marker                undefined
-  DropBarKindH4Marker                undefined
-  DropBarKindH5Marker                undefined
-  DropBarKindH6Marker                undefined
-  DropBarKindIdentifier              undefined
-  DropBarKindIfStatement             undefined
-  DropBarKindInterface               undefined
-  DropBarKindKeyword                 undefined
-  DropBarKindList                    undefined
-  DropBarKindMacro                   undefined
-  DropBarKindMarkdownH1              undefined
-  DropBarKindMarkdownH2              undefined
-  DropBarKindMarkdownH3              undefined
-  DropBarKindMarkdownH4              undefined
-  DropBarKindMarkdownH5              undefined
-  DropBarKindMarkdownH6              undefined
-  DropBarKindMethod                  undefined
-  DropBarKindModule                  undefined
-  DropBarKindNamespace               undefined
-  DropBarKindNull                    undefined
-  DropBarKindNumber                  undefined
-  DropBarKindObject                  undefined
-  DropBarKindOperator                undefined
-  DropBarKindPackage                 undefined
-  DropBarKindProperty                undefined
-  DropBarKindReference               undefined
-  DropBarKindRepeat                  undefined
-  DropBarKindScope                   undefined
-  DropBarKindSpecifier               undefined
-  DropBarKindStatement               undefined
-  DropBarKindString                  undefined
-  DropBarKindStruct                  undefined
-  DropBarKindSwitchStatement         undefined
-  DropBarKindType                    undefined
-  DropBarKindTypeParameter           undefined
-  DropBarKindUnit                    undefined
-  DropBarKindValue                   undefined
-  DropBarKindVariable                undefined
-  DropBarKindWhileStatement          undefined
+  DropBarCurrentContext            `{ link = 'Visual' }`
+  DropBarFzfMatch                  `{ link = 'Special' }`
+  DropBarHover                     `{ link = 'Visual' }`
+  DropBarIconKindDefault           `{ link = 'Special' }`
+  DropBarIconKindArray             `{ link = 'Operator' }`
+  DropBarIconKindBoolean           `{ link = 'Boolean' }`
+  DropBarIconKindBreakStatement    `{ link = 'Error' }`
+  DropBarIconKindCall              `{ link = 'Function' }`
+  DropBarIconKindCaseStatement     `{ link = 'Conditional' }`
+  DropBarIconKindClass             `{ link = 'Type' }`
+  DropBarIconKindConstant          `{ link = 'Constant' }`
+  DropBarIconKindConstructor       `{ link = '@constructor' }`
+  DropBarIconKindContinueStatement `{ link = 'Repeat' }`
+  DropBarIconKindDeclaration       `{ link = 'DropBarIconKindDefault' }`
+  DropBarIconKindDelete            `{ link = 'Error' }`
+  DropBarIconKindDoStatement       `{ link = 'Repeat' }`
+  DropBarIconKindElseStatement     `{ link = 'Conditional' }`
+  DropBarIconKindElement           `{ link = 'DropBarIconKindDefault' }`
+  DropBarIconKindEnum              `{ link = 'Constant' }`
+  DropBarIconKindEnumMember        `{ link = 'DropBarIconKindEnumMember' }`
+  DropBarIconKindEvent             `{ link = '@lsp.type.event' }`
+  DropBarIconKindField             `{ link = 'DropBarIconKindDefault' }`
+  DropBarIconKindFile              `{ link = 'DropBarIconKindFolder' }`
+  DropBarIconKindFolder            `{ link = 'Directory' }`
+  DropBarIconKindForStatement      `{ link = 'Repeat' }`
+  DropBarIconKindFunction          `{ link = 'Function' }`
+  DropBarIconKindH1Marker          `{ link = 'markdownH1' }`
+  DropBarIconKindH2Marker          `{ link = 'markdownH2' }`
+  DropBarIconKindH3Marker          `{ link = 'markdownH3' }`
+  DropBarIconKindH4Marker          `{ link = 'markdownH4' }`
+  DropBarIconKindH5Marker          `{ link = 'markdownH5' }`
+  DropBarIconKindH6Marker          `{ link = 'markdownH6' }`
+  DropBarIconKindIdentifier        `{ link = 'DropBarIconKindDefault' }`
+  DropBarIconKindIfStatement       `{ link = 'Conditional' }`
+  DropBarIconKindInterface         `{ link = 'Type' }`
+  DropBarIconKindKeyword           `{ link = '@keyword' }`
+  DropBarIconKindList              `{ link = 'Operator' }`
+  DropBarIconKindMacro             `{ link = 'Macro' }`
+  DropBarIconKindMarkdownH1        `{ link = 'markdownH1' }`
+  DropBarIconKindMarkdownH2        `{ link = 'markdownH2' }`
+  DropBarIconKindMarkdownH3        `{ link = 'markdownH3' }`
+  DropBarIconKindMarkdownH4        `{ link = 'markdownH4' }`
+  DropBarIconKindMarkdownH5        `{ link = 'markdownH5' }`
+  DropBarIconKindMarkdownH6        `{ link = 'markdownH6' }`
+  DropBarIconKindMethod            `{ link = 'Function' }`
+  DropBarIconKindModule            `{ link = '@module' }`
+  DropBarIconKindNamespace         `{ link = '@lsp.type.namespace' }`
+  DropBarIconKindNull              `{ link = 'Constant' }`
+  DropBarIconKindNumber            `{ link = 'Number' }`
+  DropBarIconKindObject            `{ link = 'Statement' }`
+  DropBarIconKindOperator          `{ link = 'Operator' }`
+  DropBarIconKindPackage           `{ link = '@module' }`
+  DropBarIconKindPair              `{ link = 'DropBarIconKindDefault' }`
+  DropBarIconKindProperty          `{ link = 'DropBarIconKindDefault' }`
+  DropBarIconKindReference         `{ link = 'DropBarIconKindDefault' }`
+  DropBarIconKindRepeat            `{ link = 'Repeat' }`
+  DropBarIconKindRuleSet           `{ link = '@lsp.type.namespace' }`
+  DropBarIconKindScope             `{ link = '@lsp.type.namespace' }`
+  DropBarIconKindSpecifier         `{ link = '@keyword' }`
+  DropBarIconKindStatement         `{ link = 'Statement' }`
+  DropBarIconKindString            `{ link = '@string' }`
+  DropBarIconKindStruct            `{ link = 'Type' }`
+  DropBarIconKindSwitchStatement   `{ link = 'Conditional' }`
+  DropBarIconKindTerminal          `{ link = 'Number' }`
+  DropBarIconKindType              `{ link = 'Type' }`
+  DropBarIconKindTypeParameter     `{ link = 'DropBarIconKindDefault' }`
+  DropBarIconKindUnit              `{ link = 'DropBarIconKindDefault' }`
+  DropBarIconKindValue             `{ link = 'Number' }`
+  DropBarIconKindVariable          `{ link = 'DropBarIconKindDefault' }`
+  DropBarIconKindWhileStatement    `{ link = 'Repeat' }`
+  DropBarIconUIIndicator           `{ link = 'SpecialChar' }`
+  DropBarIconUIPickPivot           `{ link = 'Error' }`
+  DropBarIconUISeparator           `{ link = 'Comment' }`
+  DropBarIconUISeparatorMenu       `{ link = 'DropBarIconUISeparator' }`
+  DropBarMenuCurrentContext        `{ link = 'PmenuSel' }`
+  DropBarMenuFloatBorder           `{ link = 'FloatBorder' }`
+  DropBarMenuHoverEntry            `{ link = 'IncSearch' }`
+  DropBarMenuHoverIcon             `{ reverse = true }`
+  DropBarMenuHoverSymbol           `{ bold = true }`
+  DropBarMenuNormalFloat           `{ link = 'NormalFloat' }`
+  DropBarMenuSbar                  `{ link = 'PmenuSbar' }`
+  DropBarMenuThumb                 `{ link = 'PmenuThumb' }`
+  DropBarPreview                   `{ link = 'Visual' }`
+  DropBarKindArray                 undefined
+  DropBarKindBoolean               undefined
+  DropBarKindBreakStatement        undefined
+  DropBarKindCall                  undefined
+  DropBarKindCaseStatement         undefined
+  DropBarKindClass                 undefined
+  DropBarKindConstant              undefined
+  DropBarKindConstructor           undefined
+  DropBarKindContinueStatement     undefined
+  DropBarKindDeclaration           undefined
+  DropBarKindDelete                undefined
+  DropBarKindDoStatement           undefined
+  DropBarKindElseStatement         undefined
+  DropBarKindElement               undefined
+  DropBarKindEnum                  undefined
+  DropBarKindEnumMember            undefined
+  DropBarKindEvent                 undefined
+  DropBarKindField                 undefined
+  DropBarKindFile                  undefined
+  DropBarKindFolder                undefined
+  DropBarKindForStatement          undefined
+  DropBarKindFunction              undefined
+  DropBarKindH1Marker              undefined
+  DropBarKindH2Marker              undefined
+  DropBarKindH3Marker              undefined
+  DropBarKindH4Marker              undefined
+  DropBarKindH5Marker              undefined
+  DropBarKindH6Marker              undefined
+  DropBarKindIdentifier            undefined
+  DropBarKindIfStatement           undefined
+  DropBarKindInterface             undefined
+  DropBarKindKeyword               undefined
+  DropBarKindList                  undefined
+  DropBarKindMacro                 undefined
+  DropBarKindMarkdownH1            undefined
+  DropBarKindMarkdownH2            undefined
+  DropBarKindMarkdownH3            undefined
+  DropBarKindMarkdownH4            undefined
+  DropBarKindMarkdownH5            undefined
+  DropBarKindMarkdownH6            undefined
+  DropBarKindMethod                undefined
+  DropBarKindModule                undefined
+  DropBarKindNamespace             undefined
+  DropBarKindNull                  undefined
+  DropBarKindNumber                undefined
+  DropBarKindObject                undefined
+  DropBarKindOperator              undefined
+  DropBarKindPackage               undefined
+  DropBarKindPair                  undefined
+  DropBarKindProperty              undefined
+  DropBarKindReference             undefined
+  DropBarKindRepeat                undefined
+  DropBarKindRuleSet               undefined
+  DropBarKindScope                 undefined
+  DropBarKindSpecifier             undefined
+  DropBarKindStatement             undefined
+  DropBarKindString                undefined
+  DropBarKindStruct                undefined
+  DropBarKindSwitchStatement       undefined
+  DropBarKindTerminal              undefined
+  DropBarKindType                  undefined
+  DropBarKindTypeParameter         undefined
+  DropBarKindUnit                  undefined
+  DropBarKindValue                 undefined
+  DropBarKindVariable              undefined
+  DropBarKindWhileStatement        undefined
 
 
 ==============================================================================
