@@ -281,8 +281,9 @@ function dropbar_symbol_t:bytewidth()
 end
 
 ---Jump to the start of the symbol associated with the winbar symbol
+---@param reorient boolean? whether to set view after jumping, default true
 ---@return nil
-function dropbar_symbol_t:jump()
+function dropbar_symbol_t:jump(reorient)
   if not self.range or not self.win then
     return
   end
@@ -291,9 +292,11 @@ function dropbar_symbol_t:jump()
     self.range.start.line + 1,
     self.range.start.character,
   })
-  vim.api.nvim_win_call(self.win, function()
-    configs.opts.symbol.jump.reorient(self.win, self.range)
-  end)
+  if reorient ~= false then
+    vim.api.nvim_win_call(self.win, function()
+      configs.opts.symbol.jump.reorient(self.win, self.range)
+    end)
+  end
 end
 
 ---Preview the symbol in the source window

@@ -72,7 +72,7 @@ function M.goto_context_start(count)
     end
     current_sym = prev_sym
   end
-  current_sym:jump()
+  current_sym:jump(false)
 end
 
 ---Open the menu of current context to select the next context
