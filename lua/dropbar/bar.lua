@@ -1,25 +1,6 @@
 local configs = require('dropbar.configs')
 local utils = require('dropbar.utils')
 
----Add highlight to a string
----@param str string
----@param hlgroup string?
----@return string
-local function hl(str, hlgroup)
-  if not hlgroup then
-    return str
-  end
-  return string.format('%%#%s#%s%%*', hlgroup, str or '')
-end
-
----Make a dropbar string clickable
----@param str string
----@param callback string
----@return string
-local function make_clickable(str, callback)
-  return string.format('%%@%s@%s%%X', callback, str)
-end
-
 ---@alias dropbar_symbol_range_t lsp_range_t
 
 ---@class dropbar_symbol_t
@@ -242,10 +223,10 @@ function dropbar_symbol_t:cat(plain)
   -- Escape `%` characters to prevent unintended statusline evaluation
   local icon_escaped = self.icon:gsub('%%', '%%%%')
   local name_escaped = self.name:gsub('%%', '%%%%')
-  local icon_highlighted = hl(icon_escaped, self.icon_hl)
-  local name_highlighted = hl(name_escaped, self.name_hl)
+  local icon_highlighted = utils.bar.hl(icon_escaped, self.icon_hl)
+  local name_highlighted = utils.bar.hl(name_escaped, self.name_hl)
   if self.on_click and self.bar_idx then
-    self.cache.decorated_str = make_clickable(
+    self.cache.decorated_str = utils.bar.make_clickable(
       icon_highlighted .. name_highlighted,
       string.format(
         'v:lua.dropbar.callbacks.buf%s.win%s.fn%s',
@@ -514,7 +495,7 @@ function dropbar_t:cat(plain)
   result = result and padding_left .. result .. padding_right or ''
   -- Must add highlights to padding when `plain` is false, else nvim will
   -- automatically truncate it
-  return plain and result or hl(result, '')
+  return plain and result or utils.bar.hl(result, '')
 end
 
 ---Reevaluate dropbar string from components and redraw dropbar
