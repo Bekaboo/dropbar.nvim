@@ -243,7 +243,6 @@ behavior of the plugin:
 
             {
 	      'CursorMoved',
-	      'CursorMovedI',
 	      'WinEnter',
 	      'WinResized',
             }
@@ -257,7 +256,7 @@ behavior of the plugin:
 	      'BufModifiedSet',
 	      'FileChangedShellPost',
 	      'TextChanged',
-	      'TextChangedI',
+	      'ModeChanged',
 	    }
 <
 - `opts.general.update_events.global`: `string[]`
