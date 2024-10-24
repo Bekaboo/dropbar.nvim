@@ -1,5 +1,24 @@
 local M = {}
 
+---Add highlight to a string
+---@param str string
+---@param hlgroup string?
+---@return string
+function M.hl(str, hlgroup)
+  if not hlgroup then
+    return str
+  end
+  return string.format('%%#%s#%s%%*', hlgroup, str or '')
+end
+
+---Make a dropbar string clickable
+---@param str string
+---@param callback string
+---@return string
+function M.make_clickable(str, callback)
+  return string.format('%%@%s@%s%%X', callback, str)
+end
+
 ---Get dropbar
 --- - If only `opts.win` is specified, return the dropbar attached the window;
 --- - If only `opts.buf` is specified, return all dropbars attached the buffer;
