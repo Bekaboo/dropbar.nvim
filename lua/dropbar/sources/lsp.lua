@@ -265,30 +265,42 @@ end
 ---Update LSP symbols from an LSP client
 ---Side effect: update symbol_list
 ---@param buf integer buffer handler
----@param client lsp_client_t LSP client
 ---@param ttl integer? limit the number of recursive requests, default 60
-local function update_symbols(buf, client, ttl)
+local function update_symbols(buf, ttl)
   ttl = ttl or configs.opts.sources.lsp.request.ttl_init
-  if
-    ttl <= 0
-    or not vim.api.nvim_buf_is_valid(buf)
-    or not vim.b[buf].dropbar_lsp_attached
-  then
+  if ttl <= 0 or not vim.api.nvim_buf_is_valid(buf) then
     lsp_buf_symbols[buf] = nil
     return
   end
-  local textdocument_params = vim.lsp.util.make_text_document_params(buf)
+
+  local function _defer_update_symbols()
+    vim.defer_fn(function()
+      update_symbols(buf, ttl - 1)
+    end, configs.opts.sources.lsp.request.interval)
+  end
+
+  local client = vim.tbl_filter(
+    function(client)
+      return client.supports_method('textDocument/documentSymbol')
+    end,
+    vim.lsp.get_clients({
+      bufnr = buf,
+    })
+  )[1]
+  if not client then
+    _defer_update_symbols()
+    return
+  end
+
   client.request(
     'textDocument/documentSymbol',
-    { textDocument = textdocument_params },
+    { textDocument = vim.lsp.util.make_text_document_params(buf) },
     function(err, symbols, _)
       if err or not symbols or vim.tbl_isempty(symbols) then
-        vim.defer_fn(function()
-          update_symbols(buf, client, ttl - 1)
-        end, configs.opts.sources.lsp.request.interval)
-      else -- Update symbol_list
-        lsp_buf_symbols[buf] = unify(symbols)
+        _defer_update_symbols()
+        return
       end
+      lsp_buf_symbols[buf] = unify(symbols)
     end,
     buf
   )
@@ -300,21 +312,16 @@ local function attach(buf)
   if vim.b[buf].dropbar_lsp_attached then
     return
   end
-  local function _update()
-    local client = vim.tbl_filter(function(client)
-      return client.supports_method('textDocument/documentSymbol')
-    end, vim.lsp.get_clients({ bufnr = buf }))[1]
-    update_symbols(buf, client)
-  end
-  vim.b[buf].dropbar_lsp_attached = vim.api.nvim_create_autocmd(
-    { 'TextChanged', 'TextChangedI' },
-    {
+
+  update_symbols(buf)
+  vim.b[buf].dropbar_lsp_attached =
+    vim.api.nvim_create_autocmd(configs.opts.general.update_events.buf, {
       group = groupid,
       buffer = buf,
-      callback = _update,
-    }
-  )
-  _update()
+      callback = function(info)
+        update_symbols(info.buf)
+      end,
+    })
 end
 
 ---Detach LSP symbol getter from buffer
