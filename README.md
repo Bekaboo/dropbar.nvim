@@ -284,7 +284,6 @@ vim.ui.select = require('dropbar.utils.menu').select
       update_events = {
         win = {
           'CursorMoved',
-          'CursorMovedI',
           'WinEnter',
           'WinResized',
         },
@@ -292,7 +291,7 @@ vim.ui.select = require('dropbar.utils.menu').select
           'BufModifiedSet',
           'FileChangedShellPost',
           'TextChanged',
-          'TextChangedI',
+          'ModeChanged',
         },
         global = {
           'DirChanged',
@@ -958,7 +957,6 @@ general behavior of the plugin:
     ```lua
     {
       'CursorMoved',
-      'CursorMovedI',
       'WinEnter',
       'WinResized',
     }
@@ -972,7 +970,7 @@ general behavior of the plugin:
       'BufModifiedSet',
       'FileChangedShellPost',
       'TextChanged',
-      'TextChangedI',
+      'ModeChanged',
     }
     ```
 - `opts.general.update_events.global`: `string[]`
