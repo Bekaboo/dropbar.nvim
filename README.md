@@ -302,8 +302,56 @@ M.opts = {
   icons = {
     enable = true,
     kinds = {
-      use_mini_icons = false,
-      use_devicons = true,
+      ---Directory icon and highlighting getter, set to `false` to disable
+      ---@param path string path to the directory
+      ---@return string: icon for the directory
+      ---@return string?: highlight group for the icon
+      ---@type fun(path: string): string, string?|false
+      dir_icon = function(_)
+        return M.opts.icons.kinds.symbols.Folder, 'DropBarIconKindFolder'
+      end,
+      ---File icon and highlighting getter, set to `false` to disable
+      ---@param path string path to the file
+      ---@return string: icon for the file
+      ---@return string?: highlight group for the icon
+      ---@type fun(path: string): string, string?|false
+      file_icon = function(path)
+        local icon_kind_opts = M.opts.icons.kinds
+        local file_icon = icon_kind_opts.symbols.File
+        local file_icon_hl = 'DropBarIconKindFile'
+        local devicons_ok, devicons = pcall(require, 'nvim-web-devicons')
+        if not devicons_ok then
+          return file_icon, file_icon_hl
+        end
+
+        -- Try to find icon using the filename, explicitly disable the
+        -- default icon so that we can try to find the icon using the
+        -- filetype if the filename does not have a corresponding icon
+        local devicon, devicon_hl = devicons.get_icon(
+          vim.fs.basename(path),
+          vim.fn.fnamemodify(path, ':e'),
+          { default = false }
+        )
+
+        -- No corresponding devicon found using the filename, try finding icon
+        -- with filetype if the file is loaded as a buf in nvim
+        if not devicon then
+          ---@type integer?
+          local buf = vim.iter(vim.api.nvim_list_bufs()):find(function(buf)
+            return vim.api.nvim_buf_get_name(buf) == path
+          end)
+          if buf then
+            local filetype =
+              vim.api.nvim_get_option_value('filetype', { buf = buf })
+            devicon, devicon_hl = devicons.get_icon_by_filetype(filetype)
+          end
+        end
+
+        file_icon = devicon and devicon .. ' ' or file_icon
+        file_icon_hl = devicon_hl
+
+        return file_icon, file_icon_hl
+      end,
       symbols = {
         Array = '󰅪 ',
         Boolean = ' ',
@@ -683,37 +731,37 @@ M.opts = {
             return 2 -- left and right border
           end
 
-          local left, right = 1, 1
-          if
-            (#border == 1 and border[1] == '')
-            or (#border == 4 and border[4] == '')
-            or (#border == 8 and border[8] == '')
-          then
-            left = 0
-          end
-          if
-            (#border == 1 and border[1] == '')
-            or (#border == 4 and border[4] == '')
-            or (#border == 8 and border[4] == '')
-          then
-            right = 0
-          end
-          return left + right
+        local left, right = 1, 1
+        if
+          (#border == 1 and border[1] == '')
+          or (#border == 4 and border[4] == '')
+          or (#border == 8 and border[8] == '')
+        then
+          left = 0
         end
-        local menu_width = menu._win_configs.width
-          + border_width(menu._win_configs.border)
-        local self_width = menu._win_configs.width
-        local self_border = border_width(
-          (
-            M.opts.fzf.win_configs
-            and M.eval(M.opts.fzf.win_configs.border, menu)
-          )
-            or (menu.fzf_win_configs and M.eval(
-              menu.fzf_win_configs.border,
-              menu
-            ))
-            or menu._win_configs.border
+        if
+          (#border == 1 and border[1] == '')
+          or (#border == 4 and border[4] == '')
+          or (#border == 8 and border[4] == '')
+        then
+          right = 0
+        end
+        return left + right
+      end
+      local menu_width = menu._win_configs.width
+        + border_width(menu._win_configs.border)
+      local self_width = menu._win_configs.width
+      local self_border = border_width(
+        (
+          M.opts.fzf.win_configs
+          and M.eval(M.opts.fzf.win_configs.border, menu)
         )
+          or (menu.fzf_win_configs and M.eval(
+            menu.fzf_win_configs.border,
+            menu
+          ))
+          or menu._win_configs.border
+      )
 
         if self_width + self_border > menu_width then
           return self_width - self_border
@@ -888,9 +936,6 @@ M.opts = {
       ---@type string|fun(buf: integer): string
       icon = function(buf)
         local icon = M.opts.icons.kinds.symbols.Terminal
-        if M.opts.icons.kinds.use_mini_icons and _G.MiniIcons then
-          icon = require('mini.icons').get('filetype', vim.bo[buf].filetype) or icon
-        end
         if M.opts.icons.kinds.use_devicons then
           icon = require('nvim-web-devicons').get_icon_by_filetype(
             vim.bo[buf].filetype
@@ -1413,9 +1458,22 @@ used by the plugin:
 - `opts.icons.enable`: `boolean`
   - Whether to enable icons
   - Default: `true`
-- `opts.icons.kinds.use_devicons`: `boolean`
-  - Whether to use [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons) to show icons for different filetypes
-  - Default: `true`
+- `opts.icons.kinds.dir_icon`: `fun(path: string): string, string?|false`
+  - Directory icon and highlighting getter, set to `false` to disable
+  - Default:
+    ```lua
+    function(_)
+      return M.opts.icons.kinds.symbols.Folder, 'DropBarIconKindFolder'
+    end
+    ```
+- `opts.icons.kinds.file_icon`: `fun(path: string): string, string?|false`
+  - File icon and highlighting getter, set to `false` to disable
+  - Default:
+    ```lua
+    function(path)
+      return M.opts.icons.kinds.symbols.File, 'DropBarIconKindFile'
+    end
+    ```
 - `opts.icons.kinds.symbols`: `table<string, string>`
   - Table mapping the different kinds of symbols to their corresponding icons
   - Default:
@@ -1724,14 +1782,8 @@ Thanks [@willothy](https://github.com/willothy) for implementing this.
   - Icon to show before terminal names
   - Default:
     ```lua
-    icon = function(buf)
-      local icon = M.opts.icons.kinds.symbols.Terminal
-      if M.opts.icons.kinds.use_devicons then
-        icon = require('nvim-web-devicons').get_icon_by_filetype(
-          vim.bo[buf].filetype
-        ) or icon
-      end
-      return icon
+    function(_)
+      return M.opts.icons.kinds.symbols.Terminal or ''
     end
     ```
 

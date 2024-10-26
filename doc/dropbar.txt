@@ -684,12 +684,22 @@ by the plugin:
 - `opts.icons.enable`: `boolean`
     - Whether to enable icons
     - Default: `true`
-- `opts.icons.kinds.use_devicons`: `boolean`
-    - Whether to use nvim-web-devicons
-      <https://github.com/nvim-tree/nvim-web-devicons> to show icons for
-      different filetypes
-    - Default: `true`
+- `opts.icons.kinds.dir_icon`: `fun(path: string): string, string?|false`
+  - Directory icon and highlighting getter, set to `false` to disable
+  - Default: >lua
 
+	  function(_)
+	    return M.opts.icons.kinds.symbols.Folder, 'DropBarIconKindFolder'
+	  end
+<
+- `opts.icons.kinds.file_icon`: `fun(path: string): string, string?|false`
+  - File icon and highlighting getter, set to `false` to disable
+  - Default: >lua
+
+	  function(path)
+	    return M.opts.icons.kinds.symbols.File, 'DropBarIconKindFile'
+	  end
+<
 - `opts.icons.kinds.symbols`: `table<string, string>`
     - Table mapping the different kinds of symbols to their corresponding
       icons
@@ -986,18 +996,12 @@ MARKDOWN                      *dropbar-configuration-options-sources-markdown*
 
 TERMINAL                      *dropbar-configuration-options-sources-terminal*
 
-- `opts.sources.terminal.icon`: `string` or `fun(buf: integer): string`
+- `opts.sources.terminal.icon`: `string|fun(buf: integer): string`
   - Icon to show before terminal names
   - Default: >lua
 
-	  icon = function(buf)
-	    local icon = M.opts.icons.kinds.symbols.Terminal
-	    if M.opts.icons.kinds.use_devicons then
-	      icon = require('nvim-web-devicons').get_icon_by_filetype(
-		vim.bo[buf].filetype
-	      ) or icon
-	    end
-	    return icon
+	  function(_)
+	    return M.opts.icons.kinds.symbols.Terminal or ' '
 	  end
 <
 - `opts.sources.terminal.name`: `string|fun(buf: integer): string`

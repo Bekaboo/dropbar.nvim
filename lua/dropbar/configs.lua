@@ -7,8 +7,56 @@ M.opts = {
   icons = {
     enable = true,
     kinds = {
-      use_mini_icons = false,
-      use_devicons = true,
+      ---Directory icon and highlighting getter, set to `false` to disable
+      ---@param path string path to the directory
+      ---@return string: icon for the directory
+      ---@return string?: highlight group for the icon
+      ---@type fun(path: string): string, string?|false
+      dir_icon = function(_)
+        return M.opts.icons.kinds.symbols.Folder, 'DropBarIconKindFolder'
+      end,
+      ---File icon and highlighting getter, set to `false` to disable
+      ---@param path string path to the file
+      ---@return string: icon for the file
+      ---@return string?: highlight group for the icon
+      ---@type fun(path: string): string, string?|false
+      file_icon = function(path)
+        local icon_kind_opts = M.opts.icons.kinds
+        local file_icon = icon_kind_opts.symbols.File
+        local file_icon_hl = 'DropBarIconKindFile'
+        local devicons_ok, devicons = pcall(require, 'nvim-web-devicons')
+        if not devicons_ok then
+          return file_icon, file_icon_hl
+        end
+
+        -- Try to find icon using the filename, explicitly disable the
+        -- default icon so that we can try to find the icon using the
+        -- filetype if the filename does not have a corresponding icon
+        local devicon, devicon_hl = devicons.get_icon(
+          vim.fs.basename(path),
+          vim.fn.fnamemodify(path, ':e'),
+          { default = false }
+        )
+
+        -- No corresponding devicon found using the filename, try finding icon
+        -- with filetype if the file is loaded as a buf in nvim
+        if not devicon then
+          ---@type integer?
+          local buf = vim.iter(vim.api.nvim_list_bufs()):find(function(buf)
+            return vim.api.nvim_buf_get_name(buf) == path
+          end)
+          if buf then
+            local filetype =
+                vim.api.nvim_get_option_value('filetype', { buf = buf })
+            devicon, devicon_hl = devicons.get_icon_by_filetype(filetype)
+          end
+        end
+
+        file_icon = devicon and devicon .. ' ' or file_icon
+        file_icon_hl = devicon_hl
+
+        return file_icon, file_icon_hl
+      end,
       symbols = {
         Array = '󰅪 ',
         Boolean = ' ',
@@ -120,8 +168,8 @@ M.opts = {
         local win_height = vim.api.nvim_win_get_height(win)
         local topline = range.start.line - math.floor(win_height / 4)
         if
-          topline > view.topline
-          and topline + win_height < vim.fn.line('$')
+            topline > view.topline
+            and topline + win_height < vim.fn.line('$')
         then
           view.topline = topline
           vim.fn.winrestview(view)
@@ -133,11 +181,11 @@ M.opts = {
     ---@type boolean|fun(buf: integer, win: integer, info: table?): boolean
     enable = function(buf, win, _)
       return vim.api.nvim_buf_is_valid(buf)
-        and vim.api.nvim_win_is_valid(win)
-        and vim.wo[win].winbar == ''
-        and vim.fn.win_gettype(win) == ''
-        and vim.bo[buf].ft ~= 'help'
-        and ((pcall(vim.treesitter.get_parser, buf)) and true or false)
+          and vim.api.nvim_win_is_valid(win)
+          and vim.wo[win].winbar == ''
+          and vim.fn.win_gettype(win) == ''
+          and vim.bo[buf].ft ~= 'help'
+          and ((pcall(vim.treesitter.get_parser, buf)) and true or false)
     end,
     attach_events = {
       'BufWinEnter',
@@ -281,18 +329,18 @@ M.opts = {
         return menu.prev_menu
             and menu.prev_menu.clicked_at
             and menu.prev_menu.clicked_at[1] - vim.fn.line('w0')
-          or 0
+            or 0
       end,
       ---@param menu dropbar_menu_t
       col = function(menu)
         if menu.prev_menu then
           return menu.prev_menu._win_configs.width
-            + (
-              menu.prev_menu.scrollbar
+              + (
+                menu.prev_menu.scrollbar
                 and menu.prev_menu.scrollbar.background
                 and 1
-              or 0
-            )
+                or 0
+              )
         end
         local mouse = vim.fn.getmousepos()
         local bar = utils.bar.get({ win = menu.prev_win })
@@ -305,7 +353,7 @@ M.opts = {
       relative = 'win',
       win = function(menu)
         return menu.prev_menu and menu.prev_menu.win
-          or vim.fn.getmousepos().winid
+            or vim.fn.getmousepos().winid
       end,
       height = function(menu)
         return math.max(
@@ -313,7 +361,7 @@ M.opts = {
           math.min(
             #menu.entries,
             vim.go.pumheight ~= 0 and vim.go.pumheight
-              or math.ceil(vim.go.lines / 4)
+            or math.ceil(vim.go.lines / 4)
           )
         )
       end,
@@ -358,34 +406,34 @@ M.opts = {
 
           local left, right = 1, 1
           if
-            (#border == 1 and border[1] == '')
-            or (#border == 4 and border[4] == '')
-            or (#border == 8 and border[8] == '')
+              (#border == 1 and border[1] == '')
+              or (#border == 4 and border[4] == '')
+              or (#border == 8 and border[8] == '')
           then
             left = 0
           end
           if
-            (#border == 1 and border[1] == '')
-            or (#border == 4 and border[4] == '')
-            or (#border == 8 and border[4] == '')
+              (#border == 1 and border[1] == '')
+              or (#border == 4 and border[4] == '')
+              or (#border == 8 and border[4] == '')
           then
             right = 0
           end
           return left + right
         end
         local menu_width = menu._win_configs.width
-          + border_width(menu._win_configs.border)
+            + border_width(menu._win_configs.border)
         local self_width = menu._win_configs.width
         local self_border = border_width(
           (
             M.opts.fzf.win_configs
             and M.eval(M.opts.fzf.win_configs.border, menu)
           )
-            or (menu.fzf_win_configs and M.eval(
-              menu.fzf_win_configs.border,
-              menu
-            ))
-            or menu._win_configs.border
+          or (menu.fzf_win_configs and M.eval(
+            menu.fzf_win_configs.border,
+            menu
+          ))
+          or menu._win_configs.border
         )
 
         if self_width + self_border > menu_width then
@@ -397,9 +445,9 @@ M.opts = {
       row = function(menu)
         local menu_border = menu._win_configs.border
         if
-          type(menu_border) == 'string'
-          and menu_border ~= 'shadow'
-          and menu_border ~= 'none'
+            type(menu_border) == 'string'
+            and menu_border ~= 'shadow'
+            and menu_border ~= 'none'
         then
           return menu._win_configs.height + 1
         elseif menu_border == 'none' then
@@ -407,9 +455,9 @@ M.opts = {
         end
         local len_menu_border = #menu_border
         if
-          len_menu_border == 1 and menu_border[1] ~= ''
-          or (len_menu_border == 2 or len_menu_border == 4) and menu_border[2] ~= ''
-          or len_menu_border == 8 and menu_border[8] ~= ''
+            len_menu_border == 1 and menu_border[1] ~= ''
+            or (len_menu_border == 2 or len_menu_border == 4) and menu_border[2] ~= ''
+            or len_menu_border == 8 and menu_border[8] ~= ''
         then
           return menu._win_configs.height + 1
         else
@@ -419,14 +467,14 @@ M.opts = {
       col = function(menu)
         local menu_border = menu._win_configs.border
         if
-          type(menu_border) == 'string'
-          and menu_border ~= 'shadow'
-          and menu_border ~= 'none'
+            type(menu_border) == 'string'
+            and menu_border ~= 'shadow'
+            and menu_border ~= 'none'
         then
           return -1
         end
         if
-          type(menu_border) == 'table' and menu_border[#menu_border] ~= ''
+            type(menu_border) == 'table' and menu_border[#menu_border] ~= ''
         then
           return -1
         end
@@ -473,10 +521,10 @@ M.opts = {
         -- If mouse is not in the menu window or on the border, end preview
         -- and clear hover highlights
         if
-          mouse.winid ~= menu.win
-          or mouse.line <= 0
-          or mouse.column <= 0
-          or mouse.winrow > (#menu.entries + 1)
+            mouse.winid ~= menu.win
+            or mouse.line <= 0
+            or mouse.column <= 0
+            or mouse.winrow > (#menu.entries + 1)
         then
           -- Find the root menu
           while menu and menu.prev_menu do
@@ -553,7 +601,7 @@ M.opts = {
       -- word with optional prefix and suffix: [#~!@\*&.]*[[:keyword:]]\+!\?
       -- word separators: \(->\)\+\|-\+\|\.\+\|:\+\|\s\+
       name_regex = [=[[#~!@\*&.]*[[:keyword:]]\+!\?]=]
-        .. [=[\(\(\(->\)\+\|-\+\|\.\+\|:\+\|\s\+\)\?[#~!@\*&.]*[[:keyword:]]\+!\?\)*]=],
+          .. [=[\(\(\(->\)\+\|-\+\|\.\+\|:\+\|\s\+\)\?[#~!@\*&.]*[[:keyword:]]\+!\?\)*]=],
       -- The order matters! The first match is used as the type
       -- of the treesitter symbol and used to show the icon
       -- Types listed below must have corresponding icons
@@ -632,9 +680,6 @@ M.opts = {
       ---@type string|fun(buf: integer): string
       icon = function(buf)
         local icon = M.opts.icons.kinds.symbols.Terminal
-        if M.opts.icons.kinds.use_mini_icons and _G.MiniIcons then
-          icon = require('mini.icons').get('filetype', vim.bo[buf].filetype) or icon
-        end
         if M.opts.icons.kinds.use_devicons then
           icon = require('nvim-web-devicons').get_icon_by_filetype(
             vim.bo[buf].filetype
@@ -660,16 +705,16 @@ function M.set(new_opts)
   -- Notify deprecated options
   if new_opts.general and islist(new_opts.general.update_events) then
     vim.api.nvim_echo({
-      { '[dropbar.nvim] ', 'Normal' },
-      { 'opts.general.update_events', 'WarningMsg' },
-      { ' is deprecated, please use:\n', 'Normal' },
-      { '               opts.general.update_events.win', 'WarningMsg' },
+      { '[dropbar.nvim] ',                                       'Normal' },
+      { 'opts.general.update_events',                            'WarningMsg' },
+      { ' is deprecated, please use:\n',                         'Normal' },
+      { '               opts.general.update_events.win',         'WarningMsg' },
       { ' for updating a winbar attached to a single window,\n', 'Normal' },
-      { '               opts.general.update_events.buf ', 'WarningMsg' },
-      { 'for updating all winbars attached to a buffer, or\n', 'Normal' },
-      { '               opts.general.update_events.global ', 'WarningMsg' },
-      { 'for updating all winbars in current nvim session ', 'Normal' },
-      { 'instead', 'Normal' },
+      { '               opts.general.update_events.buf ',        'WarningMsg' },
+      { 'for updating all winbars attached to a buffer, or\n',   'Normal' },
+      { '               opts.general.update_events.global ',     'WarningMsg' },
+      { 'for updating all winbars in current nvim session ',     'Normal' },
+      { 'instead',                                               'Normal' },
     }, true, {})
     new_opts.general.update_events = {
       win = new_opts.general.update_events,
@@ -678,12 +723,12 @@ function M.set(new_opts)
 
   if ((new_opts.sources or {}).treesitter or {}).name_pattern then
     vim.api.nvim_echo({
-      { '[dropbar.nvim] ', 'Normal' },
-      { 'opts.sources.treesitter.name_pattern', 'WarningMsg' },
-      { ' is deprecated.\n', 'Normal' },
-      { '[dropbar.nvim] ', 'Normal' },
-      { 'Please use ', 'Normal' },
-      { 'opts.sources.treesitter.name_regex ', 'WarningMsg' },
+      { '[dropbar.nvim] ',                               'Normal' },
+      { 'opts.sources.treesitter.name_pattern',          'WarningMsg' },
+      { ' is deprecated.\n',                             'Normal' },
+      { '[dropbar.nvim] ',                               'Normal' },
+      { 'Please use ',                                   'Normal' },
+      { 'opts.sources.treesitter.name_regex ',           'WarningMsg' },
       { 'instead to match ts node names with vim regex', 'Normal' },
     }, true, {})
     new_opts.sources.treesitter.name_pattern = nil
@@ -691,11 +736,11 @@ function M.set(new_opts)
 
   if (new_opts.general or {}).update_interval then
     vim.api.nvim_echo({
-      { '[dropbar.nvim] ', 'Normal' },
+      { '[dropbar.nvim] ',              'Normal' },
       { 'opts.general.update_interval', 'WarningMsg' },
-      { ' is deprecated, please use ', 'Normal' },
-      { 'opts.bar.update_debounce', 'WarningMsg' },
-      { ' instead', 'Normal' },
+      { ' is deprecated, please use ',  'Normal' },
+      { 'opts.bar.update_debounce',     'WarningMsg' },
+      { ' instead',                     'Normal' },
     }, true, {})
     new_opts.general.update_debounce = new_opts.general.update_interval
     new_opts.general.update_interval = nil
@@ -703,14 +748,27 @@ function M.set(new_opts)
 
   if new_opts.general then
     vim.api.nvim_echo({
-      { '[dropbar.nvim] ', 'Normal' },
-      { 'opts.general', 'WarningMsg' },
+      { '[dropbar.nvim] ',                                       'Normal' },
+      { 'opts.general',                                          'WarningMsg' },
       { ' is deprecated, its config fields have been moved to ', 'Normal' },
-      { 'opts.bar', 'WarningMsg' },
+      { 'opts.bar',                                              'WarningMsg' },
     }, true, {})
     new_opts.bar =
-      vim.tbl_deep_extend('force', new_opts.bar or {}, new_opts.general)
+        vim.tbl_deep_extend('force', new_opts.bar or {}, new_opts.general)
     new_opts.general = nil ---@diagnostic disable-line: inject-field
+  end
+
+  if (((new_opts or {}).icons or {}).kinds or {}).use_devicons ~= nil then
+    vim.api.nvim_echo({
+      { '[dropbar.nvim] ',                       'Normal' },
+      { 'opts.icons.kinds.use_devicons',         'WarningMsg' },
+      { ' is deprecated, please use ',           'Normal' },
+      { 'opts.icons.kinds.file_icon',            'WarningMsg' },
+      { ' and ',                                 'Normal' },
+      { 'opts.icons.kinds.folder_icon',          'WarningMsg' },
+      { ' to customize file or directory icons', 'Normal' },
+    }, true, {})
+    new_opts.icons.kinds.use_devicons = nil
   end
 
   if new_opts.icons and new_opts.icons.enable == false then
@@ -719,19 +777,19 @@ function M.set(new_opts)
         return ' '
       end,
     })
-    M.opts.icons.kinds.use_mini_icons = false
     M.opts.icons.kinds.use_devicons = false
     M.opts.icons.kinds.symbols = blank_icons
     M.opts.icons.ui.bar = blank_icons
     M.opts.icons.ui.menu = blank_icons
   end
+
   M.opts = vim.tbl_deep_extend('force', M.opts, new_opts)
 end
 
 ---Evaluate a dynamic option value (with type T|fun(...): T)
 ---@generic T
----@param opt T|fun(...): T
----@return T
+---@param opt? `T`|fun(...): `T`
+---@return `T`?
 function M.eval(opt, ...)
   if type(opt) == 'function' then
     return opt(...)
