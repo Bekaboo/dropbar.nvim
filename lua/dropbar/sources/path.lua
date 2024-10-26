@@ -1,61 +1,6 @@
 local configs = require('dropbar.configs')
 local bar = require('dropbar.bar')
 
----Get icon, icon highlight and name highlight of a path
----@param path string
----@return string icon
----@return string? icon_hl
----@return string? name_hl
-local function get_icon_and_hl(path)
-  local icon_kind_opts = configs.opts.icons.kinds
-  local stat = vim.uv.fs_stat(path)
-
-  if stat and stat.type == 'directory' then
-    return icon_kind_opts.symbols.Folder,
-      'DropBarIconKindFolder',
-      'DropBarKindFolder'
-  end
-
-  local file_icon = icon_kind_opts.symbols.File
-  local file_icon_hl = 'DropBarIconKindFile'
-  local file_name_hl = 'DropBarKindFile'
-  if not stat or not icon_kind_opts.use_devicons then
-    return file_icon, file_icon_hl, file_name_hl
-  end
-
-  local devicons_ok, devicons = pcall(require, 'nvim-web-devicons')
-  if not devicons_ok then
-    return file_icon, file_icon_hl, file_name_hl
-  end
-
-  -- Try to find icon using the filename, explicitly disable the
-  -- default icon so that we can try to find the icon using the
-  -- filetype if the filename does not have a corresponding icon
-  local devicon, devicon_hl = devicons.get_icon(
-    vim.fs.basename(path),
-    vim.fn.fnamemodify(path, ':e'),
-    { default = false }
-  )
-
-  -- No corresponding devicon found using the filename, try finding icon
-  -- with filetype if the file is loaded as a buf in nvim
-  if not devicon then
-    ---@type integer?
-    local buf = vim.iter(vim.api.nvim_list_bufs()):find(function(buf)
-      return vim.api.nvim_buf_get_name(buf) == path
-    end)
-    if buf then
-      local filetype = vim.api.nvim_get_option_value('filetype', { buf = buf })
-      devicon, devicon_hl = devicons.get_icon_by_filetype(filetype)
-    end
-  end
-
-  file_icon = devicon and devicon .. ' ' or file_icon
-  file_icon_hl = devicon_hl
-
-  return file_icon, file_icon_hl, file_name_hl
-end
-
 ---@param self dropbar_symbol_t
 local function preview_prepare_buf(self, path)
   local stat = vim.uv.fs_stat(path)
@@ -139,7 +84,18 @@ end
 ---@return dropbar_symbol_t
 local function convert(path, buf, win)
   local path_opts = configs.opts.sources.path
-  local icon, icon_hl, name_hl = get_icon_and_hl(path)
+  local icon_opts = configs.opts.icons
+  local icon ---@type string?
+  local icon_hl ---@type string?
+  local name_hl ---@type string?
+  local stat = vim.uv.fs_stat(path)
+  if stat and stat.type == 'directory' then
+    icon, icon_hl = configs.eval(icon_opts.kinds.dir_icon, path)
+    name_hl = 'DropBarKindDir'
+  else
+    icon, icon_hl = configs.eval(icon_opts.kinds.file_icon, path)
+    name_hl = 'DropBarKindFile'
+  end
 
   return bar.dropbar_symbol_t:new(setmetatable({
     buf = buf,

@@ -7,7 +7,56 @@ M.opts = {
   icons = {
     enable = true,
     kinds = {
-      use_devicons = true,
+      ---Directory icon and highlighting getter, set to `false` to disable
+      ---@param path string path to the directory
+      ---@return string: icon for the directory
+      ---@return string?: highlight group for the icon
+      ---@type fun(path: string): string, string?|false
+      dir_icon = function(_)
+        return M.opts.icons.kinds.symbols.Folder, 'DropBarIconKindFolder'
+      end,
+      ---File icon and highlighting getter, set to `false` to disable
+      ---@param path string path to the file
+      ---@return string: icon for the file
+      ---@return string?: highlight group for the icon
+      ---@type fun(path: string): string, string?|false
+      file_icon = function(path)
+        local icon_kind_opts = M.opts.icons.kinds
+        local file_icon = icon_kind_opts.symbols.File
+        local file_icon_hl = 'DropBarIconKindFile'
+        local devicons_ok, devicons = pcall(require, 'nvim-web-devicons')
+        if not devicons_ok then
+          return file_icon, file_icon_hl
+        end
+
+        -- Try to find icon using the filename, explicitly disable the
+        -- default icon so that we can try to find the icon using the
+        -- filetype if the filename does not have a corresponding icon
+        local devicon, devicon_hl = devicons.get_icon(
+          vim.fs.basename(path),
+          vim.fn.fnamemodify(path, ':e'),
+          { default = false }
+        )
+
+        -- No corresponding devicon found using the filename, try finding icon
+        -- with filetype if the file is loaded as a buf in nvim
+        if not devicon then
+          ---@type integer?
+          local buf = vim.iter(vim.api.nvim_list_bufs()):find(function(buf)
+            return vim.api.nvim_buf_get_name(buf) == path
+          end)
+          if buf then
+            local filetype =
+              vim.api.nvim_get_option_value('filetype', { buf = buf })
+            devicon, devicon_hl = devicons.get_icon_by_filetype(filetype)
+          end
+        end
+
+        file_icon = devicon and devicon .. ' ' or file_icon
+        file_icon_hl = devicon_hl
+
+        return file_icon, file_icon_hl
+      end,
       symbols = {
         Array = '󰅪 ',
         Boolean = ' ',
@@ -629,14 +678,8 @@ M.opts = {
     },
     terminal = {
       ---@type string|fun(buf: integer): string
-      icon = function(buf)
-        local icon = M.opts.icons.kinds.symbols.Terminal
-        if M.opts.icons.kinds.use_devicons then
-          icon = require('nvim-web-devicons').get_icon_by_filetype(
-            vim.bo[buf].filetype
-          ) or icon
-        end
-        return icon
+      icon = function(_)
+        return M.opts.icons.kinds.symbols.Terminal or ' '
       end,
       ---@type string|fun(buf: integer): string
       name = vim.api.nvim_buf_get_name,
@@ -709,24 +752,39 @@ function M.set(new_opts)
     new_opts.general = nil ---@diagnostic disable-line: inject-field
   end
 
+  if (((new_opts or {}).icons or {}).kinds or {}).use_devicons ~= nil then
+    vim.api.nvim_echo({
+      { '[dropbar.nvim] ', 'Normal' },
+      { 'opts.icons.kinds.use_devicons', 'WarningMsg' },
+      { ' is deprecated, please use ', 'Normal' },
+      { 'opts.icons.kinds.file_icon', 'WarningMsg' },
+      { ' and ', 'Normal' },
+      { 'opts.icons.kinds.folder_icon', 'WarningMsg' },
+      { ' to customize file or directory icons', 'Normal' },
+    }, true, {})
+    new_opts.icons.kinds.use_devicons = nil
+  end
+
   if new_opts.icons and new_opts.icons.enable == false then
     local blank_icons = setmetatable({}, {
       __index = function()
         return ' '
       end,
     })
-    M.opts.icons.kinds.use_devicons = false
+    M.opts.icons.kinds.dir_icon = false
+    M.opts.icons.kinds.file_icon = false
     M.opts.icons.kinds.symbols = blank_icons
     M.opts.icons.ui.bar = blank_icons
     M.opts.icons.ui.menu = blank_icons
   end
+
   M.opts = vim.tbl_deep_extend('force', M.opts, new_opts)
 end
 
 ---Evaluate a dynamic option value (with type T|fun(...): T)
 ---@generic T
----@param opt T|fun(...): T
----@return T
+---@param opt? `T`|fun(...): `T`
+---@return `T`?
 function M.eval(opt, ...)
   if type(opt) == 'function' then
     return opt(...)
