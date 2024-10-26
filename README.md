@@ -1735,8 +1735,9 @@ Thanks [@willothy](https://github.com/willothy) for implementing this.
     end
     ```
 
-- `opts.sources.terminal.name`: `string` or `fun(buf: integer): string`
+- `opts.sources.terminal.name`: `string|fun(buf: integer): string`
 
+  - Default: `vim.api.nvim_buf_get_name`
   - Easy to integrate with other plugins (for example, [toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim)):
     ```lua
     name = function(buf)
@@ -1750,7 +1751,6 @@ Thanks [@willothy](https://github.com/willothy) for implementing this.
       end
     end
     ```
-  - Default: `vim.api.nvim_buf_get_name`
 
 - `opts.sources.terminal.show_current: boolean`
   - Show the current terminal buffer in the menu
