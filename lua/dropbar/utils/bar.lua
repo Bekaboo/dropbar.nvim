@@ -123,7 +123,7 @@ end
 ---@param info table? info from autocmd
 function M.attach(buf, win, info)
   local configs = require('dropbar.configs')
-  if configs.eval(configs.opts.general.enable, buf, win, info) then
+  if configs.eval(configs.opts.bar.enable, buf, win, info) then
     vim.wo[win].winbar = '%{%v:lua.dropbar.get_dropbar_str()%}'
   end
 end

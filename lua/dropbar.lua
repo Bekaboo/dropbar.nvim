@@ -57,8 +57,8 @@ local function setup(opts)
   for _, win in ipairs(vim.api.nvim_list_wins()) do
     utils.bar.attach(vim.api.nvim_win_get_buf(win), win)
   end
-  if not vim.tbl_isempty(configs.opts.general.attach_events) then
-    vim.api.nvim_create_autocmd(configs.opts.general.attach_events, {
+  if not vim.tbl_isempty(configs.opts.bar.attach_events) then
+    vim.api.nvim_create_autocmd(configs.opts.bar.attach_events, {
       group = groupid,
       callback = function(info)
         -- Try attaching dropbar to all windows containing the buffer
@@ -80,8 +80,8 @@ local function setup(opts)
     end,
     desc = 'Remove dropbar from cache on buffer delete/unload/wipeout.',
   })
-  if not vim.tbl_isempty(configs.opts.general.update_events.win) then
-    vim.api.nvim_create_autocmd(configs.opts.general.update_events.win, {
+  if not vim.tbl_isempty(configs.opts.bar.update_events.win) then
+    vim.api.nvim_create_autocmd(configs.opts.bar.update_events.win, {
       group = groupid,
       callback = function(info)
         if info.event == 'WinResized' then
@@ -98,8 +98,8 @@ local function setup(opts)
       desc = 'Update a single winbar.',
     })
   end
-  if not vim.tbl_isempty(configs.opts.general.update_events.buf) then
-    vim.api.nvim_create_autocmd(configs.opts.general.update_events.buf, {
+  if not vim.tbl_isempty(configs.opts.bar.update_events.buf) then
+    vim.api.nvim_create_autocmd(configs.opts.bar.update_events.buf, {
       group = groupid,
       callback = function(info)
         utils.bar.exec('update', { buf = info.buf })
@@ -107,8 +107,8 @@ local function setup(opts)
       desc = 'Update all winbars associated with buf.',
     })
   end
-  if not vim.tbl_isempty(configs.opts.general.update_events.global) then
-    vim.api.nvim_create_autocmd(configs.opts.general.update_events.global, {
+  if not vim.tbl_isempty(configs.opts.bar.update_events.global) then
+    vim.api.nvim_create_autocmd(configs.opts.bar.update_events.global, {
       group = groupid,
       callback = function(info)
         if vim.tbl_isempty(utils.bar.get({ buf = info.buf })) then
