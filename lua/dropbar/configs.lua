@@ -24,36 +24,72 @@ M.opts = {
         local icon_kind_opts = M.opts.icons.kinds
         local file_icon = icon_kind_opts.symbols.File
         local file_icon_hl = 'DropBarIconKindFile'
-        local devicons_ok, devicons = pcall(require, 'nvim-web-devicons')
-        if not devicons_ok then
-          return file_icon, file_icon_hl
+
+        local function get_devicon_icon()
+          local devicons_ok, devicons = pcall(require, 'nvim-web-devicons')
+          if not devicons_ok then
+            return file_icon, file_icon_hl
+          end
+
+          -- Try to find icon using the filename, explicitly disable the
+          -- default icon so that we can try to find the icon using the
+          -- filetype if the filename does not have a corresponding icon
+          local devicon, devicon_hl = devicons.get_icon(
+            vim.fs.basename(path),
+            vim.fn.fnamemodify(path, ':e'),
+            { default = false }
+          )
+
+          -- No corresponding devicon found using the filename, try finding icon
+          -- with filetype if the file is loaded as a buf in nvim
+          if not devicon then
+            ---@type integer?
+            local buf = vim.iter(vim.api.nvim_list_bufs()):find(function(buf)
+              return vim.api.nvim_buf_get_name(buf) == path
+            end)
+            if buf then
+              local filetype =
+                vim.api.nvim_get_option_value('filetype', { buf = buf })
+              devicon, devicon_hl = devicons.get_icon_by_filetype(filetype)
+            end
+          end
+
+          return devicon, devicon_hl
         end
 
-        -- Try to find icon using the filename, explicitly disable the
-        -- default icon so that we can try to find the icon using the
-        -- filetype if the filename does not have a corresponding icon
-        local devicon, devicon_hl = devicons.get_icon(
-          vim.fs.basename(path),
-          vim.fn.fnamemodify(path, ':e'),
-          { default = false }
-        )
+        local function get_mini_icon()
+          local _, mini_icons = pcall(require, 'mini.icons')
+          ---@diagnostic disable-next-line: undefined-field
+          if not _G.MiniIcons then
+            return file_icon, file_icon_hl
+          end
 
-        -- No corresponding devicon found using the filename, try finding icon
-        -- with filetype if the file is loaded as a buf in nvim
-        if not devicon then
-          ---@type integer?
-          local buf = vim.iter(vim.api.nvim_list_bufs()):find(function(buf)
-            return vim.api.nvim_buf_get_name(buf) == path
-          end)
-          if buf then
-            local filetype =
-              vim.api.nvim_get_option_value('filetype', { buf = buf })
-            devicon, devicon_hl = devicons.get_icon_by_filetype(filetype)
+          -- Attempt to get icon by filename
+          local mini_icon, mini_icon_hl =
+            mini_icons.get('file', vim.fs.basename(path))
+
+          if not mini_icon then
+            -- If filename lookup fails, attempt to get icon by filetype
+            local buf = vim.fn.bufnr(path, true)
+            if buf ~= -1 then
+              local filetype = vim.api.nvim_buf_get_option(buf, 'filetype')
+              mini_icon, mini_icon_hl = mini_icons.get('filetype', filetype)
+            end
+            return mini_icon, mini_icon_hl
           end
         end
 
-        file_icon = devicon and devicon .. ' ' or file_icon
-        file_icon_hl = devicon_hl
+        -- Try getting icon with devicons first
+        local icon, icon_hl = get_devicon_icon()
+
+        -- If devicons is unavailable or no icon was found, fall back to mini.icons
+        if not icon then
+          icon, icon_hl = get_mini_icon()
+        end
+
+        -- Set final icon and highlight
+        file_icon = icon and icon .. ' ' or file_icon
+        file_icon_hl = icon_hl or file_icon_hl
 
         return file_icon, file_icon_hl
       end,
