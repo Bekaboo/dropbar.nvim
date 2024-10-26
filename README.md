@@ -1766,7 +1766,7 @@ Thanks [@willothy](https://github.com/willothy) for implementing this.
   - Default:
     ```lua
     function(_)
-      return M.opts.icons.kinds.symbols.Terminal or ''
+      return M.opts.icons.kinds.symbols.Terminal or ' '
     end
     ```
 
