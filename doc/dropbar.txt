@@ -20,12 +20,13 @@ CONTENTS                                           *dropbar-table-of-contents*
     5.1.2 Symbol                        |dropbar-configuration-options-symbol|
     5.1.3 Bar                              |dropbar-configuration-options-bar|
     5.1.4 Menu                            |dropbar-configuration-options-menu|
-    5.1.5 Sources                      |dropbar-configuration-options-sources|
-      5.1.5.1 Path                |dropbar-configuration-options-sources-path|
-      5.1.5.2 Treesitter    |dropbar-configuration-options-sources-treesitter|
-      5.1.5.3 LSP                  |dropbar-configuration-options-sources-lsp|
-      5.1.5.4 Markdown        |dropbar-configuration-options-sources-markdown|
-      5.1.5.5 Terminal        |dropbar-configuration-options-sources-terminal|
+    5.1.5 Fzf                              |dropbar-configuration-options-fzf|
+    5.1.6 Sources                      |dropbar-configuration-options-sources|
+      5.1.6.1 Path                |dropbar-configuration-options-sources-path|
+      5.1.6.2 Treesitter    |dropbar-configuration-options-sources-treesitter|
+      5.1.6.3 LSP                  |dropbar-configuration-options-sources-lsp|
+      5.1.6.4 Markdown        |dropbar-configuration-options-sources-markdown|
+      5.1.6.5 Terminal        |dropbar-configuration-options-sources-terminal|
   5.2 API                                          |dropbar-configuration-api|
   5.3 Utility Functions              |dropbar-configuration-utility-functions|
     5.3.1 Bar Utility Functions  |dropbar-configuration-utility-functions-bar|
