@@ -17,12 +17,13 @@
 
 <div align='center'>
 
-  [![docs](https://github.com/bekaboo/dropbar.nvim/actions/workflows/tests.yml/badge.svg)](./doc/dropbar.txt)
-  [![luarocks](https://img.shields.io/luarocks/v/bekaboo/dropbar.nvim?logo=lua&color=blue)](https://luarocks.org/modules/bekaboo/dropbar.nvim)
+[![docs](https://github.com/bekaboo/dropbar.nvim/actions/workflows/tests.yml/badge.svg)](./doc/dropbar.txt)
+[![luarocks](https://img.shields.io/luarocks/v/bekaboo/dropbar.nvim?logo=lua&color=blue)](https://luarocks.org/modules/bekaboo/dropbar.nvim)
 
 </div>
 
 <!--toc:start-->
+
 - [Features and TODOs](#features-and-todos)
 - [Requirements](#requirements)
 - [Installation](#installation)
@@ -71,15 +72,15 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
 - [x] Opening drop-down menus or go to definition with a single mouse click
 
-    ![mouse-click](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/25282bf2-c90d-496b-9c37-0cbb6938ff5f)
+  ![mouse-click](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/25282bf2-c90d-496b-9c37-0cbb6938ff5f)
 
 - [x] Pick mode for quickly selecting a component in the winbar with shortcuts
 
-    ![pick-mode](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/6126ceb1-0ad9-468b-89b9-457ce4110999)
+  ![pick-mode](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/6126ceb1-0ad9-468b-89b9-457ce4110999)
 
 - [x] Automatically truncating long components
 
-    ![auto-truncate](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/c3b03e7f-d6f7-4c60-9c0d-da038529e1c7)
+  ![auto-truncate](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/c3b03e7f-d6f7-4c60-9c0d-da038529e1c7)
 
   - [x] Better truncation when winbar is still too long after shortening
         all components
@@ -115,14 +116,14 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 - [x] Drop-down menu components and winbar symbols that response to
       mouse/cursor hovering:
 
-    ![hover](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/c944d61c-d39b-42e9-8b24-e3e33672b0d2)
+  ![hover](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/c944d61c-d39b-42e9-8b24-e3e33672b0d2)
 
-    - This features requires `:h mousemoveevent` to be enabled.
+  - This features requires `:h mousemoveevent` to be enabled.
 
 - [x] Preview symbols in their source windows when hovering over them in the
-  drop-down menu
+      drop-down menu
 
-    ![preview](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/93f33b90-4f42-459c-861a-1e70114ba6f2)
+  ![preview](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/93f33b90-4f42-459c-861a-1e70114ba6f2)
 
 - [x] Reorient the source window on previewing or after jumping to a symbol
 
@@ -130,7 +131,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
   ![scrollbar](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/ace94d9a-e850-4a6b-9ab3-51a290e5af32)
 
-- [x] Background color support<super>*</super> thanks [@theofabilous](https://github.com/theofabilous)
+- [x] Background color support<super>\*</super> thanks [@theofabilous](https://github.com/theofabilous)
 
   ![background-color](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/d7794098-9dcf-459e-9763-8b7d9414e035)
 
@@ -253,698 +254,734 @@ vim.ui.select = require('dropbar.utils.menu').select
     A full list of all available options and their default values:
   </summary>
 
-  ```lua
-  ---@class dropbar_configs_t
-  M.opts = {
-    general = {
-      ---@type boolean|fun(buf: integer, win: integer, info: table?): boolean
-      enable = function(buf, win, _)
-        return vim.api.nvim_buf_is_valid(buf)
-          and vim.api.nvim_win_is_valid(win)
-          and vim.wo[win].winbar == ''
-          and (
-            (pcall(vim.treesitter.get_parser, buf, vim.bo[buf].ft)) and true
-            or false
-          )
+```lua
+---@class dropbar_configs_t
+M.opts = {
+  general = {
+    ---@type boolean|fun(buf: integer, win: integer, info: table?): boolean
+    enable = function(buf, win, _)
+      return vim.api.nvim_buf_is_valid(buf)
+        and vim.api.nvim_win_is_valid(win)
+        and vim.wo[win].winbar == ''
+        and (
+          (pcall(vim.treesitter.get_parser, buf, vim.bo[buf].ft)) and true
+          or false
+        )
+    end,
+    attach_events = {
+      'OptionSet',
+      'BufWinEnter',
+      'BufWritePost',
+    },
+    -- Wait for a short time before updating the winbar, if another update
+    -- request is received within this time, the previous request will be
+    -- cancelled, this improves the performance when the user is holding
+    -- down a key (e.g. 'j') to scroll the window, default to 0 ms
+    -- If you encounter performance issues when scrolling the window, try
+    -- setting this option to a number slightly larger than
+    -- 1000 / key_repeat_rate
+    update_debounce = 0,
+    update_events = {
+      win = {
+        'CursorMoved',
+        'WinEnter',
+        'WinResized',
+      },
+      buf = {
+        'BufModifiedSet',
+        'FileChangedShellPost',
+        'TextChanged',
+        'ModeChanged',
+      },
+      global = {
+        'DirChanged',
+        'VimResized',
+      },
+    },
+  },
+  icons = {
+    enable = true,
+    kinds = {
+      ---Directory icon and highlighting getter, set to `false` to disable
+      ---@param path string path to the directory
+      ---@return string: icon for the directory
+      ---@return string?: highlight group for the icon
+      ---@type fun(path: string): string, string?|false
+      dir_icon = function(_)
+        return M.opts.icons.kinds.symbols.Folder, 'DropBarIconKindFolder'
       end,
-      attach_events = {
-        'OptionSet',
-        'BufWinEnter',
-        'BufWritePost',
-      },
-      -- Wait for a short time before updating the winbar, if another update
-      -- request is received within this time, the previous request will be
-      -- cancelled, this improves the performance when the user is holding
-      -- down a key (e.g. 'j') to scroll the window, default to 0 ms
-      -- If you encounter performance issues when scrolling the window, try
-      -- setting this option to a number slightly larger than
-      -- 1000 / key_repeat_rate
-      update_debounce = 0,
-      update_events = {
-        win = {
-          'CursorMoved',
-          'WinEnter',
-          'WinResized',
-        },
-        buf = {
-          'BufModifiedSet',
-          'FileChangedShellPost',
-          'TextChanged',
-          'ModeChanged',
-        },
-        global = {
-          'DirChanged',
-          'VimResized',
-        },
-      },
-    },
-    icons = {
-      enable = true,
-      kinds = {
-        ---Directory icon and highlighting getter, set to `false` to disable
-        ---@param path string path to the directory
-        ---@return string: icon for the directory
-        ---@return string?: highlight group for the icon
-        ---@type fun(path: string): string, string?|false
-        dir_icon = function(_)
-          return M.opts.icons.kinds.symbols.Folder, 'DropBarIconKindFolder'
-        end,
-        ---File icon and highlighting getter, set to `false` to disable
-        ---@param path string path to the file
-        ---@return string: icon for the file
-        ---@return string?: highlight group for the icon
-        ---@type fun(path: string): string, string?|false
-        file_icon = function(path)
-          local icon_kind_opts = M.opts.icons.kinds
-          local file_icon = icon_kind_opts.symbols.File
-          local file_icon_hl = 'DropBarIconKindFile'
-          local devicons_ok, devicons = pcall(require, 'nvim-web-devicons')
-          if not devicons_ok then
-            return file_icon, file_icon_hl
-          end
+      ---File icon and highlighting getter, set to `false` to disable
+      ---@param path string path to the file
+      ---@return string: icon for the file
+      ---@return string?: highlight group for the icon
+      ---@type fun(path: string): string, string?|false
+      file_icon = function(path)
+      local icon_kind_opts = M.opts.icons.kinds
+      local file_icon = icon_kind_opts.symbols.File
+      local file_icon_hl = 'DropBarIconKindFile'
 
-          -- Try to find icon using the filename, explicitly disable the
-          -- default icon so that we can try to find the icon using the
-          -- filetype if the filename does not have a corresponding icon
-          local devicon, devicon_hl = devicons.get_icon(
-            vim.fs.basename(path),
-            vim.fn.fnamemodify(path, ':e'),
-            { default = false }
-          )
-
-          -- No corresponding devicon found using the filename, try finding icon
-          -- with filetype if the file is loaded as a buf in nvim
-          if not devicon then
-            ---@type integer?
-            local buf = vim.iter(vim.api.nvim_list_bufs()):find(function(buf)
-              return vim.api.nvim_buf_get_name(buf) == path
-            end)
-            if buf then
-              local filetype =
-                vim.api.nvim_get_option_value('filetype', { buf = buf })
-              devicon, devicon_hl = devicons.get_icon_by_filetype(filetype)
-            end
-          end
-
-          file_icon = devicon and devicon .. ' ' or file_icon
-          file_icon_hl = devicon_hl
-
+      local function get_devicon_icon()
+        local devicons_ok, devicons = pcall(require, 'nvim-web-devicons')
+        if not devicons_ok then
           return file_icon, file_icon_hl
-        end,
-        symbols = {
-          Array = '󰅪 ',
-          Boolean = ' ',
-          BreakStatement = '󰙧 ',
-          Call = '󰃷 ',
-          CaseStatement = '󱃙 ',
-          Class = ' ',
-          Color = '󰏘 ',
-          Constant = '󰏿 ',
-          Constructor = ' ',
-          ContinueStatement = '→ ',
-          Copilot = ' ',
-          Declaration = '󰙠 ',
-          Delete = '󰩺 ',
-          DoStatement = '󰑖 ',
-          Enum = ' ',
-          EnumMember = ' ',
-          Event = ' ',
-          Field = ' ',
-          File = '󰈔 ',
-          Folder = '󰉋 ',
-          ForStatement = '󰑖 ',
-          Function = '󰊕 ',
-          H1Marker = '󰉫 ', -- Used by markdown treesitter parser
-          H2Marker = '󰉬 ',
-          H3Marker = '󰉭 ',
-          H4Marker = '󰉮 ',
-          H5Marker = '󰉯 ',
-          H6Marker = '󰉰 ',
-          Identifier = '󰀫 ',
-          IfStatement = '󰇉 ',
-          Interface = ' ',
-          Keyword = '󰌋 ',
-          List = '󰅪 ',
-          Log = '󰦪 ',
-          Lsp = ' ',
-          Macro = '󰁌 ',
-          MarkdownH1 = '󰉫 ', -- Used by builtin markdown source
-          MarkdownH2 = '󰉬 ',
-          MarkdownH3 = '󰉭 ',
-          MarkdownH4 = '󰉮 ',
-          MarkdownH5 = '󰉯 ',
-          MarkdownH6 = '󰉰 ',
-          Method = '󰆧 ',
-          Module = '󰏗 ',
-          Namespace = '󰅩 ',
-          Null = '󰢤 ',
-          Number = '󰎠 ',
-          Object = '󰅩 ',
-          Operator = '󰆕 ',
-          Package = '󰆦 ',
-          Pair = '󰅪 ',
-          Property = ' ',
-          Reference = '󰦾 ',
-          Regex = ' ',
-          Repeat = '󰑖 ',
-          Scope = '󰅩 ',
-          Snippet = '󰩫 ',
-          Specifier = '󰦪 ',
-          Statement = '󰅩 ',
-          String = '󰉾 ',
-          Struct = ' ',
-          SwitchStatement = '󰺟 ',
-          Terminal = ' ',
-          Text = ' ',
-          Type = ' ',
-          TypeParameter = '󰆩 ',
-          Unit = ' ',
-          Value = '󰎠 ',
-          Variable = '󰀫 ',
-          WhileStatement = '󰑖 ',
-        },
-      },
-      ui = {
-        bar = {
-          separator = ' ',
-          extends = '…',
-        },
-        menu = {
-          separator = ' ',
-          indicator = ' ',
-        },
+        end
+
+        -- Try to find icon using the filename, explicitly disable the
+        -- default icon so that we can try to find the icon using the
+        -- filetype if the filename does not have a corresponding icon
+        local devicon, devicon_hl = devicons.get_icon(
+          vim.fs.basename(path),
+          vim.fn.fnamemodify(path, ':e'),
+          { default = false }
+        )
+
+        -- No corresponding devicon found using the filename, try finding icon
+        -- with filetype if the file is loaded as a buf in nvim
+        if not devicon then
+          ---@type integer?
+          local buf = vim.iter(vim.api.nvim_list_bufs()):find(function(buf)
+            return vim.api.nvim_buf_get_name(buf) == path
+          end)
+          if buf then
+            local filetype =
+              vim.api.nvim_get_option_value('filetype', { buf = buf })
+            devicon, devicon_hl = devicons.get_icon_by_filetype(filetype)
+          end
+        end
+
+        return devicon, devicon_hl
+      end
+
+      local function get_mini_icon()
+        local _, mini_icons = pcall(require, 'mini.icons')
+        ---@diagnostic disable-next-line: undefined-field
+        if not _G.MiniIcons then
+          return file_icon, file_icon_hl
+        end
+
+        -- Attempt to get icon by filename
+        local mini_icon, mini_icon_hl =
+          mini_icons.get('file', vim.fs.basename(path))
+
+        if not mini_icon then
+          -- If filename lookup fails, attempt to get icon by filetype
+          local buf = vim.fn.bufnr(path, true)
+          if buf ~= -1 then
+            local filetype = vim.api.nvim_buf_get_option(buf, 'filetype')
+            mini_icon, mini_icon_hl = mini_icons.get('filetype', filetype)
+          end
+          return mini_icon, mini_icon_hl
+        end
+      end
+
+      -- Try getting icon with devicons first
+      local icon, icon_hl = get_devicon_icon()
+
+      -- If devicons is unavailable or no icon was found, fall back to mini.icons
+      if not icon then
+        icon, icon_hl = get_mini_icon()
+      end
+
+      -- Set final icon and highlight
+      file_icon = icon and icon .. ' ' or file_icon
+      file_icon_hl = icon_hl or file_icon_hl
+
+      return file_icon, file_icon_hl
+    end,
+      symbols = {
+        Array = '󰅪 ',
+        Boolean = ' ',
+        BreakStatement = '󰙧 ',
+        Call = '󰃷 ',
+        CaseStatement = '󱃙 ',
+        Class = ' ',
+        Color = '󰏘 ',
+        Constant = '󰏿 ',
+        Constructor = ' ',
+        ContinueStatement = '→ ',
+        Copilot = ' ',
+        Declaration = '󰙠 ',
+        Delete = '󰩺 ',
+        DoStatement = '󰑖 ',
+        Enum = ' ',
+        EnumMember = ' ',
+        Event = ' ',
+        Field = ' ',
+        File = '󰈔 ',
+        Folder = '󰉋 ',
+        ForStatement = '󰑖 ',
+        Function = '󰊕 ',
+        H1Marker = '󰉫 ', -- Used by markdown treesitter parser
+        H2Marker = '󰉬 ',
+        H3Marker = '󰉭 ',
+        H4Marker = '󰉮 ',
+        H5Marker = '󰉯 ',
+        H6Marker = '󰉰 ',
+        Identifier = '󰀫 ',
+        IfStatement = '󰇉 ',
+        Interface = ' ',
+        Keyword = '󰌋 ',
+        List = '󰅪 ',
+        Log = '󰦪 ',
+        Lsp = ' ',
+        Macro = '󰁌 ',
+        MarkdownH1 = '󰉫 ', -- Used by builtin markdown source
+        MarkdownH2 = '󰉬 ',
+        MarkdownH3 = '󰉭 ',
+        MarkdownH4 = '󰉮 ',
+        MarkdownH5 = '󰉯 ',
+        MarkdownH6 = '󰉰 ',
+        Method = '󰆧 ',
+        Module = '󰏗 ',
+        Namespace = '󰅩 ',
+        Null = '󰢤 ',
+        Number = '󰎠 ',
+        Object = '󰅩 ',
+        Operator = '󰆕 ',
+        Package = '󰆦 ',
+        Pair = '󰅪 ',
+        Property = ' ',
+        Reference = '󰦾 ',
+        Regex = ' ',
+        Repeat = '󰑖 ',
+        Scope = '󰅩 ',
+        Snippet = '󰩫 ',
+        Specifier = '󰦪 ',
+        Statement = '󰅩 ',
+        String = '󰉾 ',
+        Struct = ' ',
+        SwitchStatement = '󰺟 ',
+        Terminal = ' ',
+        Text = ' ',
+        Type = ' ',
+        TypeParameter = '󰆩 ',
+        Unit = ' ',
+        Value = '󰎠 ',
+        Variable = '󰀫 ',
+        WhileStatement = '󰑖 ',
       },
     },
-    symbol = {
-      preview = {
-        ---Reorient the preview window on previewing a new symbol
-        ---@param _ integer source window id, ignored
-        ---@param range {start: {line: integer}, end: {line: integer}} 0-indexed
-        reorient = function(_, range)
-          local invisible = range['end'].line - vim.fn.line('w$') + 1
-          if invisible > 0 then
-            local view = vim.fn.winsaveview() --[[@as vim.fn.winrestview.dict]]
-            view.topline = math.min(
-              view.topline + invisible,
-              math.max(1, range.start.line - vim.wo.scrolloff + 1)
-            )
-            vim.fn.winrestview(view)
-          end
-        end,
+    ui = {
+      bar = {
+        separator = ' ',
+        extends = '…',
       },
-      jump = {
-        ---@param win integer source window id
-        ---@param range {start: {line: integer}, end: {line: integer}} 0-indexed
-        reorient = function(win, range)
-          local view = vim.fn.winsaveview()
-          local win_height = vim.api.nvim_win_get_height(win)
-          local topline = range.start.line - math.floor(win_height / 4)
-          if
-            topline > view.topline
-            and topline + win_height < vim.fn.line('$')
-          then
-            view.topline = topline
-            vim.fn.winrestview(view)
-          end
-        end,
+      menu = {
+        separator = ' ',
+        indicator = ' ',
       },
     },
-    bar = {
-      hover = true,
-      ---@type dropbar_source_t[]|fun(buf: integer, win: integer): dropbar_source_t[]
-      sources = function(buf, _)
-        local sources = require('dropbar.sources')
-        if vim.bo[buf].ft == 'markdown' then
-          return {
-            sources.path,
-            sources.markdown,
-          }
+  },
+  symbol = {
+    preview = {
+      ---Reorient the preview window on previewing a new symbol
+      ---@param _ integer source window id, ignored
+      ---@param range {start: {line: integer}, end: {line: integer}} 0-indexed
+      reorient = function(_, range)
+        local invisible = range['end'].line - vim.fn.line('w$') + 1
+        if invisible > 0 then
+          local view = vim.fn.winsaveview() --[[@as vim.fn.winrestview.dict]]
+          view.topline = math.min(
+            view.topline + invisible,
+            math.max(1, range.start.line - vim.wo.scrolloff + 1)
+          )
+          vim.fn.winrestview(view)
         end
-        if vim.bo[buf].buftype == 'terminal' then
-          return {
-            sources.terminal,
-          }
+      end,
+    },
+    jump = {
+      ---@param win integer source window id
+      ---@param range {start: {line: integer}, end: {line: integer}} 0-indexed
+      reorient = function(win, range)
+        local view = vim.fn.winsaveview()
+        local win_height = vim.api.nvim_win_get_height(win)
+        local topline = range.start.line - math.floor(win_height / 4)
+        if
+          topline > view.topline
+          and topline + win_height < vim.fn.line('$')
+        then
+          view.topline = topline
+          vim.fn.winrestview(view)
         end
+      end,
+    },
+  },
+  bar = {
+    hover = true,
+    ---@type dropbar_source_t[]|fun(buf: integer, win: integer): dropbar_source_t[]
+    sources = function(buf, _)
+      local sources = require('dropbar.sources')
+      if vim.bo[buf].ft == 'markdown' then
         return {
           sources.path,
-          utils.source.fallback({
-            sources.lsp,
-            sources.treesitter,
-          }),
+          sources.markdown,
         }
-      end,
+      end
+      if vim.bo[buf].buftype == 'terminal' then
+        return {
+          sources.terminal,
+        }
+      end
+      return {
+        sources.path,
+        utils.source.fallback({
+          sources.lsp,
+          sources.treesitter,
+        }),
+      }
+    end,
+    padding = {
+      left = 1,
+      right = 1,
+    },
+    pick = {
+      pivots = 'abcdefghijklmnopqrstuvwxyz',
+    },
+    truncate = true,
+  },
+  menu = {
+    -- When on, preview the symbol under the cursor on CursorMoved
+    preview = true,
+    -- When on, automatically set the cursor to the closest previous/next
+    -- clickable component in the direction of cursor movement on CursorMoved
+    quick_navigation = true,
+    entry = {
       padding = {
         left = 1,
         right = 1,
       },
-      pick = {
-        pivots = 'abcdefghijklmnopqrstuvwxyz',
-      },
-      truncate = true,
     },
-    menu = {
-      -- When on, preview the symbol under the cursor on CursorMoved
-      preview = true,
-      -- When on, automatically set the cursor to the closest previous/next
-      -- clickable component in the direction of cursor movement on CursorMoved
-      quick_navigation = true,
-      entry = {
-        padding = {
-          left = 1,
-          right = 1,
-        },
-      },
-      -- Menu scrollbar options
-      scrollbar = {
-        enable = true,
-        -- The background / gutter of the scrollbar
-        -- When false, only the scrollbar thumb is shown.
-        background = true
-      },
-      ---@type table<string, string|function|table<string, string|function>>
+    -- Menu scrollbar options
+    scrollbar = {
+      enable = true,
+      -- The background / gutter of the scrollbar
+      -- When false, only the scrollbar thumb is shown.
+      background = true
+    },
+    ---@type table<string, string|function|table<string, string|function>>
+  keymaps = {
+    ['q'] = '<C-w>q',
+    ['<Esc>'] = '<C-w>q',
+    ['<LeftMouse>'] = function()
+      local menu = utils.menu.get_current()
+      if not menu then
+        return
+      end
+      local mouse = vim.fn.getmousepos()
+      local clicked_menu = utils.menu.get({ win = mouse.winid })
+      -- If clicked on a menu, invoke the corresponding click action,
+      -- else close all menus and set the cursor to the clicked window
+      if clicked_menu then
+        clicked_menu:click_at({ mouse.line, mouse.column - 1 }, nil, 1, 'l')
+        return
+      end
+      utils.menu.exec('close')
+      utils.bar.exec('update_current_context_hl')
+      if vim.api.nvim_win_is_valid(mouse.winid) then
+        vim.api.nvim_set_current_win(mouse.winid)
+      end
+    end,
+    ['<CR>'] = function()
+      local menu = utils.menu.get_current()
+      if not menu then
+        return
+      end
+      local cursor = vim.api.nvim_win_get_cursor(menu.win)
+      local component = menu.entries[cursor[1]]:first_clickable(cursor[2])
+      if component then
+        menu:click_on(component, nil, 1, 'l')
+      end
+    end,
+    ['<MouseMove>'] = function()
+      local menu = utils.menu.get_current()
+      if not menu then
+        return
+      end
+      local mouse = vim.fn.getmousepos()
+      utils.menu.update_hover_hl(mouse)
+      if M.opts.menu.preview then
+        utils.menu.update_preview(mouse)
+      end
+    end,
+    ['i'] = function()
+      local menu = utils.menu.get_current()
+      if not menu then
+        return
+      end
+      menu:fuzzy_find_open()
+    end,
+  },
+    ---@alias dropbar_menu_win_config_opts_t any|fun(menu: dropbar_menu_t):any
+    ---@type table<string, dropbar_menu_win_config_opts_t>
+    ---@see vim.api.nvim_open_win
+    win_configs = {
+      border = 'none',
+      style = 'minimal',
+      row = function(menu)
+        return menu.prev_menu
+            and menu.prev_menu.clicked_at
+            and menu.prev_menu.clicked_at[1] - vim.fn.line('w0')
+          or 0
+      end,
+      ---@param menu dropbar_menu_t
+      col = function(menu)
+        if menu.prev_menu then
+          return menu.prev_menu._win_configs.width
+            + (
+              menu.prev_menu.scrollbar
+                and menu.prev_menu.scrollbar.background
+                and 1
+              or 0
+            )
+        end
+        local mouse = vim.fn.getmousepos()
+        local bar = utils.bar.get({ win = menu.prev_win })
+        if not bar then
+          return mouse.wincol
+        end
+        local _, range = bar:get_component_at(math.max(0, mouse.wincol - 1))
+        return range and range.start or mouse.wincol
+      end,
+      relative = 'win',
+      win = function(menu)
+        return menu.prev_menu and menu.prev_menu.win
+          or vim.fn.getmousepos().winid
+      end,
+      height = function(menu)
+        return math.max(
+          1,
+          math.min(
+            #menu.entries,
+            vim.go.pumheight ~= 0 and vim.go.pumheight
+              or math.ceil(vim.go.lines / 4)
+          )
+        )
+      end,
+      width = function(menu)
+        local min_width = vim.go.pumwidth ~= 0 and vim.go.pumwidth or 8
+        if vim.tbl_isempty(menu.entries) then
+          return min_width
+        end
+        return math.max(
+          min_width,
+          math.max(unpack(vim.tbl_map(function(entry)
+            return entry:displaywidth()
+          end, menu.entries)))
+        )
+      end,
+      zindex = function(menu)
+        if menu.prev_menu then
+          if menu.prev_menu.scrollbar and menu.prev_menu.scrollbar.thumb then
+            return vim.api.nvim_win_get_config(menu.prev_menu.scrollbar.thumb).zindex
+          end
+          return vim.api.nvim_win_get_config(menu.prev_win).zindex
+        end
+      end,
+    },
+  },
+  fzf = {
+    ---@type table<string, string | fun()>
     keymaps = {
-      ['q'] = '<C-w>q',
-      ['<Esc>'] = '<C-w>q',
       ['<LeftMouse>'] = function()
+        ---@type dropbar_menu_t
         local menu = utils.menu.get_current()
         if not menu then
           return
         end
         local mouse = vim.fn.getmousepos()
-        local clicked_menu = utils.menu.get({ win = mouse.winid })
-        -- If clicked on a menu, invoke the corresponding click action,
-        -- else close all menus and set the cursor to the clicked window
-        if clicked_menu then
-          clicked_menu:click_at({ mouse.line, mouse.column - 1 }, nil, 1, 'l')
+        if not mouse then
           return
         end
-        utils.menu.exec('close')
-        utils.bar.exec('update_current_context_hl')
-        if vim.api.nvim_win_is_valid(mouse.winid) then
-          vim.api.nvim_set_current_win(mouse.winid)
-        end
-      end,
-      ['<CR>'] = function()
-        local menu = utils.menu.get_current()
-        if not menu then
+        if mouse.winid ~= menu.win then
+          local default_func = M.opts.menu.keymaps['<LeftMouse>']
+          if type(default_func) == 'function' then
+            default_func()
+          end
+          menu:fuzzy_find_close()
+          return
+        elseif mouse.winrow > vim.api.nvim_buf_line_count(menu.buf) then
           return
         end
-        local cursor = vim.api.nvim_win_get_cursor(menu.win)
-        local component = menu.entries[cursor[1]]:first_clickable(cursor[2])
-        if component then
-          menu:click_on(component, nil, 1, 'l')
-        end
+        vim.api.nvim_win_set_cursor(menu.win, { mouse.line, mouse.column - 1 })
+        menu:fuzzy_find_click_on_entry(function(entry)
+          return entry:get_component_at(mouse.column - 1, true)
+        end)
       end,
       ['<MouseMove>'] = function()
+        ---@type dropbar_menu_t
         local menu = utils.menu.get_current()
         if not menu then
           return
         end
         local mouse = vim.fn.getmousepos()
-        utils.menu.update_hover_hl(mouse)
-        if M.opts.menu.preview then
-          utils.menu.update_preview(mouse)
-        end
-      end,
-      ['i'] = function()
-        local menu = utils.menu.get_current()
-        if not menu then
+        if not mouse then
           return
         end
-        menu:fuzzy_find_open()
+        -- If mouse is not in the menu window or on the border, end preview
+        -- and clear hover highlights
+        if
+          mouse.winid ~= menu.win
+          or mouse.line <= 0
+          or mouse.column <= 0
+          or mouse.winrow > (#menu.entries + 1)
+        then
+          -- Find the root menu
+          while menu and menu.prev_menu do
+            menu = menu.prev_menu
+          end
+          if menu then
+            menu:finish_preview(true)
+            menu:update_hover_hl()
+          end
+          return
+        end
+        if M.opts.menu.preview then
+          menu:preview_symbol_at({ mouse.line, mouse.column - 1 }, true)
+        end
+        menu:update_hover_hl({ mouse.line, mouse.column - 1 })
+      end,
+      ['<Up>'] = api.fuzzy_find_prev,
+      ['<Down>'] = api.fuzzy_find_next,
+      ['<C-k>'] = api.fuzzy_find_prev,
+      ['<C-j>'] = api.fuzzy_find_next,
+      ['<C-p>'] = api.fuzzy_find_prev,
+      ['<C-n>'] = api.fuzzy_find_next,
+      ['<CR>'] = api.fuzzy_find_click,
+      ['<S-Enter>'] = function()
+        api.fuzzy_find_click(-1)
       end,
     },
-      ---@alias dropbar_menu_win_config_opts_t any|fun(menu: dropbar_menu_t):any
-      ---@type table<string, dropbar_menu_win_config_opts_t>
-      ---@see vim.api.nvim_open_win
-      win_configs = {
-        border = 'none',
-        style = 'minimal',
-        row = function(menu)
-          return menu.prev_menu
-              and menu.prev_menu.clicked_at
-              and menu.prev_menu.clicked_at[1] - vim.fn.line('w0')
-            or 0
-        end,
-        ---@param menu dropbar_menu_t
-        col = function(menu)
-          if menu.prev_menu then
-            return menu.prev_menu._win_configs.width
-              + (
-                menu.prev_menu.scrollbar
-                  and menu.prev_menu.scrollbar.background
-                  and 1
-                or 0
-              )
-          end
-          local mouse = vim.fn.getmousepos()
-          local bar = utils.bar.get({ win = menu.prev_win })
-          if not bar then
-            return mouse.wincol
-          end
-          local _, range = bar:get_component_at(math.max(0, mouse.wincol - 1))
-          return range and range.start or mouse.wincol
-        end,
-        relative = 'win',
-        win = function(menu)
-          return menu.prev_menu and menu.prev_menu.win
-            or vim.fn.getmousepos().winid
-        end,
-        height = function(menu)
-          return math.max(
-            1,
-            math.min(
-              #menu.entries,
-              vim.go.pumheight ~= 0 and vim.go.pumheight
-                or math.ceil(vim.go.lines / 4)
-            )
-          )
-        end,
-        width = function(menu)
-          local min_width = vim.go.pumwidth ~= 0 and vim.go.pumwidth or 8
-          if vim.tbl_isempty(menu.entries) then
-            return min_width
-          end
-          return math.max(
-            min_width,
-            math.max(unpack(vim.tbl_map(function(entry)
-              return entry:displaywidth()
-            end, menu.entries)))
-          )
-        end,
-        zindex = function(menu)
-          if menu.prev_menu then
-            if menu.prev_menu.scrollbar and menu.prev_menu.scrollbar.thumb then
-              return vim.api.nvim_win_get_config(menu.prev_menu.scrollbar.thumb).zindex
+    win_configs = {
+      relative = 'win',
+      anchor = 'NW',
+      height = 1,
+      win = function(menu)
+        return menu.win
+      end,
+      width = function(menu)
+        local function border_width(border)
+          if type(border) == 'string' then
+            if border == 'none' or border == 'shadow' then
+              return 0
             end
-            return vim.api.nvim_win_get_config(menu.prev_win).zindex
+            return 2 -- left and right border
           end
-        end,
-      },
-    },
-    fzf = {
-      ---@type table<string, string | fun()>
-      keymaps = {
-        ['<LeftMouse>'] = function()
-          ---@type dropbar_menu_t
-          local menu = utils.menu.get_current()
-          if not menu then
-            return
-          end
-          local mouse = vim.fn.getmousepos()
-          if not mouse then
-            return
-          end
-          if mouse.winid ~= menu.win then
-            local default_func = M.opts.menu.keymaps['<LeftMouse>']
-            if type(default_func) == 'function' then
-              default_func()
-            end
-            menu:fuzzy_find_close()
-            return
-          elseif mouse.winrow > vim.api.nvim_buf_line_count(menu.buf) then
-            return
-          end
-          vim.api.nvim_win_set_cursor(menu.win, { mouse.line, mouse.column - 1 })
-          menu:fuzzy_find_click_on_entry(function(entry)
-            return entry:get_component_at(mouse.column - 1, true)
-          end)
-        end,
-        ['<MouseMove>'] = function()
-          ---@type dropbar_menu_t
-          local menu = utils.menu.get_current()
-          if not menu then
-            return
-          end
-          local mouse = vim.fn.getmousepos()
-          if not mouse then
-            return
-          end
-          -- If mouse is not in the menu window or on the border, end preview
-          -- and clear hover highlights
-          if
-            mouse.winid ~= menu.win
-            or mouse.line <= 0
-            or mouse.column <= 0
-            or mouse.winrow > (#menu.entries + 1)
-          then
-            -- Find the root menu
-            while menu and menu.prev_menu do
-              menu = menu.prev_menu
-            end
-            if menu then
-              menu:finish_preview(true)
-              menu:update_hover_hl()
-            end
-            return
-          end
-          if M.opts.menu.preview then
-            menu:preview_symbol_at({ mouse.line, mouse.column - 1 }, true)
-          end
-          menu:update_hover_hl({ mouse.line, mouse.column - 1 })
-        end,
-        ['<Up>'] = api.fuzzy_find_prev,
-        ['<Down>'] = api.fuzzy_find_next,
-        ['<C-k>'] = api.fuzzy_find_prev,
-        ['<C-j>'] = api.fuzzy_find_next,
-        ['<C-p>'] = api.fuzzy_find_prev,
-        ['<C-n>'] = api.fuzzy_find_next,
-        ['<CR>'] = api.fuzzy_find_click,
-        ['<S-Enter>'] = function()
-          api.fuzzy_find_click(-1)
-        end,
-      },
-      win_configs = {
-        relative = 'win',
-        anchor = 'NW',
-        height = 1,
-        win = function(menu)
-          return menu.win
-        end,
-        width = function(menu)
-          local function border_width(border)
-            if type(border) == 'string' then
-              if border == 'none' or border == 'shadow' then
-                return 0
-              end
-              return 2 -- left and right border
-            end
 
-            local left, right = 1, 1
-            if
-              (#border == 1 and border[1] == '')
-              or (#border == 4 and border[4] == '')
-              or (#border == 8 and border[8] == '')
-            then
-              left = 0
-            end
-            if
-              (#border == 1 and border[1] == '')
-              or (#border == 4 and border[4] == '')
-              or (#border == 8 and border[4] == '')
-            then
-              right = 0
-            end
-            return left + right
+          local left, right = 1, 1
+          if
+            (#border == 1 and border[1] == '')
+            or (#border == 4 and border[4] == '')
+            or (#border == 8 and border[8] == '')
+          then
+            left = 0
           end
-          local menu_width = menu._win_configs.width
-            + border_width(menu._win_configs.border)
-          local self_width = menu._win_configs.width
-          local self_border = border_width(
-            (
-              M.opts.fzf.win_configs
-              and M.eval(M.opts.fzf.win_configs.border, menu)
-            )
-              or (menu.fzf_win_configs and M.eval(
-                menu.fzf_win_configs.border,
-                menu
-              ))
-              or menu._win_configs.border
+          if
+            (#border == 1 and border[1] == '')
+            or (#border == 4 and border[4] == '')
+            or (#border == 8 and border[4] == '')
+          then
+            right = 0
+          end
+          return left + right
+        end
+        local menu_width = menu._win_configs.width
+          + border_width(menu._win_configs.border)
+        local self_width = menu._win_configs.width
+        local self_border = border_width(
+          (
+            M.opts.fzf.win_configs
+            and M.eval(M.opts.fzf.win_configs.border, menu)
           )
+            or (menu.fzf_win_configs and M.eval(
+              menu.fzf_win_configs.border,
+              menu
+            ))
+            or menu._win_configs.border
+        )
 
-          if self_width + self_border > menu_width then
-            return self_width - self_border
-          else
-            return menu_width - self_border
-          end
-        end,
-        row = function(menu)
-          local menu_border = menu._win_configs.border
-          if
-            type(menu_border) == 'string'
-            and menu_border ~= 'shadow'
-            and menu_border ~= 'none'
-          then
-            return menu._win_configs.height + 1
-          elseif menu_border == 'none' then
-            return menu._win_configs.height
-          end
-          local len_menu_border = #menu_border
-          if
-            len_menu_border == 1 and menu_border[1] ~= ''
-            or (len_menu_border == 2 or len_menu_border == 4) and menu_border[2] ~= ''
-            or len_menu_border == 8 and menu_border[8] ~= ''
-          then
-            return menu._win_configs.height + 1
-          else
-            return menu._win_configs.height
-          end
-        end,
-        col = function(menu)
-          local menu_border = menu._win_configs.border
-          if
-            type(menu_border) == 'string'
-            and menu_border ~= 'shadow'
-            and menu_border ~= 'none'
-          then
-            return -1
-          end
-          if
-            type(menu_border) == 'table' and menu_border[#menu_border] ~= ''
-          then
-            return -1
-          end
-          return 0
-        end,
-      },
-      prompt = '%#htmlTag# ',
-      char_pattern = '[%w%p]',
-      retain_inner_spaces = true,
-      fuzzy_find_on_click = true,
+        if self_width + self_border > menu_width then
+          return self_width - self_border
+        else
+          return menu_width - self_border
+        end
+      end,
+      row = function(menu)
+        local menu_border = menu._win_configs.border
+        if
+          type(menu_border) == 'string'
+          and menu_border ~= 'shadow'
+          and menu_border ~= 'none'
+        then
+          return menu._win_configs.height + 1
+        elseif menu_border == 'none' then
+          return menu._win_configs.height
+        end
+        local len_menu_border = #menu_border
+        if
+          len_menu_border == 1 and menu_border[1] ~= ''
+          or (len_menu_border == 2 or len_menu_border == 4) and menu_border[2] ~= ''
+          or len_menu_border == 8 and menu_border[8] ~= ''
+        then
+          return menu._win_configs.height + 1
+        else
+          return menu._win_configs.height
+        end
+      end,
+      col = function(menu)
+        local menu_border = menu._win_configs.border
+        if
+          type(menu_border) == 'string'
+          and menu_border ~= 'shadow'
+          and menu_border ~= 'none'
+        then
+          return -1
+        end
+        if
+          type(menu_border) == 'table' and menu_border[#menu_border] ~= ''
+        then
+          return -1
+        end
+        return 0
+      end,
     },
-    sources = {
-      path = {
-        ---@type string|fun(buf: integer, win: integer): string
-        relative_to = function(_, win)
-          -- Workaround for Vim:E5002: Cannot find window number
-          local ok, cwd = pcall(vim.fn.getcwd, win)
-          return ok and cwd or vim.fn.getcwd()
-        end,
-        ---Can be used to filter out files or directories
-        ---based on their name
-        ---@type fun(name: string): boolean
-        filter = function(_)
-          return true
-        end,
-        ---Last symbol from path source when current buf is modified
-        ---@param sym dropbar_symbol_t
-        ---@return dropbar_symbol_t
-        modified = function(sym)
-          return sym
-        end,
-        ---@type boolean|fun(path: string): boolean?|nil
-        preview = function(path)
-          local stat = vim.uv.fs_stat(path)
-          if not stat or stat.type ~= 'file' then
-            return false
-          end
-          if stat.size > 524288 then
-            vim.notify(
-              string.format(
-                '[dropbar.nvim] file "%s" too large to preview',
-                path
-              ),
-              vim.log.levels.WARN
-            )
-            return false
-          end
-          return true
-        end,
-      },
-      treesitter = {
-        -- Vim regex used to extract a short name from the node text
-        -- word with optional prefix and suffix: [#~!@\*&.]*[[:keyword:]]\+!\?
-        -- word separators: \(->\)\+\|-\+\|\.\+\|:\+\|\s\+
-        name_regex = [=[[#~!@\*&.]*[[:keyword:]]\+!\?]=]
-          .. [=[\(\(\(->\)\+\|-\+\|\.\+\|:\+\|\s\+\)\?[#~!@\*&.]*[[:keyword:]]\+!\?\)*]=],
-        -- The order matters! The first match is used as the type
-        -- of the treesitter symbol and used to show the icon
-        -- Types listed below must have corresponding icons
-        -- in the `icons.kinds.symbols` table for the icon to be shown
-        valid_types = {
-          'array',
-          'boolean',
-          'break_statement',
-          'call',
-          'case_statement',
-          'class',
-          'constant',
-          'constructor',
-          'continue_statement',
-          'delete',
-          'do_statement',
-          'element',
-          'enum',
-          'enum_member',
-          'event',
-          'for_statement',
-          'function',
-          'h1_marker',
-          'h2_marker',
-          'h3_marker',
-          'h4_marker',
-          'h5_marker',
-          'h6_marker',
-          'if_statement',
-          'interface',
-          'keyword',
-          'macro',
-          'method',
-          'module',
-          'namespace',
-          'null',
-          'number',
-          'operator',
-          'package',
-          'pair',
-          'property',
-          'reference',
-          'repeat',
-          'rule_set',
-          'scope',
-          'specifier',
-          'struct',
-          'switch_statement',
-          'type',
-          'type_parameter',
-          'unit',
-          'value',
-          'variable',
-          'while_statement',
-          'declaration',
-          'field',
-          'identifier',
-          'object',
-          'statement',
-        },
-      },
-      lsp = {
-        request = {
-          -- Times to retry a request before giving up
-          ttl_init = 60,
-          interval = 1000, -- in ms
-        },
-      },
-      markdown = {
-        parse = {
-          -- Number of lines to update when cursor moves out of the parsed range
-          look_ahead = 200,
-        },
-      },
-      terminal = {
-        ---@type (string?)|fun(buf: integer): string?
-        icon = function(_)
-          return M.opts.icons.kinds.symbols.Terminal or ' '
-        end,
-        ---@type string|fun(buf: integer): string
-        name = vim.api.nvim_buf_get_name,
-        ---@type boolean
-        ---Show the current terminal buffer in the menu
-        show_current = true,
+    prompt = '%#htmlTag# ',
+    char_pattern = '[%w%p]',
+    retain_inner_spaces = true,
+    fuzzy_find_on_click = true,
+  },
+  sources = {
+    path = {
+      ---@type string|fun(buf: integer, win: integer): string
+      relative_to = function(_, win)
+        -- Workaround for Vim:E5002: Cannot find window number
+        local ok, cwd = pcall(vim.fn.getcwd, win)
+        return ok and cwd or vim.fn.getcwd()
+      end,
+      ---Can be used to filter out files or directories
+      ---based on their name
+      ---@type fun(name: string): boolean
+      filter = function(_)
+        return true
+      end,
+      ---Last symbol from path source when current buf is modified
+      ---@param sym dropbar_symbol_t
+      ---@return dropbar_symbol_t
+      modified = function(sym)
+        return sym
+      end,
+      ---@type boolean|fun(path: string): boolean?|nil
+      preview = function(path)
+        local stat = vim.uv.fs_stat(path)
+        if not stat or stat.type ~= 'file' then
+          return false
+        end
+        if stat.size > 524288 then
+          vim.notify(
+            string.format(
+              '[dropbar.nvim] file "%s" too large to preview',
+              path
+            ),
+            vim.log.levels.WARN
+          )
+          return false
+        end
+        return true
+      end,
+    },
+    treesitter = {
+      -- Vim regex used to extract a short name from the node text
+      -- word with optional prefix and suffix: [#~!@\*&.]*[[:keyword:]]\+!\?
+      -- word separators: \(->\)\+\|-\+\|\.\+\|:\+\|\s\+
+      name_regex = [=[[#~!@\*&.]*[[:keyword:]]\+!\?]=]
+        .. [=[\(\(\(->\)\+\|-\+\|\.\+\|:\+\|\s\+\)\?[#~!@\*&.]*[[:keyword:]]\+!\?\)*]=],
+      -- The order matters! The first match is used as the type
+      -- of the treesitter symbol and used to show the icon
+      -- Types listed below must have corresponding icons
+      -- in the `icons.kinds.symbols` table for the icon to be shown
+      valid_types = {
+        'array',
+        'boolean',
+        'break_statement',
+        'call',
+        'case_statement',
+        'class',
+        'constant',
+        'constructor',
+        'continue_statement',
+        'delete',
+        'do_statement',
+        'element',
+        'enum',
+        'enum_member',
+        'event',
+        'for_statement',
+        'function',
+        'h1_marker',
+        'h2_marker',
+        'h3_marker',
+        'h4_marker',
+        'h5_marker',
+        'h6_marker',
+        'if_statement',
+        'interface',
+        'keyword',
+        'macro',
+        'method',
+        'module',
+        'namespace',
+        'null',
+        'number',
+        'operator',
+        'package',
+        'pair',
+        'property',
+        'reference',
+        'repeat',
+        'rule_set',
+        'scope',
+        'specifier',
+        'struct',
+        'switch_statement',
+        'type',
+        'type_parameter',
+        'unit',
+        'value',
+        'variable',
+        'while_statement',
+        'declaration',
+        'field',
+        'identifier',
+        'object',
+        'statement',
       },
     },
-  }
-  ```
+    lsp = {
+      request = {
+        -- Times to retry a request before giving up
+        ttl_init = 60,
+        interval = 1000, -- in ms
+      },
+    },
+    markdown = {
+      parse = {
+        -- Number of lines to update when cursor moves out of the parsed range
+        look_ahead = 200,
+      },
+    },
+    terminal = {
+      ---@type (string?)|fun(buf: integer): string?
+      icon = function(_)
+        return M.opts.icons.kinds.symbols.Terminal or ' '
+      end,
+      ---@type string|fun(buf: integer): string
+      name = vim.api.nvim_buf_get_name,
+      ---@type boolean
+      ---Show the current terminal buffer in the menu
+      show_current = true,
+    },
+  },
+}
+```
 
 </details>
 
@@ -956,7 +993,7 @@ winbar:
 - `opts.bar.enable`: `boolean|fun(buf: integer, win: integer): boolean`
   - Controls whether to attach dropbar to the current buffer and window
   - If a function is provided, it will be called with the current bufnr and
-  winid and should return a boolean
+    winid and should return a boolean
   - Default:
     ```lua
     function(buf, win, _)
@@ -1081,6 +1118,7 @@ menu:
   - Whether to enable previewing for menu entries
   - Default: `true`
 - `opts.menu.keymaps`: `table<string, function|string|table<string, function>|table<string, string>>`
+
   - Buffer-local keymaps in the menu
   - Use `<key> = <function|string>` to map a key in normal mode in the menu
     buffer, or use `<key> = table<mode, function|string>` to map
@@ -1142,6 +1180,7 @@ menu:
     ```
 
 - `opts.menu.scrollbar`: `table<string, boolean>`
+
   - Scrollbar configuration for the menu.
   - Default:
     ```lua
@@ -1230,6 +1269,7 @@ These options live under `opts.fzf` and are used to control the behavior and
 appearance of the fuzzy finder interface.
 
 - `opts.fzf.keymaps`
+
   - The keymaps that will apply in insert mode, in the fzf prompt buffer
   - Same config as opts.menu.keymaps
   - Default:
@@ -1307,10 +1347,12 @@ appearance of the fuzzy finder interface.
     ```
 
 - `opts.fzf.win_configs`
+
   - Options passed to `:h nvim_open_win`. The fuzzy finder will use its
     parent window's config by default, but options set here will override those.
   - Same config as opts.menu.win_configs
   - Default:
+
     ```lua
     win_configs = {
       relative = 'win',
@@ -1408,6 +1450,7 @@ appearance of the fuzzy finder interface.
     ```
 
 - `opts.fzf.prompt`
+
   - Prompt string that will be displayed in the statuscolumn of the fzf input window.
   - Can include highlight groups
   - Default:
@@ -1416,12 +1459,14 @@ appearance of the fuzzy finder interface.
     ```
 
 - `opts.fzf.char_pattern`
+
   - Default:
     ```lua
     char_pattern = '[%w%p]'
     ```
 
 - `opts.fzf.retain_inner_spaces`
+
   - Default:
     ```lua
     retain_inner_spaces = true
@@ -1554,6 +1599,7 @@ used by the plugin:
       indicator = ' ',
     }
     ```
+
 #### Symbol
 
 These options live under `opts.symbol` and are used to control the behavior of
@@ -1762,6 +1808,7 @@ each sources.
 Thanks [@willothy](https://github.com/willothy) for implementing this.
 
 - `opts.sources.terminal.icon`: `string|fun(buf: integer): string`
+
   - Icon to show before terminal names
   - Default:
     ```lua
@@ -1771,6 +1818,7 @@ Thanks [@willothy](https://github.com/willothy) for implementing this.
     ```
 
 - `opts.sources.terminal.name`: `string|fun(buf: integer): string`
+
   - Default: `vim.api.nvim_buf_get_name`
   - Easy to integrate with other plugins (for example, [toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim)):
     ```lua
@@ -1827,7 +1875,7 @@ used to interact with the winbar or the drop-down menu:
   - Options override the default / config options for the fuzzy finder
 - `fuzzy_find_click(component: number | (fun(entry: dropbar_menu_entry_t):dropbar_sumbol_t)?)`
   - If `component` is a `number`, the `component`-nth symbol is selected,
-    unless `0` or `-1` is supplied, in which case the *first* or *last*
+    unless `0` or `-1` is supplied, in which case the _first_ or _last_
     clickable component is selected, respectively.
   - If it is a `function`, it receives the `dropbar_menu_entry_t` as an argument
     and should return the `dropbar_symbol_t` that is to be clicked.
@@ -1881,157 +1929,157 @@ should be self-explanatory:
 <details>
   <summary>Highlight groups</summary>
 
-  | Highlight group                  | Attributes                               |
-  |----------------------------------|------------------------------------------|
-  | DropBarCurrentContext            | `{ link = 'Visual' }`                    |
-  | DropBarFzfMatch                  | `{ link = 'Special' }`                   |
-  | DropBarHover                     | `{ link = 'Visual' }`                    |
-  | DropBarIconKindDefault           | `{ link = 'Special' }`                   |
-  | DropBarIconKindArray             | `{ link = 'Operator' }`                  |
-  | DropBarIconKindBoolean           | `{ link = 'Boolean' }`                   |
-  | DropBarIconKindBreakStatement    | `{ link = 'Error' }`                     |
-  | DropBarIconKindCall              | `{ link = 'Function' }`                  |
-  | DropBarIconKindCaseStatement     | `{ link = 'Conditional' }`               |
-  | DropBarIconKindClass             | `{ link = 'Type' }`                      |
-  | DropBarIconKindConstant          | `{ link = 'Constant' }`                  |
-  | DropBarIconKindConstructor       | `{ link = '@constructor' }`              |
-  | DropBarIconKindContinueStatement | `{ link = 'Repeat' }`                    |
-  | DropBarIconKindDeclaration       | `{ link = 'DropBarIconKindDefault' }`    |
-  | DropBarIconKindDelete            | `{ link = 'Error' }`                     |
-  | DropBarIconKindDoStatement       | `{ link = 'Repeat' }`                    |
-  | DropBarIconKindElseStatement     | `{ link = 'Conditional' }`               |
-  | DropBarIconKindElement           | `{ link = 'DropBarIconKindDefault' }`    |
-  | DropBarIconKindEnum              | `{ link = 'Constant' }`                  |
-  | DropBarIconKindEnumMember        | `{ link = 'DropBarIconKindEnumMember' }` |
-  | DropBarIconKindEvent             | `{ link = '@lsp.type.event' }`           |
-  | DropBarIconKindField             | `{ link = 'DropBarIconKindDefault' }`    |
-  | DropBarIconKindFile              | `{ link = 'DropBarIconKindFolder' }`     |
-  | DropBarIconKindFolder            | `{ link = 'Directory' }`                 |
-  | DropBarIconKindForStatement      | `{ link = 'Repeat' }`                    |
-  | DropBarIconKindFunction          | `{ link = 'Function' }`                  |
-  | DropBarIconKindH1Marker          | `{ link = 'markdownH1' }`                |
-  | DropBarIconKindH2Marker          | `{ link = 'markdownH2' }`                |
-  | DropBarIconKindH3Marker          | `{ link = 'markdownH3' }`                |
-  | DropBarIconKindH4Marker          | `{ link = 'markdownH4' }`                |
-  | DropBarIconKindH5Marker          | `{ link = 'markdownH5' }`                |
-  | DropBarIconKindH6Marker          | `{ link = 'markdownH6' }`                |
-  | DropBarIconKindIdentifier        | `{ link = 'DropBarIconKindDefault' }`    |
-  | DropBarIconKindIfStatement       | `{ link = 'Conditional' }`               |
-  | DropBarIconKindInterface         | `{ link = 'Type' }`                      |
-  | DropBarIconKindKeyword           | `{ link = '@keyword' }`                  |
-  | DropBarIconKindList              | `{ link = 'Operator' }`                  |
-  | DropBarIconKindMacro             | `{ link = 'Macro' }`                     |
-  | DropBarIconKindMarkdownH1        | `{ link = 'markdownH1' }`                |
-  | DropBarIconKindMarkdownH2        | `{ link = 'markdownH2' }`                |
-  | DropBarIconKindMarkdownH3        | `{ link = 'markdownH3' }`                |
-  | DropBarIconKindMarkdownH4        | `{ link = 'markdownH4' }`                |
-  | DropBarIconKindMarkdownH5        | `{ link = 'markdownH5' }`                |
-  | DropBarIconKindMarkdownH6        | `{ link = 'markdownH6' }`                |
-  | DropBarIconKindMethod            | `{ link = 'Function' }`                  |
-  | DropBarIconKindModule            | `{ link = '@module' }`                   |
-  | DropBarIconKindNamespace         | `{ link = '@lsp.type.namespace' }`       |
-  | DropBarIconKindNull              | `{ link = 'Constant' }`                  |
-  | DropBarIconKindNumber            | `{ link = 'Number' }`                    |
-  | DropBarIconKindObject            | `{ link = 'Statement' }`                 |
-  | DropBarIconKindOperator          | `{ link = 'Operator' }`                  |
-  | DropBarIconKindPackage           | `{ link = '@module' }`                   |
-  | DropBarIconKindPair              | `{ link = 'DropBarIconKindDefault' }`    |
-  | DropBarIconKindProperty          | `{ link = 'DropBarIconKindDefault' }`    |
-  | DropBarIconKindReference         | `{ link = 'DropBarIconKindDefault' }`    |
-  | DropBarIconKindRepeat            | `{ link = 'Repeat' }`                    |
-  | DropBarIconKindRuleSet           | `{ link = '@lsp.type.namespace' }`       |
-  | DropBarIconKindScope             | `{ link = '@lsp.type.namespace' }`       |
-  | DropBarIconKindSpecifier         | `{ link = '@keyword' }`                  |
-  | DropBarIconKindStatement         | `{ link = 'Statement' }`                 |
-  | DropBarIconKindString            | `{ link = '@string' }`                   |
-  | DropBarIconKindStruct            | `{ link = 'Type' }`                      |
-  | DropBarIconKindSwitchStatement   | `{ link = 'Conditional' }`               |
-  | DropBarIconKindTerminal          | `{ link = 'Number' }`                    |
-  | DropBarIconKindType              | `{ link = 'Type' }`                      |
-  | DropBarIconKindTypeParameter     | `{ link = 'DropBarIconKindDefault' }`    |
-  | DropBarIconKindUnit              | `{ link = 'DropBarIconKindDefault' }`    |
-  | DropBarIconKindValue             | `{ link = 'Number' }`                    |
-  | DropBarIconKindVariable          | `{ link = 'DropBarIconKindDefault' }`    |
-  | DropBarIconKindWhileStatement    | `{ link = 'Repeat' }`                    |
-  | DropBarIconUIIndicator           | `{ link = 'SpecialChar' }`               |
-  | DropBarIconUIPickPivot           | `{ link = 'Error' }`                     |
-  | DropBarIconUISeparator           | `{ link = 'Comment' }`                   |
-  | DropBarIconUISeparatorMenu       | `{ link = 'DropBarIconUISeparator' }`    |
-  | DropBarMenuCurrentContext        | `{ link = 'PmenuSel' }`                  |
-  | DropBarMenuFloatBorder           | `{ link = 'FloatBorder' }`               |
-  | DropBarMenuHoverEntry            | `{ link = 'IncSearch' }`                 |
-  | DropBarMenuHoverIcon             | `{ reverse = true }`                     |
-  | DropBarMenuHoverSymbol           | `{ bold = true }`                        |
-  | DropBarMenuNormalFloat           | `{ link = 'NormalFloat' }`               |
-  | DropBarMenuSbar                  | `{ link = 'PmenuSbar' }`                 |
-  | DropBarMenuThumb                 | `{ link = 'PmenuThumb' }`                |
-  | DropBarPreview                   | `{ link = 'Visual' }`                    |
-  | DropBarKindArray                 | undefined                                |
-  | DropBarKindBoolean               | undefined                                |
-  | DropBarKindBreakStatement        | undefined                                |
-  | DropBarKindCall                  | undefined                                |
-  | DropBarKindCaseStatement         | undefined                                |
-  | DropBarKindClass                 | undefined                                |
-  | DropBarKindConstant              | undefined                                |
-  | DropBarKindConstructor           | undefined                                |
-  | DropBarKindContinueStatement     | undefined                                |
-  | DropBarKindDeclaration           | undefined                                |
-  | DropBarKindDelete                | undefined                                |
-  | DropBarKindDoStatement           | undefined                                |
-  | DropBarKindElseStatement         | undefined                                |
-  | DropBarKindElement               | undefined                                |
-  | DropBarKindEnum                  | undefined                                |
-  | DropBarKindEnumMember            | undefined                                |
-  | DropBarKindEvent                 | undefined                                |
-  | DropBarKindField                 | undefined                                |
-  | DropBarKindFile                  | undefined                                |
-  | DropBarKindFolder                | undefined                                |
-  | DropBarKindForStatement          | undefined                                |
-  | DropBarKindFunction              | undefined                                |
-  | DropBarKindH1Marker              | undefined                                |
-  | DropBarKindH2Marker              | undefined                                |
-  | DropBarKindH3Marker              | undefined                                |
-  | DropBarKindH4Marker              | undefined                                |
-  | DropBarKindH5Marker              | undefined                                |
-  | DropBarKindH6Marker              | undefined                                |
-  | DropBarKindIdentifier            | undefined                                |
-  | DropBarKindIfStatement           | undefined                                |
-  | DropBarKindInterface             | undefined                                |
-  | DropBarKindKeyword               | undefined                                |
-  | DropBarKindList                  | undefined                                |
-  | DropBarKindMacro                 | undefined                                |
-  | DropBarKindMarkdownH1            | undefined                                |
-  | DropBarKindMarkdownH2            | undefined                                |
-  | DropBarKindMarkdownH3            | undefined                                |
-  | DropBarKindMarkdownH4            | undefined                                |
-  | DropBarKindMarkdownH5            | undefined                                |
-  | DropBarKindMarkdownH6            | undefined                                |
-  | DropBarKindMethod                | undefined                                |
-  | DropBarKindModule                | undefined                                |
-  | DropBarKindNamespace             | undefined                                |
-  | DropBarKindNull                  | undefined                                |
-  | DropBarKindNumber                | undefined                                |
-  | DropBarKindObject                | undefined                                |
-  | DropBarKindOperator              | undefined                                |
-  | DropBarKindPackage               | undefined                                |
-  | DropBarKindPair                  | undefined                                |
-  | DropBarKindProperty              | undefined                                |
-  | DropBarKindReference             | undefined                                |
-  | DropBarKindRepeat                | undefined                                |
-  | DropBarKindRuleSet               | undefined                                |
-  | DropBarKindScope                 | undefined                                |
-  | DropBarKindSpecifier             | undefined                                |
-  | DropBarKindStatement             | undefined                                |
-  | DropBarKindString                | undefined                                |
-  | DropBarKindStruct                | undefined                                |
-  | DropBarKindSwitchStatement       | undefined                                |
-  | DropBarKindTerminal              | undefined                                |
-  | DropBarKindType                  | undefined                                |
-  | DropBarKindTypeParameter         | undefined                                |
-  | DropBarKindUnit                  | undefined                                |
-  | DropBarKindValue                 | undefined                                |
-  | DropBarKindVariable              | undefined                                |
-  | DropBarKindWhileStatement        | undefined                                |
+| Highlight group                  | Attributes                               |
+| -------------------------------- | ---------------------------------------- |
+| DropBarCurrentContext            | `{ link = 'Visual' }`                    |
+| DropBarFzfMatch                  | `{ link = 'Special' }`                   |
+| DropBarHover                     | `{ link = 'Visual' }`                    |
+| DropBarIconKindDefault           | `{ link = 'Special' }`                   |
+| DropBarIconKindArray             | `{ link = 'Operator' }`                  |
+| DropBarIconKindBoolean           | `{ link = 'Boolean' }`                   |
+| DropBarIconKindBreakStatement    | `{ link = 'Error' }`                     |
+| DropBarIconKindCall              | `{ link = 'Function' }`                  |
+| DropBarIconKindCaseStatement     | `{ link = 'Conditional' }`               |
+| DropBarIconKindClass             | `{ link = 'Type' }`                      |
+| DropBarIconKindConstant          | `{ link = 'Constant' }`                  |
+| DropBarIconKindConstructor       | `{ link = '@constructor' }`              |
+| DropBarIconKindContinueStatement | `{ link = 'Repeat' }`                    |
+| DropBarIconKindDeclaration       | `{ link = 'DropBarIconKindDefault' }`    |
+| DropBarIconKindDelete            | `{ link = 'Error' }`                     |
+| DropBarIconKindDoStatement       | `{ link = 'Repeat' }`                    |
+| DropBarIconKindElseStatement     | `{ link = 'Conditional' }`               |
+| DropBarIconKindElement           | `{ link = 'DropBarIconKindDefault' }`    |
+| DropBarIconKindEnum              | `{ link = 'Constant' }`                  |
+| DropBarIconKindEnumMember        | `{ link = 'DropBarIconKindEnumMember' }` |
+| DropBarIconKindEvent             | `{ link = '@lsp.type.event' }`           |
+| DropBarIconKindField             | `{ link = 'DropBarIconKindDefault' }`    |
+| DropBarIconKindFile              | `{ link = 'DropBarIconKindFolder' }`     |
+| DropBarIconKindFolder            | `{ link = 'Directory' }`                 |
+| DropBarIconKindForStatement      | `{ link = 'Repeat' }`                    |
+| DropBarIconKindFunction          | `{ link = 'Function' }`                  |
+| DropBarIconKindH1Marker          | `{ link = 'markdownH1' }`                |
+| DropBarIconKindH2Marker          | `{ link = 'markdownH2' }`                |
+| DropBarIconKindH3Marker          | `{ link = 'markdownH3' }`                |
+| DropBarIconKindH4Marker          | `{ link = 'markdownH4' }`                |
+| DropBarIconKindH5Marker          | `{ link = 'markdownH5' }`                |
+| DropBarIconKindH6Marker          | `{ link = 'markdownH6' }`                |
+| DropBarIconKindIdentifier        | `{ link = 'DropBarIconKindDefault' }`    |
+| DropBarIconKindIfStatement       | `{ link = 'Conditional' }`               |
+| DropBarIconKindInterface         | `{ link = 'Type' }`                      |
+| DropBarIconKindKeyword           | `{ link = '@keyword' }`                  |
+| DropBarIconKindList              | `{ link = 'Operator' }`                  |
+| DropBarIconKindMacro             | `{ link = 'Macro' }`                     |
+| DropBarIconKindMarkdownH1        | `{ link = 'markdownH1' }`                |
+| DropBarIconKindMarkdownH2        | `{ link = 'markdownH2' }`                |
+| DropBarIconKindMarkdownH3        | `{ link = 'markdownH3' }`                |
+| DropBarIconKindMarkdownH4        | `{ link = 'markdownH4' }`                |
+| DropBarIconKindMarkdownH5        | `{ link = 'markdownH5' }`                |
+| DropBarIconKindMarkdownH6        | `{ link = 'markdownH6' }`                |
+| DropBarIconKindMethod            | `{ link = 'Function' }`                  |
+| DropBarIconKindModule            | `{ link = '@module' }`                   |
+| DropBarIconKindNamespace         | `{ link = '@lsp.type.namespace' }`       |
+| DropBarIconKindNull              | `{ link = 'Constant' }`                  |
+| DropBarIconKindNumber            | `{ link = 'Number' }`                    |
+| DropBarIconKindObject            | `{ link = 'Statement' }`                 |
+| DropBarIconKindOperator          | `{ link = 'Operator' }`                  |
+| DropBarIconKindPackage           | `{ link = '@module' }`                   |
+| DropBarIconKindPair              | `{ link = 'DropBarIconKindDefault' }`    |
+| DropBarIconKindProperty          | `{ link = 'DropBarIconKindDefault' }`    |
+| DropBarIconKindReference         | `{ link = 'DropBarIconKindDefault' }`    |
+| DropBarIconKindRepeat            | `{ link = 'Repeat' }`                    |
+| DropBarIconKindRuleSet           | `{ link = '@lsp.type.namespace' }`       |
+| DropBarIconKindScope             | `{ link = '@lsp.type.namespace' }`       |
+| DropBarIconKindSpecifier         | `{ link = '@keyword' }`                  |
+| DropBarIconKindStatement         | `{ link = 'Statement' }`                 |
+| DropBarIconKindString            | `{ link = '@string' }`                   |
+| DropBarIconKindStruct            | `{ link = 'Type' }`                      |
+| DropBarIconKindSwitchStatement   | `{ link = 'Conditional' }`               |
+| DropBarIconKindTerminal          | `{ link = 'Number' }`                    |
+| DropBarIconKindType              | `{ link = 'Type' }`                      |
+| DropBarIconKindTypeParameter     | `{ link = 'DropBarIconKindDefault' }`    |
+| DropBarIconKindUnit              | `{ link = 'DropBarIconKindDefault' }`    |
+| DropBarIconKindValue             | `{ link = 'Number' }`                    |
+| DropBarIconKindVariable          | `{ link = 'DropBarIconKindDefault' }`    |
+| DropBarIconKindWhileStatement    | `{ link = 'Repeat' }`                    |
+| DropBarIconUIIndicator           | `{ link = 'SpecialChar' }`               |
+| DropBarIconUIPickPivot           | `{ link = 'Error' }`                     |
+| DropBarIconUISeparator           | `{ link = 'Comment' }`                   |
+| DropBarIconUISeparatorMenu       | `{ link = 'DropBarIconUISeparator' }`    |
+| DropBarMenuCurrentContext        | `{ link = 'PmenuSel' }`                  |
+| DropBarMenuFloatBorder           | `{ link = 'FloatBorder' }`               |
+| DropBarMenuHoverEntry            | `{ link = 'IncSearch' }`                 |
+| DropBarMenuHoverIcon             | `{ reverse = true }`                     |
+| DropBarMenuHoverSymbol           | `{ bold = true }`                        |
+| DropBarMenuNormalFloat           | `{ link = 'NormalFloat' }`               |
+| DropBarMenuSbar                  | `{ link = 'PmenuSbar' }`                 |
+| DropBarMenuThumb                 | `{ link = 'PmenuThumb' }`                |
+| DropBarPreview                   | `{ link = 'Visual' }`                    |
+| DropBarKindArray                 | undefined                                |
+| DropBarKindBoolean               | undefined                                |
+| DropBarKindBreakStatement        | undefined                                |
+| DropBarKindCall                  | undefined                                |
+| DropBarKindCaseStatement         | undefined                                |
+| DropBarKindClass                 | undefined                                |
+| DropBarKindConstant              | undefined                                |
+| DropBarKindConstructor           | undefined                                |
+| DropBarKindContinueStatement     | undefined                                |
+| DropBarKindDeclaration           | undefined                                |
+| DropBarKindDelete                | undefined                                |
+| DropBarKindDoStatement           | undefined                                |
+| DropBarKindElseStatement         | undefined                                |
+| DropBarKindElement               | undefined                                |
+| DropBarKindEnum                  | undefined                                |
+| DropBarKindEnumMember            | undefined                                |
+| DropBarKindEvent                 | undefined                                |
+| DropBarKindField                 | undefined                                |
+| DropBarKindFile                  | undefined                                |
+| DropBarKindFolder                | undefined                                |
+| DropBarKindForStatement          | undefined                                |
+| DropBarKindFunction              | undefined                                |
+| DropBarKindH1Marker              | undefined                                |
+| DropBarKindH2Marker              | undefined                                |
+| DropBarKindH3Marker              | undefined                                |
+| DropBarKindH4Marker              | undefined                                |
+| DropBarKindH5Marker              | undefined                                |
+| DropBarKindH6Marker              | undefined                                |
+| DropBarKindIdentifier            | undefined                                |
+| DropBarKindIfStatement           | undefined                                |
+| DropBarKindInterface             | undefined                                |
+| DropBarKindKeyword               | undefined                                |
+| DropBarKindList                  | undefined                                |
+| DropBarKindMacro                 | undefined                                |
+| DropBarKindMarkdownH1            | undefined                                |
+| DropBarKindMarkdownH2            | undefined                                |
+| DropBarKindMarkdownH3            | undefined                                |
+| DropBarKindMarkdownH4            | undefined                                |
+| DropBarKindMarkdownH5            | undefined                                |
+| DropBarKindMarkdownH6            | undefined                                |
+| DropBarKindMethod                | undefined                                |
+| DropBarKindModule                | undefined                                |
+| DropBarKindNamespace             | undefined                                |
+| DropBarKindNull                  | undefined                                |
+| DropBarKindNumber                | undefined                                |
+| DropBarKindObject                | undefined                                |
+| DropBarKindOperator              | undefined                                |
+| DropBarKindPackage               | undefined                                |
+| DropBarKindPair                  | undefined                                |
+| DropBarKindProperty              | undefined                                |
+| DropBarKindReference             | undefined                                |
+| DropBarKindRepeat                | undefined                                |
+| DropBarKindRuleSet               | undefined                                |
+| DropBarKindScope                 | undefined                                |
+| DropBarKindSpecifier             | undefined                                |
+| DropBarKindStatement             | undefined                                |
+| DropBarKindString                | undefined                                |
+| DropBarKindStruct                | undefined                                |
+| DropBarKindSwitchStatement       | undefined                                |
+| DropBarKindTerminal              | undefined                                |
+| DropBarKindType                  | undefined                                |
+| DropBarKindTypeParameter         | undefined                                |
+| DropBarKindUnit                  | undefined                                |
+| DropBarKindValue                 | undefined                                |
+| DropBarKindVariable              | undefined                                |
+| DropBarKindWhileStatement        | undefined                                |
 
 </details>
 
@@ -2101,11 +2149,10 @@ string. It is also responsible for registering `on_click` callbacks of each
 symbol in the global table `_G.dropbar.callbacks` so that nvim knows
 which function to call when a symbol is clicked.
 
-
 `dropbar_t` has the following fields:
 
 | Field                      | Type                                      | Description                                                                                                 |
-| --------------             | ---------------------------------         | ---------------------------------------------------------------------------------------------               |
+| -------------------------- | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | `buf`                      | `integer`                                 | the buffer the dropbar is attached to                                                                       |
 | `win`                      | `integer`                                 | the window the dropbar is attached to                                                                       |
 | `sources`                  | [`dropbar_source_t[]`](#dropbar_source_t) | sources<sub>[`dropbar_source_t[]`](#dropbar_source_t)</sub> that provide symbols to the dropbar             |
@@ -2118,11 +2165,10 @@ which function to call when a symbol is clicked.
 | `symbol_on_hover`          | [`dropbar_symbol_t`](#dropbar_symbol_t)   | The previous symbol<sub>[`dropbar_symbol_t[]`](#dropbar_symbol_t)</sub> under mouse hovering in the dropbar |
 | `last_update_request_time` | `float?`                                  | timestamp of the last update request in ms, see `:h uv.now()`                                               |
 
-
 `dropbar_t` has the following methods:
 
 | Method                                                  | Description                                                                                                                                                                                               |
-| ------------------------------------------------        | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `dropbar_t:new(opts: dropbar_opts_t): dropbar_t`        | constructor of `dropbar_t`                                                                                                                                                                                |
 | `dropbar_t:del()`                                       | destructor of `dropbar_t`                                                                                                                                                                                 |
 | `dropbar_t:displaywidth(): integer`                     | returns the display width of the dropbar                                                                                                                                                                  |
@@ -2136,7 +2182,6 @@ which function to call when a symbol is clicked.
 | `dropbar_t:update_hover_hl(col: integer?)`              | Highlight the symbol at `col` as if the mouse is hovering on it                                                                                                                                           |
 | `dropbar_t:__tostring(): string`                        | meta method to convert `dropbar_t` to its string representation                                                                                                                                           |
 
-
 #### `dropbar_symbol_t`
 
 Declared and defined in [`lua/dropbar/bar.lua`](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/bar.lua).
@@ -2146,11 +2191,10 @@ Declared and defined in [`lua/dropbar/bar.lua`](https://github.com/Bekaboo/dropb
 `dropbar_symbol_t` is a class that represents a symbol in a dropbar. It is the
 basic element of [`dropbar_t`](#dropbar_t) and [`dropbar_menu_entry_t`](#dropbar_menu_entry_t).
 
-
 `dropbar_symbol_t` has the following fields:
 
 | Field          | Type                                                                                                                | Description                                                                                                                                         |
-| -----------    | ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------        |
+| -------------- | ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `name`         | `string`                                                                                                            | name of the symbol                                                                                                                                  |
 | `icon`         | `string`                                                                                                            | icon of the symbol                                                                                                                                  |
 | `name_hl`      | `string?`                                                                                                           | highlight of the name of the symbol                                                                                                                 |
@@ -2172,11 +2216,10 @@ basic element of [`dropbar_t`](#dropbar_t) and [`dropbar_menu_entry_t`](#dropbar
 | `opts`         | `dropbar_symbol_opts_t?`                                                                                            | options passed to `winbar_symbol_t:new()` when the symbols is created                                                                               |
 | `data`         | `table?`                                                                                                            | any extra data associated with the symbol                                                                                                           |
 
-
 `dropbar_symbol_t` has the following methods:
 
 | Method                                                            | Description                                                                                                                                                                                   |
-| ------------------------------------------------                  | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `dropbar_symbol_t:new(opts: dropbar_symbol_t?): dropbar_symbol_t` | constructor of `dropbar_symbol_t`                                                                                                                                                             |
 | `dropbar_symbol_t:del()`                                          | destructor of `dropbar_symbol_t`                                                                                                                                                              |
 | `dropbar_symbol_t:merge(opts: dropbar_symbol_t)`                  | create a new `dropbar_symbol_t` by merging `opts` into the current `dropbar_symbol_t`                                                                                                         |
@@ -2201,7 +2244,7 @@ Declared and defined in [`lua/dropbar/menu.lua`](https://github.com/Bekaboo/drop
 `dropbar_menu_t` has the following fields:
 
 | Field              | Type                                              | Description                                                                            |
-| ------             | ------                                            | ------                                                                                 |
+| ------------------ | ------------------------------------------------- | -------------------------------------------------------------------------------------- |
 | `buf`              | `integer`                                         | buffer number of the menu                                                              |
 | `win`              | `integer`                                         | window id of the menu                                                                  |
 | `is_opened`        | `boolean?`                                        | whether the menu is currently opened                                                   |
@@ -2220,7 +2263,7 @@ Declared and defined in [`lua/dropbar/menu.lua`](https://github.com/Bekaboo/drop
 `dropbar_menu_t` has the following methods:
 
 | Method                                                                                                                            | Description                                                                                                                                                                 |
-| ------                                                                                                                            | ------                                                                                                                                                                      |
+| --------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `dropbar_menu_t:new(opts: dropbar_menu_t?): dropbar_menu_t`                                                                       | constructor of `dropbar_menu_t`                                                                                                                                             |
 | `dropbar_menu_t:del()`                                                                                                            | destructor of `dropbar_menu_t`                                                                                                                                              |
 | `dropbar_menu_t:eval_win_configs()`                                                                                               | evaluate window configurations `dropbar_menu_t.win_configs` and store the result in `dropbar_menu_t._win_configs`                                                           |
@@ -2238,10 +2281,10 @@ Declared and defined in [`lua/dropbar/menu.lua`](https://github.com/Bekaboo/drop
 | `dropbar_menu_t:open(opts: dropbar_menu_t?)`                                                                                      | open the menu with options `opts`                                                                                                                                           |
 | `dropbar_menu_t:close(restore_view: boolean?)`                                                                                    | close the menu                                                                                                                                                              |
 | `dropbar_menu_t:toggle(opts: dropbar_menu_t?)`                                                                                    | toggle the menu                                                                                                                                                             |
-| `dropbar_menu_t:fuzzy_find_restore_entries()`                                                                                     | restore menu buffer and entries in their original order before modified by fuzzy search
-| `dropbar_menu_t:fuzzy_find_close()`                                                                                               | stop fuzzy finding and clean up allocated memory
-| `dropbar_menu_t:fuzzy_find_click_on_entry(component: number\|fun(dropbar_menu_entry_t):dropbar_symbol_t)`                         | click on the currently selected fuzzy menu entry, choosing the component to click according to component
-| `dropbar_menu_t:fuzzy_find_open(opts: table?)`                                                                                    | open the fuzzy search menu, overriding fzf configuration with opts argument
+| `dropbar_menu_t:fuzzy_find_restore_entries()`                                                                                     | restore menu buffer and entries in their original order before modified by fuzzy search                                                                                     |
+| `dropbar_menu_t:fuzzy_find_close()`                                                                                               | stop fuzzy finding and clean up allocated memory                                                                                                                            |
+| `dropbar_menu_t:fuzzy_find_click_on_entry(component: number\|fun(dropbar_menu_entry_t):dropbar_symbol_t)`                         | click on the currently selected fuzzy menu entry, choosing the component to click according to component                                                                    |
+| `dropbar_menu_t:fuzzy_find_open(opts: table?)`                                                                                    | open the fuzzy search menu, overriding fzf configuration with opts argument                                                                                                 |
 | `dropbar_menu_t:fuzzy_find_navigate(direction: 'up'\|'down'\|integer)`                                                            | navigate to the nth previous/next entry while fuzzy finding                                                                                                                 |
 
 #### `dropbar_menu_entry_t`
@@ -2259,7 +2302,7 @@ multiple `dropbar_menu_entry_t` instances while a
 `dropbar_menu_entry_t` has the following fields:
 
 | Field        | Type                                      | Description                                                                 |
-| ------       | ------                                    | ------                                                                      |
+| ------------ | ----------------------------------------- | --------------------------------------------------------------------------- |
 | `separator`  | [`dropbar_symbol_t`](#dropbar_symbol_t)   | separator to use in the entry                                               |
 | `padding`    | `{left: integer, right: integer}`         | padding to use between the menu entry and the menu border                   |
 | `components` | [`dropbar_symbol_t[]`](#dropbar_symbol_t) | components<sub>[`dropbar_symbol_t[]`](#dropbar_symbol_t)</sub> in the entry |
@@ -2270,7 +2313,7 @@ multiple `dropbar_menu_entry_t` instances while a
 `dropbar_menu_entry_t` has the following methods:
 
 | Method                                                                                                                            | Description                                                                                                                                                             |
-| ------                                                                                                                            | ------                                                                                                                                                                  |
+| --------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `dropbar_menu_entry_t:new(opts: dropbar_menu_entry_t?): dropbar_menu_entry_t`                                                     | constructor of `dropbar_menu_entry_t`                                                                                                                                   |
 | `dropbar_menu_entry_t:del()`                                                                                                      | destructor of `dropbar_menu_entry_t`                                                                                                                                    |
 | `dropbar_menu_entry_t:cat(): string, dropbar_menu_hl_info_t`                                                                      | concatenate the components into a string, returns the string and highlight info<sub>[`dropbar_menu_hl_info_t`](#dropbar_menu_hl_info_t)                                 |
@@ -2293,7 +2336,7 @@ single line of a drop-down menu.
 `dropbar_menu_hl_info_t` has the following fields:
 
 | Field     | Type       | Description                                                      |
-| ------    | ------     | ------                                                           |
+| --------- | ---------- | ---------------------------------------------------------------- |
 | `start`   | `integer`  | start column of the higlighted range                             |
 | `end`     | `integer`  | end column of the higlighted range                               |
 | `hlgroup` | `string`   | highlight group to use for the range                             |
@@ -2310,7 +2353,7 @@ Declared in [`lua/dropbar/sources/init.lua`](https://github.com/Bekaboo/dropbar.
 `dropbar_source_t` has the following field:
 
 | Field         | Type                                                                          | Description                                                                                                                                          |
-| ------        | ------                                                                        | ------                                                                                                                                               |
+| ------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `get_symbols` | `function(buf: integer, win: integer, cursor: integer[]): dropbar_symbol_t[]` | returns the symbols<sub>[`dropbar_symbol_t[]`](#dropbar_symbol_t)</sub> to show in the winbar given buffer number `buf` and cursor position `cursor` |
 
 #### `dropbar_select_opts_t`
@@ -2323,12 +2366,12 @@ Declared in [`lua/dropbar/utils/menu.lua`](https://github.com/Bekaboo/dropbar.nv
 
 `dropbar_select_opts_t` has the following fields:
 
-| Field         | Type                                                                          | Description                                                                                                                                          |
-| ------        | ------                                                                        | ------                                                                                                                                               |
-| `prompt`        | `string?`                                                                       | determines what will be shown at the top of the select menu.                                                                                         |
-| `format_item`   | `fun(item: any): string, string[][]?`                                           | formats the list items for display in the menu, and optionally formats virtual text chunks to be shown below the item.                               |
-| `preview`       | `fun(self: dropbar_symbol_t, item: any, idx: integer)`                          | previews the list item under the cursor.                                                                                                             |
-| `preview_close` | `fun(self: dropbar_symbol_t, item: any, idx: integer)`                          | closes the preview when the menu is closed.                                                                                                          |
+| Field           | Type                                                   | Description                                                                                                            |
+| --------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `prompt`        | `string?`                                              | determines what will be shown at the top of the select menu.                                                           |
+| `format_item`   | `fun(item: any): string, string[][]?`                  | formats the list items for display in the menu, and optionally formats virtual text chunks to be shown below the item. |
+| `preview`       | `fun(self: dropbar_symbol_t, item: any, idx: integer)` | previews the list item under the cursor.                                                                               |
+| `preview_close` | `fun(self: dropbar_symbol_t, item: any, idx: integer)` | closes the preview when the menu is closed.                                                                            |
 
 ### Making a New Source
 
@@ -2445,15 +2488,15 @@ about these fields see [`dropbar_symbol_t`](#dropbar_symbol_t).
 
 For creating the drop-down menu:
 
-  - `dropbar_symbol_t.siblings`
-  - `dropbar_symbol_t.sibling_idx`
-  - `dropbar_symbol_t.children`
+- `dropbar_symbol_t.siblings`
+- `dropbar_symbol_t.sibling_idx`
+- `dropbar_symbol_t.children`
 
 For jumping to the symbol or previewing it:
 
-  - `dropbar_symbol_t.range`
-  - `dropbar_symbol_t.win`
-  - `dropbar_symbol_t.buf`
+- `dropbar_symbol_t.range`
+- `dropbar_symbol_t.win`
+- `dropbar_symbol_t.buf`
 
 The following example shows a source that utilizes the default `on_click()`
 callback:
