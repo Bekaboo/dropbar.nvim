@@ -16,11 +16,11 @@ CONTENTS                                           *dropbar-table-of-contents*
   4.1 Usage with `vim.ui.select`                |dropbar-usage-with-ui-select|
 5. Configuration                                       |dropbar-configuration|
   5.1 Options                                  |dropbar-configuration-options|
-    5.1.1 Icons                          |dropbar-configuration-options-icons|
-    5.1.2 Symbol                        |dropbar-configuration-options-symbol|
-    5.1.3 Bar                              |dropbar-configuration-options-bar|
-    5.1.4 Menu                            |dropbar-configuration-options-menu|
-    5.1.5 Fzf                              |dropbar-configuration-options-fzf|
+    5.1.1 Bar                              |dropbar-configuration-options-bar|
+    5.1.2 Menu                            |dropbar-configuration-options-menu|
+    5.1.3 Fzf                              |dropbar-configuration-options-fzf|
+    5.1.4 Icons                          |dropbar-configuration-options-icons|
+    5.1.5 Symbol                        |dropbar-configuration-options-symbol|
     5.1.6 Sources                      |dropbar-configuration-options-sources|
       5.1.6.1 Path                |dropbar-configuration-options-sources-path|
       5.1.6.2 Treesitter    |dropbar-configuration-options-sources-treesitter|
@@ -194,157 +194,6 @@ CONFIGURATION                                          *dropbar-configuration*
 ------------------------------------------------------------------------------
 OPTIONS                                        *dropbar-configuration-options*
 
-..............................................................................
-ICONS                                    *dropbar-configuration-options-icons*
-
-These options live under `opts.icons` and are used to configure the icons used
-by the plugin:
-
-- `opts.icons.enable`: `boolean`
-    - Whether to enable icons
-    - Default: `true`
-- `opts.icons.kinds.use_devicons`: `boolean`
-    - Whether to use nvim-web-devicons
-      <https://github.com/nvim-tree/nvim-web-devicons> to show icons for
-      different filetypes
-    - Default: `true`
-
-- `opts.icons.kinds.symbols`: `table<string, string>`
-    - Table mapping the different kinds of symbols to their corresponding
-      icons
-    - Default: >lua
-
-            {
-              Array = '󰅪 ',
-              Boolean = ' ',
-              BreakStatement = '󰙧 ',
-              Call = '󰃷 ',
-              CaseStatement = '󱃙 ',
-              Class = ' ',
-              Color = '󰏘 ',
-              Constant = '󰏿 ',
-              Constructor = ' ',
-              ContinueStatement = '→ ',
-              Copilot = ' ',
-              Declaration = '󰙠 ',
-              Delete = '󰩺 ',
-              DoStatement = '󰑖 ',
-              Enum = ' ',
-              EnumMember = ' ',
-              Event = ' ',
-              Field = ' ',
-              File = '󰈔 ',
-              Folder = '󰉋 ',
-              ForStatement = '󰑖 ',
-              Function = '󰊕 ',
-              H1Marker = '󰉫 ', -- Used by markdown treesitter parser
-              H2Marker = '󰉬 ',
-              H3Marker = '󰉭 ',
-              H4Marker = '󰉮 ',
-              H5Marker = '󰉯 ',
-              H6Marker = '󰉰 ',
-              Identifier = '󰀫 ',
-              IfStatement = '󰇉 ',
-              Interface = ' ',
-              Keyword = '󰌋 ',
-              List = '󰅪 ',
-              Log = '󰦪 ',
-              Lsp = ' ',
-              Macro = '󰁌 ',
-              MarkdownH1 = '󰉫 ', -- Used by builtin markdown source
-              MarkdownH2 = '󰉬 ',
-              MarkdownH3 = '󰉭 ',
-              MarkdownH4 = '󰉮 ',
-              MarkdownH5 = '󰉯 ',
-              MarkdownH6 = '󰉰 ',
-              Method = '󰆧 ',
-              Module = '󰏗 ',
-              Namespace = '󰅩 ',
-              Null = '󰢤 ',
-              Number = '󰎠 ',
-              Object = '󰅩 ',
-              Operator = '󰆕 ',
-              Package = '󰆦 ',
-              Pair = '󰅪 ',
-              Property = ' ',
-              Reference = '󰦾 ',
-              Regex = ' ',
-              Repeat = '󰑖 ',
-              Scope = '󰅩 ',
-              Snippet = '󰩫 ',
-              Specifier = '󰦪 ',
-              Statement = '󰅩 ',
-              String = '󰉾 ',
-              Struct = ' ',
-              SwitchStatement = '󰺟 ',
-              Terminal = ' ',
-              Text = ' ',
-              Type = ' ',
-              TypeParameter = '󰆩 ',
-              Unit = ' ',
-              Value = '󰎠 ',
-              Variable = '󰀫 ',
-              WhileStatement = '󰑖 ',
-            }
-<
-- `opts.icons.ui.bar`: `table<string, string>`
-    - Controls the icons used in the winbar UI
-    - Default: >lua
-            {
-              separator = ' ',
-              extends = '…',
-            }
-<
-- `opts.icons.ui.menu`: `table<string, string>`
-    - Controls the icons used in the menu UI
-    - Default: >lua
-            {
-              separator = ' ',
-              indicator = ' ',
-            }
-<
-
-..............................................................................
-Symbol                                  *dropbar-configuration-options-symbol*
-
-These options live under `opts.bar` and are used to control the behavior of
-the symbols:
-
-- `opts.symbol.preview.reorient`: `fun(win: integer, range: {start: {line: integer, character: integer}, end: {line: integer, character: integer}})`
-    - Function to reorient the source window when previewing symbol given
-      the source window `win` and the range of the symbol `range`
-    - Default: >lua
-
-	    function(_, range)
-	      local invisible = range['end'].line - vim.fn.line('w$') + 1
-	      if invisible > 0 then
-		local view = vim.fn.winsaveview() --[[@as vim.fn.winrestview.dict]]
-		view.topline = math.min(
-		  view.topline + invisible,
-		  math.max(1, range.start.line - vim.wo.scrolloff + 1)
-		)
-		vim.fn.winrestview(view)
-	      end
-	    end
-<
-- `opts.symbol.jump.reorient`: `fun(win: integer, range: {start: {line: integer, character: integer}, end: {line: integer, character: integer}})`
-  - Function to reorient the source window after jumping to symbol given
-    the source window `win` and the range of the symbol `range`
-  - Default: >lua
-
-	  function(win, range)
-	    local view = vim.fn.winsaveview()
-	    local win_height = vim.api.nvim_win_get_height(win)
-	    local topline = range.start.line - math.floor(win_height / 4)
-	    if
-	      topline > view.topline
-	      and topline + win_height < vim.fn.line('$')
-	    then
-	      view.topline = topline
-	      vim.fn.winrestview(view)
-	    end
-	  end,
-<
 ..............................................................................
 BAR                                        *dropbar-configuration-options-bar*
 
@@ -825,6 +674,158 @@ appearance of the fuzzy finder interface.
     - When opening an entry with a submenu via the fuzzy finder,
       open the submenu in fuzzy finder mode.
     - Default: `true`
+
+..............................................................................
+ICONS                                    *dropbar-configuration-options-icons*
+
+These options live under `opts.icons` and are used to configure the icons used
+by the plugin:
+
+- `opts.icons.enable`: `boolean`
+    - Whether to enable icons
+    - Default: `true`
+- `opts.icons.kinds.use_devicons`: `boolean`
+    - Whether to use nvim-web-devicons
+      <https://github.com/nvim-tree/nvim-web-devicons> to show icons for
+      different filetypes
+    - Default: `true`
+
+- `opts.icons.kinds.symbols`: `table<string, string>`
+    - Table mapping the different kinds of symbols to their corresponding
+      icons
+    - Default: >lua
+
+            {
+              Array = '󰅪 ',
+              Boolean = ' ',
+              BreakStatement = '󰙧 ',
+              Call = '󰃷 ',
+              CaseStatement = '󱃙 ',
+              Class = ' ',
+              Color = '󰏘 ',
+              Constant = '󰏿 ',
+              Constructor = ' ',
+              ContinueStatement = '→ ',
+              Copilot = ' ',
+              Declaration = '󰙠 ',
+              Delete = '󰩺 ',
+              DoStatement = '󰑖 ',
+              Enum = ' ',
+              EnumMember = ' ',
+              Event = ' ',
+              Field = ' ',
+              File = '󰈔 ',
+              Folder = '󰉋 ',
+              ForStatement = '󰑖 ',
+              Function = '󰊕 ',
+              H1Marker = '󰉫 ', -- Used by markdown treesitter parser
+              H2Marker = '󰉬 ',
+              H3Marker = '󰉭 ',
+              H4Marker = '󰉮 ',
+              H5Marker = '󰉯 ',
+              H6Marker = '󰉰 ',
+              Identifier = '󰀫 ',
+              IfStatement = '󰇉 ',
+              Interface = ' ',
+              Keyword = '󰌋 ',
+              List = '󰅪 ',
+              Log = '󰦪 ',
+              Lsp = ' ',
+              Macro = '󰁌 ',
+              MarkdownH1 = '󰉫 ', -- Used by builtin markdown source
+              MarkdownH2 = '󰉬 ',
+              MarkdownH3 = '󰉭 ',
+              MarkdownH4 = '󰉮 ',
+              MarkdownH5 = '󰉯 ',
+              MarkdownH6 = '󰉰 ',
+              Method = '󰆧 ',
+              Module = '󰏗 ',
+              Namespace = '󰅩 ',
+              Null = '󰢤 ',
+              Number = '󰎠 ',
+              Object = '󰅩 ',
+              Operator = '󰆕 ',
+              Package = '󰆦 ',
+              Pair = '󰅪 ',
+              Property = ' ',
+              Reference = '󰦾 ',
+              Regex = ' ',
+              Repeat = '󰑖 ',
+              Scope = '󰅩 ',
+              Snippet = '󰩫 ',
+              Specifier = '󰦪 ',
+              Statement = '󰅩 ',
+              String = '󰉾 ',
+              Struct = ' ',
+              SwitchStatement = '󰺟 ',
+              Terminal = ' ',
+              Text = ' ',
+              Type = ' ',
+              TypeParameter = '󰆩 ',
+              Unit = ' ',
+              Value = '󰎠 ',
+              Variable = '󰀫 ',
+              WhileStatement = '󰑖 ',
+            }
+<
+- `opts.icons.ui.bar`: `table<string, string>`
+    - Controls the icons used in the winbar UI
+    - Default: >lua
+            {
+              separator = ' ',
+              extends = '…',
+            }
+<
+- `opts.icons.ui.menu`: `table<string, string>`
+    - Controls the icons used in the menu UI
+    - Default: >lua
+            {
+              separator = ' ',
+              indicator = ' ',
+            }
+<
+
+..............................................................................
+Symbol                                  *dropbar-configuration-options-symbol*
+
+These options live under `opts.bar` and are used to control the behavior of
+the symbols:
+
+- `opts.symbol.preview.reorient`: `fun(win: integer, range: {start: {line: integer, character: integer}, end: {line: integer, character: integer}})`
+    - Function to reorient the source window when previewing symbol given
+      the source window `win` and the range of the symbol `range`
+    - Default: >lua
+
+	    function(_, range)
+	      local invisible = range['end'].line - vim.fn.line('w$') + 1
+	      if invisible > 0 then
+		local view = vim.fn.winsaveview() --[[@as vim.fn.winrestview.dict]]
+		view.topline = math.min(
+		  view.topline + invisible,
+		  math.max(1, range.start.line - vim.wo.scrolloff + 1)
+		)
+		vim.fn.winrestview(view)
+	      end
+	    end
+<
+- `opts.symbol.jump.reorient`: `fun(win: integer, range: {start: {line: integer, character: integer}, end: {line: integer, character: integer}})`
+  - Function to reorient the source window after jumping to symbol given
+    the source window `win` and the range of the symbol `range`
+  - Default: >lua
+
+	  function(win, range)
+	    local view = vim.fn.winsaveview()
+	    local win_height = vim.api.nvim_win_get_height(win)
+	    local topline = range.start.line - math.floor(win_height / 4)
+	    if
+	      topline > view.topline
+	      and topline + win_height < vim.fn.line('$')
+	    then
+	      view.topline = topline
+	      vim.fn.winrestview(view)
+	    end
+	  end,
+<
 
 ..............................................................................
 SOURCES                                *dropbar-configuration-options-sources*
