@@ -30,7 +30,6 @@
   - [Usage with `vim.ui.select`](#usage-with-vimuiselect)
 - [Configuration](#configuration)
   - [Options](#options)
-    - [General](#general)
     - [Icons](#icons)
     - [Symbol](#symbol)
     - [Bar](#bar)
@@ -280,7 +279,7 @@ vim.ui.select = require('dropbar.utils.menu').select
       -- If you encounter performance issues when scrolling the window, try
       -- setting this option to a number slightly larger than
       -- 1000 / key_repeat_rate
-      update_interval = 0,
+      update_debounce = 0,
       update_events = {
         win = {
           'CursorMoved',
@@ -906,80 +905,6 @@ vim.ui.select = require('dropbar.utils.menu').select
 
 </details>
 
-#### General
-
-These options live under `opts.general` and are used to configure the
-general behavior of the plugin:
-
-- `opts.general.enable`: `boolean|fun(buf: integer, win: integer): boolean`
-  - Controls whether to enable the plugin for the current buffer and window
-  - If a function is provided, it will be called with the current bufnr and
-  winid and should return a boolean
-  - Default:
-    ```lua
-    function(buf, win, _)
-      return vim.api.nvim_buf_is_valid(buf)
-        and vim.api.nvim_win_is_valid(win)
-        and vim.wo[win].winbar == ''
-        and vim.fn.win_gettype(win) == ''
-        and vim.bo[buf].ft ~= 'help'
-        and ((pcall(vim.treesitter.get_parser, buf)) and true or false)
-    end,
-    ```
-- `opts.general.attach_events`: `string[]`
-  - Controls when to evaluate the `enable()` function and attach the plugin
-    to corresponding buffer or window
-  - Default:
-    ```lua
-    {
-      'OptionSet',
-      'BufWinEnter',
-      'BufWritePost',
-    }
-    ```
-- `opts.general.update_interval`: `number`
-  - Wait for a short time before updating the winbar, if another update
-    request is received within this time, the previous request will be
-    cancelled, this improves the performance when the user is holding
-    down a key (e.g. `'j'`) to scroll the window
-  - If you encounter performance issues when scrolling the window, try
-    setting this option to a number slightly larger than
-    `1000 / key_repeat_rate`
-  - Default: `0`
-- `opts.general.update_events.win`: `string[]`
-  - List of events that should trigger an update on the dropbar attached to
-    a single window
-  - Default:
-    ```lua
-    {
-      'CursorMoved',
-      'WinEnter',
-      'WinResized',
-    }
-    ```
-- `opts.general.update_events.buf`: `string[]`
-  - List of events that should trigger an update on all dropbars attached to a
-    buffer
-  - Default:
-    ```lua
-    {
-      'BufModifiedSet',
-      'FileChangedShellPost',
-      'TextChanged',
-      'ModeChanged',
-    }
-    ```
-- `opts.general.update_events.global`: `string[]`
-  - List of events that should trigger an update of all dropbars in current
-    nvim session
-  - Default:
-    ```lua
-    {
-      'DirChanged',
-      'VimResized',
-    }
-    ```
-
 #### Icons
 
 These options live under `opts.icons` and are used to configure the icons
@@ -1132,6 +1057,74 @@ the symbols:
 These options live under `opts.bar` and are used to control the behavior of the
 winbar:
 
+- `opts.bar.enable`: `boolean|fun(buf: integer, win: integer): boolean`
+  - Controls whether to attach dropbar to the current buffer and window
+  - If a function is provided, it will be called with the current bufnr and
+  winid and should return a boolean
+  - Default:
+    ```lua
+    function(buf, win, _)
+      return vim.api.nvim_buf_is_valid(buf)
+        and vim.api.nvim_win_is_valid(win)
+        and vim.wo[win].winbar == ''
+        and vim.fn.win_gettype(win) == ''
+        and vim.bo[buf].ft ~= 'help'
+        and ((pcall(vim.treesitter.get_parser, buf)) and true or false)
+    end,
+    ```
+- `opts.bar.attach_events`: `string[]`
+  - Controls when to evaluate the `enable()` function and attach the plugin
+    to corresponding buffer or window
+  - Default:
+    ```lua
+    {
+      'OptionSet',
+      'BufWinEnter',
+      'BufWritePost',
+    }
+    ```
+- `opts.bar.update_debounce`: `number`
+  - Wait for a short time before updating the winbar, if another update
+    request is received within this time, the previous request will be
+    cancelled, this improves the performance when the user is holding
+    down a key (e.g. `'j'`) to scroll the window
+  - If you encounter performance issues when scrolling the window, try
+    setting this option to a number slightly larger than
+    `1000 / key_repeat_rate`
+  - Default: `0`
+- `opts.bar.update_events.win`: `string[]`
+  - List of events that should trigger an update on the dropbar attached to
+    a single window
+  - Default:
+    ```lua
+    {
+      'CursorMoved',
+      'WinEnter',
+      'WinResized',
+    }
+    ```
+- `opts.bar.update_events.buf`: `string[]`
+  - List of events that should trigger an update on all dropbars attached to a
+    buffer
+  - Default:
+    ```lua
+    {
+      'BufModifiedSet',
+      'FileChangedShellPost',
+      'TextChanged',
+      'ModeChanged',
+    }
+    ```
+- `opts.bar.update_events.global`: `string[]`
+  - List of events that should trigger an update of all dropbars in current
+    nvim session
+  - Default:
+    ```lua
+    {
+      'DirChanged',
+      'VimResized',
+    }
+    ```
 - `opts.bar.hover`: `boolean`
   - Whether to highlight the symbol under the cursor
   - This feature requires `'mousemoveevent'` to be enabled

@@ -315,7 +315,7 @@ local function attach(buf)
 
   update_symbols(buf)
   vim.b[buf].dropbar_lsp_attached =
-    vim.api.nvim_create_autocmd(configs.opts.general.update_events.buf, {
+    vim.api.nvim_create_autocmd(configs.opts.bar.update_events.buf, {
       group = groupid,
       buffer = buf,
       callback = function(info)

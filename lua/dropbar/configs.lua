@@ -4,45 +4,6 @@ local M = {}
 
 ---@class dropbar_configs_t
 M.opts = {
-  general = {
-    ---@type boolean|fun(buf: integer, win: integer, info: table?): boolean
-    enable = function(buf, win, _)
-      return vim.api.nvim_buf_is_valid(buf)
-        and vim.api.nvim_win_is_valid(win)
-        and vim.wo[win].winbar == ''
-        and vim.fn.win_gettype(win) == ''
-        and vim.bo[buf].ft ~= 'help'
-        and ((pcall(vim.treesitter.get_parser, buf)) and true or false)
-    end,
-    attach_events = {
-      'BufWinEnter',
-      'BufWritePost',
-    },
-    -- Wait for a short time before updating the winbar, if another update
-    -- request is received within this time, the previous request will be
-    -- cancelled, this improves the performance when the user is holding
-    -- down a key (e.g. 'j') to scroll the window, default to 0 ms
-    -- If you encounter performance issues when scrolling the window, try
-    -- setting this option to a number slightly larger than
-    -- 1000 / key_repeat_rate
-    update_interval = 0,
-    update_events = {
-      win = {
-        'CursorMoved',
-        'WinResized',
-      },
-      buf = {
-        'BufModifiedSet',
-        'FileChangedShellPost',
-        'TextChanged',
-        'ModeChanged',
-      },
-      global = {
-        'DirChanged',
-        'VimResized',
-      },
-    },
-  },
   icons = {
     enable = true,
     kinds = {
@@ -168,6 +129,43 @@ M.opts = {
     },
   },
   bar = {
+    ---@type boolean|fun(buf: integer, win: integer, info: table?): boolean
+    enable = function(buf, win, _)
+      return vim.api.nvim_buf_is_valid(buf)
+        and vim.api.nvim_win_is_valid(win)
+        and vim.wo[win].winbar == ''
+        and vim.fn.win_gettype(win) == ''
+        and vim.bo[buf].ft ~= 'help'
+        and ((pcall(vim.treesitter.get_parser, buf)) and true or false)
+    end,
+    attach_events = {
+      'BufWinEnter',
+      'BufWritePost',
+    },
+    -- Wait for a short time before updating the winbar, if another update
+    -- request is received within this time, the previous request will be
+    -- cancelled, this improves the performance when the user is holding
+    -- down a key (e.g. 'j') to scroll the window, default to 0 ms
+    -- If you encounter performance issues when scrolling the window, try
+    -- setting this option to a number slightly larger than
+    -- 1000 / key_repeat_rate
+    update_debounce = 0,
+    update_events = {
+      win = {
+        'CursorMoved',
+        'WinResized',
+      },
+      buf = {
+        'BufModifiedSet',
+        'FileChangedShellPost',
+        'TextChanged',
+        'ModeChanged',
+      },
+      global = {
+        'DirChanged',
+        'VimResized',
+      },
+    },
     hover = true,
     ---@type dropbar_source_t[]|fun(buf: integer, win: integer): dropbar_source_t[]
     sources = function(buf, _)
@@ -660,16 +658,14 @@ function M.set(new_opts)
     vim.api.nvim_echo({
       { '[dropbar.nvim] ', 'Normal' },
       { 'opts.general.update_events', 'WarningMsg' },
-      { ' is deprecated.\n', 'Normal' },
-      { '[dropbar.nvim] ', 'Normal' },
-      { 'Please use\n', 'Normal' },
-      { '               opts.general.update_events.win ', 'WarningMsg' },
-      { 'for updating a winbar attached to a single window,\n', 'Normal' },
+      { ' is deprecated, please use:\n', 'Normal' },
+      { '               opts.general.update_events.win', 'WarningMsg' },
+      { ' for updating a winbar attached to a single window,\n', 'Normal' },
       { '               opts.general.update_events.buf ', 'WarningMsg' },
       { 'for updating all winbars attached to a buffer, or\n', 'Normal' },
       { '               opts.general.update_events.global ', 'WarningMsg' },
       { 'for updating all winbars in current nvim session ', 'Normal' },
-      { 'instead.\n', 'Normal' },
+      { 'instead', 'Normal' },
     }, true, {})
     new_opts.general.update_events = {
       win = new_opts.general.update_events,
@@ -684,9 +680,33 @@ function M.set(new_opts)
       { '[dropbar.nvim] ', 'Normal' },
       { 'Please use ', 'Normal' },
       { 'opts.sources.treesitter.name_regex ', 'WarningMsg' },
-      { 'instead to match ts node names with vim regex.\n', 'Normal' },
+      { 'instead to match ts node names with vim regex', 'Normal' },
     }, true, {})
     new_opts.sources.treesitter.name_pattern = nil
+  end
+
+  if (new_opts.general or {}).update_interval then
+    vim.api.nvim_echo({
+      { '[dropbar.nvim] ', 'Normal' },
+      { 'opts.general.update_interval', 'WarningMsg' },
+      { ' is deprecated, please use ', 'Normal' },
+      { 'opts.bar.update_debounce', 'WarningMsg' },
+      { ' instead', 'Normal' },
+    }, true, {})
+    new_opts.general.update_debounce = new_opts.general.update_interval
+    new_opts.general.update_interval = nil
+  end
+
+  if new_opts.general then
+    vim.api.nvim_echo({
+      { '[dropbar.nvim] ', 'Normal' },
+      { 'opts.general', 'WarningMsg' },
+      { ' is deprecated, its config fields have been moved to ', 'Normal' },
+      { 'opts.bar', 'WarningMsg' },
+    }, true, {})
+    new_opts.bar =
+      vim.tbl_deep_extend('force', new_opts.bar or {}, new_opts.general)
+    new_opts.general = nil ---@diagnostic disable-line: inject-field
   end
 
   if new_opts.icons and new_opts.icons.enable == false then

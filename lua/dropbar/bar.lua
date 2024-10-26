@@ -574,7 +574,7 @@ function dropbar_t:update()
       end
     end
     self:redraw()
-  end, configs.opts.general.update_interval)
+  end, configs.opts.bar.update_debounce)
 end
 
 ---Execute a function in pick mode
