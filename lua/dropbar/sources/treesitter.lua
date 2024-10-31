@@ -21,7 +21,7 @@ local function get_node_short_name(node, buf)
     .trim(
       vim.fn.matchstr(
         vim.treesitter.get_node_text(node, buf):gsub('\n', ' '),
-        configs.opts.sources.treesitter.name_pattern
+        configs.opts.sources.treesitter.name_regex
       )
     )
     :gsub('%s+', ' ')
