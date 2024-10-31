@@ -301,19 +301,19 @@ vim.ui.select = require('dropbar.utils.menu').select
     icons = {
       enable = true,
       kinds = {
-        ---Directory icon and highlighting getter, set to `false` to disable
+        ---Directory icon and highlighting getter, set to empty string to disable
         ---@param path string path to the directory
         ---@return string: icon for the directory
         ---@return string?: highlight group for the icon
-        ---@type fun(path: string): string, string?|false
+        ---@type fun(path: string): string, string?|string?
         dir_icon = function(_)
           return M.opts.icons.kinds.symbols.Folder, 'DropBarIconKindFolder'
         end,
-        ---File icon and highlighting getter, set to `false` to disable
+        ---File icon and highlighting getter, set to empty string to disable
         ---@param path string path to the file
         ---@return string: icon for the file
         ---@return string?: highlight group for the icon
-        ---@type fun(path: string): string, string?|false
+        ---@type fun(path: string): string, string?|string?
         file_icon = function(path)
           local icon_kind_opts = M.opts.icons.kinds
           local file_icon = icon_kind_opts.symbols.File
@@ -1443,16 +1443,16 @@ used by the plugin:
 - `opts.icons.enable`: `boolean`
   - Whether to enable icons
   - Default: `true`
-- `opts.icons.kinds.dir_icon`: `fun(path: string): string, string?|false`
-  - Directory icon and highlighting getter, set to `false` to disable
+- `opts.icons.kinds.dir_icon`: `fun(path: string): string, string?|string?`
+  - Directory icon and highlighting getter, set to empty string to disable
   - Default:
     ```lua
     function(_)
       return M.opts.icons.kinds.symbols.Folder, 'DropBarIconKindFolder'
     end
     ```
-- `opts.icons.kinds.file_icon`: `fun(path: string): string, string?|false`
-  - File icon and highlighting getter, set to `false` to disable
+- `opts.icons.kinds.file_icon`: `fun(path: string): string, string?|string?`
+  - File icon and highlighting getter, set to empty string to disable
   - Default:
     ```lua
     function(path)

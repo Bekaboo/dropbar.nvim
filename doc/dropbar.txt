@@ -684,16 +684,16 @@ by the plugin:
 - `opts.icons.enable`: `boolean`
     - Whether to enable icons
     - Default: `true`
-- `opts.icons.kinds.dir_icon`: `fun(path: string): string, string?|false`
-  - Directory icon and highlighting getter, set to `false` to disable
+- `opts.icons.kinds.dir_icon`: `fun(path: string): string, string?|string?`
+  - Directory icon and highlighting getter, set to empty string to disable
   - Default: >lua
 
 	  function(_)
 	    return M.opts.icons.kinds.symbols.Folder, 'DropBarIconKindFolder'
 	  end
 <
-- `opts.icons.kinds.file_icon`: `fun(path: string): string, string?|false`
-  - File icon and highlighting getter, set to `false` to disable
+- `opts.icons.kinds.file_icon`: `fun(path: string): string, string?|string?`
+  - File icon and highlighting getter, set to empty string to disable
   - Default: >lua
 
 	  function(path)
