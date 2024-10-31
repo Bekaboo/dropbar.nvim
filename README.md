@@ -88,15 +88,15 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
   `dropbar.nvim` comes with five builtin sources:
 
-  - [x] [lsp](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/sources/lsp.lua): gets symbols from language servers using nvim's builtin LSP framework
+  - [x] [lsp](lua/dropbar/sources/lsp.lua): gets symbols from language servers using nvim's builtin LSP framework
 
-  - [x] [markdown](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/sources/markdown.lua): a custom incremental parser that gets symbol information about markdown headings
+  - [x] [markdown](lua/dropbar/sources/markdown.lua): a custom incremental parser that gets symbol information about markdown headings
 
-  - [x] [path](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/sources/path.lua): gets current file path
+  - [x] [path](lua/dropbar/sources/path.lua): gets current file path
 
-  - [x] [treesitter](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/sources/treesitter.lua): gets symbols from treesitter parsers using nvim's builtin treesitter integration
+  - [x] [treesitter](lua/dropbar/sources/treesitter.lua): gets symbols from treesitter parsers using nvim's builtin treesitter integration
 
-  - [x] [terminal](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/sources/terminal.lua): easily switch terminal buffers using the dropdown menu
+  - [x] [terminal](lua/dropbar/sources/terminal.lua): easily switch terminal buffers using the dropdown menu
 
   To make a new source yourself, see [making a new source](#making-a-new-source).
 
@@ -200,7 +200,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
   git clone https://github.com/Bekaboo/dropbar.nvim ~/.local/share/nvim/site/pack/packages/start/dropbar.nvim
   ```
 
-  Lazy-loading is unneeded as it is already done in [plugin/dropbar.lua](https://github.com/Bekaboo/dropbar.nvim/blob/master/plugin/dropbar.lua).
+  Lazy-loading is unneeded as it is already done in [plugin/dropbar.lua](plugin/dropbar.lua).
 
 ## Usage
 
@@ -1845,7 +1845,7 @@ your config:
 
 #### Bar Utility Functions
 
-Defined in [`lua/dropbar/utils/bar.lua`](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/utils/bar.lua).
+Defined in [`lua/dropbar/utils/bar.lua`](lua/dropbar/utils/bar.lua).
 
 - `utils.bar.get(opts?): (dropbar_t?)|table<integer, dropbar_t>|table<integer, table<integer, dropbar_t>>`
   - Get the dropbar(s) associated with the given buffer and window
@@ -1860,7 +1860,7 @@ Defined in [`lua/dropbar/utils/bar.lua`](https://github.com/Bekaboo/dropbar.nvim
 
 #### Menu Utility Functions
 
-Defined in [`lua/dropbar/utils/menu.lua`](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/utils/menu.lua).
+Defined in [`lua/dropbar/utils/menu.lua`](lua/dropbar/utils/menu.lua).
 
 - `utils.menu.get(opts): (dropbar_menu_t?)|table<integer, dropbar_menu_t>`
   - Get dropbar menu
@@ -2089,7 +2089,7 @@ should be self-explanatory:
 
 #### `dropbar_t`
 
-Declared and defined in [`lua/dropbar/bar.lua`](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/bar.lua).
+Declared and defined in [`lua/dropbar/bar.lua`](lua/dropbar/bar.lua).
 
 ---
 
@@ -2139,7 +2139,7 @@ which function to call when a symbol is clicked.
 
 #### `dropbar_symbol_t`
 
-Declared and defined in [`lua/dropbar/bar.lua`](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/bar.lua).
+Declared and defined in [`lua/dropbar/bar.lua`](lua/dropbar/bar.lua).
 
 ---
 
@@ -2192,7 +2192,7 @@ basic element of [`dropbar_t`](#dropbar_t) and [`dropbar_menu_entry_t`](#dropbar
 
 #### `dropbar_menu_t`
 
-Declared and defined in [`lua/dropbar/menu.lua`](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/menu.lua).
+Declared and defined in [`lua/dropbar/menu.lua`](lua/dropbar/menu.lua).
 
 ---
 
@@ -2246,7 +2246,7 @@ Declared and defined in [`lua/dropbar/menu.lua`](https://github.com/Bekaboo/drop
 
 #### `dropbar_menu_entry_t`
 
-Declared and defined in [`lua/dropbar/menu.lua`](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/menu.lua).
+Declared and defined in [`lua/dropbar/menu.lua`](lua/dropbar/menu.lua).
 
 ---
 
@@ -2283,7 +2283,7 @@ multiple `dropbar_menu_entry_t` instances while a
 
 #### `dropbar_menu_hl_info_t`
 
-Declared and defined in [`lua/dropbar/menu.lua`](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/menu.lua).
+Declared and defined in [`lua/dropbar/menu.lua`](lua/dropbar/menu.lua).
 
 ---
 
@@ -2301,7 +2301,7 @@ single line of a drop-down menu.
 
 #### `dropbar_source_t`
 
-Declared in [`lua/dropbar/sources/init.lua`](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/sources/init.lua).
+Declared in [`lua/dropbar/sources/init.lua`](lua/dropbar/sources/init.lua).
 
 ---
 
@@ -2315,7 +2315,7 @@ Declared in [`lua/dropbar/sources/init.lua`](https://github.com/Bekaboo/dropbar.
 
 #### `dropbar_select_opts_t`
 
-Declared in [`lua/dropbar/utils/menu.lua`](https://github.com/Bekaboo/dropbar.nvim/blob/master/lua/dropbar/utils/menu.lua).
+Declared in [`lua/dropbar/utils/menu.lua`](lua/dropbar/utils/menu.lua).
 
 ---
 
@@ -2545,7 +2545,7 @@ local custom_source = {
 ```
 
 To see concrete examples of lazy-loading see
-[`lua/dropbar/sources`](https://github.com/Bekaboo/dropbar.nvim/tree/master/lua/dropbar/sources).
+[`lua/dropbar/sources`](lua/dropbar/sources).
 
 #### Practical Examples
 
