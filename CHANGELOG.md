@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.0.1](https://github.com/Bekaboo/dropbar.nvim/compare/v9.0.0...v9.0.1) (2024-11-02)
+
+
+### Bug Fixes
+
+* Use personal access token (PAT), see discussion: ([22382f4](https://github.com/Bekaboo/dropbar.nvim/commit/22382f44f8ce0320d38023c6a68f3ef4087c8c10))
+
 ## [9.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v8.6.1...v9.0.0) (2024-10-31)
 
 
