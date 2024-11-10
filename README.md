@@ -256,48 +256,6 @@ vim.ui.select = require('dropbar.utils.menu').select
   ```lua
   ---@class dropbar_configs_t
   M.opts = {
-    general = {
-      ---@type boolean|fun(buf: integer, win: integer, info: table?): boolean
-      enable = function(buf, win, _)
-        return vim.api.nvim_buf_is_valid(buf)
-          and vim.api.nvim_win_is_valid(win)
-          and vim.wo[win].winbar == ''
-          and (
-            (pcall(vim.treesitter.get_parser, buf, vim.bo[buf].ft)) and true
-            or false
-          )
-      end,
-      attach_events = {
-        'OptionSet',
-        'BufWinEnter',
-        'BufWritePost',
-      },
-      -- Wait for a short time before updating the winbar, if another update
-      -- request is received within this time, the previous request will be
-      -- cancelled, this improves the performance when the user is holding
-      -- down a key (e.g. 'j') to scroll the window, default to 0 ms
-      -- If you encounter performance issues when scrolling the window, try
-      -- setting this option to a number slightly larger than
-      -- 1000 / key_repeat_rate
-      update_debounce = 0,
-      update_events = {
-        win = {
-          'CursorMoved',
-          'WinEnter',
-          'WinResized',
-        },
-        buf = {
-          'BufModifiedSet',
-          'FileChangedShellPost',
-          'TextChanged',
-          'ModeChanged',
-        },
-        global = {
-          'DirChanged',
-          'VimResized',
-        },
-      },
-    },
     icons = {
       enable = true,
       kinds = {
@@ -470,6 +428,46 @@ vim.ui.select = require('dropbar.utils.menu').select
       },
     },
     bar = {
+      ---@type boolean|fun(buf: integer, win: integer, info: table?): boolean
+      enable = function(buf, win, _)
+        return vim.api.nvim_buf_is_valid(buf)
+          and vim.api.nvim_win_is_valid(win)
+          and vim.wo[win].winbar == ''
+          and (
+            (pcall(vim.treesitter.get_parser, buf, vim.bo[buf].ft)) and true
+            or false
+          )
+      end,
+      attach_events = {
+        'OptionSet',
+        'BufWinEnter',
+        'BufWritePost',
+      },
+      -- Wait for a short time before updating the winbar, if another update
+      -- request is received within this time, the previous request will be
+      -- cancelled, this improves the performance when the user is holding
+      -- down a key (e.g. 'j') to scroll the window, default to 0 ms
+      -- If you encounter performance issues when scrolling the window, try
+      -- setting this option to a number slightly larger than
+      -- 1000 / key_repeat_rate
+      update_debounce = 0,
+      update_events = {
+        win = {
+          'CursorMoved',
+          'WinEnter',
+          'WinResized',
+        },
+        buf = {
+          'BufModifiedSet',
+          'FileChangedShellPost',
+          'TextChanged',
+          'ModeChanged',
+        },
+        global = {
+          'DirChanged',
+          'VimResized',
+        },
+      },
       hover = true,
       ---@type dropbar_source_t[]|fun(buf: integer, win: integer): dropbar_source_t[]
       sources = function(buf, _)
@@ -953,7 +951,7 @@ vim.ui.select = require('dropbar.utils.menu').select
 These options live under `opts.bar` and are used to control the behavior of the
 winbar:
 
-- `opts.bar.enable`: `boolean|fun(buf: integer, win: integer): boolean`
+- `opts.bar.enable`: `boolean|fun(buf: integer, win: integer, info: table?): boolean`
   - Controls whether to attach dropbar to the current buffer and window
   - If a function is provided, it will be called with the current bufnr and
   winid and should return a boolean
