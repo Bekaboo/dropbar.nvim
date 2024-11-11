@@ -123,21 +123,23 @@ local function init()
     callback = set_hlgroups,
   })
 
-  -- Remove winbar background as a workaround for
+  -- Remove winbar background for non-nightly versions as a workaround for
   -- https://github.com/Bekaboo/dropbar.nvim/issues/118, also see
   -- https://github.com/neovim/neovim/issues/26037#issuecomment-1838548013
-  clear_winbar_bg()
-  vim.api.nvim_create_autocmd('ColorScheme', {
-    desc = 'Remove WinBar background color as a workaround.',
-    group = groupid,
-    callback = clear_winbar_bg,
-  })
-  vim.api.nvim_create_autocmd('OptionSet', {
-    desc = 'Remove WinBar background color as a workaround.',
-    pattern = 'background',
-    group = groupid,
-    callback = clear_winbar_bg,
-  })
+  if vim.fn.has('nvim-0.11.0') == 0 then
+    clear_winbar_bg()
+    vim.api.nvim_create_autocmd('ColorScheme', {
+      desc = 'Remove WinBar background color as a workaround.',
+      group = groupid,
+      callback = clear_winbar_bg,
+    })
+    vim.api.nvim_create_autocmd('OptionSet', {
+      desc = 'Remove WinBar background color as a workaround.',
+      pattern = 'background',
+      group = groupid,
+      callback = clear_winbar_bg,
+    })
+  end
 end
 
 return {
