@@ -226,7 +226,7 @@ the winbar:
 	'BufWritePost',
       }
 <
-- `opts.general.update_debounce`: `number`
+- `opts.bar.update_debounce`: `number`
     - Wait for a short time before updating the winbar, if another update
       request is received within this time, the previous request will be
       cancelled, this improves the performance when the user is holding
@@ -236,7 +236,7 @@ the winbar:
       `1000 / key_repeat_rate`
     - Default: `0`
 
-- `opts.general.update_events.win`: `string[]`
+- `opts.bar.update_events.win`: `string[]`
     - List of events that should trigger an update on the dropbar attached to
       a single window
     - Default: >lua
@@ -247,7 +247,7 @@ the winbar:
 	      'WinResized',
             }
 <
-- `opts.general.update_events.buf`: `string[]`
+- `opts.bar.update_events.buf`: `string[]`
   - List of events that should trigger an update on all dropbars attached to a
     buffer
   - Default: >lua
@@ -259,7 +259,7 @@ the winbar:
 	      'ModeChanged',
 	    }
 <
-- `opts.general.update_events.global`: `string[]`
+- `opts.bar.update_events.global`: `string[]`
   - List of events that should trigger an update of all dropbars in current
     nvim session
   - Default: >lua
