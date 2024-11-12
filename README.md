@@ -130,14 +130,6 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 
   ![scrollbar](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/ace94d9a-e850-4a6b-9ab3-51a290e5af32)
 
-- [x] Background color support<super>*</super> thanks [@theofabilous](https://github.com/theofabilous)
-
-  ![background-color](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/d7794098-9dcf-459e-9763-8b7d9414e035)
-
-  - This is currently an experimental feature that is only available in branch
-    [`feat-winbar-background-highlight`](https://github.com/Bekaboo/dropbar.nvim/tree/feat-winbar-background-highlight).
-  - To achieve the same effect in branch [`master`](https://github.com/Bekaboo/dropbar.nvim/tree/master), see discussions in [#2](https://github.com/Bekaboo/dropbar.nvim/issues/2)
-
 - [ ] Add preview for symbols shown in the winbar
 
 - [ ] Preview symbols (files) from `path` source
