@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.0.2](https://github.com/Bekaboo/dropbar.nvim/compare/v9.0.1...v9.0.2) (2024-11-17)
+
+
+### Bug Fixes
+
+* **hlgroups:** don't remove winbar background in nightly ([#195](https://github.com/Bekaboo/dropbar.nvim/issues/195)) ([0065665](https://github.com/Bekaboo/dropbar.nvim/commit/006566571f7af2edf45c99fb997d550878c661ad))
+
 ## [9.0.1](https://github.com/Bekaboo/dropbar.nvim/compare/v9.0.0...v9.0.1) (2024-11-02)
 
 
