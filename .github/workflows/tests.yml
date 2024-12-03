@@ -11,7 +11,7 @@ jobs:
           - os: ubuntu-22.04
             release-build: nvim-linux64.tar.gz
             version: nightly
-          - os: macos-12
+          - os: macos-13
             release-build: nvim-macos-x86_64.tar.gz
             version: nightly
     steps:
