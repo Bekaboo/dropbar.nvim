@@ -786,7 +786,7 @@ end
 ---@param opt? `T`|fun(...): `T`
 ---@return `T`?
 function M.eval(opt, ...)
-  if type(opt) == 'function' then
+  if opt and vim.is_callable(opt) then
     return opt(...)
   end
   return opt
