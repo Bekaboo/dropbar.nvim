@@ -169,6 +169,12 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
         'nvim-telescope/telescope-fzf-native.nvim',
         build = 'make'
       }
+      config = function()
+        local dropbar_api = require('dropbar.api')
+        vim.keymap.set('n', '<Leader>;', dropbar_api.pick, { desc = 'Pick symbols in winbar' })
+        vim.keymap.set('n', '[;', dropbar_api.goto_context_start, { desc = 'Go to start of current context' })
+        vim.keymap.set('n', '];', dropbar_api.select_next_context, { desc = 'Select next context' })
+      end
     }
   })
   ```
@@ -183,6 +189,12 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
         'nvim-telescope/telescope-fzf-native.nvim',
         run = 'make'
       }
+      config = function ()
+        local dropbar_api = require('dropbar.api')
+        vim.keymap.set('n', '<Leader>;', dropbar_api.pick, { desc = 'Pick symbols in winbar' })
+        vim.keymap.set('n', '[;', dropbar_api.goto_context_start, { desc = 'Go to start of current context' })
+        vim.keymap.set('n', '];', dropbar_api.select_next_context, { desc = 'Select next context' })
+      end
     })
   end)
   ```
