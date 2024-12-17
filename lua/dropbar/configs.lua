@@ -144,6 +144,109 @@ M.opts = {
     },
   },
   symbol = {
+    ---@type fun(symbol: dropbar_symbol_t, min_width: integer?, n_clicks: integer?, button: string?, modifiers: string?)|false?
+    on_click = function(symbol)
+      -- Update current context highlights if the symbol
+      -- is shown inside a menu
+      if symbol.entry and symbol.entry.menu then
+        symbol.entry.menu:update_current_context_hl(symbol.entry.idx)
+      elseif symbol.bar then
+        symbol.bar:update_current_context_hl(symbol.bar_idx)
+      end
+
+      -- Determine menu configs
+      local prev_win = nil ---@type integer?
+      local entries_source = nil ---@type dropbar_symbol_t[]?
+      local init_cursor = nil ---@type integer[]?
+      local win_configs = {}
+      if symbol.bar then -- If symbol inside a dropbar
+        prev_win = symbol.bar.win
+        entries_source = symbol.opts.siblings
+        init_cursor = symbol.opts.sibling_idx
+          and { symbol.opts.sibling_idx, 0 }
+        ---@param tbl number[]
+        local function _sum(tbl)
+          local sum = 0
+          for _, v in ipairs(tbl) do
+            sum = sum + v
+          end
+          return sum
+        end
+        if symbol.bar.in_pick_mode then
+          win_configs.relative = 'win'
+          win_configs.win = vim.api.nvim_get_current_win()
+          win_configs.row = 0
+          win_configs.col = symbol.bar.padding.left
+            + _sum(vim.tbl_map(
+              function(component)
+                return component:displaywidth()
+                  + symbol.bar.separator:displaywidth()
+              end,
+              vim.tbl_filter(function(component)
+                return component.bar_idx < symbol.bar_idx
+              end, symbol.bar.components)
+            ))
+        end
+      elseif symbol.entry and symbol.entry.menu then -- If inside a menu
+        prev_win = symbol.entry.menu.win
+        entries_source = symbol.opts.children
+      end
+
+      -- Toggle existing menu
+      if symbol.menu then
+        symbol.menu:toggle({
+          prev_win = prev_win,
+          win_configs = win_configs,
+        })
+        return
+      end
+
+      -- Create a new menu for the symbol
+      if not entries_source or vim.tbl_isempty(entries_source) then
+        return
+      end
+
+      local menu = require('dropbar.menu')
+      local configs = require('dropbar.configs')
+      symbol.menu = menu.dropbar_menu_t:new({
+        prev_win = prev_win,
+        cursor = init_cursor,
+        win_configs = win_configs,
+        ---@param sym dropbar_symbol_t
+        entries = vim.tbl_map(function(sym)
+          local menu_indicator_icon = configs.opts.icons.ui.menu.indicator
+          local menu_indicator_on_click = nil
+          if not sym.children or vim.tbl_isempty(sym.children) then
+            menu_indicator_icon =
+              string.rep(' ', vim.fn.strdisplaywidth(menu_indicator_icon))
+            menu_indicator_on_click = false
+          end
+          return menu.dropbar_menu_entry_t:new({
+            components = {
+              sym:merge({
+                name = '',
+                icon = menu_indicator_icon,
+                icon_hl = 'dropbarIconUIIndicator',
+                on_click = menu_indicator_on_click,
+              }),
+              sym:merge({
+                on_click = function()
+                  local current_menu = symbol.menu
+                  while current_menu and current_menu.prev_menu do
+                    current_menu = current_menu.prev_menu
+                  end
+                  if current_menu then
+                    current_menu:close(false)
+                  end
+                  sym:jump()
+                end,
+              }),
+            },
+          })
+        end, entries_source),
+      })
+      symbol.menu:toggle()
+    end,
     preview = {
       ---Reorient the preview window on previewing a new symbol
       ---@param _ integer source window id, ignored
