@@ -210,10 +210,17 @@ local function convert_document_symbol_list(
   -- is preferred
   for idx, symbol in vim.iter(lsp_symbols):enumerate():rev() do
     if cursor_in_range(cursor, symbol.range) then
-      table.insert(
-        dropbar_symbols,
-        convert_document_symbol(symbol, buf, win, lsp_symbols, idx)
-      )
+      if
+        vim.tbl_contains(
+          configs.opts.sources.lsp.valid_symbols,
+          symbol_kind_names[symbol.kind]
+        )
+      then
+        table.insert(
+          dropbar_symbols,
+          convert_document_symbol(symbol, buf, win, lsp_symbols, idx)
+        )
+      end
       if symbol.children then
         convert_document_symbol_list(
           symbol.children,

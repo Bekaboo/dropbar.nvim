@@ -1026,6 +1026,34 @@ vim.ui.select = require('dropbar.utils.menu').select
         },
       },
       lsp = {
+        valid_symbols = {
+          'File',
+          'Module',
+          'Namespace',
+          'Package',
+          'Class',
+          'Method',
+          'Property',
+          'Field',
+          'Constructor',
+          'Enum',
+          'Interface',
+          'Function',
+          'Variable',
+          'Constant',
+          'String',
+          'Number',
+          'Boolean',
+          'Array',
+          'Object',
+          'Keyword',
+          'Null',
+          'EnumMember',
+          'Struct',
+          'Event',
+          'Operator',
+          'TypeParameter',
+        },
         request = {
           -- Times to retry a request before giving up
           ttl_init = 60,
@@ -1958,6 +1986,39 @@ each sources.
 
 ##### LSP
 
+- `opts.sources.lsp.valid_symbols:` `string[]`
+  - A list of LSP document symbols to include in the results
+  - Default:
+    ```lua
+    {
+      'File',
+      'Module',
+      'Namespace',
+      'Package',
+      'Class',
+      'Method',
+      'Property',
+      'Field',
+      'Constructor',
+      'Enum',
+      'Interface',
+      'Function',
+      'Variable',
+      'Constant',
+      'String',
+      'Number',
+      'Boolean',
+      'Array',
+      'Object',
+      'Keyword',
+      'Null',
+      'EnumMember',
+      'Struct',
+      'Event',
+      'Operator',
+      'TypeParameter',
+    }
+    ```
 - `opts.sources.lsp.request.ttl_init`: `number`
   - Number of times to retry a request before giving up
   - Default: `60`
