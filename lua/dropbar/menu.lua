@@ -460,9 +460,10 @@ function dropbar_menu_t:make_buf()
   -- Set buffer-local keymaps
   -- Default modes: normal
   for key, mapping in pairs(configs.opts.menu.keymaps) do
-    if type(mapping) == 'function' or type(mapping) == 'string' then
+    local mapping_type = type(mapping)
+    if mapping_type == 'function' or mapping_type == 'string' then
       vim.keymap.set('n', key, mapping, { buffer = self.buf })
-    elseif type(mapping) == 'table' then
+    elseif mapping_type == 'table' then
       for mode, rhs in pairs(mapping) do
         vim.keymap.set(mode, key, rhs, { buffer = self.buf })
       end
