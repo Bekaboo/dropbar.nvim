@@ -1,5 +1,13 @@
 # Changelog
 
+## [9.1.0](https://github.com/Bekaboo/dropbar.nvim/compare/v9.0.2...v9.1.0) (2024-12-19)
+
+
+### Features
+
+* **configs:** allow overriding default `on_click()` callback ([b63fe2e](https://github.com/Bekaboo/dropbar.nvim/commit/b63fe2ef7cc84a2193f867a0cfb6988a1233ab31))
+* **configs:** configure which LSP document symbols to show ([#203](https://github.com/Bekaboo/dropbar.nvim/issues/203)) ([b2c0fa8](https://github.com/Bekaboo/dropbar.nvim/commit/b2c0fa871a7b2f15f9ef32fa251a1052eb2abd99))
+
 ## [9.0.2](https://github.com/Bekaboo/dropbar.nvim/compare/v9.0.1...v9.0.2) (2024-11-17)
 
 
