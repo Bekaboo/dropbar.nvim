@@ -476,9 +476,8 @@ end
 
 ---Execute a function in pick mode
 ---Side effect: change dropbar.in_pick_mode
----@generic T
----@param fn fun(...): T?
----@return T?
+---@param fn fun(...): ...?
+---@return ...?
 function dropbar_t:pick_mode_wrap(fn, ...)
   local pick_mode = self.in_pick_mode
   self.in_pick_mode = true
