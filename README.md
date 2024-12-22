@@ -2100,7 +2100,7 @@ used to interact with the winbar or the drop-down menu:
 - `fuzzy_find_toggle(opts: table?)`
   - Toggle the fuzzy finder interface for the current dropbar menu
   - Options override the default / config options for the fuzzy finder
-- `fuzzy_find_click(component: number | (fun(entry: dropbar_menu_entry_t):dropbartbl_sumbol_t)?)`
+- `fuzzy_find_click(component: number | (fun(entry: dropbar_menu_entry_t):dropbar_symbol_t)?)`
   - If `component` is a `number`, the `component`-nth symbol is selected,
     unless `0` or `-1` is supplied, in which case the *first* or *last*
     clickable component is selected, respectively.
