@@ -420,15 +420,15 @@ vim.ui.select = require('dropbar.utils.menu').select
           entries_source = symbol.opts.siblings
           init_cursor = symbol.opts.sibling_idx
             and { symbol.opts.sibling_idx, 0 }
-          ---@param tbl number[]
-          local function tbl_sum(tbl)
-            local sum = 0
-            for _, v in ipairs(tbl) do
-              sum = sum + v
-            end
-            return sum
-          end
           if symbol.bar.in_pick_mode then
+            ---@param tbl number[]
+            local function tbl_sum(tbl)
+              local sum = 0
+              for _, v in ipairs(tbl) do
+                sum = sum + v
+              end
+              return sum
+            end
             win_configs.relative = 'win'
             win_configs.win = vim.api.nvim_get_current_win()
             win_configs.row = 0
@@ -1717,15 +1717,15 @@ the symbols:
         entries_source = symbol.opts.siblings
         init_cursor = symbol.opts.sibling_idx
           and { symbol.opts.sibling_idx, 0 }
-        ---@param tbl number[]
-        local function tbl_sum(tbl)
-          local sum = 0
-          for _, v in ipairs(tbl) do
-            sum = sum + v
-          end
-          return sum
-        end
         if symbol.bar.in_pick_mode then
+          ---@param tbl number[]
+          local function tbl_sum(tbl)
+            local sum = 0
+            for _, v in ipairs(tbl) do
+              sum = sum + v
+            end
+            return sum
+          end
           win_configs.relative = 'win'
           win_configs.win = vim.api.nvim_get_current_win()
           win_configs.row = 0
