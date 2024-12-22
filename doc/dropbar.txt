@@ -1479,7 +1479,7 @@ around in their window or clicks at a symbol in the winbar:
                                               │ contaning buf 1  ├──────────────────────┐
                                               └───────┬─▲────────┘                      │
                                                       ▼ │                               │
-                                          _G.dropbar.get_dropbar_str()                  │
+                                                  _G.dropbar()                          │
                                                       │ ▲                               │
     ┌──────────────┐                           ┌──────▼─┴──────┐                        │
     │sources       │                           │_G.dropbar.bars│                        │
@@ -1493,9 +1493,9 @@ around in their window or clicks at a symbol in the winbar:
     └─────┬─▲──────┘                        ┌─▼─┴──┐       ┌──┴───┐ ...                 │
           │ │                               │[1000]│       │[1015]│                     │
           │ │                               └─┬─▲──┘       └──────┘                     │
-          │ │                    __tostring() │ │ return string cache                   │
+          │ │                        __call() │ │ return string cache                   │
           │ │                             ┌───▼─┴───┐                    ┌──────────────▼──────────────┐
-          │ │                             │dropbar_t├────────────────────▶_G.dropbar.callbacks│
+          │ │                             │dropbar_t├────────────────────▶     _G.dropbar.callbacks    │
           │ │    On update events         └───┬─▲───┘  register symbol   └──────────────┬──────────────┘
           │ │ get_symbols(1, 1000, <cursor>)  │ │    on_click() callbacks               │
           │ └─────────────────────────────────┘ │                       ┌──────────┬────▼─────┬─────────┐
@@ -1727,9 +1727,9 @@ dropbar_t:update_hover_hl([{col}])                 *dropbar_t:update_hover_hl*
 				position, set to `nil` to clear the hover
 				highlights
 
-dropbar_t:__tostring()                                *dropbar_t:__tostring()*
+dropbar_t:__call()                                        *dropbar_t:__call()*
 
- 	Meta method to convert dropbar_t to its string representation
+ 	Meta method to convert `dropbar_t` to its string representation
 
 ..............................................................................
 DROPBAR_SYMBOL_T                 *dropbar-developers-classes-dropbar_symbol_t*

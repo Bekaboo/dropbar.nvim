@@ -2320,7 +2320,7 @@ should be self-explanatory:
                                               │ contaning buf 1  ├──────────────────────┐
                                               └───────┬─▲────────┘                      │
                                                       ▼ │                               │
-                                          _G.dropbar.get_dropbar_str()                  │
+                                                  _G.dropbar()                          │
                                                       │ ▲                               │
     ┌──────────────┐                           ┌──────▼─┴──────┐                        │
     │sources       │                           │_G.dropbar.bars│                        │
@@ -2334,7 +2334,7 @@ should be self-explanatory:
     └─────┬─▲──────┘                        ┌─▼─┴──┐       ┌──┴───┐ ...                 │
           │ │                               │[1000]│       │[1015]│                     │
           │ │                               └─┬─▲──┘       └──────┘                     │
-          │ │                    __tostring() │ │ return string cache                   │
+          │ │                        __call() │ │ return string cache                   │
           │ │                             ┌───▼─┴───┐                    ┌──────────────▼──────────────┐
           │ │                             │dropbar_t├────────────────────▶     _G.dropbar.callbacks    │
           │ │    On update events         └───┬─▲───┘  register symbol   └──────────────┬──────────────┘
@@ -2409,7 +2409,7 @@ which function to call when a symbol is clicked.
 | `dropbar_t:pick(idx: integer?)`                         | pick a component from dropbar in interactive pick mode if `idx` is not given; else pick the `idx`th component directly                                                                                    |
 | `dropbar_t:update_current_context_hl(bar_idx: integer)` | Update the current context highlight `hl-DropBarCurrentContext` and `hl-DropBarIconCurrentContext` assuming the `bar_idx` th symbol is clicked in the winbar                                              |
 | `dropbar_t:update_hover_hl(col: integer?)`              | Highlight the symbol at `col` as if the mouse is hovering on it                                                                                                                                           |
-| `dropbar_t:__tostring(): string`                        | meta method to convert `dropbar_t` to its string representation                                                                                                                                           |
+| `dropbar_t:__call(): string`                            | meta method to convert `dropbar_t` to its string representation                                                                                                                                           |
 
 
 #### `dropbar_symbol_t`

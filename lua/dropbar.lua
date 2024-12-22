@@ -1,8 +1,15 @@
-_G.dropbar = {}
 local hlgroups = require('dropbar.hlgroups')
 local bar = require('dropbar.bar')
 local configs = require('dropbar.configs')
 local utils = require('dropbar.utils')
+
+_G.dropbar = setmetatable({}, {
+  __call = function()
+    local buf = vim.api.nvim_get_current_buf()
+    local win = vim.api.nvim_get_current_win()
+    return _G.dropbar.bars[buf][win]()
+  end,
+})
 
 ---Store the on_click callbacks for each dropbar symbol
 ---Make it accessible from global only because nvim's viml-lua interface
@@ -37,11 +44,13 @@ _G.dropbar.bars = setmetatable({}, {
 })
 
 ---Get dropbar string for current window
+---@deprecated
 ---@return string
 function _G.dropbar.get_dropbar_str()
-  local buf = vim.api.nvim_get_current_buf()
-  local win = vim.api.nvim_get_current_win()
-  return tostring(_G.dropbar.bars[buf][win])
+  vim.notify_once(
+    '[dropbar.nvim] _G.dropbar.get_dropbar_str() is deprecated, use _G.dropbar() instead',
+    vim.log.levels.WARN
+  )
 end
 
 ---Setup dropbar

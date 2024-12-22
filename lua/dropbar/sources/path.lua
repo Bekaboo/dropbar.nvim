@@ -60,7 +60,7 @@ local function preview_open(self, path)
   vim.bo[preview_buf].buflisted = buflisted
 
   -- ensure dropbar still shows then the preview buffer is opened
-  vim.wo[preview_win].winbar = '%{%v:lua.dropbar.get_dropbar_str()%}'
+  vim.wo[preview_win].winbar = '%{%v:lua.dropbar()%}'
 end
 
 ---@param self dropbar_symbol_t

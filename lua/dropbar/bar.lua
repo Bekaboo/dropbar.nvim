@@ -656,8 +656,18 @@ function dropbar_t:update_hover_hl(col)
 end
 
 ---Get the string representation of the dropbar
+---@deprecated
 ---@return string
-function dropbar_t:__tostring()
+function dropbar_t.__tostring()
+  vim.notify_once(
+    '[dropbar.nvim] tostring(dropbar_t) is deprecated, use dropbar_t() instead',
+    vim.log.levels.WARN
+  )
+end
+
+---Get the string representation of the dropbar
+---@return string
+function dropbar_t:__call()
   if vim.tbl_isempty(self.components) then
     self:update()
   end
