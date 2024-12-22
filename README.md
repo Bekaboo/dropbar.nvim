@@ -421,7 +421,7 @@ vim.ui.select = require('dropbar.utils.menu').select
           init_cursor = symbol.opts.sibling_idx
             and { symbol.opts.sibling_idx, 0 }
           ---@param tbl number[]
-          local function _sum(tbl)
+          local function tbl_sum(tbl)
             local sum = 0
             for _, v in ipairs(tbl) do
               sum = sum + v
@@ -433,7 +433,7 @@ vim.ui.select = require('dropbar.utils.menu').select
             win_configs.win = vim.api.nvim_get_current_win()
             win_configs.row = 0
             win_configs.col = symbol.bar.padding.left
-              + _sum(vim.tbl_map(
+              + tbl_sum(vim.tbl_map(
                 function(component)
                   return component:displaywidth()
                     + symbol.bar.separator:displaywidth()
@@ -1718,7 +1718,7 @@ the symbols:
         init_cursor = symbol.opts.sibling_idx
           and { symbol.opts.sibling_idx, 0 }
         ---@param tbl number[]
-        local function _sum(tbl)
+        local function tbl_sum(tbl)
           local sum = 0
           for _, v in ipairs(tbl) do
             sum = sum + v
@@ -1730,7 +1730,7 @@ the symbols:
           win_configs.win = vim.api.nvim_get_current_win()
           win_configs.row = 0
           win_configs.col = symbol.bar.padding.left
-            + _sum(vim.tbl_map(
+            + tbl_sum(vim.tbl_map(
               function(component)
                 return component:displaywidth()
                   + symbol.bar.separator:displaywidth()
@@ -2100,7 +2100,7 @@ used to interact with the winbar or the drop-down menu:
 - `fuzzy_find_toggle(opts: table?)`
   - Toggle the fuzzy finder interface for the current dropbar menu
   - Options override the default / config options for the fuzzy finder
-- `fuzzy_find_click(component: number | (fun(entry: dropbar_menu_entry_t):dropbar_sumbol_t)?)`
+- `fuzzy_find_click(component: number | (fun(entry: dropbar_menu_entry_t):dropbartbl_sumbol_t)?)`
   - If `component` is a `number`, the `component`-nth symbol is selected,
     unless `0` or `-1` is supplied, in which case the *first* or *last*
     clickable component is selected, respectively.
