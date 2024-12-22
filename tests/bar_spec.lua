@@ -158,7 +158,7 @@ describe('[bar]', function()
         .. end_str
       assert.are.same(plain_str, winbar:cat(true))
       assert.are.same(representation_str, winbar:cat())
-      assert.are.same(representation_str, tostring(winbar))
+      assert.are.same(representation_str, winbar())
     end)
     it('calculates display width', function()
       assert.are.same(
