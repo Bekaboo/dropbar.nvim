@@ -281,20 +281,14 @@ M.opts = {
     },
   },
   bar = {
-    ---@type boolean|fun(buf: integer?, win: integer?, info: table?): boolean
+    ---@type boolean|fun(buf: integer, win: integer, info: table?): boolean
     enable = function(buf, win, _)
-      if not buf or buf == 0 then
-        buf = vim.api.nvim_get_current_buf()
-      end
-      if not win or win == 0 then
-        win = vim.api.nvim_get_current_win()
-      end
       return vim.api.nvim_buf_is_valid(buf)
         and vim.api.nvim_win_is_valid(win)
         and vim.wo[win].winbar == ''
         and vim.fn.win_gettype(win) == ''
         and vim.bo[buf].ft ~= 'help'
-        and vim.treesitter.highlighter.active[buf] ~= nil
+        and ((pcall(vim.treesitter.get_parser, buf)) and true or false)
     end,
     attach_events = {
       'BufWinEnter',
