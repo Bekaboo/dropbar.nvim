@@ -81,20 +81,6 @@ highly-customizable 'winbar' with drop-down menu support and mutiple backends.
 - Reorient the source window on previewing or after jumping to a symbol
 - Add scrollbar to the menu when the symbol list is too long
 
-TODO
-
-- Add preview for symbols shown in the winbar
-- Preview symbols (files) from `path` source
-- Support visual mode selection to select/delete multiple symbols
-- Ability to hide/show the winbar on each window separately
-- Add more tests for the sources `path`, `lsp`, and `treesitter`
-- Configurable scrollbar appearance
-- Update winbar sources dynamically
-- More responsive mouse clicking & hovering in insert (fzf) mode, like in
-  normal mode
-- Better truncation when winbar is still too long after shortening all
-  components
-
 ==============================================================================
 REQUIREMENTS                                            *dropbar-requirements*
 

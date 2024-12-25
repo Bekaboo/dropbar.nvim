@@ -23,7 +23,7 @@
 </div>
 
 <!--toc:start-->
-- [Features and TODOs](#features-and-todos)
+- [Features](#features)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -65,7 +65,7 @@
 - [Similar Projects](#similar-projects)
 <!--toc:end-->
 
-## Features and TODOs
+## Features
 
 https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-b20fc3098c5a
 
@@ -129,23 +129,6 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 - [x] Add scrollbar to the menu when the symbol list is too long
 
   ![scrollbar](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/ace94d9a-e850-4a6b-9ab3-51a290e5af32)
-
-- [ ] Add preview for symbols shown in the winbar
-
-- [ ] Preview symbols (files) from `path` source
-
-- [ ] Support visual mode selection to select/delete multiple symbols
-
-- [ ] Ability to hide/show the winbar on each window separately
-
-- [ ] Add more tests for the sources `path`, `lsp`, and `treesitter`
-
-- [ ] Configurable scrollbar appearance
-
-- [ ] Update winbar sources dynamically
-
-- [ ] More responsive mouse clicking & hovering in insert (fzf) mode, like
-      in normal mode
 
 ## Requirements
 
