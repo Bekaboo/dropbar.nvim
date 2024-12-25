@@ -118,10 +118,12 @@ function M.update_hover_hl(mouse)
 end
 
 ---Attach dropbar to window
----@param win integer
----@param buf integer
+---@param win integer?
+---@param buf integer?
 ---@param info table? info from autocmd
 function M.attach(buf, win, info)
+  buf = buf or vim.api.nvim_get_current_buf()
+  win = win or vim.api.nvim_get_current_win()
   local configs = require('dropbar.configs')
   if configs.eval(configs.opts.bar.enable, buf, win, info) then
     vim.wo[win].winbar = '%{%v:lua.dropbar()%}'

@@ -522,11 +522,18 @@ vim.ui.select = require('dropbar.utils.menu').select
     bar = {
       ---@type boolean|fun(buf: integer, win: integer, info: table?): boolean
       enable = function(buf, win, _)
+        if not buf or buf == 0 then
+          buf = vim.api.nvim_get_current_buf()
+        end
+        if not win or win == 0 then
+          win = vim.api.nvim_get_current_win()
+        end
         return vim.api.nvim_buf_is_valid(buf)
           and vim.api.nvim_win_is_valid(win)
           and vim.wo[win].winbar == ''
-          and vim.treesitter.highlighter.active[buf or vim.api.nvim_get_current_buf()]
-            ~= nil
+          and vim.fn.win_gettype(win) == ''
+          and vim.bo[buf].ft ~= 'help'
+          and vim.treesitter.highlighter.active[buf] ~= nil
       end,
       attach_events = {
         'OptionSet',
@@ -1069,20 +1076,25 @@ vim.ui.select = require('dropbar.utils.menu').select
 These options live under `opts.bar` and are used to control the behavior of the
 winbar:
 
-- `opts.bar.enable`: `boolean|fun(buf: integer, win: integer, info: table?): boolean`
+- `opts.bar.enable`: `boolean|fun(buf: integer?, win: integer?, info: table?): boolean`
   - Controls whether to attach dropbar to the current buffer and window
   - If a function is provided, it will be called with the current bufnr and
   winid and should return a boolean
   - Default:
     ```lua
     function(buf, win, _)
+      if not buf or buf == 0 then
+        buf = vim.api.nvim_get_current_buf()
+      end
+      if not win or win == 0 then
+        win = vim.api.nvim_get_current_win()
+      end
       return vim.api.nvim_buf_is_valid(buf)
         and vim.api.nvim_win_is_valid(win)
         and vim.wo[win].winbar == ''
         and vim.fn.win_gettype(win) == ''
         and vim.bo[buf].ft ~= 'help'
-        and vim.treesitter.highlighter.active[buf or vim.api.nvim_get_current_buf()]
-          ~= nil
+        and vim.treesitter.highlighter.active[buf] ~= nil
     end,
     ```
 - `opts.bar.attach_events`: `string[]`
