@@ -288,7 +288,8 @@ M.opts = {
         and vim.wo[win].winbar == ''
         and vim.fn.win_gettype(win) == ''
         and vim.bo[buf].ft ~= 'help'
-        and ((pcall(vim.treesitter.get_parser, buf)) and true or false)
+        and vim.treesitter.highlighter.active[buf or vim.api.nvim_get_current_buf()]
+          ~= nil
     end,
     attach_events = {
       'BufWinEnter',

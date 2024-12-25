@@ -186,14 +186,15 @@ the winbar:
       winid and should return a boolean
     - Default: >lua
 
-	     function(buf, win, _)
-	       return vim.api.nvim_buf_is_valid(buf)
-		 and vim.api.nvim_win_is_valid(win)
-		 and vim.wo[win].winbar == ''
-		 and vim.fn.win_gettype(win) == ''
-		 and vim.bo[buf].ft ~= 'help'
-		 and ((pcall(vim.treesitter.get_parser, buf)) and true or false)
-	     end,
+	    function(buf, win, _)
+	      return vim.api.nvim_buf_is_valid(buf)
+		and vim.api.nvim_win_is_valid(win)
+		and vim.wo[win].winbar == ''
+		and vim.fn.win_gettype(win) == ''
+		and vim.bo[buf].ft ~= 'help'
+		and vim.treesitter.highlighter.active[buf or vim.api.nvim_get_current_buf()]
+		  ~= nil
+	    end,
 <
 - `opts.bar.attach_events`: `string[]`
     - Controls when to evaluate the `enable()` function and attach the plugin
