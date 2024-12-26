@@ -295,6 +295,9 @@ local function get_symbols(buf, win, cursor)
   local result = {}
   local current_level = 7
   for idx, symbol in vim.iter(buf_symbols.symbols):enumerate():rev() do
+    if #result >= configs.opts.sources.markdown.max_depth then
+      break
+    end
     if symbol.lnum <= cursor[1] and symbol.level < current_level then
       current_level = symbol.level
       table.insert(

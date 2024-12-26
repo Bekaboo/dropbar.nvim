@@ -178,7 +178,8 @@ local function get_symbols(buf, win, _)
   local current_path = normalize((vim.api.nvim_buf_get_name(buf)))
   local root = normalize(configs.eval(path_opts.relative_to, buf, win))
   while
-    current_path
+    #symbols < configs.opts.sources.path.max_depth
+    and current_path
     and current_path ~= '.'
     and current_path ~= root
     and current_path ~= vim.fs.dirname(current_path)

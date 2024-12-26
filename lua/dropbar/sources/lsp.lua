@@ -206,6 +206,10 @@ local function convert_document_symbol_list(
   win,
   cursor
 )
+  if #dropbar_symbols >= configs.opts.sources.lsp.max_depth then
+    return
+  end
+
   -- Parse in reverse order so that the symbol with the largest start position
   -- is preferred
   for idx, symbol in vim.iter(lsp_symbols):enumerate():rev() do

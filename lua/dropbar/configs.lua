@@ -677,6 +677,7 @@ M.opts = {
   },
   sources = {
     path = {
+      max_depth = 16,
       ---@type string|fun(buf: integer, win: integer): string
       relative_to = function(_, win)
         -- Workaround for Vim:E5002: Cannot find window number
@@ -715,6 +716,7 @@ M.opts = {
       end,
     },
     treesitter = {
+      max_depth = 16,
       -- Vim regex used to extract a short name from the node text
       -- word with optional prefix and suffix: [#~!@\*&.]*[[:keyword:]]\+!\?
       -- word separators: \(->\)\+\|-\+\|\.\+\|:\+\|\s\+
@@ -782,6 +784,7 @@ M.opts = {
       },
     },
     lsp = {
+      max_depth = 16,
       valid_symbols = {
         'File',
         'Module',
@@ -817,6 +820,7 @@ M.opts = {
       },
     },
     markdown = {
+      max_depth = 6,
       parse = {
         -- Number of lines to update when cursor moves out of the parsed range
         look_ahead = 200,

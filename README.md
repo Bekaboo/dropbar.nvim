@@ -1017,6 +1017,10 @@ each sources.
 
 ##### Path
 
+- `opts.sources.path.max_depth`: `integer`
+  - Maximum number of symbols to return
+  - A smaller number can help to improve performance in deeply nested paths
+  - Default: `16`
 - `opts.sources.path.relative_to`: `string|fun(buf: integer, win: integer): string`
   - The path to use as the root of the relative path
   - If a function is provided, it will be called with the current buffer number
@@ -1092,6 +1096,11 @@ each sources.
 
 ##### Treesitter
 
+- `opts.sources.treesitter.max_depth`: `integer`
+  - Maximum number of symbols to return
+  - A smaller number can help to improve performance in deeply nested trees
+    (e.g. in big nested json files)
+  - Default: `16`
 - `opts.sources.treesitter.name_regex`: `string`
   - Vim regex used to extract a short name from the node text
   - Default: `[=[[#~!@\*&.]*[[:keyword:]]\+!\?\(\(\(->\)\+\|-\+\|\.\+\|:\+\|\s\+\)\?[#~!@\*&.]*[[:keyword:]]\+!\?\)*]=]`
@@ -1159,6 +1168,11 @@ each sources.
 
 ##### LSP
 
+- `opts.sources.lsp.max_depth`: `integer`
+  - Maximum number of symbols to return
+  - A smaller number can help to improve performance when the language server
+    returns huge list of nested symbols
+  - Default: `16`
 - `opts.sources.lsp.valid_symbols:` `string[]`
   - A list of LSP document symbols to include in the results
   - Default:
@@ -1201,6 +1215,9 @@ each sources.
 
 ##### Markdown
 
+- `opts.sources.markdown.max_depth`: `integer`
+  - Maximum number of symbols to return
+  - Default: `6`
 - `opts.sources.markdown.parse.look_ahead`: `number`
   - Number of lines to update when cursor moves out of the parsed range
   - Default: `200`
