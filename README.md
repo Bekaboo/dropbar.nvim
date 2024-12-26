@@ -522,15 +522,27 @@ vim.ui.select = require('dropbar.utils.menu').select
     bar = {
       ---@type boolean|fun(buf: integer, win: integer, info: table?): boolean
       enable = function(buf, win, _)
-        return vim.api.nvim_buf_is_valid(buf)
-          and vim.api.nvim_win_is_valid(win)
-          and vim.wo[win].winbar == ''
-          and vim.fn.win_gettype(win) == ''
-          and vim.bo[buf].ft ~= 'help'
-          and (
-            (pcall(vim.treesitter.get_parser, buf, vim.bo[buf].ft)) and true
-            or false
-          )
+        if
+          not vim.api.nvim_buf_is_valid(buf)
+          or not vim.api.nvim_win_is_valid(win)
+          or vim.fn.win_gettype(win) ~= ''
+          or vim.wo[win].winbar ~= ''
+          or vim.bo[buf].ft == 'help'
+        then
+          return false
+        end
+
+        local stat = vim.uv.fs_stat(vim.api.nvim_buf_get_name(buf))
+        if stat and stat.size > 1024 * 1024 then
+          return false
+        end
+
+        return vim.bo[buf].ft == 'markdown'
+          or pcall(vim.treesitter.get_parser, buf)
+          or not vim.tbl_isempty(vim.lsp.get_clients({
+            bufnr = buf,
+            method = 'textDocument/documentSymbol',
+          }))
       end,
       attach_events = {
         'OptionSet',
@@ -1080,18 +1092,27 @@ winbar:
   - Default:
     ```lua
     function(buf, win, _)
-      if not buf or buf == 0 then
-        buf = vim.api.nvim_get_current_buf()
+      if
+        not vim.api.nvim_buf_is_valid(buf)
+        or not vim.api.nvim_win_is_valid(win)
+        or vim.fn.win_gettype(win) ~= ''
+        or vim.wo[win].winbar ~= ''
+        or vim.bo[buf].ft == 'help'
+      then
+        return false
       end
-      if not win or win == 0 then
-        win = vim.api.nvim_get_current_win()
+
+      local stat = vim.uv.fs_stat(vim.api.nvim_buf_get_name(buf))
+      if stat and stat.size > 1024 * 1024 then
+        return false
       end
-      return vim.api.nvim_buf_is_valid(buf)
-        and vim.api.nvim_win_is_valid(win)
-        and vim.wo[win].winbar == ''
-        and vim.fn.win_gettype(win) == ''
-        and vim.bo[buf].ft ~= 'help'
-        and ((pcall(vim.treesitter.get_parser, buf)) and true or false)
+
+      return vim.bo[buf].ft == 'markdown'
+        or pcall(vim.treesitter.get_parser, buf)
+        or not vim.tbl_isempty(vim.lsp.get_clients({
+          bufnr = buf,
+          method = 'textDocument/documentSymbol',
+        }))
     end,
     ```
 - `opts.bar.attach_events`: `string[]`
