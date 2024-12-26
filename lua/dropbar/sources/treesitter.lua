@@ -167,7 +167,9 @@ local function get_symbols(buf, win, cursor)
           :match('^i') and 1 or 0),
       },
     })
-  while current_node and #symbols < configs.opts.sources.treesitter.max_depth do
+  while
+    current_node and #symbols < configs.opts.sources.treesitter.max_depth
+  do
     if valid_node(current_node, buf) then
       table.insert(symbols, 1, convert(current_node, buf, win))
     end
