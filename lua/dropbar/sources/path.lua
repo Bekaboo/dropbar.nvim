@@ -127,6 +127,10 @@ local function convert(path, buf, win)
   }, {
     ---@param self dropbar_symbol_t
     __index = function(self, k)
+      if not self.data or not self.data.path then
+        return
+      end
+
       if k == 'children' then
         self.children = {}
         for name in vim.fs.dir(self.data.path) do
@@ -139,6 +143,7 @@ local function convert(path, buf, win)
         end
         return self.children
       end
+
       if k == 'siblings' or k == 'sibling_idx' then
         local parent_dir = vim.fs.dirname(self.data.path)
         self.siblings = {}
