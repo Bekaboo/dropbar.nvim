@@ -2,15 +2,20 @@ local configs = require('dropbar.configs')
 local bar = require('dropbar.bar')
 
 ---@param self dropbar_symbol_t
-local function preview_prepare_buf(self, path)
-  local stat = vim.uv.fs_stat(path)
+local function preview_prepare_buf(self)
+  if not self.data or not self.data.path then
+    return
+  end
+
+  local stat = vim.uv.fs_stat(self.data.path)
   if not stat or stat.type ~= 'file' then
     self:preview_restore_view()
     return
   end
-  local buf = vim.fn.bufnr(path, false)
+
+  local buf = vim.fn.bufnr(self.data.path, false)
   if buf == nil or buf == -1 then
-    buf = vim.fn.bufadd(path)
+    buf = vim.fn.bufadd(self.data.path)
     if not buf then
       self:preview_restore_view()
       return
@@ -27,20 +32,26 @@ local function preview_prepare_buf(self, path)
 end
 
 ---@param self dropbar_symbol_t
-local function preview_open(self, path)
-  if not configs.eval(configs.opts.sources.path.preview, path) then
+local function preview_open(self)
+  if
+    not self.data
+    or not self.data.path
+    or not configs.eval(configs.opts.sources.path.preview, self.data.path)
+  then
     return
   end
-  local preview_buf = preview_prepare_buf(self, path)
+
+  local preview_buf = preview_prepare_buf(self)
   if not preview_buf then
     return
   end
-  local buflisted = vim.bo[preview_buf].buflisted
 
+  local buflisted = vim.bo[preview_buf].buflisted
   local preview_win = self.entry.menu:root_win()
   if not preview_win then
     return
   end
+
   self.entry.menu.prev_buf = self.entry.menu.prev_buf
     or vim.api.nvim_win_get_buf(preview_win)
 
@@ -104,12 +115,13 @@ local function convert(path, buf, win)
     icon = icon,
     name_hl = name_hl,
     icon_hl = icon_hl,
+    data = { path = path },
     ---Override the default jump function
-    jump = vim.schedule_wrap(function(_)
-      vim.cmd.edit(path)
+    jump = vim.schedule_wrap(function(self)
+      vim.cmd.edit(self.data.path)
     end),
     preview = vim.schedule_wrap(function(self)
-      preview_open(self, path)
+      preview_open(self)
     end),
     preview_restore_view = preview_close,
   }, {
@@ -117,15 +129,18 @@ local function convert(path, buf, win)
     __index = function(self, k)
       if k == 'children' then
         self.children = {}
-        for name in vim.fs.dir(path) do
+        for name in vim.fs.dir(self.data.path) do
           if path_opts.filter(name) then
-            table.insert(self.children, convert(path .. '/' .. name, buf, win))
+            table.insert(
+              self.children,
+              convert(self.data.path .. '/' .. name, buf, win)
+            )
           end
         end
         return self.children
       end
       if k == 'siblings' or k == 'sibling_idx' then
-        local parent_dir = vim.fs.dirname(path)
+        local parent_dir = vim.fs.dirname(self.data.path)
         self.siblings = {}
         self.sibling_idx = 1
         if parent_dir then
