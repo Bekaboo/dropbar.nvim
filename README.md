@@ -151,7 +151,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
       dependencies = {
         'nvim-telescope/telescope-fzf-native.nvim',
         build = 'make'
-      }
+      },
       config = function()
         local dropbar_api = require('dropbar.api')
         vim.keymap.set('n', '<Leader>;', dropbar_api.pick, { desc = 'Pick symbols in winbar' })
@@ -171,7 +171,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
       requires = {
         'nvim-telescope/telescope-fzf-native.nvim',
         run = 'make'
-      }
+      },
       config = function ()
         local dropbar_api = require('dropbar.api')
         vim.keymap.set('n', '<Leader>;', dropbar_api.pick, { desc = 'Pick symbols in winbar' })
