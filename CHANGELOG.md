@@ -1,5 +1,34 @@
 # Changelog
 
+## [10.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v9.0.2...v10.0.0) (2024-12-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bar:** use `__call()` to get string representation
+
+### Features
+
+* **configs:** allow overriding default `on_click()` callback ([b63fe2e](https://github.com/Bekaboo/dropbar.nvim/commit/b63fe2ef7cc84a2193f867a0cfb6988a1233ab31))
+* **configs:** configure which LSP document symbols to show ([#203](https://github.com/Bekaboo/dropbar.nvim/issues/203)) ([b2c0fa8](https://github.com/Bekaboo/dropbar.nvim/commit/b2c0fa871a7b2f15f9ef32fa251a1052eb2abd99))
+* **configs:** improve default `opts.bar.enable()` function ([d226c70](https://github.com/Bekaboo/dropbar.nvim/commit/d226c7028b66b9ae56e7055c89d90f7c8f6c89c1))
+* **sources:** add `max_depth` option ([5439d2f](https://github.com/Bekaboo/dropbar.nvim/commit/5439d2f02bb744cecb878aaa23c6c6f8b21a351c))
+
+
+### Bug Fixes
+
+* **nvim:** `opts.bar.enable()` always return `false` when `buf == 0` ([34a29fe](https://github.com/Bekaboo/dropbar.nvim/commit/34a29fe385232b30383c6abfbf34643b2a964d08))
+
+
+### Performance Improvements
+
+* **configs:** `vim.treesitter.get_parser()` is slow in big files ([b2f778a](https://github.com/Bekaboo/dropbar.nvim/commit/b2f778a9ad153a1c222c8b5dc6df9fe1375eeea4))
+
+
+### Code Refactoring
+
+* **bar:** use `__call()` to get string representation ([e5eb834](https://github.com/Bekaboo/dropbar.nvim/commit/e5eb834c398cb985f1f1b3efdaf5e7822441f6e7))
+
 ## [9.0.2](https://github.com/Bekaboo/dropbar.nvim/compare/v9.0.1...v9.0.2) (2024-11-17)
 
 
