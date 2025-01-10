@@ -156,11 +156,13 @@ M.opts = {
 
       -- Determine menu configs
       local prev_win = nil ---@type integer?
+      local prev_buf = nil ---@type integer?
       local entries_source = nil ---@type dropbar_symbol_t[]?
       local init_cursor = nil ---@type integer[]?
       local win_configs = {}
       if symbol.bar then -- If symbol inside a dropbar
         prev_win = symbol.bar.win
+        prev_buf = symbol.bar.buf
         entries_source = symbol.opts.siblings
         init_cursor = symbol.opts.sibling_idx
           and { symbol.opts.sibling_idx, 0 }
@@ -189,6 +191,7 @@ M.opts = {
         end
       elseif symbol.entry and symbol.entry.menu then -- If inside a menu
         prev_win = symbol.entry.menu.win
+        prev_buf = symbol.entry.menu.buf
         entries_source = symbol.opts.children
       end
 
@@ -196,6 +199,7 @@ M.opts = {
       if symbol.menu then
         symbol.menu:toggle({
           prev_win = prev_win,
+          prev_buf = prev_buf,
           win_configs = win_configs,
         })
         return
@@ -210,6 +214,7 @@ M.opts = {
       local configs = require('dropbar.configs')
       symbol.menu = menu.dropbar_menu_t:new({
         prev_win = prev_win,
+        prev_buf = prev_buf,
         cursor = init_cursor,
         win_configs = win_configs,
         ---@param sym dropbar_symbol_t
@@ -697,23 +702,7 @@ M.opts = {
         return sym
       end,
       ---@type boolean|fun(path: string): boolean?|nil
-      preview = function(path)
-        local stat = vim.uv.fs_stat(path)
-        if not stat or stat.type ~= 'file' then
-          return false
-        end
-        if stat.size > 524288 then
-          vim.notify(
-            string.format(
-              '[dropbar.nvim] file "%s" too large to preview',
-              path
-            ),
-            vim.log.levels.WARN
-          )
-          return false
-        end
-        return true
-      end,
+      preview = true,
     },
     treesitter = {
       max_depth = 16,

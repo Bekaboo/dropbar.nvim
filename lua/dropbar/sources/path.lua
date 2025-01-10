@@ -1,90 +1,127 @@
 local configs = require('dropbar.configs')
 local bar = require('dropbar.bar')
 
----@param self dropbar_symbol_t
-local function preview_prepare_buf(self)
-  if not self.data or not self.data.path then
+---Preview file represented by symbol `sym`
+---@param sym dropbar_symbol_t
+---@return nil
+local function preview(sym)
+  -- Cannot preview a symbol without corresponding source window
+  if not sym.win or not vim.api.nvim_win_is_valid(sym.win) then
     return
   end
 
-  local stat = vim.uv.fs_stat(self.data.path)
-  if not stat or stat.type ~= 'file' then
-    self:preview_restore_view()
+  if not configs.eval(configs.opts.sources.path.preview, sym.data.path) then
     return
   end
 
-  local buf = vim.fn.bufnr(self.data.path, false)
-  if buf == nil or buf == -1 then
-    buf = vim.fn.bufadd(self.data.path)
-    if not buf then
-      self:preview_restore_view()
-      return
-    end
-    if not vim.api.nvim_buf_is_loaded(buf) then
-      vim.fn.bufload(buf)
-    end
-  end
-  if buf == nil or self.entry.menu == nil or self.entry.menu.win == nil then
-    self:preview_restore_view()
-    return
-  end
-  return buf
-end
-
----@param self dropbar_symbol_t
-local function preview_open(self)
   if
-    not self.data
-    or not self.data.path
-    or not configs.eval(configs.opts.sources.path.preview, self.data.path)
+    not sym.data.preview_buf
+    or not vim.api.nvim_buf_is_valid(sym.data.preview_buf)
   then
+    sym.data.preview_buf = vim.api.nvim_create_buf(false, true)
+    vim.bo[sym.data.preview_buf].bufhidden = 'wipe'
+    vim.bo[sym.data.preview_buf].filetype = 'dropbar_preview'
+    vim.api.nvim_win_call(sym.win, function()
+      vim.api.nvim_set_current_buf(sym.data.preview_buf)
+    end)
+  end
+
+  -- Preview buffer already contains contents of file to preview
+  local preview_bufname = vim.fn.bufname(sym.data.preview_buf)
+  local preview_bufnewname = 'dropbar_preview://' .. sym.data.path
+  if preview_bufname == preview_bufnewname then
     return
   end
 
-  local preview_buf = preview_prepare_buf(self)
-  if not preview_buf then
+  local stat = sym.data.path and vim.uv.fs_stat(sym.data.path)
+  local preview_win_height = vim.api.nvim_win_get_height(sym.win)
+  local preview_win_width = vim.api.nvim_win_get_width(sym.win)
+  local add_syntax = false
+
+  ---Generate lines for preview window when preview is not available
+  ---@param msg string
+  ---@return string[]
+  local function nopreview(msg)
+    local lines = {}
+    local fillchar = vim.opt_local.fillchars:get().diff or '-'
+    local msglen = #msg + 4
+    local padlen_l = math.max(0, math.floor((preview_win_width - msglen) / 2))
+    local padlen_r = math.max(0, preview_win_width - msglen - padlen_l)
+    local line_fill = fillchar:rep(preview_win_width)
+    local half_fill_l = fillchar:rep(padlen_l)
+    local half_fill_r = fillchar:rep(padlen_r)
+    local line_above = half_fill_l .. string.rep(' ', msglen) .. half_fill_r
+    local line_below = line_above
+    local line_msg = half_fill_l .. '  ' .. msg .. '  ' .. half_fill_r
+    local half_height_u = math.max(0, math.floor((preview_win_height - 3) / 2))
+    local half_height_d = math.max(0, preview_win_height - 3 - half_height_u)
+    for _ = 1, half_height_u do
+      table.insert(lines, line_fill)
+    end
+    table.insert(lines, line_above)
+    table.insert(lines, line_msg)
+    table.insert(lines, line_below)
+    for _ = 1, half_height_d do
+      table.insert(lines, line_fill)
+    end
+    return lines
+  end
+
+  local lines = not stat and nopreview('Not a file or directory')
+    or stat.type == 'directory' and vim.fn.systemlist(
+      'ls -lhA ' .. vim.fn.shellescape(sym.data.path)
+    )
+    or stat.size == 0 and nopreview('Empty file')
+    or not vim.fn.system({ 'file', sym.data.path }):match('text') and nopreview(
+      'Binary file, no preview available'
+    )
+    or (function()
+        add_syntax = true
+        return true
+      end)()
+      and vim
+        .iter(io.lines(sym.data.path))
+        :take(preview_win_height)
+        :map(function(line)
+          return (line:gsub('\x0d$', ''))
+        end)
+        :totable()
+
+  vim.bo[sym.data.preview_buf].modifiable = true
+  vim.api.nvim_buf_set_lines(sym.data.preview_buf, 0, -1, false, lines)
+  vim.bo[sym.data.preview_buf].modifiable = false
+
+  vim.api.nvim_buf_set_name(sym.data.preview_buf, preview_bufnewname)
+  vim.api.nvim_buf_call(sym.data.preview_buf, function()
+    vim.treesitter.stop(sym.data.preview_buf)
+  end)
+  vim.bo[sym.data.preview_buf].syntax = ''
+
+  if not add_syntax then
     return
   end
 
-  local buflisted = vim.bo[preview_buf].buflisted
-  local preview_win = self.entry.menu:root_win()
-  if not preview_win then
-    return
-  end
-
-  self.entry.menu.prev_buf = self.entry.menu.prev_buf
-    or vim.api.nvim_win_get_buf(preview_win)
-
-  vim.api.nvim_create_autocmd('BufLeave', {
-    buffer = self.entry.menu.buf,
-    callback = function()
-      self:preview_restore_view()
-    end,
+  local ft = vim.filetype.match({
+    buf = sym.data.preview_buf,
+    filename = sym.data.path,
   })
-  vim.api.nvim_win_set_buf(preview_win, preview_buf)
-  -- set cursor to the last exited position in buf (:h '"), if available
-  local last_exit = vim.api.nvim_buf_get_mark(preview_buf, '"')
-  if last_exit[1] ~= 0 then
-    vim.api.nvim_win_set_cursor(preview_win, last_exit)
+  if ft and not pcall(vim.treesitter.start, sym.data.preview_buf, ft) then
+    vim.bo[sym.data.preview_buf].syntax = ft
   end
-
-  vim.bo[preview_buf].buflisted = buflisted
-
-  -- ensure dropbar still shows then the preview buffer is opened
-  vim.wo[preview_win].winbar = '%{%v:lua.dropbar()%}'
 end
 
----@param self dropbar_symbol_t
-local function preview_close(self)
-  if self.win then
-    if self.entry.menu.prev_buf then
-      vim.api.nvim_win_set_buf(self.win, self.entry.menu.prev_buf)
-    end
-    if self.view then
-      vim.api.nvim_win_call(self.win, function()
-        vim.fn.winrestview(self.view)
-      end)
-    end
+---@param sym dropbar_symbol_t
+local function preview_restore_view(sym)
+  if not sym.win then
+    return
+  end
+  if sym.entry.menu.prev_buf then
+    vim.api.nvim_win_set_buf(sym.win, sym.entry.menu.prev_buf)
+  end
+  if sym.view then
+    vim.api.nvim_win_call(sym.win, function()
+      vim.fn.winrestview(sym.view)
+    end)
   end
 end
 
@@ -117,13 +154,12 @@ local function convert(path, buf, win)
     icon_hl = icon_hl,
     data = { path = path },
     ---Override the default jump function
-    jump = vim.schedule_wrap(function(self)
+    jump = function(self)
       vim.cmd.edit(self.data.path)
-    end),
-    preview = vim.schedule_wrap(function(self)
-      preview_open(self)
-    end),
-    preview_restore_view = preview_close,
+      vim.cmd.normal({ "m'", bang = true })
+    end,
+    preview = preview,
+    preview_restore_view = preview_restore_view,
   }, {
     ---@param self dropbar_symbol_t
     __index = function(self, k)

@@ -1073,26 +1073,7 @@ each sources.
 - `opts.sources.path.preview`: `boolean|fun(path: string): boolean?|nil`
   - A boolean or a function that takes a file path and returns whether to
     preview the file under cursor
-  - Default:
-    ```lua
-    function(path)
-      local stat = vim.uv.fs_stat(path)
-      if not stat or stat.type ~= 'file' then
-        return false
-      end
-      if stat.size > 524288 then
-        vim.notify(
-          string.format(
-            '[dropbar.nvim] file "%s" too large to preview',
-            path
-          ),
-          vim.log.levels.WARN
-        )
-        return false
-      end
-      return true
-    end,
-    ```
+  - Default: `true`
 
 ##### Treesitter
 
