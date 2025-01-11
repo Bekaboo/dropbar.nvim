@@ -246,9 +246,9 @@ local function get_symbols(buf, win, _)
     #symbols < configs.opts.sources.path.max_depth
     and current_path
     and current_path ~= '.'
-    and current_path ~= 'oil:'
     and current_path ~= root
     and current_path ~= vim.fs.dirname(current_path)
+    and (vim.fn.has('win32') == 0 or current_path ~= 'oil:')
   do
     table.insert(symbols, 1, convert(current_path, buf, win))
     current_path = vim.fs.dirname(current_path)
