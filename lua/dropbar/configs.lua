@@ -303,7 +303,9 @@ M.opts = {
         return false
       end
 
-      return vim.bo[buf].ft == 'markdown'
+      local ft = vim.bo[buf].ft
+      return ft == 'markdown'
+        or ft == 'oil'
         or pcall(vim.treesitter.get_parser, buf)
         or not vim.tbl_isempty(vim.lsp.get_clients({
           bufnr = buf,

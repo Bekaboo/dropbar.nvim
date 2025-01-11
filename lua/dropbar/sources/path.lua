@@ -131,6 +131,9 @@ end
 ---@param win integer window handler
 ---@return dropbar_symbol_t
 local function convert(path, buf, win)
+  -- Fix for oil
+  path = path:gsub('^oil:', '/')
+
   local path_opts = configs.opts.sources.path
   local icon_opts = configs.opts.icons
   local icon ---@type string?
@@ -148,7 +151,7 @@ local function convert(path, buf, win)
   return bar.dropbar_symbol_t:new(setmetatable({
     buf = buf,
     win = win,
-    name = vim.fs.basename(path),
+    name = (path == '/') and '/' or vim.fs.basename(path),
     icon = icon,
     name_hl = name_hl,
     icon_hl = icon_hl,
