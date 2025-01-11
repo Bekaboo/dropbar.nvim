@@ -132,7 +132,13 @@ end
 ---@return dropbar_symbol_t
 local function convert(path, buf, win)
   -- Convert oil.nvim path to system path
-  path = path:gsub('^oil:', '/')
+  if path:sub(1, 4) == 'oil:' then
+    if vim.fn.has('win32') == 1 then
+      path = path:gsub('^oil:/([A-Za-z])/', '%1:/'):gsub('^oil:/', '')
+    else
+      path = path:gsub('^oil:', '/')
+    end
+  end
 
   local path_opts = configs.opts.sources.path
   local icon_opts = configs.opts.icons
@@ -240,6 +246,7 @@ local function get_symbols(buf, win, _)
     #symbols < configs.opts.sources.path.max_depth
     and current_path
     and current_path ~= '.'
+    and current_path ~= 'oil:'
     and current_path ~= root
     and current_path ~= vim.fs.dirname(current_path)
   do
