@@ -74,9 +74,9 @@ local function preview(sym)
     )
     or stat.size == 0 and nopreview('Empty file')
     -- TODO: Windows call
-    or (vim.fn.has('win32') == 0 and not vim.fn.system({ 'file', sym.data.path }):match('text')) and nopreview(
-      'Binary file, no preview available'
-    )
+    or (vim.fn.has('win32') == 0 and not vim.fn
+      .system({ 'file', sym.data.path })
+      :match('text')) and nopreview('Binary file, no preview available')
     or (function()
         add_syntax = true
         return true
