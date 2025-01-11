@@ -151,7 +151,7 @@ local function convert(path, buf, win)
   return bar.dropbar_symbol_t:new(setmetatable({
     buf = buf,
     win = win,
-    name = (path == '/') and '/' or vim.fs.basename(path),
+    name = (path == '/') and path or vim.fs.basename(path),
     icon = icon,
     name_hl = name_hl,
     icon_hl = icon_hl,
