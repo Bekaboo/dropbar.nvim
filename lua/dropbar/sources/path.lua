@@ -145,7 +145,9 @@ end
 ---@param win integer window handler
 ---@return dropbar_symbol_t
 local function convert(path, buf, win)
-  path = sanitize_oil_path(path)
+  if configs.opts.sources.path.oil then
+    path = sanitize_oil_path(path)
+  end
 
   local path_opts = configs.opts.sources.path
   local icon_opts = configs.opts.icons
@@ -165,7 +167,8 @@ local function convert(path, buf, win)
   return bar.dropbar_symbol_t:new(setmetatable({
     buf = buf,
     win = win,
-    name = (path == '/') and path or vim.fs.basename(path),
+    name = configs.opts.sources.path.oil and ((path == '/') and path)
+      or vim.fs.basename(path),
     icon = icon,
     name_hl = name_hl,
     icon_hl = icon_hl,
@@ -256,6 +259,7 @@ local function get_symbols(buf, win, _)
     and current_path ~= '.'
     and current_path ~= root
     and current_path ~= vim.fs.dirname(current_path)
+    and configs.opts.sources.path.oil
     and not (vim.fn.has('win32') == 1 and current_path == 'oil:')
   do
     table.insert(symbols, 1, convert(current_path, buf, win))

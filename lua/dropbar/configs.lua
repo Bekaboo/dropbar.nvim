@@ -303,9 +303,10 @@ M.opts = {
         return false
       end
 
+      local configs = require('dropbar.configs')
       local ft = vim.bo[buf].ft
       return ft == 'markdown'
-        or ft == 'oil'
+        or configs.opts.sources.path.oil and ft == 'oil'
         or pcall(vim.treesitter.get_parser, buf)
         or not vim.tbl_isempty(vim.lsp.get_clients({
           bufnr = buf,
@@ -705,6 +706,9 @@ M.opts = {
       end,
       ---@type boolean|fun(path: string): boolean?|nil
       preview = true,
+      ---@type boolean
+      ---Show on oil.nvim buffers
+      oil = false,
     },
     treesitter = {
       max_depth = 16,
