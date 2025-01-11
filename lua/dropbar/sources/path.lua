@@ -131,7 +131,7 @@ end
 ---@param win integer window handler
 ---@return dropbar_symbol_t
 local function convert(path, buf, win)
-  -- Fix for oil
+  -- Convert oil.nvim path to system path
   path = path:gsub('^oil:', '/')
 
   local path_opts = configs.opts.sources.path
