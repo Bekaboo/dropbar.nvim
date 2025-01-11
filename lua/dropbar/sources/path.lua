@@ -72,7 +72,8 @@ local function preview(sym)
       'ls -lhA ' .. vim.fn.shellescape(sym.data.path)
     )
     or stat.size == 0 and nopreview('Empty file')
-    or not vim.fn.system({ 'file', sym.data.path }):match('text') and nopreview(
+    -- TODO: Windows call
+    or (vim.fn.has('win32') == 0 and not vim.fn.system({ 'file', sym.data.path }):match('text')) and nopreview(
       'Binary file, no preview available'
     )
     or (function()
