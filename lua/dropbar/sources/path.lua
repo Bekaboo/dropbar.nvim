@@ -253,14 +253,14 @@ local function get_symbols(buf, win, _)
   local symbols = {} ---@type dropbar_symbol_t[]
   local current_path = normalize((vim.api.nvim_buf_get_name(buf)))
   local root = normalize(configs.eval(path_opts.relative_to, buf, win))
+  local is_windows = vim.fn.has('win32') == 1
   while
     #symbols < configs.opts.sources.path.max_depth
     and current_path
     and current_path ~= '.'
     and current_path ~= root
     and current_path ~= vim.fs.dirname(current_path)
-    and configs.opts.sources.path.oil
-    and not (vim.fn.has('win32') == 1 and current_path == 'oil:')
+    and not (is_windows and current_path == 'oil:')
   do
     table.insert(symbols, 1, convert(current_path, buf, win))
     current_path = vim.fs.dirname(current_path)
