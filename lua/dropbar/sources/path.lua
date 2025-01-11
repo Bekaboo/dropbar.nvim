@@ -68,11 +68,10 @@ local function preview(sym)
   end
 
   local lines = not stat and nopreview('Not a file or directory')
-    or stat.type == 'directory' and vim.fn.systemlist(
+    or stat.type == 'directory' and vim.fn.has('win32') == 0 and vim.fn.systemlist(
       'ls -lhA ' .. vim.fn.shellescape(sym.data.path)
     )
     or stat.size == 0 and nopreview('Empty file')
-    -- TODO: Windows call
     or (vim.fn.has('win32') == 0 and not vim.fn.system({ 'file', sym.data.path }):match('text')) and nopreview(
       'Binary file, no preview available'
     )
