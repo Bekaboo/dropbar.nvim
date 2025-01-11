@@ -145,14 +145,14 @@ end
 ---@param win integer window handler
 ---@return dropbar_symbol_t
 local function convert(path, buf, win)
+  path = sanitize_oil_path(path)
+
   local path_opts = configs.opts.sources.path
   local icon_opts = configs.opts.icons
   local icon ---@type string?
   local icon_hl ---@type string?
   local name_hl ---@type string?
   local stat = vim.uv.fs_stat(path)
-
-  path = sanitize_oil_path(path)
 
   if stat and stat.type == 'directory' then
     icon, icon_hl = configs.eval(icon_opts.kinds.dir_icon, path)
