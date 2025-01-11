@@ -1001,6 +1001,10 @@ PATH                              *dropbar-configuration-options-sources-path*
     preview the file under cursor
   - Default: `true`
 
+- `opts.sources.path.oil`: `boolean`
+  - A boolean that enables oil.nvim support
+  - Default: `false`
+
 TREESITTER                  *dropbar-configuration-options-sources-treesitter*
 
 - `opts.sources.treesitter.max_depth`: `integer`

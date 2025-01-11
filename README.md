@@ -1075,6 +1075,10 @@ each sources.
     preview the file under cursor
   - Default: `true`
 
+- `opts.sources.path.oil`: `boolean`
+  - A boolean that enables oil.nvim support
+  - Default: `false`
+
 ##### Treesitter
 
 - `opts.sources.treesitter.max_depth`: `integer`
