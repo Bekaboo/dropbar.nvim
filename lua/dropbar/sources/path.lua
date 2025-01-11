@@ -125,13 +125,10 @@ local function preview_restore_view(sym)
   end
 end
 
----Convert a path to a dropbar symbol
+---Convert an oil.nvim path to system path
 ---@param path string full path
----@param buf integer buffer handler
----@param win integer window handler
----@return dropbar_symbol_t
-local function convert(path, buf, win)
-  -- Convert oil.nvim path to system path
+---@return string
+local function sanitize_oil_path(path)
   if path:sub(1, 4) == 'oil:' then
     if vim.fn.has('win32') == 1 then
       path = path:gsub('^oil:/([A-Za-z])/', '%1:/'):gsub('^oil:/', '')
@@ -139,13 +136,24 @@ local function convert(path, buf, win)
       path = path:gsub('^oil:', '/')
     end
   end
+  return path
+end
 
+---Convert a path to a dropbar symbol
+---@param path string full path
+---@param buf integer buffer handler
+---@param win integer window handler
+---@return dropbar_symbol_t
+local function convert(path, buf, win)
   local path_opts = configs.opts.sources.path
   local icon_opts = configs.opts.icons
   local icon ---@type string?
   local icon_hl ---@type string?
   local name_hl ---@type string?
   local stat = vim.uv.fs_stat(path)
+
+  path = sanitize_oil_path(path)
+
   if stat and stat.type == 'directory' then
     icon, icon_hl = configs.eval(icon_opts.kinds.dir_icon, path)
     name_hl = 'DropBarKindDir'
