@@ -288,6 +288,7 @@ M.opts = {
   bar = {
     ---@type boolean|fun(buf: integer, win: integer, info: table?): boolean
     enable = function(buf, win, _)
+      local configs = require('dropbar.configs')
       local ft = vim.bo[buf].ft
 
       if
@@ -305,7 +306,6 @@ M.opts = {
         return false
       end
 
-      local configs = require('dropbar.configs')
       return ft == 'markdown'
         or (configs.opts.sources.path.oil and ft == 'oil')
         or pcall(vim.treesitter.get_parser, buf)
