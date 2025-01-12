@@ -288,12 +288,14 @@ M.opts = {
   bar = {
     ---@type boolean|fun(buf: integer, win: integer, info: table?): boolean
     enable = function(buf, win, _)
+      local ft = vim.bo[buf].ft
+
       if
         not vim.api.nvim_buf_is_valid(buf)
         or not vim.api.nvim_win_is_valid(win)
         or vim.fn.win_gettype(win) ~= ''
         or vim.wo[win].winbar ~= ''
-        or vim.bo[buf].ft == 'help'
+        or ft == 'help'
       then
         return false
       end
@@ -304,9 +306,8 @@ M.opts = {
       end
 
       local configs = require('dropbar.configs')
-      local ft = vim.bo[buf].ft
       return ft == 'markdown'
-        or configs.opts.sources.path.oil and ft == 'oil'
+        or (configs.opts.sources.path.oil and ft == 'oil')
         or pcall(vim.treesitter.get_parser, buf)
         or not vim.tbl_isempty(vim.lsp.get_clients({
           bufnr = buf,
