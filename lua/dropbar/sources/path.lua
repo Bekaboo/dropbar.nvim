@@ -67,6 +67,12 @@ local function preview(sym)
     return lines
   end
 
+  vim.api.nvim_buf_set_name(sym.data.preview_buf, preview_bufnewname)
+  vim.api.nvim_buf_call(sym.data.preview_buf, function()
+    vim.treesitter.stop(sym.data.preview_buf)
+    vim.bo.syntax = ''
+  end)
+
   local lines = not stat and nopreview('Not a file or directory')
     or stat.type == 'directory' and vim.fn.systemlist(
       'ls -lhA ' .. vim.fn.shellescape(sym.data.path)
@@ -88,14 +94,9 @@ local function preview(sym)
         :totable()
 
   vim.bo[sym.data.preview_buf].modifiable = true
+  vim.api.nvim_buf_set_lines(sym.data.preview_buf, 0, -1, false, {})
   vim.api.nvim_buf_set_lines(sym.data.preview_buf, 0, -1, false, lines)
   vim.bo[sym.data.preview_buf].modifiable = false
-
-  vim.api.nvim_buf_set_name(sym.data.preview_buf, preview_bufnewname)
-  vim.api.nvim_buf_call(sym.data.preview_buf, function()
-    vim.treesitter.stop(sym.data.preview_buf)
-  end)
-  vim.bo[sym.data.preview_buf].syntax = ''
 
   if not add_syntax then
     return
