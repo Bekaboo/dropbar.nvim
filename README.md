@@ -46,6 +46,9 @@
     - [Bar Utility Functions](#bar-utility-functions)
     - [Menu Utility Functions](#menu-utility-functions)
   - [Highlighting](#highlighting)
+  - [Configuration Examples](#configuration-examples)
+    - [Highlight File Name Using Custom Highlight Group `DropBarFileName`](#highlight-file-name-using-custom-highlight-group-dropbarfilename)
+    - [Enable Path Source in Special Plugin Buffers, e.g. Oil or Fugitive](#enable-path-source-in-special-plugin-buffers-eg-oil-or-fugitive)
 - [Developers](#developers)
   - [Architecture](#architecture)
   - [Classes](#classes)
@@ -60,9 +63,6 @@
     - [Making a Source With Drop-Down Menus](#making-a-source-with-drop-down-menus)
     - [Default `on_click()` Callback](#default-on_click-callback)
     - [Lazy-Loading Expensive Fields](#lazy-loading-expensive-fields)
-- [Configuration Examples](#configuration-examples)
-  - [Highlight File Name Using Custom Highlight Group `DropBarFileName`](#highlight-file-name-using-custom-highlight-group-dropbarfilename)
-  - [Enable Path Source in Special Plugin Buffers, e.g. Oil or Fugitive](#enable-path-source-in-special-plugin-buffers-eg-oil-or-fugitive)
 - [Similar Projects](#similar-projects)
 <!--toc:end-->
 
@@ -1328,159 +1328,263 @@ should be self-explanatory:
 <details>
   <summary>Highlight groups</summary>
 
-  | Highlight group                  | Attributes                               |
-  |----------------------------------|------------------------------------------|
-  | DropBarCurrentContext            | `{ link = 'Visual' }`                    |
-  | DropBarFzfMatch                  | `{ link = 'Special' }`                   |
-  | DropBarHover                     | `{ link = 'Visual' }`                    |
-  | DropBarIconKindDefault           | `{ link = 'Special' }`                   |
-  | DropBarIconKindArray             | `{ link = 'Operator' }`                  |
-  | DropBarIconKindBoolean           | `{ link = 'Boolean' }`                   |
-  | DropBarIconKindBreakStatement    | `{ link = 'Error' }`                     |
-  | DropBarIconKindCall              | `{ link = 'Function' }`                  |
-  | DropBarIconKindCaseStatement     | `{ link = 'Conditional' }`               |
-  | DropBarIconKindClass             | `{ link = 'Type' }`                      |
-  | DropBarIconKindConstant          | `{ link = 'Constant' }`                  |
-  | DropBarIconKindConstructor       | `{ link = '@constructor' }`              |
-  | DropBarIconKindContinueStatement | `{ link = 'Repeat' }`                    |
-  | DropBarIconKindDeclaration       | `{ link = 'DropBarIconKindDefault' }`    |
-  | DropBarIconKindDelete            | `{ link = 'Error' }`                     |
-  | DropBarIconKindDoStatement       | `{ link = 'Repeat' }`                    |
-  | DropBarIconKindElseStatement     | `{ link = 'Conditional' }`               |
-  | DropBarIconKindElement           | `{ link = 'DropBarIconKindDefault' }`    |
-  | DropBarIconKindEnum              | `{ link = 'Constant' }`                  |
-  | DropBarIconKindEnumMember        | `{ link = 'DropBarIconKindEnumMember' }` |
-  | DropBarIconKindEvent             | `{ link = '@lsp.type.event' }`           |
-  | DropBarIconKindField             | `{ link = 'DropBarIconKindDefault' }`    |
-  | DropBarIconKindFile              | `{ link = 'DropBarIconKindFolder' }`     |
-  | DropBarIconKindFolder            | `{ link = 'Directory' }`                 |
-  | DropBarIconKindForStatement      | `{ link = 'Repeat' }`                    |
-  | DropBarIconKindFunction          | `{ link = 'Function' }`                  |
-  | DropBarIconKindH1Marker          | `{ link = 'markdownH1' }`                |
-  | DropBarIconKindH2Marker          | `{ link = 'markdownH2' }`                |
-  | DropBarIconKindH3Marker          | `{ link = 'markdownH3' }`                |
-  | DropBarIconKindH4Marker          | `{ link = 'markdownH4' }`                |
-  | DropBarIconKindH5Marker          | `{ link = 'markdownH5' }`                |
-  | DropBarIconKindH6Marker          | `{ link = 'markdownH6' }`                |
-  | DropBarIconKindIdentifier        | `{ link = 'DropBarIconKindDefault' }`    |
-  | DropBarIconKindIfStatement       | `{ link = 'Conditional' }`               |
-  | DropBarIconKindInterface         | `{ link = 'Type' }`                      |
-  | DropBarIconKindKeyword           | `{ link = '@keyword' }`                  |
-  | DropBarIconKindList              | `{ link = 'Operator' }`                  |
-  | DropBarIconKindMacro             | `{ link = 'Macro' }`                     |
-  | DropBarIconKindMarkdownH1        | `{ link = 'markdownH1' }`                |
-  | DropBarIconKindMarkdownH2        | `{ link = 'markdownH2' }`                |
-  | DropBarIconKindMarkdownH3        | `{ link = 'markdownH3' }`                |
-  | DropBarIconKindMarkdownH4        | `{ link = 'markdownH4' }`                |
-  | DropBarIconKindMarkdownH5        | `{ link = 'markdownH5' }`                |
-  | DropBarIconKindMarkdownH6        | `{ link = 'markdownH6' }`                |
-  | DropBarIconKindMethod            | `{ link = 'Function' }`                  |
-  | DropBarIconKindModule            | `{ link = '@module' }`                   |
-  | DropBarIconKindNamespace         | `{ link = '@lsp.type.namespace' }`       |
-  | DropBarIconKindNull              | `{ link = 'Constant' }`                  |
-  | DropBarIconKindNumber            | `{ link = 'Number' }`                    |
-  | DropBarIconKindObject            | `{ link = 'Statement' }`                 |
-  | DropBarIconKindOperator          | `{ link = 'Operator' }`                  |
-  | DropBarIconKindPackage           | `{ link = '@module' }`                   |
-  | DropBarIconKindPair              | `{ link = 'DropBarIconKindDefault' }`    |
-  | DropBarIconKindProperty          | `{ link = 'DropBarIconKindDefault' }`    |
-  | DropBarIconKindReference         | `{ link = 'DropBarIconKindDefault' }`    |
-  | DropBarIconKindRepeat            | `{ link = 'Repeat' }`                    |
-  | DropBarIconKindRuleSet           | `{ link = '@lsp.type.namespace' }`       |
-  | DropBarIconKindScope             | `{ link = '@lsp.type.namespace' }`       |
-  | DropBarIconKindSpecifier         | `{ link = '@keyword' }`                  |
-  | DropBarIconKindStatement         | `{ link = 'Statement' }`                 |
-  | DropBarIconKindString            | `{ link = '@string' }`                   |
-  | DropBarIconKindStruct            | `{ link = 'Type' }`                      |
-  | DropBarIconKindSwitchStatement   | `{ link = 'Conditional' }`               |
-  | DropBarIconKindTerminal          | `{ link = 'Number' }`                    |
-  | DropBarIconKindType              | `{ link = 'Type' }`                      |
-  | DropBarIconKindTypeParameter     | `{ link = 'DropBarIconKindDefault' }`    |
-  | DropBarIconKindUnit              | `{ link = 'DropBarIconKindDefault' }`    |
-  | DropBarIconKindValue             | `{ link = 'Number' }`                    |
-  | DropBarIconKindVariable          | `{ link = 'DropBarIconKindDefault' }`    |
-  | DropBarIconKindWhileStatement    | `{ link = 'Repeat' }`                    |
-  | DropBarIconUIIndicator           | `{ link = 'SpecialChar' }`               |
-  | DropBarIconUIPickPivot           | `{ link = 'Error' }`                     |
-  | DropBarIconUISeparator           | `{ link = 'Comment' }`                   |
-  | DropBarIconUISeparatorMenu       | `{ link = 'DropBarIconUISeparator' }`    |
-  | DropBarMenuCurrentContext        | `{ link = 'PmenuSel' }`                  |
-  | DropBarMenuFloatBorder           | `{ link = 'FloatBorder' }`               |
-  | DropBarMenuHoverEntry            | `{ link = 'IncSearch' }`                 |
-  | DropBarMenuHoverIcon             | `{ reverse = true }`                     |
-  | DropBarMenuHoverSymbol           | `{ bold = true }`                        |
-  | DropBarMenuNormalFloat           | `{ link = 'NormalFloat' }`               |
-  | DropBarMenuSbar                  | `{ link = 'PmenuSbar' }`                 |
-  | DropBarMenuThumb                 | `{ link = 'PmenuThumb' }`                |
-  | DropBarPreview                   | `{ link = 'Visual' }`                    |
-  | DropBarKindArray                 | undefined                                |
-  | DropBarKindBoolean               | undefined                                |
-  | DropBarKindBreakStatement        | undefined                                |
-  | DropBarKindCall                  | undefined                                |
-  | DropBarKindCaseStatement         | undefined                                |
-  | DropBarKindClass                 | undefined                                |
-  | DropBarKindConstant              | undefined                                |
-  | DropBarKindConstructor           | undefined                                |
-  | DropBarKindContinueStatement     | undefined                                |
-  | DropBarKindDeclaration           | undefined                                |
-  | DropBarKindDelete                | undefined                                |
-  | DropBarKindDoStatement           | undefined                                |
-  | DropBarKindElseStatement         | undefined                                |
-  | DropBarKindElement               | undefined                                |
-  | DropBarKindEnum                  | undefined                                |
-  | DropBarKindEnumMember            | undefined                                |
-  | DropBarKindEvent                 | undefined                                |
-  | DropBarKindField                 | undefined                                |
-  | DropBarKindFile                  | undefined                                |
-  | DropBarKindFolder                | undefined                                |
-  | DropBarKindForStatement          | undefined                                |
-  | DropBarKindFunction              | undefined                                |
-  | DropBarKindH1Marker              | undefined                                |
-  | DropBarKindH2Marker              | undefined                                |
-  | DropBarKindH3Marker              | undefined                                |
-  | DropBarKindH4Marker              | undefined                                |
-  | DropBarKindH5Marker              | undefined                                |
-  | DropBarKindH6Marker              | undefined                                |
-  | DropBarKindIdentifier            | undefined                                |
-  | DropBarKindIfStatement           | undefined                                |
-  | DropBarKindInterface             | undefined                                |
-  | DropBarKindKeyword               | undefined                                |
-  | DropBarKindList                  | undefined                                |
-  | DropBarKindMacro                 | undefined                                |
-  | DropBarKindMarkdownH1            | undefined                                |
-  | DropBarKindMarkdownH2            | undefined                                |
-  | DropBarKindMarkdownH3            | undefined                                |
-  | DropBarKindMarkdownH4            | undefined                                |
-  | DropBarKindMarkdownH5            | undefined                                |
-  | DropBarKindMarkdownH6            | undefined                                |
-  | DropBarKindMethod                | undefined                                |
-  | DropBarKindModule                | undefined                                |
-  | DropBarKindNamespace             | undefined                                |
-  | DropBarKindNull                  | undefined                                |
-  | DropBarKindNumber                | undefined                                |
-  | DropBarKindObject                | undefined                                |
-  | DropBarKindOperator              | undefined                                |
-  | DropBarKindPackage               | undefined                                |
-  | DropBarKindPair                  | undefined                                |
-  | DropBarKindProperty              | undefined                                |
-  | DropBarKindReference             | undefined                                |
-  | DropBarKindRepeat                | undefined                                |
-  | DropBarKindRuleSet               | undefined                                |
-  | DropBarKindScope                 | undefined                                |
-  | DropBarKindSpecifier             | undefined                                |
-  | DropBarKindStatement             | undefined                                |
-  | DropBarKindString                | undefined                                |
-  | DropBarKindStruct                | undefined                                |
-  | DropBarKindSwitchStatement       | undefined                                |
-  | DropBarKindTerminal              | undefined                                |
-  | DropBarKindType                  | undefined                                |
-  | DropBarKindTypeParameter         | undefined                                |
-  | DropBarKindUnit                  | undefined                                |
-  | DropBarKindValue                 | undefined                                |
-  | DropBarKindVariable              | undefined                                |
-  | DropBarKindWhileStatement        | undefined                                |
+  | Highlight group                    | Attributes                                 |
+  | ---------------------------------- | ------------------------------------------ |
+  | DropBarCurrentContext              | `{ link = 'Visual' }`                      |
+  | DropBarFzfMatch                    | `{ link = 'Special' }`                     |
+  | DropBarHover                       | `{ link = 'Visual' }`                      |
+  | DropBarIconKindDefault             | `{ link = 'Special' }`                     |
+  | DropBarIconKindArray               | `{ link = 'Operator' }`                    |
+  | DropBarIconKindBoolean             | `{ link = 'Boolean' }`                     |
+  | DropBarIconKindBreakStatement      | `{ link = 'Error' }`                       |
+  | DropBarIconKindCall                | `{ link = 'Function' }`                    |
+  | DropBarIconKindCaseStatement       | `{ link = 'Conditional' }`                 |
+  | DropBarIconKindClass               | `{ link = 'Type' }`                        |
+  | DropBarIconKindConstant            | `{ link = 'Constant' }`                    |
+  | DropBarIconKindConstructor         | `{ link = '@constructor' }`                |
+  | DropBarIconKindContinueStatement   | `{ link = 'Repeat' }`                      |
+  | DropBarIconKindDeclaration         | `{ link = 'DropBarIconKindDefault' }`      |
+  | DropBarIconKindDelete              | `{ link = 'Error' }`                       |
+  | DropBarIconKindDoStatement         | `{ link = 'Repeat' }`                      |
+  | DropBarIconKindElseStatement       | `{ link = 'Conditional' }`                 |
+  | DropBarIconKindElement             | `{ link = 'DropBarIconKindDefault' }`      |
+  | DropBarIconKindEnum                | `{ link = 'Constant' }`                    |
+  | DropBarIconKindEnumMember          | `{ link = 'DropBarIconKindEnumMember' }`   |
+  | DropBarIconKindEvent               | `{ link = '@lsp.type.event' }`             |
+  | DropBarIconKindField               | `{ link = 'DropBarIconKindDefault' }`      |
+  | DropBarIconKindFile                | `{ link = 'DropBarIconKindFolder' }`       |
+  | DropBarIconKindFolder              | `{ link = 'Directory' }`                   |
+  | DropBarIconKindForStatement        | `{ link = 'Repeat' }`                      |
+  | DropBarIconKindFunction            | `{ link = 'Function' }`                    |
+  | DropBarIconKindH1Marker            | `{ link = 'markdownH1' }`                  |
+  | DropBarIconKindH2Marker            | `{ link = 'markdownH2' }`                  |
+  | DropBarIconKindH3Marker            | `{ link = 'markdownH3' }`                  |
+  | DropBarIconKindH4Marker            | `{ link = 'markdownH4' }`                  |
+  | DropBarIconKindH5Marker            | `{ link = 'markdownH5' }`                  |
+  | DropBarIconKindH6Marker            | `{ link = 'markdownH6' }`                  |
+  | DropBarIconKindIdentifier          | `{ link = 'DropBarIconKindDefault' }`      |
+  | DropBarIconKindIfStatement         | `{ link = 'Conditional' }`                 |
+  | DropBarIconKindInterface           | `{ link = 'Type' }`                        |
+  | DropBarIconKindKeyword             | `{ link = '@keyword' }`                    |
+  | DropBarIconKindList                | `{ link = 'Operator' }`                    |
+  | DropBarIconKindMacro               | `{ link = 'Macro' }`                       |
+  | DropBarIconKindMarkdownH1          | `{ link = 'markdownH1' }`                  |
+  | DropBarIconKindMarkdownH2          | `{ link = 'markdownH2' }`                  |
+  | DropBarIconKindMarkdownH3          | `{ link = 'markdownH3' }`                  |
+  | DropBarIconKindMarkdownH4          | `{ link = 'markdownH4' }`                  |
+  | DropBarIconKindMarkdownH5          | `{ link = 'markdownH5' }`                  |
+  | DropBarIconKindMarkdownH6          | `{ link = 'markdownH6' }`                  |
+  | DropBarIconKindMethod              | `{ link = 'Function' }`                    |
+  | DropBarIconKindModule              | `{ link = '@module' }`                     |
+  | DropBarIconKindNamespace           | `{ link = '@lsp.type.namespace' }`         |
+  | DropBarIconKindNull                | `{ link = 'Constant' }`                    |
+  | DropBarIconKindNumber              | `{ link = 'Number' }`                      |
+  | DropBarIconKindObject              | `{ link = 'Statement' }`                   |
+  | DropBarIconKindOperator            | `{ link = 'Operator' }`                    |
+  | DropBarIconKindPackage             | `{ link = '@module' }`                     |
+  | DropBarIconKindPair                | `{ link = 'DropBarIconKindDefault' }`      |
+  | DropBarIconKindProperty            | `{ link = 'DropBarIconKindDefault' }`      |
+  | DropBarIconKindReference           | `{ link = 'DropBarIconKindDefault' }`      |
+  | DropBarIconKindRepeat              | `{ link = 'Repeat' }`                      |
+  | DropBarIconKindRuleSet             | `{ link = '@lsp.type.namespace' }`         |
+  | DropBarIconKindScope               | `{ link = '@lsp.type.namespace' }`         |
+  | DropBarIconKindSpecifier           | `{ link = '@keyword' }`                    |
+  | DropBarIconKindStatement           | `{ link = 'Statement' }`                   |
+  | DropBarIconKindString              | `{ link = '@string' }`                     |
+  | DropBarIconKindStruct              | `{ link = 'Type' }`                        |
+  | DropBarIconKindSwitchStatement     | `{ link = 'Conditional' }`                 |
+  | DropBarIconKindTerminal            | `{ link = 'Number' }`                      |
+  | DropBarIconKindType                | `{ link = 'Type' }`                        |
+  | DropBarIconKindTypeParameter       | `{ link = 'DropBarIconKindDefault' }`      |
+  | DropBarIconKindUnit                | `{ link = 'DropBarIconKindDefault' }`      |
+  | DropBarIconKindValue               | `{ link = 'Number' }`                      |
+  | DropBarIconKindVariable            | `{ link = 'DropBarIconKindDefault' }`      |
+  | DropBarIconKindWhileStatement      | `{ link = 'Repeat' }`                      |
+  | DropBarIconUIIndicator             | `{ link = 'SpecialChar' }`                 |
+  | DropBarIconUIPickPivot             | `{ link = 'Error' }`                       |
+  | DropBarIconUISeparator             | `{ link = 'Comment' }`                     |
+  | DropBarIconUISeparatorMenu         | `{ link = 'DropBarIconUISeparator' }`      |
+  | DropBarMenuCurrentContext          | `{ link = 'PmenuSel' }`                    |
+  | DropBarMenuFloatBorder             | `{ link = 'FloatBorder' }`                 |
+  | DropBarMenuHoverEntry              | `{ link = 'IncSearch' }`                   |
+  | DropBarMenuHoverIcon               | `{ reverse = true }`                       |
+  | DropBarMenuHoverSymbol             | `{ bold = true }`                          |
+  | DropBarMenuNormalFloat             | `{ link = 'NormalFloat' }`                 |
+  | DropBarMenuSbar                    | `{ link = 'PmenuSbar' }`                   |
+  | DropBarMenuThumb                   | `{ link = 'PmenuThumb' }`                  |
+  | DropBarPreview                     | `{ link = 'Visual' }`                      |
+  | DropBarKindArray                   | undefined                                  |
+  | DropBarKindBoolean                 | undefined                                  |
+  | DropBarKindBreakStatement          | undefined                                  |
+  | DropBarKindCall                    | undefined                                  |
+  | DropBarKindCaseStatement           | undefined                                  |
+  | DropBarKindClass                   | undefined                                  |
+  | DropBarKindConstant                | undefined                                  |
+  | DropBarKindConstructor             | undefined                                  |
+  | DropBarKindContinueStatement       | undefined                                  |
+  | DropBarKindDeclaration             | undefined                                  |
+  | DropBarKindDelete                  | undefined                                  |
+  | DropBarKindDoStatement             | undefined                                  |
+  | DropBarKindElseStatement           | undefined                                  |
+  | DropBarKindElement                 | undefined                                  |
+  | DropBarKindEnum                    | undefined                                  |
+  | DropBarKindEnumMember              | undefined                                  |
+  | DropBarKindEvent                   | undefined                                  |
+  | DropBarKindField                   | undefined                                  |
+  | DropBarKindFile                    | undefined                                  |
+  | DropBarKindFolder                  | undefined                                  |
+  | DropBarKindForStatement            | undefined                                  |
+  | DropBarKindFunction                | undefined                                  |
+  | DropBarKindH1Marker                | undefined                                  |
+  | DropBarKindH2Marker                | undefined                                  |
+  | DropBarKindH3Marker                | undefined                                  |
+  | DropBarKindH4Marker                | undefined                                  |
+  | DropBarKindH5Marker                | undefined                                  |
+  | DropBarKindH6Marker                | undefined                                  |
+  | DropBarKindIdentifier              | undefined                                  |
+  | DropBarKindIfStatement             | undefined                                  |
+  | DropBarKindInterface               | undefined                                  |
+  | DropBarKindKeyword                 | undefined                                  |
+  | DropBarKindList                    | undefined                                  |
+  | DropBarKindMacro                   | undefined                                  |
+  | DropBarKindMarkdownH1              | undefined                                  |
+  | DropBarKindMarkdownH2              | undefined                                  |
+  | DropBarKindMarkdownH3              | undefined                                  |
+  | DropBarKindMarkdownH4              | undefined                                  |
+  | DropBarKindMarkdownH5              | undefined                                  |
+  | DropBarKindMarkdownH6              | undefined                                  |
+  | DropBarKindMethod                  | undefined                                  |
+  | DropBarKindModule                  | undefined                                  |
+  | DropBarKindNamespace               | undefined                                  |
+  | DropBarKindNull                    | undefined                                  |
+  | DropBarKindNumber                  | undefined                                  |
+  | DropBarKindObject                  | undefined                                  |
+  | DropBarKindOperator                | undefined                                  |
+  | DropBarKindPackage                 | undefined                                  |
+  | DropBarKindPair                    | undefined                                  |
+  | DropBarKindProperty                | undefined                                  |
+  | DropBarKindReference               | undefined                                  |
+  | DropBarKindRepeat                  | undefined                                  |
+  | DropBarKindRuleSet                 | undefined                                  |
+  | DropBarKindScope                   | undefined                                  |
+  | DropBarKindSpecifier               | undefined                                  |
+  | DropBarKindStatement               | undefined                                  |
+  | DropBarKindString                  | undefined                                  |
+  | DropBarKindStruct                  | undefined                                  |
+  | DropBarKindSwitchStatement         | undefined                                  |
+  | DropBarKindTerminal                | undefined                                  |
+  | DropBarKindType                    | undefined                                  |
+  | DropBarKindTypeParameter           | undefined                                  |
+  | DropBarKindUnit                    | undefined                                  |
+  | DropBarKindValue                   | undefined                                  |
+  | DropBarKindVariable                | undefined                                  |
+  | DropBarKindWhileStatement          | undefined                                  |
 
 </details>
+
+### Configuration Examples
+
+#### Highlight File Name Using Custom Highlight Group `DropBarFileName`
+
+```lua
+local dropbar = require('dropbar')
+local sources = require('dropbar.source')
+local utils = require('dropbar.sources')
+
+vim.api.nvim_set_hl(0, 'DropBarFileName', { fg = '#FFFFFF', italic = true })
+
+local custom_path = {
+  get_symbols = function(buff, win, cursor)
+    local symbols = sources.path.get_symbols(buff, win, cursor)
+    symbols[#symbols].name_hl = 'DropBarFileName'
+    if vim.bo[buff].modified then
+      symbols[#symbols].name = symbols[#symbols].name .. ' [+]'
+      symbols[#symbols].name_hl = 'DiffAdded'
+    end
+    return symbols
+  end,
+}
+
+dropbar.setup({
+  bar = {
+    sources = function(buf, _)
+      if vim.bo[buf].ft == 'markdown' then
+        return {
+          custom_path,
+          sources.markdown,
+        }
+      end
+      if vim.bo[buf].buftype == 'terminal' then
+        return {
+          sources.terminal,
+        }
+      end
+      return {
+        custom_path,
+        utils.source.fallback {
+          sources.lsp,
+          sources.treesitter,
+        },
+      }
+    end,
+  },
+})
+```
+
+#### Enable Path Source in Special Plugin Buffers, e.g. Oil or Fugitive
+
+```lua
+require('dropbar').setup({
+  bar = {
+    enable = function(buf, win, _)
+      if
+        not vim.api.nvim_buf_is_valid(buf)
+        or not vim.api.nvim_win_is_valid(win)
+        or vim.fn.win_gettype(win) ~= ''
+        or vim.wo[win].winbar ~= ''
+        or vim.bo[buf].ft == 'help'
+      then
+        return false
+      end
+
+      local stat = vim.uv.fs_stat(vim.api.nvim_buf_get_name(buf))
+      if stat and stat.size > 1024 * 1024 then
+        return false
+      end
+
+      return vim.bo[buf].ft == 'markdown'
+        or vim.bo[buf].ft == 'oil' -- enable in oil buffers
+        or vim.bo[buf].ft == 'fugitive' -- enable in fugitive buffers
+        or pcall(vim.treesitter.get_parser, buf)
+        or not vim.tbl_isempty(vim.lsp.get_clients({
+          bufnr = buf,
+          method = 'textDocument/documentSymbol',
+        }))
+    end,
+  },
+  sources = {
+    path = {
+      relative_to = function(buf, win)
+        -- Show full path in oil or fugitive buffers
+        local bufname = vim.api.nvim_buf_get_name(buf)
+        if
+          vim.startswith(bufname, 'oil://')
+          or vim.startswith(bufname, 'fugitive://')
+        then
+          local root = bufname:gsub('^%S+://', '', 1)
+          while root and root ~= vim.fs.dirname(root) do
+            root = vim.fs.dirname(root)
+          end
+          return root
+        end
+
+        local ok, cwd = pcall(vim.fn.getcwd, win)
+        return ok and cwd or vim.fn.getcwd()
+      end,
+    },
+  },
+})
+```
 
 ## Developers
 
@@ -1993,110 +2097,6 @@ local custom_source = {
 
 To see concrete examples of lazy-loading see
 [`lua/dropbar/sources`](lua/dropbar/sources).
-
-## Configuration Examples
-
-### Highlight File Name Using Custom Highlight Group `DropBarFileName`
-
-```lua
-local dropbar = require('dropbar')
-local sources = require('dropbar.source')
-local utils = require('dropbar.sources')
-
-vim.api.nvim_set_hl(0, 'DropBarFileName', { fg = '#FFFFFF', italic = true })
-
-local custom_path = {
-  get_symbols = function(buff, win, cursor)
-    local symbols = sources.path.get_symbols(buff, win, cursor)
-    symbols[#symbols].name_hl = 'DropBarFileName'
-    if vim.bo[buff].modified then
-      symbols[#symbols].name = symbols[#symbols].name .. ' [+]'
-      symbols[#symbols].name_hl = 'DiffAdded'
-    end
-    return symbols
-  end,
-}
-
-dropbar.setup({
-  bar = {
-    sources = function(buf, _)
-      if vim.bo[buf].ft == 'markdown' then
-        return {
-          custom_path,
-          sources.markdown,
-        }
-      end
-      if vim.bo[buf].buftype == 'terminal' then
-        return {
-          sources.terminal,
-        }
-      end
-      return {
-        custom_path,
-        utils.source.fallback {
-          sources.lsp,
-          sources.treesitter,
-        },
-      }
-    end,
-  },
-})
-```
-
-### Enable Path Source in Special Plugin Buffers, e.g. Oil or Fugitive
-
-```lua
-require('dropbar').setup({
-  bar = {
-    enable = function(buf, win, _)
-      if
-        not vim.api.nvim_buf_is_valid(buf)
-        or not vim.api.nvim_win_is_valid(win)
-        or vim.fn.win_gettype(win) ~= ''
-        or vim.wo[win].winbar ~= ''
-        or vim.bo[buf].ft == 'help'
-      then
-        return false
-      end
-
-      local stat = vim.uv.fs_stat(vim.api.nvim_buf_get_name(buf))
-      if stat and stat.size > 1024 * 1024 then
-        return false
-      end
-
-      return vim.bo[buf].ft == 'markdown'
-        or vim.bo[buf].ft == 'oil' -- enable in oil buffers
-        or vim.bo[buf].ft == 'fugitive' -- enable in fugitive buffers
-        or pcall(vim.treesitter.get_parser, buf)
-        or not vim.tbl_isempty(vim.lsp.get_clients({
-          bufnr = buf,
-          method = 'textDocument/documentSymbol',
-        }))
-    end,
-  },
-  sources = {
-    path = {
-      relative_to = function(buf, win)
-        -- Show full path in oil or fugitive buffers
-        local bufname = vim.api.nvim_buf_get_name(buf)
-        if
-          vim.startswith(bufname, 'oil://')
-          or vim.startswith(bufname, 'fugitive://')
-        then
-          local root = bufname:gsub('^%S+://', '', 1)
-          while root and root ~= vim.fs.dirname(root) do
-            root = vim.fs.dirname(root)
-          end
-          return root
-        end
-
-        local ok, cwd = pcall(vim.fn.getcwd, win)
-        return ok and cwd or vim.fn.getcwd()
-      end,
-    },
-  },
-})
-```
 
 ## Similar Projects
 

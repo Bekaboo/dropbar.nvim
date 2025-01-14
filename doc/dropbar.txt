@@ -32,6 +32,7 @@ CONTENTS                                           *dropbar-table-of-contents*
     5.3.1 Bar Utility Functions  |dropbar-configuration-utility-functions-bar|
     5.3.2 Menu Utility Functions |dropbar-configuration-utility-functions-menu|
   5.5 Highlighting                        |dropbar-configuration-highlighting|
+  5.6 Configuration Examples                  |dropbar-configuration-examples|
 6. Developers                                             |dropbar-developers|
   6.1 Architecture                           |dropbar-developers-architecture|
   6.2 Classes                                     |dropbar-developers-classes|
@@ -46,8 +47,7 @@ CONTENTS                                           *dropbar-table-of-contents*
     6.3.1 Making a source with drop-down menus |dropbar-developers-making-a-source-with-drop-down-menus|
     6.3.2 Default `on_click()` callback |dropbar-developers-default-on_click-callback|
     6.3.3 Lazy-loading expensive fields |dropbar-developers-lazy-loading-expensive-fields|
-7. Configuration Examples |dropbar-developers-making-a-new-source-configuration-examples|
-8. Similar Projects                                 |dropbar-similar-projects|
+7. Similar Projects                                 |dropbar-similar-projects|
 
 
 ==============================================================================
@@ -1463,6 +1463,113 @@ Highlight groups ~
   DropBarKindVariable              undefined
   DropBarKindWhileStatement        undefined
 
+------------------------------------------------------------------------------
+CONFIGURATION EXAMPLES                        *dropbar-configuration-examples*
+
+Highlight file name using custom highlight group `DropBarFileName`: >lua
+
+    local dropbar = require('dropbar')
+    local sources = require('dropbar.source')
+    local utils = require('dropbar.sources')
+
+    vim.api.nvim_set_hl(0, 'DropBarFileName', {
+      fg = '#FFFFFF',
+      italic = true
+    })
+
+    local custom_path = {
+      get_symbols = function(buff, win, cursor)
+	local symbols = sources.path.get_symbols(buff, win, cursor)
+	symbols[#symbols].name_hl = 'DropBarFileName'
+	if vim.bo[buff].modified then
+	  symbols[#symbols].name = symbols[#symbols].name .. ' [+]'
+	  symbols[#symbols].name_hl = 'DiffAdded'
+	end
+	return symbols
+      end,
+    }
+
+    dropbar.setup({
+      bar = {
+	sources = function(buf, _)
+	  if vim.bo[buf].ft == 'markdown' then
+	    return {
+	      custom_path,
+	      sources.markdown,
+	    }
+	  end
+	  if vim.bo[buf].buftype == 'terminal' then
+	    return {
+	      sources.terminal,
+	    }
+	  end
+	  return {
+	    custom_path,
+	    utils.source.fallback {
+	      sources.lsp,
+	      sources.treesitter,
+	    },
+	  }
+	end,
+      },
+    })
+<
+
+To see concrete examples of lazy-loading, see `lua/dropbar/sources`.
+
+Enable path source in special plugin buffers, e.g. `oil` or `fugitive`: >lua
+
+    require('dropbar').setup({
+      bar = {
+	enable = function(buf, win, _)
+	  if
+	    not vim.api.nvim_buf_is_valid(buf)
+	    or not vim.api.nvim_win_is_valid(win)
+	    or vim.fn.win_gettype(win) ~= ''
+	    or vim.wo[win].winbar ~= ''
+	    or vim.bo[buf].ft == 'help'
+	  then
+	    return false
+	  end
+
+	  local stat = vim.uv.fs_stat(vim.api.nvim_buf_get_name(buf))
+	  if stat and stat.size > 1024 * 1024 then
+	    return false
+	  end
+
+	  return vim.bo[buf].ft == 'markdown'
+	    or vim.bo[buf].ft == 'oil' -- enable in oil buffers
+	    or vim.bo[buf].ft == 'fugitive' -- enable in fugitive buffers
+	    or pcall(vim.treesitter.get_parser, buf)
+	    or not vim.tbl_isempty(vim.lsp.get_clients({
+	      bufnr = buf,
+	      method = 'textDocument/documentSymbol',
+	    }))
+	end,
+      },
+      sources = {
+	path = {
+	  relative_to = function(buf, win)
+	    -- Show full path in oil or fugitive buffers
+	    local bufname = vim.api.nvim_buf_get_name(buf)
+	    if
+	      vim.startswith(bufname, 'oil://')
+	      or vim.startswith(bufname, 'fugitive://')
+	    then
+	      local root = bufname:gsub('^%S+://', '', 1)
+	      while root and root ~= vim.fs.dirname(root) do
+		root = vim.fs.dirname(root)
+	      end
+	      return root
+	    end
+
+	    local ok, cwd = pcall(vim.fn.getcwd, win)
+	    return ok and cwd or vim.fn.getcwd()
+	  end,
+	},
+      },
+    })
+<
 
 ==============================================================================
 DEVELOPERS                                                *dropbar-developers*
@@ -2801,115 +2908,6 @@ menu is opened: >lua
 	}
       end,
     }
-<
-
-..............................................................................
-CONFIGURATION EXAMPLES
-*dropbar-developers-making-a-new-source-configuration-examples*
-
-Highlight file name using custom highlight group `DropBarFileName`: >lua
-
-    local dropbar = require('dropbar')
-    local sources = require('dropbar.source')
-    local utils = require('dropbar.sources')
-
-    vim.api.nvim_set_hl(0, 'DropBarFileName', {
-      fg = '#FFFFFF',
-      italic = true
-    })
-
-    local custom_path = {
-      get_symbols = function(buff, win, cursor)
-	local symbols = sources.path.get_symbols(buff, win, cursor)
-	symbols[#symbols].name_hl = 'DropBarFileName'
-	if vim.bo[buff].modified then
-	  symbols[#symbols].name = symbols[#symbols].name .. ' [+]'
-	  symbols[#symbols].name_hl = 'DiffAdded'
-	end
-	return symbols
-      end,
-    }
-
-    dropbar.setup({
-      bar = {
-	sources = function(buf, _)
-	  if vim.bo[buf].ft == 'markdown' then
-	    return {
-	      custom_path,
-	      sources.markdown,
-	    }
-	  end
-	  if vim.bo[buf].buftype == 'terminal' then
-	    return {
-	      sources.terminal,
-	    }
-	  end
-	  return {
-	    custom_path,
-	    utils.source.fallback {
-	      sources.lsp,
-	      sources.treesitter,
-	    },
-	  }
-	end,
-      },
-    })
-<
-
-To see concrete examples of lazy-loading, see `lua/dropbar/sources`.
-
-Enable path source in special plugin buffers, e.g. `oil` or `fugitive`: >lua
-
-    require('dropbar').setup({
-      bar = {
-	enable = function(buf, win, _)
-	  if
-	    not vim.api.nvim_buf_is_valid(buf)
-	    or not vim.api.nvim_win_is_valid(win)
-	    or vim.fn.win_gettype(win) ~= ''
-	    or vim.wo[win].winbar ~= ''
-	    or vim.bo[buf].ft == 'help'
-	  then
-	    return false
-	  end
-
-	  local stat = vim.uv.fs_stat(vim.api.nvim_buf_get_name(buf))
-	  if stat and stat.size > 1024 * 1024 then
-	    return false
-	  end
-
-	  return vim.bo[buf].ft == 'markdown'
-	    or vim.bo[buf].ft == 'oil' -- enable in oil buffers
-	    or vim.bo[buf].ft == 'fugitive' -- enable in fugitive buffers
-	    or pcall(vim.treesitter.get_parser, buf)
-	    or not vim.tbl_isempty(vim.lsp.get_clients({
-	      bufnr = buf,
-	      method = 'textDocument/documentSymbol',
-	    }))
-	end,
-      },
-      sources = {
-	path = {
-	  relative_to = function(buf, win)
-	    -- Show full path in oil or fugitive buffers
-	    local bufname = vim.api.nvim_buf_get_name(buf)
-	    if
-	      vim.startswith(bufname, 'oil://')
-	      or vim.startswith(bufname, 'fugitive://')
-	    then
-	      local root = bufname:gsub('^%S+://', '', 1)
-	      while root and root ~= vim.fs.dirname(root) do
-		root = vim.fs.dirname(root)
-	      end
-	      return root
-	    end
-
-	    local ok, cwd = pcall(vim.fn.getcwd, win)
-	    return ok and cwd or vim.fn.getcwd()
-	  end,
-	},
-      },
-    })
 <
 
 ==============================================================================
