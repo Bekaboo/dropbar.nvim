@@ -1488,8 +1488,8 @@ should be self-explanatory:
 
 ```lua
 local dropbar = require('dropbar')
-local sources = require('dropbar.source')
-local utils = require('dropbar.sources')
+local sources = require('dropbar.sources')
+local utils = require('dropbar.utils')
 
 vim.api.nvim_set_hl(0, 'DropBarFileName', { fg = '#FFFFFF', italic = true })
 
