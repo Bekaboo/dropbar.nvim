@@ -1769,12 +1769,12 @@ Declared in [`lua/dropbar/utils/menu.lua`](lua/dropbar/utils/menu.lua).
 
 `dropbar_select_opts_t` has the following fields:
 
-| Field         | Type                                                                          | Description                                                                                                                                          |
-| ------        | ------                                                                        | ------                                                                                                                                               |
-| `prompt`        | `string?`                                                                       | determines what will be shown at the top of the select menu.                                                                                         |
-| `format_item`   | `fun(item: any): string, string[][]?`                                           | formats the list items for display in the menu, and optionally formats virtual text chunks to be shown below the item.                               |
-| `preview`       | `fun(self: dropbar_symbol_t, item: any, idx: integer)`                          | previews the list item under the cursor.                                                                                                             |
-| `preview_close` | `fun(self: dropbar_symbol_t, item: any, idx: integer)`                          | closes the preview when the menu is closed.                                                                                                          |
+| Field           | Type                                                   | Description                                                                                                            |
+| ------          | ------                                                 | ------                                                                                                                 |
+| `prompt`        | `string?`                                              | determines what will be shown at the top of the select menu.                                                           |
+| `format_item`   | `fun(item: any): string, string[][]?`                  | formats the list items for display in the menu, and optionally formats virtual text chunks to be shown below the item. |
+| `preview`       | `fun(self: dropbar_symbol_t, item: any, idx: integer)` | previews the list item under the cursor.                                                                               |
+| `preview_close` | `fun(self: dropbar_symbol_t, item: any, idx: integer)` | closes the preview when the menu is closed.                                                                            |
 
 ### Making a New Source
 
