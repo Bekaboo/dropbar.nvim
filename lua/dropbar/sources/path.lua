@@ -205,7 +205,12 @@ local function convert(path, buf, win)
 end
 
 local fs_normalize = not vim.uv.os_uname().sysname:find('Windows', 1, true)
-    and vim.fs.normalize
+    -- Normalization function for Unix-like file systems
+    and function(path, ...)
+      -- Use `string.gsub()` to remove prefixes e.g. `oil://`, `fugitive://`
+      -- in some plugin special buffers
+      return vim.fs.normalize(path:gsub('^%S+://', '', 1), ...)
+    end
   ---Normalize path on Windows, see #174
   ---In addition to normalizing the path with `vim.fs.normalize()`, we convert
   ---the drive letter to uppercase.
@@ -217,9 +222,13 @@ local fs_normalize = not vim.uv.os_uname().sysname:find('Windows', 1, true)
   ---@return string: path with uppercase drive letter
   or function(path, ...)
     return (
-      string.gsub(vim.fs.normalize(path, ...), '^([a-zA-Z]):', function(c)
-        return c:upper() .. ':'
-      end)
+      string.gsub(
+        vim.fs.normalize(path:gsub('^%S+://', '', 1), ...),
+        '^([a-zA-Z]):',
+        function(c)
+          return c:upper() .. ':'
+        end
+      )
     )
   end
 
