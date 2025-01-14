@@ -204,8 +204,8 @@ local function convert(path, buf, win)
   }))
 end
 
-local normalize = vim.fs.normalize
-if vim.uv.os_uname().sysname:find('Windows', 1, true) then
+local fs_normalize = not vim.uv.os_uname().sysname:find('Windows', 1, true)
+    and vim.fs.normalize
   ---Normalize path on Windows, see #174
   ---In addition to normalizing the path with `vim.fs.normalize()`, we convert
   ---the drive letter to uppercase.
@@ -215,14 +215,13 @@ if vim.uv.os_uname().sysname:find('Windows', 1, true) then
   ---To standardize this, we convert the drive letter to uppercase.
   ---@param path string full path
   ---@return string: path with uppercase drive letter
-  function normalize(path)
+  or function(path, ...)
     return (
-      string.gsub(vim.fs.normalize(path), '^([a-zA-Z]):', function(c)
+      string.gsub(vim.fs.normalize(path, ...), '^([a-zA-Z]):', function(c)
         return c:upper() .. ':'
       end)
     )
   end
-end
 
 ---Get list of dropbar symbols of the parent directories of given buffer
 ---@param buf integer buffer handler
@@ -232,8 +231,8 @@ end
 local function get_symbols(buf, win, _)
   local path_opts = configs.opts.sources.path
   local symbols = {} ---@type dropbar_symbol_t[]
-  local current_path = normalize((vim.api.nvim_buf_get_name(buf)))
-  local root = normalize(configs.eval(path_opts.relative_to, buf, win))
+  local current_path = fs_normalize((vim.api.nvim_buf_get_name(buf)))
+  local root = fs_normalize(configs.eval(path_opts.relative_to, buf, win))
   while
     #symbols < configs.opts.sources.path.max_depth
     and current_path
