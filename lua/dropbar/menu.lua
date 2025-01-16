@@ -394,14 +394,16 @@ function dropbar_menu_t:fill_buf()
     -- Pad lines with spaces to the width of the window
     -- This is to make sure hl-DropBarMenuCurrentContext colors
     -- the entire line
-    table.insert(
-      lines,
-      line
-        .. string.rep(
-          ' ',
-          self._win_configs.width - vim.fn.strdisplaywidth(line)
-        )
-    )
+    -- Also pad the last symbol's name so that cursor is always
+    -- on at least one symbol when inside the menu
+    local width_diff = self._win_configs.width - entry:displaywidth()
+    if width_diff > 0 then
+      local width_pad = string.rep(' ', width_diff)
+      local last_sym = entry.components[#entry.components]
+      last_sym.name = last_sym.name .. width_pad
+      line = line .. width_pad
+    end
+    table.insert(lines, line)
     table.insert(hl_info, entry_hl_info)
     if entry.virt_text then
       table.insert(extmarks, i, entry.virt_text)
