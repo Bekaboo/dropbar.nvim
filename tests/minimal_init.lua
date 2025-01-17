@@ -1,16 +1,16 @@
 vim.opt.rtp:prepend('.')
 
 local data_path = vim.fn.stdpath('data') --[[@as string]]
-local parent_path = vim.fs.normalize('..')
+local parent_path = vim.fn.fnamemodify('..', ':p')
 
 ---Add plugin with given name to nvim runtime path
 ---@param name string
 local function add_to_rtp(name)
-  local plenary_path = unpack(vim.fs.find(name, { path = data_path }))
+  local plugin_path = unpack(vim.fs.find(name, { path = data_path }))
     or unpack(vim.fs.find(name, { path = parent_path }))
 
-  if plenary_path then
-    vim.opt.rtp:prepend(plenary_path)
+  if plugin_path then
+    vim.opt.rtp:prepend(plugin_path)
   else
     error(string.format('%s not found', name))
   end
