@@ -1390,6 +1390,7 @@ should be self-explanatory:
   | DropBarIconKindString              | `{ link = '@string' }`                     |
   | DropBarIconKindStruct              | `{ link = 'Type' }`                        |
   | DropBarIconKindSwitchStatement     | `{ link = 'Conditional' }`                 |
+  | DropBarIconKindTable               | `{ link = 'DropBarIconKindDefault' }`      |
   | DropBarIconKindTerminal            | `{ link = 'Number' }`                      |
   | DropBarIconKindType                | `{ link = 'Type' }`                        |
   | DropBarIconKindTypeParameter       | `{ link = 'DropBarIconKindDefault' }`      |
