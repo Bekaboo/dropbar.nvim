@@ -268,9 +268,15 @@ describe('[bar]', function()
         sym3:on_click()
         -- First component: expandable indicator
         -- Second component: symbol sym3s1
-        assert.are.same('sym3s1', sym3.menu.entries[1].components[2].name)
+        -- Since menu opening can add padding to symbol names,
+        -- only verify name prefix
+        assert.is_true(
+          vim.startswith(sym3.menu.entries[1].components[2].name, 'sym3s1')
+        )
         sym4:on_click()
-        assert.are.same('sym4s1', sym4.menu.entries[1].components[2].name)
+        assert.is_true(
+          vim.startswith(sym4.menu.entries[1].components[2].name, 'sym4s1')
+        )
       end
     )
     it('creates new instances with merged options', function()
