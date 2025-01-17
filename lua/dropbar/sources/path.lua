@@ -5,32 +5,32 @@ local bar = require('dropbar.bar')
 ---@param sym dropbar_symbol_t
 ---@return nil
 local function preview(sym)
-  -- Cannot preview a symbol without corresponding source window
-  if not sym.win or not vim.api.nvim_win_is_valid(sym.win) then
+  if not configs.eval(configs.opts.sources.path.preview, sym.data.path) then
     return
   end
 
-  if not configs.eval(configs.opts.sources.path.preview, sym.data.path) then
+  -- Cannot preview a symbol without corresponding source window
+  local preview_win = sym.win
+  if not preview_win or not vim.api.nvim_win_is_valid(preview_win) then
     return
+  end
+
+  local preview_buf = sym.data.preview_buf
+  if not preview_buf or not vim.api.nvim_buf_is_valid(preview_buf) then
+    preview_buf = vim.api.nvim_create_buf(false, true)
+    sym.data.preview_buf = preview_buf
+    vim.bo[preview_buf].bufhidden = 'wipe'
+    vim.bo[preview_buf].filetype = 'dropbar_preview'
+    vim.api.nvim_win_call(sym.win, function()
+      vim.api.nvim_set_current_buf(preview_buf)
+    end)
   end
 
   -- Follow symlinks
   local path = vim.F.npcall(vim.uv.fs_realpath, sym.data.path) or ''
 
-  if
-    not sym.data.preview_buf
-    or not vim.api.nvim_buf_is_valid(sym.data.preview_buf)
-  then
-    sym.data.preview_buf = vim.api.nvim_create_buf(false, true)
-    vim.bo[sym.data.preview_buf].bufhidden = 'wipe'
-    vim.bo[sym.data.preview_buf].filetype = 'dropbar_preview'
-    vim.api.nvim_win_call(sym.win, function()
-      vim.api.nvim_set_current_buf(sym.data.preview_buf)
-    end)
-  end
-
   -- Preview buffer already contains contents of file to preview
-  local preview_bufname = vim.fn.bufname(sym.data.preview_buf)
+  local preview_bufname = vim.fn.bufname(preview_buf)
   local preview_bufnewname = 'dropbar_preview://' .. path
   if preview_bufname == preview_bufnewname then
     return
@@ -40,11 +40,13 @@ local function preview(sym)
   local preview_win_height = vim.api.nvim_win_get_height(sym.win)
   local preview_win_width = vim.api.nvim_win_get_width(sym.win)
   local add_syntax = false
+  local msg_shown = false
 
-  ---Generate lines for preview window when preview is not available
+  ---Generate lines to show a message when preview is not available
   ---@param msg string
   ---@return string[]
-  local function nopreview(msg)
+  local function preview_msg(msg)
+    msg_shown = true
     local lines = {}
     local fillchar = vim.opt_local.fillchars:get().diff or '-'
     local msglen = #msg + 4
@@ -70,47 +72,71 @@ local function preview(sym)
     return lines
   end
 
-  vim.api.nvim_buf_set_name(sym.data.preview_buf, preview_bufnewname)
-  vim.api.nvim_buf_call(sym.data.preview_buf, function()
-    vim.treesitter.stop(sym.data.preview_buf)
+  vim.api.nvim_buf_set_name(preview_buf, preview_bufnewname)
+  vim.api.nvim_buf_call(preview_buf, function()
+    vim.treesitter.stop(preview_buf)
     vim.bo.syntax = ''
   end)
 
-  local lines = not stat and nopreview('Invalid path')
-    or stat.type == 'directory' and vim.fn.systemlist(
-      'ls -lhA ' .. vim.fn.shellescape(path)
-    )
-    or stat.size == 0 and nopreview('Empty file')
-    or not vim.fn.system({ 'file', path }):match('text') and nopreview(
-      'Binary file'
-    )
-    or (function()
-        add_syntax = true
-        return true
-      end)()
-      and vim
-        .iter(io.lines(path))
-        :take(preview_win_height)
-        :map(function(line)
-          return (line:gsub('\x0d$', ''))
-        end)
-        :totable()
+  local lines = (function()
+    if not stat then
+      return preview_msg('Invalid path')
+    end
+    if stat.type == 'directory' then
+      return vim.fn.systemlist('ls -lhA ' .. vim.fn.shellescape(path))
+    end
+    if stat.size == 0 then
+      return preview_msg('Empty file')
+    end
+    if not vim.fn.system({ 'file', path }):match('text') then
+      return preview_msg('Binary file')
+    end
 
-  vim.bo[sym.data.preview_buf].modifiable = true
-  vim.api.nvim_buf_set_lines(sym.data.preview_buf, 0, -1, false, {})
-  vim.api.nvim_buf_set_lines(sym.data.preview_buf, 0, -1, false, lines)
-  vim.bo[sym.data.preview_buf].modifiable = false
+    add_syntax = true
+    return vim
+      .iter(io.lines(path))
+      :take(preview_win_height)
+      :map(function(line)
+        return (line:gsub('\x0d$', ''))
+      end)
+      :totable()
+  end)()
 
-  if not add_syntax then
-    return
+  vim.bo[preview_buf].modifiable = true
+  vim.api.nvim_buf_set_lines(preview_buf, 0, -1, false, {})
+  vim.api.nvim_buf_set_lines(preview_buf, 0, -1, false, lines)
+  vim.bo[preview_buf].modifiable = false
+
+  if add_syntax then
+    local ft = vim.filetype.match({
+      buf = preview_buf,
+      filename = path,
+    })
+    if ft and not pcall(vim.treesitter.start, preview_buf, ft) then
+      vim.bo[preview_buf].syntax = ft
+    end
   end
 
-  local ft = vim.filetype.match({
-    buf = sym.data.preview_buf,
-    filename = path,
-  })
-  if ft and not pcall(vim.treesitter.start, sym.data.preview_buf, ft) then
-    vim.bo[sym.data.preview_buf].syntax = ft
+  if msg_shown then
+    vim.api.nvim_win_call(preview_win or 0, function()
+      vim.opt_local.spell = false
+      vim.opt_local.number = false
+      vim.opt_local.relativenumber = false
+      vim.opt_local.signcolumn = 'no'
+      vim.opt_local.foldcolumn = '0'
+      vim.opt_local.statuscolumn = ''
+      vim.opt_local.winbar = ''
+    end)
+  else
+    vim.api.nvim_win_call(preview_win or 0, function()
+      vim.opt_local.spell = vim.go.spell
+      vim.opt_local.number = vim.go.number
+      vim.opt_local.relativenumber = vim.go.relativenumber
+      vim.opt_local.signcolumn = vim.go.signcolumn
+      vim.opt_local.foldcolumn = vim.go.foldcolumn
+      vim.opt_local.statuscolumn = vim.go.statuscolumn
+      vim.opt_local.winbar = vim.go.winbar
+    end)
   end
 end
 
