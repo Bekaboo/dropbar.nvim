@@ -247,6 +247,16 @@ function dropbar_menu_t:del()
   end
 end
 
+---Retrieves the root menu (first menu opened from winbar)
+---@return dropbar_menu_t?
+function dropbar_menu_t:root()
+  local current = self
+  while current and current.prev_menu do
+    current = current.prev_menu
+  end
+  return current
+end
+
 ---Evaluate window configurations
 ---Side effects: update self._win_configs
 ---@return nil
@@ -302,20 +312,6 @@ function dropbar_menu_t:click_at(pos, min_width, n_clicks, button, modifiers)
   if component and component.on_click then
     component:on_click(min_width, n_clicks, button, modifiers)
   end
-end
-
----Retrieves the root window of the menu.
----If `self.prev_menu` is nil then this `self.prev_win`.
----Otherwise, it is the root window of `self.prev_menu`.
----@return integer?
-function dropbar_menu_t:root_win()
-  local current = self
-  local win = self.prev_win
-  while current and current.prev_menu do
-    win = current.prev_menu.prev_win
-    current = current.prev_menu
-  end
-  return win
 end
 
 ---"Click" the component in the dropbar menu

@@ -587,10 +587,7 @@ appearance of the fuzzy finder interface.
           or mouse.column <= 0
           or mouse.winrow > #menu.entries
         then
-          -- Find the root menu
-          while menu and menu.prev_menu do
-            menu = menu.prev_menu
-          end
+          menu = menu:root() --[[@as dropbar_menu_t]]
           if menu then
             menu:finish_preview(true)
             menu:update_hover_hl()
@@ -958,9 +955,9 @@ the symbols:
               }),
               sym:merge({
                 on_click = function()
-                  local current_menu = symbol.menu
-                  while current_menu and current_menu.prev_menu do
-                    current_menu = current_menu.prev_menu
+                  local root_menu = symbol.menu and symbol.menu:root()
+                  if root_menu then
+                    root_menu:close(false)
                   end
                   if current_menu then
                     current_menu:close(false)
@@ -1774,6 +1771,7 @@ Declared and defined in [`lua/dropbar/menu.lua`](lua/dropbar/menu.lua).
 | ------                                                                                                                            | ------                                                                                                                                                                      |
 | `dropbar_menu_t:new(opts: dropbar_menu_t?): dropbar_menu_t`                                                                       | constructor of `dropbar_menu_t`                                                                                                                                             |
 | `dropbar_menu_t:del()`                                                                                                            | destructor of `dropbar_menu_t`                                                                                                                                              |
+| `dropbar_menu_t:root(): dropbar_menu_t?`                                                                                          | get the root menu (menu without `prev_menu`)                                                                                                                                |
 | `dropbar_menu_t:eval_win_configs()`                                                                                               | evaluate window configurations `dropbar_menu_t.win_configs` and store the result in `dropbar_menu_t._win_configs`                                                           |
 | `dropbar_menu_t:get_component_at(pos: integer[], look_ahead: boolean?): dropbar_symbol_t?, { start: integer, end: integer }?`     | get the component<sub>[`dropbar_symbol_t`](#dropbar_symbol_t)</sub> at position `pos` and its range it occupies in the entry it belongs to                                  |
 | `dropbar_menu_t:click_at(pos: integer[], min_width: integer?, n_clicks: integer?, button: string?, modifiers: string?)`           | simulate a click at `pos` in the menu                                                                                                                                       |

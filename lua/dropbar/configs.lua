@@ -236,12 +236,9 @@ M.opts = {
               }),
               sym:merge({
                 on_click = function()
-                  local current_menu = symbol.menu
-                  while current_menu and current_menu.prev_menu do
-                    current_menu = current_menu.prev_menu
-                  end
-                  if current_menu then
-                    current_menu:close(false)
+                  local root_menu = symbol.menu and symbol.menu:root()
+                  if root_menu then
+                    root_menu:close(false)
                   end
                   sym:jump()
                 end,
@@ -649,10 +646,7 @@ M.opts = {
           or mouse.column <= 0
           or mouse.winrow > (#menu.entries + 1)
         then
-          -- Find the root menu
-          while menu and menu.prev_menu do
-            menu = menu.prev_menu
-          end
+          menu = menu:root() --[[@as dropbar_menu_t]]
           if menu then
             menu:finish_preview(true)
             menu:update_hover_hl()
