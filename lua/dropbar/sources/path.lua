@@ -142,12 +142,15 @@ end
 
 ---@param sym dropbar_symbol_t
 local function preview_restore_view(sym)
-  if not sym.win then
+  if not sym.win or not sym.entry or not sym.entry.menu then
     return
   end
-  if sym.entry.menu.prev_buf then
-    vim.api.nvim_win_set_buf(sym.win, sym.entry.menu.prev_buf)
+
+  local source_buf = sym.entry.menu:root().prev_buf
+  if source_buf and vim.api.nvim_buf_is_valid(source_buf) then
+    vim.api.nvim_win_set_buf(sym.win, source_buf)
   end
+
   if sym.view then
     vim.api.nvim_win_call(sym.win, function()
       vim.fn.winrestview(sym.view)
