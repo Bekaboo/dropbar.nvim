@@ -14,6 +14,9 @@ local function preview(sym)
     return
   end
 
+  -- Follow symlinks
+  local path = vim.F.npcall(vim.uv.fs_realpath, sym.data.path) or ''
+
   if
     not sym.data.preview_buf
     or not vim.api.nvim_buf_is_valid(sym.data.preview_buf)
@@ -28,12 +31,12 @@ local function preview(sym)
 
   -- Preview buffer already contains contents of file to preview
   local preview_bufname = vim.fn.bufname(sym.data.preview_buf)
-  local preview_bufnewname = 'dropbar_preview://' .. sym.data.path
+  local preview_bufnewname = 'dropbar_preview://' .. path
   if preview_bufname == preview_bufnewname then
     return
   end
 
-  local stat = sym.data.path and vim.uv.fs_stat(sym.data.path)
+  local stat = path and vim.uv.fs_stat(path)
   local preview_win_height = vim.api.nvim_win_get_height(sym.win)
   local preview_win_width = vim.api.nvim_win_get_width(sym.win)
   local add_syntax = false
@@ -73,20 +76,20 @@ local function preview(sym)
     vim.bo.syntax = ''
   end)
 
-  local lines = not stat and nopreview('Not a file or directory')
+  local lines = not stat and nopreview('Invalid path')
     or stat.type == 'directory' and vim.fn.systemlist(
-      'ls -lhA ' .. vim.fn.shellescape(sym.data.path)
+      'ls -lhA ' .. vim.fn.shellescape(path)
     )
     or stat.size == 0 and nopreview('Empty file')
-    or not vim.fn.system({ 'file', sym.data.path }):match('text') and nopreview(
-      'Binary file, no preview available'
+    or not vim.fn.system({ 'file', path }):match('text') and nopreview(
+      'Binary file'
     )
     or (function()
         add_syntax = true
         return true
       end)()
       and vim
-        .iter(io.lines(sym.data.path))
+        .iter(io.lines(path))
         :take(preview_win_height)
         :map(function(line)
           return (line:gsub('\x0d$', ''))
@@ -104,7 +107,7 @@ local function preview(sym)
 
   local ft = vim.filetype.match({
     buf = sym.data.preview_buf,
-    filename = sym.data.path,
+    filename = path,
   })
   if ft and not pcall(vim.treesitter.start, sym.data.preview_buf, ft) then
     vim.bo[sym.data.preview_buf].syntax = ft
