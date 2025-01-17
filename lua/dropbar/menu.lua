@@ -399,8 +399,11 @@ function dropbar_menu_t:fill_buf()
     local width_diff = self._win_configs.width - entry:displaywidth()
     if width_diff > 0 then
       local width_pad = string.rep(' ', width_diff)
-      local last_sym = entry.components[#entry.components]
-      last_sym.name = last_sym.name .. width_pad
+      local num_components = #entry.components
+      if num_components > 0 then
+        local last_sym = entry.components[num_components]
+        last_sym.name = last_sym.name .. width_pad
+      end
       line = line .. width_pad
     end
     table.insert(lines, line)
