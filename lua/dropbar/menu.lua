@@ -974,17 +974,17 @@ function dropbar_menu_t:fuzzy_find_open(opts)
   vim.bo[buf].filetype = 'dropbar_menu_fzf'
   vim.bo[buf].bufhidden = 'wipe'
 
-  local win_config = self:merge_win_configs(
+  local win_configs = self:merge_win_configs(
     self.win_configs,
     self.fzf_win_configs,
     opts.win_configs
   )
 
   -- don't show title in the fzf window
-  win_config.title = nil
-  win_config.title_pos = nil
+  win_configs.title = nil
+  win_configs.title_pos = nil
 
-  local win = vim.api.nvim_open_win(buf, false, win_config)
+  local win = vim.api.nvim_open_win(buf, false, win_configs)
   vim.wo[win].stc = opts.prompt
   _G.dropbar.menus[win] = self
   self.fzf_state = utils.fzf.fzf_state_t:new(self, win, opts)
