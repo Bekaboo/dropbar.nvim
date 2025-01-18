@@ -93,13 +93,7 @@ local function preview(sym)
     end
 
     add_syntax = true
-    return vim
-      .iter(io.lines(path))
-      :take(preview_win_height)
-      :map(function(line)
-        return (line:gsub('\x0d$', ''))
-      end)
-      :totable()
+    return vim.fn.readfile(path, '', preview_win_height)
   end)()
 
   vim.bo[preview_buf].modifiable = true
