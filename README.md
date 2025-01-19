@@ -832,6 +832,7 @@ used by the plugin:
       String = '󰉾 ',
       Struct = ' ',
       SwitchStatement = '󰺟 ',
+      Table = '󰅩 ',
       Terminal = ' ',
       Text = ' ',
       Type = ' ',
