@@ -1,4 +1,5 @@
 local dropbar = require('dropbar')
+local configs = require('dropbar.configs')
 local bar = require('dropbar.bar')
 local menu = require('dropbar.menu')
 local spy = require('luassert.spy')
@@ -106,7 +107,7 @@ describe('[bar]', function()
   before_each(function()
     winbar =
       _G.dropbar.bars[vim.api.nvim_get_current_buf()][vim.api.nvim_get_current_win()]
-    vim.wait(10, winbar:update())
+    vim.wait(configs.opts.bar.update_debounce * 2, winbar:update())
     sym1 = winbar.components[1]
     sym2 = winbar.components[2]
     sym3 = winbar.components[3]
