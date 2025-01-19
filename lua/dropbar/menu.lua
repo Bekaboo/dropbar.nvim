@@ -392,15 +392,14 @@ function dropbar_menu_t:fill_buf()
     -- the entire line
     -- Also pad the last symbol's name so that cursor is always
     -- on at least one symbol when inside the menu
-    local width_diff = self._win_configs.width - entry:displaywidth()
-    if width_diff > 0 then
-      local width_pad = string.rep(' ', width_diff)
-      local num_components = #entry.components
-      if num_components > 0 then
-        local last_sym = entry.components[num_components]
-        last_sym.name = last_sym.name .. width_pad
+    local n = self._win_configs.width - entry:displaywidth()
+    if n > 0 then
+      local pad = string.rep(' ', n)
+      local last_sym = entry.components[#entry.components]
+      if last_sym then
+        last_sym.name = last_sym.name .. pad
       end
-      line = line .. width_pad
+      line = line .. pad
     end
     table.insert(lines, line)
     table.insert(hl_info, entry_hl_info)
