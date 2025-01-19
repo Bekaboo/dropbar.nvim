@@ -319,7 +319,7 @@ M.opts = {
     -- If you encounter performance issues when scrolling the window, try
     -- setting this option to a number slightly larger than
     -- 1000 / key_repeat_rate
-    update_debounce = 0,
+    update_debounce = 32,
     update_events = {
       win = {
         'CursorMoved',

@@ -296,7 +296,7 @@ winbar:
   - If you encounter performance issues when scrolling the window, try
     setting this option to a number slightly larger than
     `1000 / key_repeat_rate`
-  - Default: `0`
+  - Default: `32`
 - `opts.bar.update_events.win`: `string[]`
   - List of events that should trigger an update on the dropbar attached to
     a single window
