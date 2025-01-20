@@ -1,5 +1,37 @@
 # Changelog
 
+## [11.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v10.0.0...v11.0.0) (2025-01-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* **configs:** increase default winbar update debounce to 32
+
+### Features
+
+* **configs:** add support for toml tables ([977117d](https://github.com/Bekaboo/dropbar.nvim/commit/977117d790849869e5f998a66916bdb606802a13))
+* **menu:** add new method `root()` to find root menu ([7b8b13a](https://github.com/Bekaboo/dropbar.nvim/commit/7b8b13a4ef2d074c6e32519e6914b3e9090156a1))
+* **sources.path:** disable win decorations when showing preview msg ([415701d](https://github.com/Bekaboo/dropbar.nvim/commit/415701dbada9f3278652ad6fd1ed4e1c3506e0ca))
+* **sources.path:** follow symlinks when preview ([f19d5d2](https://github.com/Bekaboo/dropbar.nvim/commit/f19d5d22cd4f6bb85fd02075300b47b5962926b8))
+* **sources.path:** support special bufs starting with `xxx://` ([#211](https://github.com/Bekaboo/dropbar.nvim/issues/211)) ([de3125a](https://github.com/Bekaboo/dropbar.nvim/commit/de3125ac765653788e5054c6e2df50a0f2191585))
+
+
+### Bug Fixes
+
+* Check components list length before padding. ([0a37764](https://github.com/Bekaboo/dropbar.nvim/commit/0a37764d845f847af16f2074aa893273088a205c))
+* **menu:** handle menu entries without components ([0a37764](https://github.com/Bekaboo/dropbar.nvim/commit/0a37764d845f847af16f2074aa893273088a205c))
+* **sources.path:** source buf not restored when mouse moves off sub menu ([d3ddf49](https://github.com/Bekaboo/dropbar.nvim/commit/d3ddf492bb68c6c756b2f2dd8864146c95bed68a))
+* **sources.treesitter:** error getting treesitter node ([80538f5](https://github.com/Bekaboo/dropbar.nvim/commit/80538f5eee685c801d3049f6f42867f1ca33de4f))
+* Wrap `vim.treesitter.get_node()` with `vim.F.npcall()`. ([80538f5](https://github.com/Bekaboo/dropbar.nvim/commit/80538f5eee685c801d3049f6f42867f1ca33de4f))
+
+
+### Performance Improvements
+
+* **configs:** increase default winbar update debounce to 32 ([289c4c3](https://github.com/Bekaboo/dropbar.nvim/commit/289c4c3283656a4f9fa837a881476fc6b8fd5b8d))
+* **sources.path:** only load visible lines when preview ([51047f5](https://github.com/Bekaboo/dropbar.nvim/commit/51047f54a4535e775979272bfbeb685a6d229654))
+* **sources.path:** stop treesitter before setting preview buf lines ([9f6a19a](https://github.com/Bekaboo/dropbar.nvim/commit/9f6a19aad3069c346738fd66d2f2679c3bb55e75))
+* **sources.path:** use faster `readfile()` when preview ([d2792fc](https://github.com/Bekaboo/dropbar.nvim/commit/d2792fc7c163722b7d3607c9ad3aeb7192e009e4))
+
 ## [10.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v9.0.2...v10.0.0) (2024-12-28)
 
 
