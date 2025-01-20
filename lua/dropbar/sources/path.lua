@@ -83,7 +83,7 @@ local function preview(sym)
       return preview_msg('Invalid path')
     end
     if stat.type == 'directory' then
-      return vim.fn.systemlist('ls -lhA ' .. vim.fn.shellescape(path))
+      return vim.fn.systemlist({ 'ls', '-lhA', path })
     end
     if stat.size == 0 then
       return preview_msg('Empty file')
