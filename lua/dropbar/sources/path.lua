@@ -88,9 +88,7 @@ local function preview(sym)
     if stat.size == 0 then
       return preview_msg('Empty file')
     end
-    if
-      not vim.fn.system({ 'file', vim.fn.shellescape(path) }):match('text')
-    then
+    if not vim.fn.system({ 'file', path }):match('text') then
       return preview_msg('Binary file')
     end
 
