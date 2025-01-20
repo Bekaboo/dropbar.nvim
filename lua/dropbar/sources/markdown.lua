@@ -183,7 +183,7 @@ local function convert(symbol, symbols, list_idx, buf, win)
             character = 0,
           },
           ['end'] = {
-            line = symbol.lnum - 1,
+            line = vim.api.nvim_buf_line_count(buf),
             character = 0,
           },
         }
