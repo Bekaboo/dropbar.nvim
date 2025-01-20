@@ -182,7 +182,7 @@ local function convert(path, buf, win)
     data = { path = path },
     ---Override the default jump function
     jump = function(self)
-      vim.cmd.edit(self.data.path)
+      vim.cmd.edit(vim.fn.fnameescape(self.data.path))
       vim.cmd.normal({ "m'", bang = true })
     end,
     preview = preview,
