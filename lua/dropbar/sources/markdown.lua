@@ -56,15 +56,18 @@ setmetatable(markdown_heading_buf_symbols, {
 
 ---Parse markdown file and update markdown heading symbols
 ---Side effect: change markdown_heading_buf_symbols
----@param buf integer buffer handler
----@param lnum_end integer update symbols backward from this line (1-based, inclusive)
+---@param buf? integer buffer handler
+---@param lnum_end? integer update symbols backward from this line (1-based, inclusive), default to cursor line number
 ---@param incremental? boolean incremental parsing
 ---@return nil
 local function parse_buf(buf, lnum_end, incremental)
+  buf = buf or vim.api.nvim_get_current_buf()
+  lnum_end = lnum_end or vim.fn.line('.')
   if not vim.api.nvim_buf_is_valid(buf) then
     markdown_heading_buf_symbols[buf] = nil
     return
   end
+
   local symbols_parsed = markdown_heading_buf_symbols[buf]
   local lnum_start = symbols_parsed['end'].lnum
   if not incremental then
@@ -206,23 +209,24 @@ end
 ---@param buf integer buffer handler
 ---@return nil
 local function attach(buf)
-  if vim.b[buf].dropbar_markdown_heading_parser_attached then
+  if
+    not vim.api.nvim_buf_is_valid(buf)
+    or vim.bo[buf].ft ~= 'markdown'
+    or vim.b[buf].dropbar_markdown_heading_parser_attached
+  then
     return
   end
-  local function _update()
-    local cursor = vim.api.nvim_win_get_cursor(0)
-    parse_buf(buf, cursor[1])
-  end
-  vim.b[buf].dropbar_markdown_heading_parser_attached = vim.api.nvim_create_autocmd(
-    configs.opts.bar.update_events.buf,
-    {
+
+  vim.b[buf].dropbar_markdown_heading_parser_attached =
+    vim.api.nvim_create_autocmd(configs.opts.bar.update_events.buf, {
       desc = 'Update markdown heading symbols on buffer change.',
       group = groupid,
       buffer = buf,
-      callback = _update,
-    }
-  )
-  _update()
+      callback = function(info)
+        parse_buf(info.buf)
+      end,
+    })
+  parse_buf(buf)
 end
 
 ---Detach markdown heading parser from buffer
