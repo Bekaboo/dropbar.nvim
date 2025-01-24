@@ -51,6 +51,7 @@ function _G.dropbar.get_dropbar_str()
     '[dropbar.nvim] _G.dropbar.get_dropbar_str() is deprecated, use _G.dropbar() instead',
     vim.log.levels.WARN
   )
+  return ''
 end
 
 ---Setup dropbar

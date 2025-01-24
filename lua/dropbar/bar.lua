@@ -663,6 +663,7 @@ function dropbar_t.__tostring()
     '[dropbar.nvim] tostring(dropbar_t) is deprecated, use dropbar_t() instead',
     vim.log.levels.WARN
   )
+  return ''
 end
 
 ---Get the string representation of the dropbar
