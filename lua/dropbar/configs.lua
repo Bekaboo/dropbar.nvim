@@ -371,6 +371,7 @@ M.opts = {
   menu = {
     -- When on, preview the symbol under the cursor on CursorMoved
     preview = true,
+    hover = true,
     -- When on, automatically set the cursor to the closest previous/next
     -- clickable component in the direction of cursor movement on CursorMoved
     quick_navigation = true,
@@ -427,7 +428,9 @@ M.opts = {
           return
         end
         local mouse = vim.fn.getmousepos()
-        utils.menu.update_hover_hl(mouse)
+        if M.opts.menu.hover then
+          utils.menu.update_hover_hl(mouse)
+        end
         if M.opts.menu.preview then
           utils.menu.update_preview(mouse)
         end
@@ -650,14 +653,18 @@ M.opts = {
           menu = menu:root() --[[@as dropbar_menu_t]]
           if menu then
             menu:finish_preview(true)
-            menu:update_hover_hl()
+            if M.opts.menu.hover then
+              menu:update_hover_hl()
+            end
           end
           return
         end
         if M.opts.menu.preview then
           menu:preview_symbol_at({ mouse.line, mouse.column - 1 }, true)
         end
-        menu:update_hover_hl({ mouse.line, mouse.column - 1 })
+        if M.opts.menu.hover then
+          menu:update_hover_hl({ mouse.line, mouse.column - 1 })
+        end
       end,
       ['<Up>'] = api.fuzzy_find_prev,
       ['<Down>'] = api.fuzzy_find_next,

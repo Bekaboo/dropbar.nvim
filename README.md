@@ -389,6 +389,10 @@ menu:
 - `opts.menu.preview`: `boolean`
   - Whether to enable previewing for menu entries
   - Default: `true`
+- `opts.menu.hover`: `boolean`
+  - Whether to highlight the symbol under the cursor
+  - This feature requires `'mousemoveevent'` to be enabled
+  - Default: `true`
 - `opts.menu.keymaps`: `table<string, function|string|table<string, function>|table<string, string>>`
   - Buffer-local keymaps in the menu
   - Use `<key> = <function|string>` to map a key in normal mode in the menu
@@ -435,7 +439,9 @@ menu:
           return
         end
         local mouse = vim.fn.getmousepos()
-        utils.menu.update_hover_hl(mouse)
+        if M.opts.menu.hover then
+          utils.menu.update_hover_hl(mouse)
+        end
         if M.opts.menu.preview then
           utils.menu.update_preview(mouse)
         end
@@ -590,14 +596,18 @@ appearance of the fuzzy finder interface.
           menu = menu:root() --[[@as dropbar_menu_t]]
           if menu then
             menu:finish_preview(true)
-            menu:update_hover_hl()
+            if M.opts.menu.hover then
+              menu:update_hover_hl()
+            end
           end
           return
         end
         if M.opts.menu.preview then
           menu:preview_symbol_at({ mouse.line, mouse.column - 1 }, true)
         end
-        menu:update_hover_hl({ mouse.line, mouse.column - 1 })
+        if M.opts.menu.hover then
+          menu:update_hover_hl({ mouse.line, mouse.column - 1 })
+        end
       end,
       ['<Up>'] = api.fuzzy_find_prev,
       ['<Down>'] = api.fuzzy_find_next,
