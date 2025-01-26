@@ -252,35 +252,14 @@ M.opts = {
     end,
     preview = {
       ---Reorient the preview window on previewing a new symbol
-      ---@param _ integer source window id, ignored
-      ---@param range {start: {line: integer}, end: {line: integer}} 0-indexed
-      reorient = function(_, range)
-        local invisible = range['end'].line - vim.fn.line('w$') + 1
-        if invisible > 0 then
-          local view = vim.fn.winsaveview() --[[@as vim.fn.winrestview.dict]]
-          view.topline = math.min(
-            view.topline + invisible,
-            math.max(1, range.start.line - vim.wo.scrolloff + 1)
-          )
-          vim.fn.winrestview(view)
-        end
-      end,
+      ---@param win integer source window id, ignored
+      ---@param range { start: { line: integer }, end: { line: integer } } 0-indexed
+      reorient = function(win, range) end, -- luacheck: ignore 212
     },
     jump = {
       ---@param win integer source window id
-      ---@param range {start: {line: integer}, end: {line: integer}} 0-indexed
-      reorient = function(win, range)
-        local view = vim.fn.winsaveview()
-        local win_height = vim.api.nvim_win_get_height(win)
-        local topline = range.start.line - math.floor(win_height / 4)
-        if
-          topline > view.topline
-          and topline + win_height < vim.fn.line('$')
-        then
-          view.topline = topline
-          vim.fn.winrestview(view)
-        end
-      end,
+      ---@param range { start: { line: integer }, end: { line: integer } } 0-indexed
+      reorient = function(win, range) end, -- luacheck: ignore 212
     },
   },
   bar = {
