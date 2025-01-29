@@ -536,7 +536,7 @@ function dropbar_t:pick(idx)
       local icon_width = vim.fn.strdisplaywidth(component.icon)
       component:swap_field(
         'icon',
-        shortcut .. string.rep(' ', icon_width - #shortcut)
+        shortcut .. string.rep(' ', string.max(icon_width - #shortcut, 1))
       )
       component:swap_field('icon_hl', 'DropBarIconUIPickPivot')
     end
