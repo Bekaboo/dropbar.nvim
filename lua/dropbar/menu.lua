@@ -596,6 +596,8 @@ function dropbar_menu_t:update_scrollbar()
       border = 'none',
       relative = 'win',
       win = self.win,
+      focusable = false,
+      noautocmd = true,
       zindex = menu_win_configs.zindex,
     }
 
