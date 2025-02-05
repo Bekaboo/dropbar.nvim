@@ -513,6 +513,16 @@ function dropbar_menu_t:make_buf()
     buffer = self.buf,
     callback = function()
       self:update_hover_hl()
+
+      -- BufLeave event fires BEFORE actually switching buffers, so schedule a
+      -- check to run after buffer switch is complete
+      -- If we've switched to a non-menu buffer, close all menus starting from
+      -- root, this ensures proper cleanup when leaving menu navigation
+      vim.schedule(function()
+        if vim.bo.ft ~= 'dropbar_menu' then
+          self:root():close()
+        end
+      end)
     end,
   })
 end
