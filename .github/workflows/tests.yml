@@ -9,7 +9,7 @@ jobs:
       matrix:
         include:
           - os: ubuntu-22.04
-            release-build: nvim-linux64.tar.gz
+            release-build: nvim-linux-x86_64.tar.gz
             version: nightly
           - os: macos-13
             release-build: nvim-macos-x86_64.tar.gz
