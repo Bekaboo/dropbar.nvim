@@ -515,15 +515,6 @@ function dropbar_menu_t:make_buf()
       self:update_hover_hl()
     end,
   })
-  vim.api.nvim_create_autocmd('WinLeave', {
-    group = groupid,
-    buffer = self.buf,
-    callback = function()
-      if vim.bo.ft ~= 'winbar_menu' then
-        self:close()
-      end
-    end,
-  })
 end
 
 ---Open the popup window with win configs and opts,
