@@ -519,7 +519,7 @@ function dropbar_menu_t:make_buf()
       -- If we've switched to a non-menu buffer, close all menus starting from
       -- root, this ensures proper cleanup when leaving menu navigation
       vim.schedule(function()
-        if vim.bo.ft ~= 'dropbar_menu' then
+        if vim.bo.ft ~= 'dropbar_menu' and vim.bo.ft ~= 'dropbar_menu_fzf' then
           self:root():close()
         end
       end)
