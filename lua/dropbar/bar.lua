@@ -536,7 +536,9 @@ function dropbar_t:pick(idx)
       local icon_width = vim.fn.strdisplaywidth(component.icon)
       component:swap_field(
         'icon',
-        shortcut .. string.rep(' ', icon_width - #shortcut)
+        -- Add at least 1 space after winbar shortcut pivots, see
+        -- https://github.com/Bekaboo/dropbar.nvim/pull/218
+        shortcut .. string.rep(' ', math.max(1, icon_width - #shortcut))
       )
       component:swap_field('icon_hl', 'DropBarIconUIPickPivot')
     end
