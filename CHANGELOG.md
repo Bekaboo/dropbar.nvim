@@ -1,5 +1,47 @@
 # Changelog
 
+## [12.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v11.0.0...v12.0.0) (2025-02-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* **configs:** don't reorient on jump or preview by default
+
+### Features
+
+* **configs:** add new option `opts.menu.hover` ([36eca19](https://github.com/Bekaboo/dropbar.nvim/commit/36eca199222dd2840e6a197f53f7f83ad514de0c))
+
+
+### Bug Fixes
+
+* avoid triggering menu close when entering fzf input window ([3afce85](https://github.com/Bekaboo/dropbar.nvim/commit/3afce85516c25823d5a1590f73ec19fe8553e2eb)), closes [#223](https://github.com/Bekaboo/dropbar.nvim/issues/223)
+* **bar:** add at least 1 space after shortcut pivots ([#218](https://github.com/Bekaboo/dropbar.nvim/issues/218)) ([05d5fdc](https://github.com/Bekaboo/dropbar.nvim/commit/05d5fdc5a05c42b9741d21085da3f222f87c1467))
+* **init,bar:** return empty string in deprecated functions ([f7b4958](https://github.com/Bekaboo/dropbar.nvim/commit/f7b4958553e01bbe8bc995d1e45e44c5981bd0c1))
+* **menu:** menu entries wrapped ([#220](https://github.com/Bekaboo/dropbar.nvim/issues/220)) ([f11b273](https://github.com/Bekaboo/dropbar.nvim/commit/f11b27344dc3675cdaeffa9e1e5cab0442abb0fa))
+* **menu:** menu not closed on leave ([9729526](https://github.com/Bekaboo/dropbar.nvim/commit/97295266ecb22597737b6022e6ce462d8dc9b6ad))
+* **menu:** menu not closed on leave ([#222](https://github.com/Bekaboo/dropbar.nvim/issues/222)) ([c824f03](https://github.com/Bekaboo/dropbar.nvim/commit/c824f033d0e6b3a4cce550d7a767a516b99cee56))
+* **menu:** scrollbar is focusable ([e53d047](https://github.com/Bekaboo/dropbar.nvim/commit/e53d0475f161f518c8937d466915838148fdc686))
+* **sources.markdown:** last section wrong range ([f713778](https://github.com/Bekaboo/dropbar.nvim/commit/f7137785ed3ddce31d1e2837dc13792d24d217a8))
+* **sources.path:** escape paths in `vim.fn.system()` call ([3312fb1](https://github.com/Bekaboo/dropbar.nvim/commit/3312fb14832f26ce4ad185d727cd542454429863))
+* **sources.path:** properly escape special chars in files when edit ([f6ff378](https://github.com/Bekaboo/dropbar.nvim/commit/f6ff3785fbcf856c5b828ac1ac849172a8e6142a))
+* The last section does not have a following section to upate its ([f713778](https://github.com/Bekaboo/dropbar.nvim/commit/f7137785ed3ddce31d1e2837dc13792d24d217a8))
+
+
+### Performance Improvements
+
+* **sources.markdown:** don't update in insert mode by default ([dcb1b81](https://github.com/Bekaboo/dropbar.nvim/commit/dcb1b81f997050735e196e033156a9d8f44197f8))
+
+
+### Reverts
+
+* "fix(menu): menu not closed on leave" ([0a152fd](https://github.com/Bekaboo/dropbar.nvim/commit/0a152fd7923bce65a85b56dd9e4938148b580d2f))
+* "fix(sources.path): escape paths in `vim.fn.system()` call" ([0139787](https://github.com/Bekaboo/dropbar.nvim/commit/0139787b21426f300db54dd5bb986c2c8a41f16a))
+
+
+### Code Refactoring
+
+* **configs:** don't reorient on jump or preview by default ([b27bb03](https://github.com/Bekaboo/dropbar.nvim/commit/b27bb0353cb34bded65a8911e7d232b12100568b))
+
 ## [11.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v10.0.0...v11.0.0) (2025-01-19)
 
 
