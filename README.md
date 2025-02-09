@@ -240,7 +240,7 @@ vim.ui.select = require('dropbar.utils.menu').select
 
 For all available options and their default values, see [lua/dropbar/configs.lua](lua/dropbar/configs.lua).
 
-Below are the detailed explaination of the options.
+Below are the detailed explanation of the options.
 
 #### Bar
 
