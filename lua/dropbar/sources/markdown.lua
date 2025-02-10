@@ -11,8 +11,13 @@ local groupid = vim.api.nvim_create_augroup('DropBarMarkdown', {})
 local markdown_heading_symbol_t = {}
 markdown_heading_symbol_t.__index = markdown_heading_symbol_t
 
+---@class markdown_heading_symbol_opts_t
+---@field name? string
+---@field level? integer
+---@field lnum? integer
+
 ---Create a new markdown heading symbol object
----@param opts markdown_heading_symbol_t?
+---@param opts markdown_heading_symbol_opts_t?
 ---@return markdown_heading_symbol_t
 function markdown_heading_symbol_t:new(opts)
   return setmetatable(
