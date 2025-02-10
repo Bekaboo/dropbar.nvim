@@ -33,7 +33,7 @@ function M.range_single(buf, hlgroup, range)
   local ns = vim.api.nvim_create_namespace(hlgroup)
   vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
   if range then
-    vim.hl.range(
+    vim.highlight.range(
       buf,
       ns,
       hlgroup,

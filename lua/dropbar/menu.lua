@@ -412,7 +412,7 @@ function dropbar_menu_t:fill_buf()
   vim.api.nvim_buf_set_lines(self.buf, 0, -1, false, lines)
   for linenr, hl_line_info in ipairs(hl_info) do
     for _, hl_symbol_info in ipairs(hl_line_info) do
-      vim.hl.range(
+      vim.highlight.range(
         self.buf,
         hl_symbol_info.ns or vim.api.nvim_create_namespace('DropBar'),
         hl_symbol_info.hlgroup,
