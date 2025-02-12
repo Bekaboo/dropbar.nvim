@@ -43,8 +43,10 @@ function dropbar_symbol_t:__index(k)
 end
 
 function dropbar_symbol_t:__newindex(k, v)
-  if k == 'name' or k == 'icon' then
+  if type(v) == 'string' then
     v = str_sanitize(v)
+  end
+  if k == 'name' or k == 'icon' then
     self.cache.decorated_str = nil
     self.cache.plain_str = nil
     self.cache.displaywidth = nil
@@ -94,8 +96,11 @@ end
 ---@return dropbar_symbol_t
 function dropbar_symbol_t:new(opts)
   if opts then
-    opts.name = str_sanitize(opts.name)
-    opts.icon = str_sanitize(opts.icon)
+    for k, v in pairs(opts) do
+      if type(v) == 'string' then
+        opts[k] = str_sanitize(v)
+      end
+    end
   else
     opts = {}
   end
