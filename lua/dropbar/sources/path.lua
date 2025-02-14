@@ -83,14 +83,15 @@ local function preview(sym)
 
     local ls, file = { 'ls', '-lhA', path }, { 'file', path }
 
-    if sysname == "Windows_NT" then
-      local git = vim.fn.exepath("git")
+    if sysname == 'Windows_NT' then
+      local git = vim.fn.exepath('git')
 
       if #git == 0 then
-        return preview_msg("`file` & `ls` is required for path preview")
+        return preview_msg('`file` & `ls` is required for path preview')
       end
 
-      local git_cmdtool_path = vim.fs.joinpath(vim.fs.dirname(vim.fs.dirname(git)), "usr/bin")
+      local git_cmdtool_path =
+        vim.fs.joinpath(vim.fs.dirname(vim.fs.dirname(git)), 'usr/bin')
       ls[1] = vim.fs.joinpath(git_cmdtool_path, ls[1])
       file[1] = vim.fs.joinpath(git_cmdtool_path, file[1])
     end
