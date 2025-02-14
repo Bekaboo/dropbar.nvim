@@ -79,16 +79,32 @@ local function preview(sym)
   end)
 
   local lines = (function()
+    local sysname = vim.uv.os_uname().sysname
+
+    local ls, file = { 'ls', '-lhA', path }, { 'file', path }
+
+    if sysname == "Windows_NT" then
+      local git = vim.fn.exepath("git")
+
+      if #git == 0 then
+        return preview_msg("`file` & `ls` is required for path preview")
+      end
+
+      local git_cmdtool_path = vim.fs.joinpath(vim.fs.dirname(vim.fs.dirname(git)), "usr/bin")
+      ls[1] = vim.fs.joinpath(git_cmdtool_path, ls[1])
+      file[1] = vim.fs.joinpath(git_cmdtool_path, file[1])
+    end
+
     if not stat then
       return preview_msg('Invalid path')
     end
     if stat.type == 'directory' then
-      return vim.fn.systemlist({ 'ls', '-lhA', path })
+      return vim.fn.systemlist(ls)
     end
     if stat.size == 0 then
       return preview_msg('Empty file')
     end
-    if not vim.fn.system({ 'file', path }):match('text') then
+    if not vim.fn.system(file):match('text') then
       return preview_msg('Binary file')
     end
 
