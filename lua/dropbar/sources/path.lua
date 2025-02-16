@@ -13,24 +13,21 @@ local function is_windows()
   return _is_windows
 end
 
----Get path to GNU tools shipped with git on Windows
----@param cmd string name of the command
----@return string? nil if cannot find path to command
-local function get_gnu_tool_path(cmd)
+---Use GNU tools shipped with git on Windows
+---@type table<string, string|false>
+local gnu_tool_paths = vim.defaulttable(function(cmd)
   if not is_windows() then
     return cmd
   end
-
   local git = vim.fn.exepath('git')
   if git == '' then
-    return
+    return false
   end
-
   return vim.fs.joinpath(
     vim.fs.joinpath(vim.fs.dirname(vim.fs.dirname(git)), 'usr/bin'),
     cmd
   )
-end
+end)
 
 ---Preview file represented by symbol `sym`
 ---@param sym dropbar_symbol_t
@@ -119,12 +116,12 @@ local function preview(sym)
     end
 
     if stat.type == 'directory' then
-      local ls_cmd = get_gnu_tool_path('ls')
+      local ls_cmd = gnu_tool_paths.ls
       return ls_cmd and vim.fn.systemlist({ ls_cmd, '-lhA', path })
         or preview_msg('`ls` is required to preview directories')
     end
 
-    local file_cmd = get_gnu_tool_path('file')
+    local file_cmd = gnu_tool_paths.file
     local ft = file_cmd and vim.system({ file_cmd, path }):wait().stdout
     if ft and not ft:match('text') then
       return preview_msg('Binary file')
