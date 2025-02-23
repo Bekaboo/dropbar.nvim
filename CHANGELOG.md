@@ -1,5 +1,14 @@
 # Changelog
 
+## [12.0.1](https://github.com/Bekaboo/dropbar.nvim/compare/v12.0.0...v12.0.1) (2025-02-23)
+
+
+### Bug Fixes
+
+* **bar:** error opening menu containing symbols with newline in names ([a851224](https://github.com/Bekaboo/dropbar.nvim/commit/a851224002fde54927a4702b26d7bee7630b9442))
+* **menu,utils:** compat with nvim 0.10 (fix [#224](https://github.com/Bekaboo/dropbar.nvim/issues/224)) ([a623911](https://github.com/Bekaboo/dropbar.nvim/commit/a6239111f2988cf8789cabd89c48114fb3f8dc90))
+* **sources.path:** path preview on Windows ([#227](https://github.com/Bekaboo/dropbar.nvim/issues/227)) ([4a1c78e](https://github.com/Bekaboo/dropbar.nvim/commit/4a1c78eb0125412897005621b94d7bd44ac37592))
+
 ## [12.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v11.0.0...v12.0.0) (2025-02-05)
 
 
