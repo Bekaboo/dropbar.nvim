@@ -111,14 +111,14 @@ local function preview(sym)
       return preview_msg('Invalid path')
     end
 
-    if stat.size == 0 then
-      return preview_msg('Empty file')
-    end
-
     if stat.type == 'directory' then
       local ls_cmd = gnu_tool_paths.ls
       return ls_cmd and vim.fn.systemlist({ ls_cmd, '-lhA', path })
         or preview_msg('`ls` is required to preview directories')
+    end
+
+    if stat.size == 0 then
+      return preview_msg('Empty file')
     end
 
     local file_cmd = gnu_tool_paths.file
