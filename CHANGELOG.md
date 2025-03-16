@@ -1,5 +1,12 @@
 # Changelog
 
+## [12.0.2](https://github.com/Bekaboo/dropbar.nvim/compare/v12.0.1...v12.0.2) (2025-03-05)
+
+
+### Bug Fixes
+
+* **sources.path:** 'empty file' displayed for directories ([009c214](https://github.com/Bekaboo/dropbar.nvim/commit/009c214b6eadf49ec50fc81055ceb08ca3fcb8e1))
+
 ## [12.0.1](https://github.com/Bekaboo/dropbar.nvim/compare/v12.0.0...v12.0.1) (2025-02-23)
 
 
