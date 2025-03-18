@@ -126,7 +126,7 @@ function M.attach(buf, win, info)
   win = win or vim.api.nvim_get_current_win()
   local configs = require('dropbar.configs')
   if configs.eval(configs.opts.bar.enable, buf, win, info) then
-    vim.wo[win].winbar = '%{%v:lua.dropbar()%}'
+    vim.wo[win][0].winbar = '%{%v:lua.dropbar()%}'
   end
 end
 
