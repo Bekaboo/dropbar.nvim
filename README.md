@@ -781,6 +781,7 @@ used by the plugin:
     ```lua
     {
       Array = '󰅪 ',
+      BlockMappingPair = '󰅩 ',
       Boolean = ' ',
       BreakStatement = '󰙧 ',
       Call = '󰃷 ',
@@ -1322,6 +1323,7 @@ should be self-explanatory:
   | DropBarHover                       | `{ link = 'Visual' }`                      |
   | DropBarIconKindDefault             | `{ link = 'Special' }`                     |
   | DropBarIconKindArray               | `{ link = 'Operator' }`                    |
+  | DropBarIconKindBlockMappingPair    | `{ link = 'DropBarIconKindDefault' }`      |
   | DropBarIconKindBoolean             | `{ link = 'Boolean' }`                     |
   | DropBarIconKindBreakStatement      | `{ link = 'Error' }`                       |
   | DropBarIconKindCall                | `{ link = 'Function' }`                    |

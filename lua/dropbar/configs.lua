@@ -59,6 +59,7 @@ M.opts = {
       end,
       symbols = {
         Array = '󰅪 ',
+        BlockMappingPair = '󰅩 ',
         Boolean = ' ',
         BreakStatement = '󰙧 ',
         Call = '󰃷 ',
@@ -697,6 +698,7 @@ M.opts = {
       -- Types listed below must have corresponding icons
       -- in the `icons.kinds.symbols` table for the icon to be shown
       valid_types = {
+        'block_mapping_pair',
         'array',
         'boolean',
         'break_statement',
