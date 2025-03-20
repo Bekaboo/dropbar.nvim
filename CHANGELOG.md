@@ -1,5 +1,13 @@
 # Changelog
 
+## [12.1.0](https://github.com/Bekaboo/dropbar.nvim/compare/v12.0.2...v12.1.0) (2025-03-20)
+
+
+### Features
+
+* **configs:** add support for goto & return statements ([bc30fac](https://github.com/Bekaboo/dropbar.nvim/commit/bc30facc6d8610a6e62c384cb045cd1b8bdfb68c))
+* **configs:** add support to yaml blocks ([65cd22c](https://github.com/Bekaboo/dropbar.nvim/commit/65cd22c39f5cc0129852f6200ada486d91993865))
+
 ## [12.0.2](https://github.com/Bekaboo/dropbar.nvim/compare/v12.0.1...v12.0.2) (2025-03-05)
 
 
