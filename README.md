@@ -795,6 +795,7 @@ used by the plugin:
       Declaration = '󰙠 ',
       Delete = '󰩺 ',
       DoStatement = '󰑖 ',
+      Element = '󰅩 ',
       Enum = ' ',
       EnumMember = ' ',
       Event = ' ',
@@ -803,6 +804,7 @@ used by the plugin:
       Folder = '󰉋 ',
       ForStatement = '󰑖 ',
       Function = '󰊕 ',
+      GotoStatement = '󰁔 ',
       H1Marker = '󰉫 ', -- Used by markdown treesitter parser
       H2Marker = '󰉬 ',
       H3Marker = '󰉭 ',
@@ -836,6 +838,8 @@ used by the plugin:
       Reference = '󰦾 ',
       Regex = ' ',
       Repeat = '󰑖 ',
+      Return = '󰌑 ',
+      RuleSet = '󰅩 ',
       Scope = '󰅩 ',
       Snippet = '󰩫 ',
       Specifier = '󰦪 ',
@@ -852,6 +856,7 @@ used by the plugin:
       Value = '󰎠 ',
       Variable = '󰀫 ',
       WhileStatement = '󰑖 ',
+
     }
     ```
 - `opts.icons.ui.bar`: `table<string, string>`
@@ -1079,6 +1084,7 @@ each sources.
   - Default:
     ```lua
     {
+      'block_mapping_pair',
       'array',
       'boolean',
       'break_statement',
@@ -1096,6 +1102,7 @@ each sources.
       'event',
       'for_statement',
       'function',
+      'goto_statement',
       'h1_marker',
       'h2_marker',
       'h3_marker',
@@ -1117,11 +1124,13 @@ each sources.
       'property',
       'reference',
       'repeat',
+      'return_statement',
       'rule_set',
       'scope',
       'specifier',
       'struct',
       'switch_statement',
+      'table',
       'type',
       'type_parameter',
       'unit',
@@ -1345,6 +1354,7 @@ should be self-explanatory:
   | DropBarIconKindFolder              | `{ link = 'Directory' }`                   |
   | DropBarIconKindForStatement        | `{ link = 'Repeat' }`                      |
   | DropBarIconKindFunction            | `{ link = 'Function' }`                    |
+  | DropBarIconKindGotoStatement       | `{ link = '@keyword.return' }`             |
   | DropBarIconKindH1Marker            | `{ link = 'markdownH1' }`                  |
   | DropBarIconKindH2Marker            | `{ link = 'markdownH2' }`                  |
   | DropBarIconKindH3Marker            | `{ link = 'markdownH3' }`                  |
@@ -1375,6 +1385,7 @@ should be self-explanatory:
   | DropBarIconKindProperty            | `{ link = 'DropBarIconKindDefault' }`      |
   | DropBarIconKindReference           | `{ link = 'DropBarIconKindDefault' }`      |
   | DropBarIconKindRepeat              | `{ link = 'Repeat' }`                      |
+  | DropBarIconKindReturnStatement     | `{ link = '@keyword.return' }`             |
   | DropBarIconKindRuleSet             | `{ link = '@lsp.type.namespace' }`         |
   | DropBarIconKindScope               | `{ link = '@lsp.type.namespace' }`         |
   | DropBarIconKindSpecifier           | `{ link = '@keyword' }`                    |
