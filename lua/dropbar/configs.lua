@@ -730,7 +730,6 @@ M.opts = {
         'keyword',
         'macro',
         'method',
-        'module',
         'namespace',
         'null',
         'number',

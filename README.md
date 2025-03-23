@@ -1114,7 +1114,6 @@ each sources.
       'keyword',
       'macro',
       'method',
-      'module',
       'namespace',
       'null',
       'number',

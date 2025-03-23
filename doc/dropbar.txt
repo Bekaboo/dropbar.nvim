@@ -1034,7 +1034,6 @@ TREESITTER                  *dropbar-configuration-options-sources-treesitter*
 	      'keyword',
 	      'macro',
 	      'method',
-	      'module',
 	      'namespace',
 	      'null',
 	      'number',
