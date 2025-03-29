@@ -1,5 +1,23 @@
 # Changelog
 
+## [13.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v12.0.2...v13.0.0) (2025-03-29)
+
+
+### ⚠ BREAKING CHANGES
+
+* **configs:** remove 'module' from treesitter valid types ([#234](https://github.com/Bekaboo/dropbar.nvim/issues/234))
+
+### Features
+
+* **configs:** add support for goto & return statements ([bc30fac](https://github.com/Bekaboo/dropbar.nvim/commit/bc30facc6d8610a6e62c384cb045cd1b8bdfb68c))
+* **configs:** add support to yaml blocks ([65cd22c](https://github.com/Bekaboo/dropbar.nvim/commit/65cd22c39f5cc0129852f6200ada486d91993865))
+
+
+### Bug Fixes
+
+* **configs:** remove 'module' from treesitter valid types ([#234](https://github.com/Bekaboo/dropbar.nvim/issues/234)) ([873ba43](https://github.com/Bekaboo/dropbar.nvim/commit/873ba43f83398fd0e28880cf98fd89e6ce667c51))
+* **sources.lsp:** add nil check for client id ([0bb3f12](https://github.com/Bekaboo/dropbar.nvim/commit/0bb3f1262fa8bfd8a1c05db29804d1116df32276))
+
 ## [12.0.2](https://github.com/Bekaboo/dropbar.nvim/compare/v12.0.1...v12.0.2) (2025-03-05)
 
 
