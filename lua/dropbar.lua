@@ -57,8 +57,8 @@ end
 ---Setup dropbar
 ---@param opts dropbar_configs_t?
 local function setup(opts)
-  if 1 ~= vim.fn.has('nvim-0.10.0') then
-    vim.api.nvim_err_writeln('dropbar.nvim requires at least nvim-0.10.0')
+  if 1 ~= vim.fn.has('nvim-0.11.0') then
+    vim.api.nvim_err_writeln('[dropbar.nvim] dropbar.nvim requires at least nvim-0.11.0')
     return
   end
   configs.set(opts)
