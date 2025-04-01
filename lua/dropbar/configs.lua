@@ -429,7 +429,6 @@ M.opts = {
     ---@type table<string, dropbar_menu_win_config_opts_t>
     ---@see vim.api.nvim_open_win
     win_configs = {
-      border = 'none',
       style = 'minimal',
       row = function(menu)
         return menu.prev_menu
@@ -503,8 +502,12 @@ M.opts = {
       end,
       width = function(menu)
         local function border_width(border)
+          if not border then
+            border = vim.go.winborder
+          end
+
           if type(border) == 'string' then
-            if border == 'none' or border == 'shadow' then
+            if border == '' or border == 'none' or border == 'shadow' then
               return 0
             end
             return 2 -- left and right border
@@ -549,14 +552,15 @@ M.opts = {
         end
       end,
       row = function(menu)
-        local menu_border = menu._win_configs.border
+        local menu_border = menu._win_configs.border or vim.go.winborder
         if
           type(menu_border) == 'string'
           and menu_border ~= 'shadow'
           and menu_border ~= 'none'
+          and menu_border ~= ''
         then
           return menu._win_configs.height + 1
-        elseif menu_border == 'none' then
+        elseif menu_border == 'none' or menu_border == '' then
           return menu._win_configs.height
         end
         local len_menu_border = #menu_border
@@ -571,11 +575,12 @@ M.opts = {
         end
       end,
       col = function(menu)
-        local menu_border = menu._win_configs.border
+        local menu_border = menu._win_configs.border or vim.go.winborder
         if
           type(menu_border) == 'string'
           and menu_border ~= 'shadow'
           and menu_border ~= 'none'
+          and menu_border ~= ''
         then
           return -1
         end
