@@ -88,6 +88,7 @@ end
 ---@field sibling_idx integer? index of the symbol in its siblings
 ---@field range dropbar_symbol_range_t?
 ---@field on_click fun(this: dropbar_symbol_t, min_width: integer?, n_clicks: integer?, button: string?, modifiers: string?)|false|nil force disable on_click when false
+---@field jump fun(reorient: boolean?)?
 ---@field data table? any data associated with the symbol
 ---@field cache table? caches string representation, length, etc. for the symbol
 

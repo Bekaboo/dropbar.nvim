@@ -37,9 +37,7 @@ local function get_symbols(bar_buf)
     end)
     :totable()
 
-  current = bar.dropbar_symbol_t:new(current)
-
-  return { current }
+  return { bar.dropbar_symbol_t:new(current) }
 end
 
 return { get_symbols = get_symbols }
