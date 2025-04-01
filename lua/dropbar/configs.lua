@@ -808,9 +808,9 @@ M.opts = {
       },
     },
     terminal = {
-      ---@type string|fun(buf: integer): string
+      ---@type string|fun(buf: integer): string?
       icon = function(_)
-        return M.opts.icons.kinds.symbols.Terminal or ' '
+        return M.opts.icons.kinds.symbols.Terminal
       end,
       ---@type string|fun(buf: integer): string
       name = vim.api.nvim_buf_get_name,
@@ -899,7 +899,7 @@ function M.set(new_opts)
   if new_opts.icons and new_opts.icons.enable == false then
     local blank_icons = setmetatable({}, {
       __index = function()
-        return ' '
+        return ''
       end,
     })
     M.opts.icons.kinds.dir_icon = ''
