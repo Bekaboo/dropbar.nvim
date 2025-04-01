@@ -84,7 +84,7 @@ highly-customizable 'winbar' with drop-down menu support and mutiple backends.
 ==============================================================================
 REQUIREMENTS                                            *dropbar-requirements*
 
-- Neovim >= 0.10.0
+- Neovim >= 0.11.0
 - Optional
     - nvim-web-devicons <https://github.com/nvim-tree/nvim-web-devicons>, if
       you want to see icons for different filetypes
