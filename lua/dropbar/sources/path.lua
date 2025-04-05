@@ -1,32 +1,27 @@
 local configs = require('dropbar.configs')
 local bar = require('dropbar.bar')
 
-local _is_windows ---@type boolean?
-
----Check if nvim is running on Windows
----@return boolean
-local function is_windows()
-  if _is_windows ~= nil then
-    return _is_windows
-  end
-  _is_windows = vim.uv.os_uname().sysname:find('Windows', 1, true) ~= nil
-  return _is_windows
-end
-
----Use GNU tools shipped with git on Windows
+---Normalize executable path
+---If `cmd` is executable, it is returned as is; else we try to find it under
+---git installation and return its path; return `false` if we cannot find it
 ---@type table<string, string|false>
-local gnu_tool_paths = vim.defaulttable(function(cmd)
-  if not is_windows() then
+local exepath = vim.defaulttable(function(cmd)
+  if vim.fn.executable(cmd) == 1 then
     return cmd
   end
+
+  -- Windows git intallation ships some GNU tools, so try to find tools under
+  -- git installation
   local git = vim.fn.exepath('git')
   if git == '' then
     return false
   end
-  return vim.fs.joinpath(
+
+  cmd = vim.fs.joinpath(
     vim.fs.joinpath(vim.fs.dirname(vim.fs.dirname(git)), 'usr/bin'),
     cmd
   )
+  return vim.fn.executable(cmd) == 1 and cmd or false
 end)
 
 ---Preview file represented by symbol `sym`
@@ -112,7 +107,7 @@ local function preview(sym)
     end
 
     if stat.type == 'directory' then
-      local ls_cmd = gnu_tool_paths.ls
+      local ls_cmd = exepath.ls
       return ls_cmd and vim.fn.systemlist({ ls_cmd, '-lhA', path })
         or preview_msg('`ls` is required to preview directories')
     end
@@ -121,7 +116,7 @@ local function preview(sym)
       return preview_msg('Empty file')
     end
 
-    local file_cmd = gnu_tool_paths.file
+    local file_cmd = exepath.file
     local ft = file_cmd and vim.system({ file_cmd, path }):wait().stdout
     if ft and not ft:match('text') then
       return preview_msg('Binary file')
@@ -265,7 +260,7 @@ local function convert(path, buf, win)
   }))
 end
 
-local fs_normalize = not is_windows()
+local fs_normalize = vim.uv.os_uname().sysname:find('Windows', 1, true)
     -- Normalization function for Unix-like file systems
     and function(path, ...)
       -- Use `string.gsub()` to remove prefixes e.g. `oil://`, `fugitive://`
