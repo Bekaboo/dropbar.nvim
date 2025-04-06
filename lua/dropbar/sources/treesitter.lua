@@ -1,5 +1,6 @@
 local configs = require('dropbar.configs')
 local bar = require('dropbar.bar')
+local utils = require('dropbar.utils')
 
 ---Convert a snake_case string to camelCase
 ---@param str string?
@@ -179,6 +180,7 @@ local function get_symbols(buf, win, cursor)
     node = node:parent()
   end
 
+  utils.bar.set_min_widths(symbols, configs.opts.sources.treesitter.min_widths)
   return symbols
 end
 

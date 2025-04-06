@@ -692,6 +692,8 @@ M.opts = {
       end,
       ---@type boolean|fun(path: string): boolean?|nil
       preview = true,
+      ---@type integer[]
+      min_widths = {}
     },
     treesitter = {
       max_depth = 16,
@@ -763,6 +765,8 @@ M.opts = {
         'object',
         'statement',
       },
+      ---@type integer[]
+      min_widths = {}
     },
     lsp = {
       max_depth = 16,
@@ -799,6 +803,8 @@ M.opts = {
         ttl_init = 60,
         interval = 1000, -- in ms
       },
+      ---@type integer[]
+      min_widths = {}
     },
     markdown = {
       max_depth = 6,
@@ -806,6 +812,8 @@ M.opts = {
         -- Number of lines to update when cursor moves out of the parsed range
         look_ahead = 200,
       },
+      ---@type integer[]
+      min_widths = {}
     },
     terminal = {
       ---@type string|fun(buf: integer): string?

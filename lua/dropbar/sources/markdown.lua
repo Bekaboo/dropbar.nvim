@@ -1,5 +1,6 @@
 local configs = require('dropbar.configs')
 local bar = require('dropbar.bar')
+local utils = require('dropbar.utils')
 
 local initialized = false
 local groupid = vim.api.nvim_create_augroup('DropBarMarkdown', {})
@@ -319,6 +320,7 @@ local function get_symbols(buf, win, cursor)
       end
     end
   end
+  utils.bar.set_min_widths(result, configs.opts.sources.markdown.min_widths)
   return result
 end
 

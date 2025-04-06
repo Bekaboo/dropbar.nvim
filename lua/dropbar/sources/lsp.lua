@@ -1,5 +1,6 @@
 local configs = require('dropbar.configs')
 local bar = require('dropbar.bar')
+local utils = require('dropbar.utils')
 local groupid = vim.api.nvim_create_augroup('DropBarLsp', {})
 local initialized = false
 
@@ -408,6 +409,7 @@ local function get_symbols(buf, win, cursor)
   end
   local result = {}
   convert_document_symbol_list(lsp_buf_symbols[buf], result, buf, win, cursor)
+  utils.bar.set_min_widths(result, configs.opts.sources.lsp.min_widths)
   return result
 end
 
