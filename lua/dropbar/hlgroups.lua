@@ -61,6 +61,7 @@ local hlgroups = {
   DropBarIconKindReturnStatement   = { link = '@keyword.return' },
   DropBarIconKindRuleSet           = { link = '@lsp.type.namespace' },
   DropBarIconKindScope             = { link = '@lsp.type.namespace' },
+  DropBarIconKindSection           = { link = 'Title' },
   DropBarIconKindSpecifier         = { link = '@keyword' },
   DropBarIconKindStatement         = { link = 'Statement' },
   DropBarIconKindString            = { link = '@string' },

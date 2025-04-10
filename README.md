@@ -846,6 +846,7 @@ used by the plugin:
       Return = '󰌑 ',
       RuleSet = '󰅩 ',
       Scope = '󰅩 ',
+      Section = '󰅩 ',
       Snippet = '󰩫 ',
       Specifier = '󰦪 ',
       Statement = '󰅩 ',
@@ -1131,6 +1132,7 @@ each sources.
       'return_statement',
       'rule_set',
       'scope',
+      'section',
       'specifier',
       'struct',
       'switch_statement',
@@ -1392,6 +1394,7 @@ should be self-explanatory:
   | DropBarIconKindReturnStatement     | `{ link = '@keyword.return' }`             |
   | DropBarIconKindRuleSet             | `{ link = '@lsp.type.namespace' }`         |
   | DropBarIconKindScope               | `{ link = '@lsp.type.namespace' }`         |
+  | DropBarIconKindSection             | `{ link = 'Title' }`                       |
   | DropBarIconKindSpecifier           | `{ link = '@keyword' }`                    |
   | DropBarIconKindStatement           | `{ link = 'Statement' }`                   |
   | DropBarIconKindString              | `{ link = '@string' }`                     |
