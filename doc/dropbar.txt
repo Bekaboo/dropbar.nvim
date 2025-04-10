@@ -737,12 +737,6 @@ by the plugin:
 	      ForStatement = '󰑖 ',
 	      Function = '󰊕 ',
 	      GotoStatement = '󰁔 ',
-	      H1Marker = '󰉫 ', -- Used by markdown treesitter parser
-	      H2Marker = '󰉬 ',
-	      H3Marker = '󰉭 ',
-	      H4Marker = '󰉮 ',
-	      H5Marker = '󰉯 ',
-	      H6Marker = '󰉰 ',
 	      Identifier = '󰀫 ',
 	      IfStatement = '󰇉 ',
 	      Interface = ' ',
@@ -751,7 +745,7 @@ by the plugin:
 	      Log = '󰦪 ',
 	      Lsp = ' ',
 	      Macro = '󰁌 ',
-	      MarkdownH1 = '󰉫 ', -- Used by builtin markdown source
+	      MarkdownH1 = '󰉫 ',
 	      MarkdownH2 = '󰉬 ',
 	      MarkdownH3 = '󰉭 ',
 	      MarkdownH4 = '󰉮 ',
@@ -1027,12 +1021,6 @@ TREESITTER                  *dropbar-configuration-options-sources-treesitter*
 	      'for_statement',
 	      'function',
 	      'goto_statement',
-	      'h1_marker',
-	      'h2_marker',
-	      'h3_marker',
-	      'h4_marker',
-	      'h5_marker',
-	      'h6_marker',
 	      'if_statement',
 	      'interface',
 	      'keyword',
@@ -1338,12 +1326,6 @@ Highlight groups ~
   DropBarIconKindForStatement      `{ link = 'Repeat' }`
   DropBarIconKindFunction          `{ link = 'Function' }`
   DropBarIconKindGotoStatement     `{ link = '@keyword.return' }`
-  DropBarIconKindH1Marker          `{ link = 'markdownH1' }`
-  DropBarIconKindH2Marker          `{ link = 'markdownH2' }`
-  DropBarIconKindH3Marker          `{ link = 'markdownH3' }`
-  DropBarIconKindH4Marker          `{ link = 'markdownH4' }`
-  DropBarIconKindH5Marker          `{ link = 'markdownH5' }`
-  DropBarIconKindH6Marker          `{ link = 'markdownH6' }`
   DropBarIconKindIdentifier        `{ link = 'DropBarIconKindDefault' }`
   DropBarIconKindIfStatement       `{ link = 'Conditional' }`
   DropBarIconKindInterface         `{ link = 'Type' }`
@@ -1420,12 +1402,6 @@ Highlight groups ~
   DropBarKindFolder                undefined
   DropBarKindForStatement          undefined
   DropBarKindFunction              undefined
-  DropBarKindH1Marker              undefined
-  DropBarKindH2Marker              undefined
-  DropBarKindH3Marker              undefined
-  DropBarKindH4Marker              undefined
-  DropBarKindH5Marker              undefined
-  DropBarKindH6Marker              undefined
   DropBarKindIdentifier            undefined
   DropBarKindIfStatement           undefined
   DropBarKindInterface             undefined
