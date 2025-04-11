@@ -1,5 +1,6 @@
 local configs = require('dropbar.configs')
 local bar = require('dropbar.bar')
+local utils = require('dropbar.utils')
 
 ---Normalize executable path
 ---If `cmd` is executable, it is returned as is; else we try to find it under
@@ -311,6 +312,7 @@ local function get_symbols(buf, win, _)
   if vim.bo[buf].mod then
     symbols[#symbols] = path_opts.modified(symbols[#symbols])
   end
+  utils.bar.set_min_widths(symbols, path_opts.min_widths)
   return symbols
 end
 
