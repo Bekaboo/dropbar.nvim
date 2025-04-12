@@ -693,7 +693,7 @@ M.opts = {
       ---@type boolean|fun(path: string): boolean?|nil
       preview = true,
       ---@type integer[]
-      min_widths = {}
+      min_widths = {},
     },
     treesitter = {
       max_depth = 16,
@@ -766,7 +766,7 @@ M.opts = {
         'statement',
       },
       ---@type integer[]
-      min_widths = {}
+      min_widths = {},
     },
     lsp = {
       max_depth = 16,
@@ -804,7 +804,7 @@ M.opts = {
         interval = 1000, -- in ms
       },
       ---@type integer[]
-      min_widths = {}
+      min_widths = {},
     },
     markdown = {
       max_depth = 6,
@@ -813,7 +813,7 @@ M.opts = {
         look_ahead = 200,
       },
       ---@type integer[]
-      min_widths = {}
+      min_widths = {},
     },
     terminal = {
       ---@type string|fun(buf: integer): string?
