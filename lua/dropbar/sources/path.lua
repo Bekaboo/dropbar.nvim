@@ -24,6 +24,379 @@ local exepath = vim.defaulttable(function(cmd)
   return vim.fn.executable(cmd) == 1 and cmd or false
 end)
 
+-- Set directory preview hlgroups
+do
+  -- stylua: ignore start
+  vim.api.nvim_set_hl(0, 'DropBarDirPreviewHeader', { link = 'Title', default = true })
+  vim.api.nvim_set_hl(0, 'DropBarDirPreviewTypeFile', { link = 'DropBarIconKindFile', default = true })
+  vim.api.nvim_set_hl(0, 'DropBarDirPreviewTypeDir', { link = 'DropBarIconKindFolder', default = true })
+  vim.api.nvim_set_hl(0, 'DropBarDirPreviewTypeFifo', { link = 'Special', default = true })
+  vim.api.nvim_set_hl(0, 'DropBarDirPreviewTypeLink', { link = 'Constant', default = true })
+  vim.api.nvim_set_hl(0, 'DropBarDirPreviewTypeSocket', { link = 'Keyword', default = true })
+
+  vim.api.nvim_set_hl(0, 'DropBarDirPreviewPermRead', { link = 'DiagnosticSignWarn', default = true })
+  vim.api.nvim_set_hl(0, 'DropBarDirPreviewPermWrite', { link = 'DiagnosticSignError', default = true })
+  vim.api.nvim_set_hl(0, 'DropBarDirPreviewPermExec', { link = 'DiagnosticSignInfo', default = true })
+  vim.api.nvim_set_hl(0, 'DropBarDirPreviewPermSetuid', { link = 'DignosticSignHint', default = true })
+  vim.api.nvim_set_hl(0, 'DropBarDirPreviewPermNone', { link = 'NonText', default = true })
+  vim.api.nvim_set_hl(0, 'DropBarDirPreviewSecurityContext', { link = 'Special', default = true })
+
+  vim.api.nvim_set_hl(0, 'DropBarDirPreviewDir', { link = 'Directory', default = true })
+  vim.api.nvim_set_hl(0, 'DropBarDirPreviewFile', { link = 'DropBarKindFile', default = true })
+  vim.api.nvim_set_hl(0, 'DropBarDirPreviewLink', { link = 'Constant', default = true })
+  vim.api.nvim_set_hl(0, 'DropBarDirPreviewLinkTarget', { link = 'Special', default = true })
+  vim.api.nvim_set_hl(0, 'DropBarDirPreviewSocket', { link = 'Keyword', default = true })
+
+  vim.api.nvim_set_hl(0, 'DropBarDirPreviewDirHidden', { link = 'NonText', default = true })
+  vim.api.nvim_set_hl(0, 'DropBarDirPreviewFileHidden', { link = 'DropBarDirPreviewFile', default = true })
+  vim.api.nvim_set_hl(0, 'DropBarDirPreviewLinkHidden', { link = 'DropBarDirPreviewLink', default = true })
+  vim.api.nvim_set_hl(0, 'DropBarDirPreviewLinkTargetHidden', { link = 'DropBarDirPreviewLinkTarget', default = true })
+  vim.api.nvim_set_hl(0, 'DropBarDirPreviewSocketHidden', { link = 'DropBarDirPreviewSocket', default = true })
+  -- stylua: ignore off
+end
+
+---@return string
+local function preview_get_filler()
+  return vim.opt_local.fillchars:get().diff or '-'
+end
+
+---Generate lines to show a message when preview is not available
+---@param msg string
+---@param height integer
+---@param width integer
+---@return string[]
+local function preview_msg(msg, height, width)
+  local lines = {}
+  local fillchar = preview_get_filler()
+  local msglen = #msg + 4
+  local padlen_l = math.max(0, math.floor((width - msglen) / 2))
+  local padlen_r = math.max(0, width - msglen - padlen_l)
+  local line_fill = fillchar:rep(width)
+  local half_fill_l = fillchar:rep(padlen_l)
+  local half_fill_r = fillchar:rep(padlen_r)
+  local line_above = half_fill_l .. string.rep(' ', msglen) .. half_fill_r
+  local line_below = line_above
+  local line_msg = half_fill_l .. '  ' .. msg .. '  ' .. half_fill_r
+  local half_height_u = math.max(0, math.floor((height - 3) / 2))
+  local half_height_d = math.max(0, height - 3 - half_height_u)
+  for _ = 1, half_height_u do
+    table.insert(lines, line_fill)
+  end
+  table.insert(lines, line_above)
+  table.insert(lines, line_msg)
+  table.insert(lines, line_below)
+  for _ = 1, half_height_d do
+    table.insert(lines, line_fill)
+  end
+  return lines
+end
+
+---@param buf integer
+---@return string?
+local function preview_buf_get_path(buf)
+  if not vim.api.nvim_buf_is_valid(buf) then
+    return
+  end
+  return vim.fn.bufname(buf):match('dropbar_preview://(.*)')
+end
+
+---Disable window options, e.g. spell, number, signcolumn, etc. in given window
+---@param win integer? default to current window
+local function preview_disable_win_opts(win)
+  vim.api.nvim_win_call(win or 0, function()
+    vim.opt_local.spell = false
+    vim.opt_local.number = false
+    vim.opt_local.relativenumber = false
+    vim.opt_local.signcolumn = 'no'
+    vim.opt_local.foldcolumn = '0'
+    vim.opt_local.statuscolumn = ''
+    vim.opt_local.winbar = ''
+  end)
+end
+
+---Set window options, e.g. spell, number, signcolumn, etc. to global value
+---@param win integer? default to current window
+local function preview_restore_win_opts(win)
+  vim.api.nvim_win_call(win or 0, function()
+    vim.opt_local.spell = vim.go.spell
+    vim.opt_local.number = vim.go.number
+    vim.opt_local.relativenumber = vim.go.relativenumber
+    vim.opt_local.signcolumn = vim.go.signcolumn
+    vim.opt_local.foldcolumn = vim.go.foldcolumn
+    vim.opt_local.statuscolumn = vim.go.statuscolumn
+    vim.opt_local.winbar = vim.go.winbar
+  end)
+end
+
+---Colorize preview buffer with syntax highlighting, set win opts, etc.
+---@param win integer?
+local function preview_decorate(win)
+  win = win or 0
+  if not vim.api.nvim_win_is_valid(win) then
+    return
+  end
+
+  local buf = vim.fn.winbufnr(win)
+  local bufname = vim.fn.bufname(buf)
+  local path = preview_buf_get_path(buf)
+  if not path then
+    return
+  end
+
+  -- Add syntax highlighting for message fillers
+  if vim.b[buf]._dropbar_preview_msg_shown == bufname then
+    -- Set some window options if showing messages instead of preview
+    preview_disable_win_opts(win)
+    vim.api.nvim_buf_call(buf, function()
+      vim.treesitter.stop(buf)
+      vim.bo.syntax = ''
+      vim.cmd.syntax(
+        string.format(
+          'match NonText /\\V%s/',
+          vim.fn.escape(preview_get_filler(), '/?')
+        )
+      )
+    end)
+    return
+  end
+
+  -- Add syntax highlighting to directories or files
+  vim.uv.fs_stat(
+    path,
+    vim.schedule_wrap(function(_, stat)
+      if not stat or preview_buf_get_path(buf) ~= path then
+        return
+      end
+
+      -- Add syntax highlighting for `ls` output
+      if stat.type == 'directory' then
+        -- Disable window decorations when previewing a directory to match oil
+        -- window appearance
+        preview_disable_win_opts(win)
+        vim.api.nvim_buf_call(buf, function()
+          vim.treesitter.stop(buf)
+          vim.bo.syntax = ''
+          vim.cmd([[
+            syn match DropbarDirPreviewHeader /^total.*/
+            syn match DropbarDirPreviewTypeFile /^-/ nextgroup=DropbarDirPreviewFilePerms skipwhite
+            syn match DropbarDirPreviewTypeDir /^d/ nextgroup=DropbarDirPreviewDirPerms skipwhite
+            syn match DropbarDirPreviewTypeFifo /^p/ nextgroup=DropbarDirPreviewFifoPerms skipwhite
+            syn match DropbarDirPreviewTypeLink /^l/ nextgroup=DropbarDirPreviewLinkPerms skipwhite
+            syn match DropbarDirPreviewTypeSocket /^s/ nextgroup=DropbarDirPreviewSocketPerms skipwhite
+
+            for type in ['File', 'Dir', 'Fifo', 'Link', 'Socket']
+              exe substitute('syn match DropbarDirPreview%sPerms /\v[-rwxs]{9}\.?/ contained
+                            \ contains=DropbarDirPreviewPermRead,DropbarDirPreviewPermWrite,
+                                     \ DropbarDirPreviewPermExec,DropbarDirPreviewPermSetuid,
+                                     \ DropbarDirPreviewPermNone,DropbarDirPreviewSecurityContext
+                            \ nextgroup=DropbarDirPreview%sNumHardLinksNormal,
+                                      \ DropbarDirPreview%sNumHardLinksMulti
+                            \ skipwhite', '%s', type, 'g')
+              exe substitute('syn match DropbarDirPreview%sNumHardLinksNormal /1/ contained nextgroup=DropbarDirPreview%sUser skipwhite', '%s', type, 'g')
+              exe substitute('syn match DropbarDirPreview%sNumHardLinksMulti /\v[2-9]\d*|1\d+/ contained nextgroup=DropbarDirPreview%sUser skipwhite', '%s', type, 'g')
+              exe substitute('syn match DropbarDirPreview%sUser /\v\S+/ contained nextgroup=DropbarDirPreview%sGroup skipwhite', '%s', type, 'g')
+              exe substitute('syn match DropbarDirPreview%sGroup /\v\S+/ contained nextgroup=DropbarDirPreview%sSize skipwhite', '%s', type, 'g')
+              exe substitute('syn match DropbarDirPreview%sSize /\v\S+/ contained nextgroup=DropbarDirPreview%sTime skipwhite', '%s', type, 'g')
+              exe substitute('syn match DropbarDirPreview%sTime /\v(\S+\s+){3}/ contained
+                            \ nextgroup=DropbarDirPreview%s,DropbarDirPreview%sHidden
+                            \ skipwhite', '%s', type, 'g')
+
+              exe substitute('hi def link DropbarDirPreview%sNumHardLinksNormal Number', '%s', type, 'g')
+              exe substitute('hi def link DropbarDirPreview%sNumHardLinksMulti DropbarDirPreview%sNumHardLinksNormal', '%s', type, 'g')
+              exe substitute('hi def link DropbarDirPreview%sSize Number', '%s', type, 'g')
+              exe substitute('hi def link DropbarDirPreview%sTime String', '%s', type, 'g')
+              exe substitute('hi def link DropbarDirPreview%sUser Operator', '%s', type, 'g')
+              exe substitute('hi def link DropbarDirPreview%sGroup Structure', '%s', type, 'g')
+           endfor
+
+            syn match DropbarDirPreviewPermRead /r/ contained
+            syn match DropbarDirPreviewPermWrite /w/ contained
+            syn match DropbarDirPreviewPermExec /x/ contained
+            syn match DropbarDirPreviewPermSetuid /s/ contained
+            syn match DropbarDirPreviewPermNone /-/ contained
+            syn match DropbarDirPreviewSecurityContext /\./ contained
+
+            syn match DropbarDirPreviewDir /[^.].*/ contained
+            syn match DropbarDirPreviewFile /[^.].*/ contained
+            syn match DropbarDirPreviewSocket /[^.].*/ contained
+            syn match DropbarDirPreviewLink /[^.].*/ contained contains=DropbarDirPreviewLinkTarget
+            syn match DropbarDirPreviewLinkTarget /->.*/ contained
+
+            syn match DropbarDirPreviewDirHidden /\..*/ contained
+            syn match DropbarDirPreviewFileHidden /\..*/ contained
+            syn match DropbarDirPreviewSocketHidden /\..*/ contained
+            syn match DropbarDirPreviewLinkHidden /\..*/ contained contains=DropbarDirPreviewLinkTargetHidden
+            syn match DropbarDirPreviewLinkTargetHidden /->.*/ contained
+          ]])
+        end)
+        return
+      end
+
+      -- Add syntax/treesitter highlighting for normal files
+      if vim.b[buf]._dropbar_preview_syntax == bufname then
+        preview_restore_win_opts(win)
+        local ft = vim.filetype.match({
+          buf = buf,
+          filename = path,
+        })
+        if not ft then
+          return
+        end
+        vim.bo[buf].syntax = ft
+        vim.api.nvim_buf_call(buf, function()
+          if
+            stat
+            and stat.size
+            and vim.g.bigfile_max_size
+            and stat.size < vim.g.bigfile_max_size
+            and not pcall(vim.treesitter.start, buf, ft)
+          then
+            vim.treesitter.stop(buf)
+          end
+        end)
+      end
+    end)
+  )
+end
+
+---@param win integer
+---@param lines string[]
+---@param path string
+local function preview_win_set_lines(win, lines, path)
+  if not vim.api.nvim_win_is_valid(win) then
+    return
+  end
+
+  local buf = vim.fn.winbufnr(win)
+  if preview_buf_get_path(buf) ~= path then
+    return
+  end
+
+  vim.bo[buf].modifiable = true
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, {})
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+  vim.bo[buf].modifiable = false
+
+  preview_decorate(win)
+end
+
+---@param win integer
+local function preview_set_lines(win)
+  local buf = vim.api.nvim_win_get_buf(win)
+  local bufname = vim.fn.bufname(buf)
+
+  local path = preview_buf_get_path(buf)
+  if not path then
+    return
+  end
+
+  local stat = vim.uv.fs_stat(path)
+  local win_height = vim.api.nvim_win_get_height(win)
+  local win_width = vim.api.nvim_win_get_width(win)
+
+  if not stat then
+    vim.b[buf]._dropbar_preview_msg_shown = bufname
+    preview_win_set_lines(
+      win,
+      preview_msg('Invalid path', win_height, win_width),
+      path
+    )
+    return
+  end
+
+  -- Preview directories
+  if stat.type == 'directory' then
+    local ls_cmd = exepath.ls
+    if not ls_cmd then
+      preview_win_set_lines(
+        win,
+        preview_msg(
+          '`ls` is required to previous directories',
+          win_height,
+          win_width
+        ),
+        path
+      )
+      return
+    end
+
+    vim.system(
+      {
+        ls_cmd,
+        '-lhA',
+        path,
+      },
+      { text = true },
+      vim.schedule_wrap(function(obj)
+        preview_win_set_lines(
+          win,
+          vim
+            .iter(vim.gsplit(obj.stdout, '\n'))
+            :take(win_height)
+            :map(function(line)
+              local result = vim.fn.match(line, '\\v^[-dpls][-rwxs]{9}') == -1
+                  and line
+                or line:sub(1, 1) .. ' ' .. line:sub(2)
+              return result
+            end)
+            :totable(),
+          path
+        )
+      end)
+    )
+    return
+  end
+
+  -- Preview files
+  local function preview_file()
+    if vim.fn.winbufnr(win) ~= buf then
+      return
+    end
+
+    vim.b[buf]._dropbar_preview_syntax = bufname
+    preview_win_set_lines(
+      win,
+      vim
+        .iter(io.lines(path))
+        :take(win_height)
+        :map(function(line)
+          return (line:gsub('\x0d$', ''))
+        end)
+        :totable(),
+      path
+    )
+  end
+
+  local file_cmd = exepath.file
+  if not file_cmd then
+    preview_file()
+    return
+  end
+
+  -- Use `file` to check and preview text files only
+  vim.system(
+    { file_cmd, path },
+    { text = true },
+    vim.schedule_wrap(function(obj)
+      if vim.fn.winbufnr(win) ~= buf then
+        return
+      end
+
+      if obj.stdout:match('text') or obj.stdout:match('empty') then
+        preview_file()
+        return
+      end
+
+      vim.b[buf]._dropbar_preview_msg_shown = bufname
+      preview_win_set_lines(
+        win,
+        preview_msg('Binary file', win_height, win_width),
+        path
+      )
+    end)
+  )
+end
+
 ---Preview file represented by symbol `sym`
 ---@param sym dropbar_symbol_t
 ---@return nil
@@ -58,110 +431,9 @@ local function preview(sym)
   if preview_bufname == preview_bufnewname then
     return
   end
-
-  local stat = path and vim.uv.fs_stat(path)
-  local preview_win_height = vim.api.nvim_win_get_height(sym.win)
-  local preview_win_width = vim.api.nvim_win_get_width(sym.win)
-  local add_syntax = false
-  local msg_shown = false
-
-  ---Generate lines to show a message when preview is not available
-  ---@param msg string
-  ---@return string[]
-  local function preview_msg(msg)
-    msg_shown = true
-    local lines = {}
-    local fillchar = vim.opt_local.fillchars:get().diff or '-'
-    local msglen = #msg + 4
-    local padlen_l = math.max(0, math.floor((preview_win_width - msglen) / 2))
-    local padlen_r = math.max(0, preview_win_width - msglen - padlen_l)
-    local line_fill = fillchar:rep(preview_win_width)
-    local half_fill_l = fillchar:rep(padlen_l)
-    local half_fill_r = fillchar:rep(padlen_r)
-    local line_above = half_fill_l .. string.rep(' ', msglen) .. half_fill_r
-    local line_below = line_above
-    local line_msg = half_fill_l .. '  ' .. msg .. '  ' .. half_fill_r
-    local half_height_u = math.max(0, math.floor((preview_win_height - 3) / 2))
-    local half_height_d = math.max(0, preview_win_height - 3 - half_height_u)
-    for _ = 1, half_height_u do
-      table.insert(lines, line_fill)
-    end
-    table.insert(lines, line_above)
-    table.insert(lines, line_msg)
-    table.insert(lines, line_below)
-    for _ = 1, half_height_d do
-      table.insert(lines, line_fill)
-    end
-    return lines
-  end
-
   vim.api.nvim_buf_set_name(preview_buf, preview_bufnewname)
-  vim.api.nvim_buf_call(preview_buf, function()
-    vim.treesitter.stop(preview_buf)
-    vim.bo.syntax = ''
-  end)
 
-  local lines = (function()
-    if not stat then
-      return preview_msg('Invalid path')
-    end
-
-    if stat.type == 'directory' then
-      local ls_cmd = exepath.ls
-      return ls_cmd and vim.fn.systemlist({ ls_cmd, '-lhA', path })
-        or preview_msg('`ls` is required to preview directories')
-    end
-
-    if stat.size == 0 then
-      return preview_msg('Empty file')
-    end
-
-    local file_cmd = exepath.file
-    local ft = file_cmd and vim.system({ file_cmd, path }):wait().stdout
-    if ft and not ft:match('text') then
-      return preview_msg('Binary file')
-    end
-
-    add_syntax = true
-    return vim.fn.readfile(path, '', preview_win_height)
-  end)()
-
-  vim.bo[preview_buf].modifiable = true
-  vim.api.nvim_buf_set_lines(preview_buf, 0, -1, false, {})
-  vim.api.nvim_buf_set_lines(preview_buf, 0, -1, false, lines)
-  vim.bo[preview_buf].modifiable = false
-
-  if add_syntax then
-    local ft = vim.filetype.match({
-      buf = preview_buf,
-      filename = path,
-    })
-    if ft and not pcall(vim.treesitter.start, preview_buf, ft) then
-      vim.bo[preview_buf].syntax = ft
-    end
-  end
-
-  if msg_shown then
-    vim.api.nvim_win_call(preview_win or 0, function()
-      vim.opt_local.spell = false
-      vim.opt_local.number = false
-      vim.opt_local.relativenumber = false
-      vim.opt_local.signcolumn = 'no'
-      vim.opt_local.foldcolumn = '0'
-      vim.opt_local.statuscolumn = ''
-      vim.opt_local.winbar = ''
-    end)
-  else
-    vim.api.nvim_win_call(preview_win or 0, function()
-      vim.opt_local.spell = vim.go.spell
-      vim.opt_local.number = vim.go.number
-      vim.opt_local.relativenumber = vim.go.relativenumber
-      vim.opt_local.signcolumn = vim.go.signcolumn
-      vim.opt_local.foldcolumn = vim.go.foldcolumn
-      vim.opt_local.statuscolumn = vim.go.statuscolumn
-      vim.opt_local.winbar = vim.go.winbar
-    end)
-  end
+  preview_set_lines(preview_win)
 end
 
 ---@param sym dropbar_symbol_t
