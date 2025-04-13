@@ -24,37 +24,6 @@ local exepath = vim.defaulttable(function(cmd)
   return vim.fn.executable(cmd) == 1 and cmd or false
 end)
 
--- Set directory preview hlgroups
-do
-  -- stylua: ignore start
-  vim.api.nvim_set_hl(0, 'DropBarDirPreviewHeader', { link = 'Title', default = true })
-  vim.api.nvim_set_hl(0, 'DropBarDirPreviewTypeFile', { link = 'DropBarIconKindFile', default = true })
-  vim.api.nvim_set_hl(0, 'DropBarDirPreviewTypeDir', { link = 'DropBarIconKindFolder', default = true })
-  vim.api.nvim_set_hl(0, 'DropBarDirPreviewTypeFifo', { link = 'Special', default = true })
-  vim.api.nvim_set_hl(0, 'DropBarDirPreviewTypeLink', { link = 'Constant', default = true })
-  vim.api.nvim_set_hl(0, 'DropBarDirPreviewTypeSocket', { link = 'Keyword', default = true })
-
-  vim.api.nvim_set_hl(0, 'DropBarDirPreviewPermRead', { link = 'DiagnosticSignWarn', default = true })
-  vim.api.nvim_set_hl(0, 'DropBarDirPreviewPermWrite', { link = 'DiagnosticSignError', default = true })
-  vim.api.nvim_set_hl(0, 'DropBarDirPreviewPermExec', { link = 'DiagnosticSignInfo', default = true })
-  vim.api.nvim_set_hl(0, 'DropBarDirPreviewPermSetuid', { link = 'DignosticSignHint', default = true })
-  vim.api.nvim_set_hl(0, 'DropBarDirPreviewPermNone', { link = 'NonText', default = true })
-  vim.api.nvim_set_hl(0, 'DropBarDirPreviewSecurityContext', { link = 'Special', default = true })
-
-  vim.api.nvim_set_hl(0, 'DropBarDirPreviewDir', { link = 'Directory', default = true })
-  vim.api.nvim_set_hl(0, 'DropBarDirPreviewFile', { link = 'DropBarKindFile', default = true })
-  vim.api.nvim_set_hl(0, 'DropBarDirPreviewLink', { link = 'Constant', default = true })
-  vim.api.nvim_set_hl(0, 'DropBarDirPreviewLinkTarget', { link = 'Special', default = true })
-  vim.api.nvim_set_hl(0, 'DropBarDirPreviewSocket', { link = 'Keyword', default = true })
-
-  vim.api.nvim_set_hl(0, 'DropBarDirPreviewDirHidden', { link = 'NonText', default = true })
-  vim.api.nvim_set_hl(0, 'DropBarDirPreviewFileHidden', { link = 'DropBarDirPreviewFile', default = true })
-  vim.api.nvim_set_hl(0, 'DropBarDirPreviewLinkHidden', { link = 'DropBarDirPreviewLink', default = true })
-  vim.api.nvim_set_hl(0, 'DropBarDirPreviewLinkTargetHidden', { link = 'DropBarDirPreviewLinkTarget', default = true })
-  vim.api.nvim_set_hl(0, 'DropBarDirPreviewSocketHidden', { link = 'DropBarDirPreviewSocket', default = true })
-  -- stylua: ignore off
-end
-
 ---@return string
 local function preview_get_filler()
   return vim.opt_local.fillchars:get().diff or '-'
@@ -227,6 +196,32 @@ local function preview_decorate(win)
             syn match DropbarDirPreviewSocketHidden /\..*/ contained
             syn match DropbarDirPreviewLinkHidden /\..*/ contained contains=DropbarDirPreviewLinkTargetHidden
             syn match DropbarDirPreviewLinkTargetHidden /->.*/ contained
+
+            hi def link DropBarDirPreviewHeader Title
+            hi def link DropBarDirPreviewTypeFile DropBarIconKindFile
+            hi def link DropBarDirPreviewTypeDir DropBarIconKindFolder
+            hi def link DropBarDirPreviewTypeFifo Special
+            hi def link DropBarDirPreviewTypeLink Constant
+            hi def link DropBarDirPreviewTypeSocket Keyword
+
+            hi def link DropBarDirPreviewPermRead DiagnosticSignWarn
+            hi def link DropBarDirPreviewPermWrite DiagnosticSignError
+            hi def link DropBarDirPreviewPermExec DiagnosticSignInfo
+            hi def link DropBarDirPreviewPermSetuid DignosticSignHint
+            hi def link DropBarDirPreviewPermNone NonText
+            hi def link DropBarDirPreviewSecurityContext Special
+
+            hi def link DropBarDirPreviewDir Directory
+            hi def link DropBarDirPreviewFile DropBarKindFile
+            hi def link DropBarDirPreviewLink Constant
+            hi def link DropBarDirPreviewLinkTarget Special
+            hi def link DropBarDirPreviewSocket Keyword
+
+            hi def link DropBarDirPreviewDirHidden NonText
+            hi def link DropBarDirPreviewFileHidden DropBarDirPreviewFile
+            hi def link DropBarDirPreviewLinkHidden DropBarDirPreviewLink
+            hi def link DropBarDirPreviewLinkTargetHidden DropBarDirPreviewLinkTarget
+            hi def link DropBarDirPreviewSocketHidden DropBarDirPreviewSocket
           ]])
         end)
         return
