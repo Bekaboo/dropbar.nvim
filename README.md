@@ -1068,6 +1068,10 @@ each sources.
   - A boolean or a function that takes a file path and returns whether to
     preview the file under cursor
   - Default: `true`
+- `opts.sources.path.min_widths`: `integer[]`
+  - Minimum width of each symbols when truncated, in reverse order
+    (e.g. `{10}` forces the last symbol has width >= 10)
+  - Default: `{}`
 
 ##### Treesitter
 
@@ -1138,6 +1142,10 @@ each sources.
       'statement',
     }
     ```
+- `opts.sources.treesitter.min_widths`: `integer[]`
+  - Minimum width of each symbols when truncated, in reverse order
+    (e.g. `{10}` forces the last symbol has width >= 10)
+  - Default: `{}`
 
 ##### LSP
 
@@ -1185,6 +1193,10 @@ each sources.
 - `opts.sources.lsp.request.interval`: `number`
   - Number of milliseconds to wait between retries
   - Default: `1000`
+- `opts.sources.lsp.min_widths`: `integer[]`
+  - Minimum width of each symbols when truncated, in reverse order
+    (e.g. `{10}` forces the last symbol has width >= 10)
+  - Default: `{}`
 
 ##### Markdown
 
@@ -1194,6 +1206,10 @@ each sources.
 - `opts.sources.markdown.parse.look_ahead`: `number`
   - Number of lines to update when cursor moves out of the parsed range
   - Default: `200`
+- `opts.sources.markdown.min_widths`: `integer[]`
+  - Minimum width of each symbols when truncated, in reverse order
+    (e.g. `{10}` forces the last symbol has width >= 10)
+  - Default: `{}`
 
 ##### Terminal
 
@@ -1706,6 +1722,7 @@ basic element of [`dropbar_t`](#dropbar_t) and [`dropbar_menu_entry_t`](#dropbar
 | `callback_idx` | `integer?`                                                                                                          | idx of the on_click callback in `_G.dropbar.callbacks[buf][win]`, use this to index callback function because `bar_idx` could change after truncate |
 | `opts`         | `dropbar_symbol_opts_t?`                                                                                            | options passed to `winbar_symbol_t:new()` when the symbols is created                                                                               |
 | `data`         | `table?`                                                                                                            | any extra data associated with the symbol                                                                                                           |
+| `min_width`    | `integer?`                                                                                                          | minimum width when truncated                                                                                                                        |
 
 
 `dropbar_symbol_t` has the following methods:

@@ -130,4 +130,16 @@ function M.attach(buf, win, info)
   end
 end
 
+---Set min widths for dropbar symbols
+---@param symbols dropbar_symbol_t[]
+---@param min_widths integer[]
+function M.set_min_widths(symbols, min_widths)
+  for i, w in ipairs(min_widths) do
+    if i > #symbols then
+      break
+    end
+    symbols[#symbols - i + 1].min_width = w
+  end
+end
+
 return M

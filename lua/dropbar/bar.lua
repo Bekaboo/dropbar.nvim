@@ -36,6 +36,7 @@ end
 ---@field opts dropbar_symbol_opts_t? options passed to `dropbar_symbol_t:new()` when the symbols is created
 ---@field data table? any data associated with the symbol
 ---@field cache table caches string representation, length, etc. for the symbol
+---@field min_width integer? minimum width when truncated
 local dropbar_symbol_t = {}
 
 function dropbar_symbol_t:__index(k)
@@ -345,13 +346,15 @@ function dropbar_t:truncate()
       break
     end
     local name_len = vim.fn.strdisplaywidth(component.name)
-    local min_len =
-      vim.fn.strdisplaywidth(component.name:sub(1, 1) .. self.extends.icon)
+    local min_len = vim.fn.strdisplaywidth(
+      vim.fn.strcharpart(component.name, 0, component.min_width or 1)
+        .. self.extends.icon
+    )
     if name_len > min_len then
       component.name = vim.fn.strcharpart(
         component.name,
         0,
-        math.max(1, name_len - delta - 1)
+        math.max(component.min_width or 1, name_len - delta - 1)
       ) .. self.extends.icon
       delta = delta - name_len + vim.fn.strdisplaywidth(component.name)
     end

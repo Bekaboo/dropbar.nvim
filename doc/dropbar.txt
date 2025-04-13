@@ -987,6 +987,10 @@ PATH                              *dropbar-configuration-options-sources-path*
   - A boolean or a function that takes a file path and returns whether to
     preview the file under cursor
   - Default: `true`
+- `opts.sources.path.min_widths`: `integer[]`
+  - Minimum width of each symbols when truncated, in reverse order
+    (e.g. `{10}` forces the last symbol has width >= 10)
+  - Default: `{}`
 
 TREESITTER                  *dropbar-configuration-options-sources-treesitter*
 
@@ -1055,6 +1059,10 @@ TREESITTER                  *dropbar-configuration-options-sources-treesitter*
 	      'object',
 	      'statement',
             }
+- `opts.sources.treesitter.min_widths`: `integer[]`
+  - Minimum width of each symbols when truncated, in reverse order
+    (e.g. `{10}` forces the last symbol has width >= 10)
+  - Default: `{}`
 <
 
 LSP                                *dropbar-configuration-options-sources-lsp*
@@ -1102,6 +1110,10 @@ LSP                                *dropbar-configuration-options-sources-lsp*
 - `opts.sources.lsp.request.interval`: `number`
     - Number of milliseconds to wait between retries
     - Default: `1000`
+- `opts.sources.lsp.min_widths`: `integer[]`
+  - Minimum width of each symbols when truncated, in reverse order
+    (e.g. `{10}` forces the last symbol has width >= 10)
+  - Default: `{}`
 
 MARKDOWN                      *dropbar-configuration-options-sources-markdown*
 
@@ -1111,6 +1123,10 @@ MARKDOWN                      *dropbar-configuration-options-sources-markdown*
 - `opts.sources.markdown.parse.look_ahead`: `number`
     - Number of lines to update when cursor moves out of the parsed range
     - Default: `200`
+- `opts.sources.markdown.min_widths`: `integer[]`
+  - Minimum width of each symbols when truncated, in reverse order
+    (e.g. `{10}` forces the last symbol has width >= 10)
+  - Default: `{}`
 
 TERMINAL                      *dropbar-configuration-options-sources-terminal*
 
@@ -1996,6 +2012,13 @@ dropbar_symbol_t.data                                  *dropbar_symbol_t.data*
 
 	Type ~
 	    table?
+
+dropbar_symbol_t.min_width                        *dropbar_symbol_t.min_width*
+
+ 	Minimun width when truncated
+
+	Type ~
+	    integer?
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
