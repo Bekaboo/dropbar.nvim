@@ -235,21 +235,15 @@ local function preview_decorate(win)
           buf = buf,
           filename = path,
         })
-        if not ft then
-          vim.treesitter.stop(buf)
-          vim.bo[buf].syntax = ''
-          return
-        end
-        vim.bo[buf].syntax = ft
         vim.api.nvim_buf_call(buf, function()
-          if
-            stat
-            and stat.size
-            and vim.g.bigfile_max_size
-            and stat.size < vim.g.bigfile_max_size
-            and not pcall(vim.treesitter.start, buf, ft)
-          then
-            vim.treesitter.stop(buf)
+          if not ft then
+            vim.treesitter.stop()
+            vim.bo.syntax = ''
+            return
+          end
+          if not pcall(vim.treesitter.start, buf, ft) then
+            vim.treesitter.stop()
+            vim.bo.syntax = ft
           end
         end)
       end
