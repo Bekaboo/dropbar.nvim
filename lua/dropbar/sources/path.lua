@@ -236,6 +236,8 @@ local function preview_decorate(win)
           filename = path,
         })
         if not ft then
+          vim.treesitter.stop(buf)
+          vim.bo[buf].syntax = ''
           return
         end
         vim.bo[buf].syntax = ft
