@@ -67,7 +67,7 @@ local function preview_buf_get_path(buf)
   if not vim.api.nvim_buf_is_valid(buf) then
     return
   end
-  return vim.fn.bufname(buf):match('dropbar_preview://(.*)')
+  return vim.fn.bufname(buf):match('dropbar_preview_%d+://(.*)')
 end
 
 ---Disable window options, e.g. spell, number, signcolumn, etc. in given window
@@ -423,7 +423,10 @@ local function preview(sym)
 
   -- Preview buffer already contains contents of file to preview
   local preview_bufname = vim.fn.bufname(preview_buf)
-  local preview_bufnewname = 'dropbar_preview://' .. path
+  local preview_bufnewname = ('dropbar_preview_%d://%s'):format(
+    preview_buf,
+    path
+  )
   if preview_bufname == preview_bufnewname then
     return
   end
