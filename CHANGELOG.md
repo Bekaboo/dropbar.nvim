@@ -1,5 +1,36 @@
 # Changelog
 
+## [13.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v12.0.2...v13.0.0) (2025-04-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop neovim 0.10 support
+* **configs:** remove 'module' from treesitter valid types ([#234](https://github.com/Bekaboo/dropbar.nvim/issues/234))
+
+### Features
+
+* **bar:** add config `min_widths` ([#237](https://github.com/Bekaboo/dropbar.nvim/issues/237)) ([a64fc20](https://github.com/Bekaboo/dropbar.nvim/commit/a64fc20c4ec7e10fc92dc80312457010755bb019))
+* **configs,menu:** respect new `winborder` option in neovim 0.11 ([3ec39f1](https://github.com/Bekaboo/dropbar.nvim/commit/3ec39f1e65dbc643cefca55ce1dae03c96854905))
+* **configs:** add support for goto & return statements ([bc30fac](https://github.com/Bekaboo/dropbar.nvim/commit/bc30facc6d8610a6e62c384cb045cd1b8bdfb68c))
+* **configs:** add support to yaml blocks ([65cd22c](https://github.com/Bekaboo/dropbar.nvim/commit/65cd22c39f5cc0129852f6200ada486d91993865))
+* **configs:** support treesitter 'section' nodes in markdown ([e7a980b](https://github.com/Bekaboo/dropbar.nvim/commit/e7a980b599ad37e1210031ded43db0467e75ffc2))
+* **sources.path:** async preview with highlighting ([5f23a92](https://github.com/Bekaboo/dropbar.nvim/commit/5f23a92820d8d23eda1fbada141e3539840e404c))
+
+
+### Bug Fixes
+
+* **compat:** should check for neovim 0.11 instead of 0.10 ([2ce5c5c](https://github.com/Bekaboo/dropbar.nvim/commit/2ce5c5c48c81c1ae03d9bea204657dbb7e37fd16))
+* **configs:** remove 'module' from treesitter valid types ([#234](https://github.com/Bekaboo/dropbar.nvim/issues/234)) ([873ba43](https://github.com/Bekaboo/dropbar.nvim/commit/873ba43f83398fd0e28880cf98fd89e6ce667c51))
+* **sources.lsp:** add nil check for client id ([0bb3f12](https://github.com/Bekaboo/dropbar.nvim/commit/0bb3f1262fa8bfd8a1c05db29804d1116df32276))
+* **sources.path:** disable hl in files with no filetype ([58abebe](https://github.com/Bekaboo/dropbar.nvim/commit/58abebe16b9c48615c651488847bf2dba72f8bdd))
+* **sources.path:** possible error `Vim:E95` previewing same path in two buffers ([57ae5ec](https://github.com/Bekaboo/dropbar.nvim/commit/57ae5ec10a3aa0d9a3b59c68d6af3b827c003eae))
+
+
+### Code Refactoring
+
+* drop neovim 0.10 support ([da78f3e](https://github.com/Bekaboo/dropbar.nvim/commit/da78f3ec7e0030eb0985efc1f74d309c714cd7e5))
+
 ## [12.0.2](https://github.com/Bekaboo/dropbar.nvim/compare/v12.0.1...v12.0.2) (2025-03-05)
 
 
