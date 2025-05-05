@@ -82,6 +82,141 @@ local hlgroups = {
   DropBarMenuSbar                  = { link = 'PmenuSbar' },
   DropBarMenuThumb                 = { link = 'PmenuThumb' },
   DropBarPreview                   = { link = 'Visual' },
+
+  -- Highlight groups in non-current windows
+  DropBarIconKindDefaultNC           = { link = 'WinBarNC' },
+  DropBarIconKindArrayNC             = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindBlockMappingPairNC  = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindBooleanNC           = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindBreakStatementNC    = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindCallNC              = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindCaseStatementNC     = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindClassNC             = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindConstantNC          = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindConstructorNC       = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindContinueStatementNC = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindDeclarationNC       = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindDeleteNC            = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindDoStatementNC       = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindElementNC           = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindElseStatementNC     = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindEnumNC              = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindEnumMemberNC        = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindEventNC             = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindFieldNC             = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindFileNC              = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindFolderNC            = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindForStatementNC      = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindFunctionNC          = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindGotoStatementNC     = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindIdentifierNC        = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindIfStatementNC       = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindInterfaceNC         = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindKeywordNC           = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindListNC              = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindMacroNC             = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindMarkdownH1NC        = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindMarkdownH2NC        = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindMarkdownH3NC        = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindMarkdownH4NC        = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindMarkdownH5NC        = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindMarkdownH6NC        = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindMethodNC            = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindModuleNC            = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindNamespaceNC         = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindNullNC              = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindNumberNC            = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindObjectNC            = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindOperatorNC          = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindPackageNC           = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindPairNC              = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindPropertyNC          = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindReferenceNC         = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindRepeatNC            = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindReturnStatementNC   = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindRuleSetNC           = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindScopeNC             = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindSectionNC           = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindSpecifierNC         = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindStatementNC         = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindStringNC            = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindStructNC            = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindSwitchStatementNC   = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindTableNC             = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindTypeNC              = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindTypeParameterNC     = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindUnitNC              = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindValueNC             = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindVariableNC          = { link = 'DropBarIconKindDefaultNC' },
+  DropBarIconKindWhileStatementNC    = { link = 'DropBarIconKindDefaultNC' },
+
+  DropBarKindDefaultNC               = { link = 'WinBarNC' },
+  DropBarKindArrayNC                 = { link = 'DropBarKindDefaultNC' },
+  DropBarKindBlockMappingPairNC      = { link = 'DropBarKindDefaultNC' },
+  DropBarKindBooleanNC               = { link = 'DropBarKindDefaultNC' },
+  DropBarKindBreakStatementNC        = { link = 'DropBarKindDefaultNC' },
+  DropBarKindCallNC                  = { link = 'DropBarKindDefaultNC' },
+  DropBarKindCaseStatementNC         = { link = 'DropBarKindDefaultNC' },
+  DropBarKindClassNC                 = { link = 'DropBarKindDefaultNC' },
+  DropBarKindConstantNC              = { link = 'DropBarKindDefaultNC' },
+  DropBarKindConstructorNC           = { link = 'DropBarKindDefaultNC' },
+  DropBarKindContinueStatementNC     = { link = 'DropBarKindDefaultNC' },
+  DropBarKindDeclarationNC           = { link = 'DropBarKindDefaultNC' },
+  DropBarKindDeleteNC                = { link = 'DropBarKindDefaultNC' },
+  DropBarKindDoStatementNC           = { link = 'DropBarKindDefaultNC' },
+  DropBarKindElementNC               = { link = 'DropBarKindDefaultNC' },
+  DropBarKindElseStatementNC         = { link = 'DropBarKindDefaultNC' },
+  DropBarKindEnumNC                  = { link = 'DropBarKindDefaultNC' },
+  DropBarKindEnumMemberNC            = { link = 'DropBarKindDefaultNC' },
+  DropBarKindEventNC                 = { link = 'DropBarKindDefaultNC' },
+  DropBarKindFieldNC                 = { link = 'DropBarKindDefaultNC' },
+  DropBarKindFileNC                  = { link = 'DropBarKindDefaultNC' },
+  DropBarKindFolderNC                = { link = 'DropBarKindDefaultNC' },
+  DropBarKindForStatementNC          = { link = 'DropBarKindDefaultNC' },
+  DropBarKindFunctionNC              = { link = 'DropBarKindDefaultNC' },
+  DropBarKindGotoStatementNC         = { link = 'DropBarKindDefaultNC' },
+  DropBarKindIdentifierNC            = { link = 'DropBarKindDefaultNC' },
+  DropBarKindIfStatementNC           = { link = 'DropBarKindDefaultNC' },
+  DropBarKindInterfaceNC             = { link = 'DropBarKindDefaultNC' },
+  DropBarKindKeywordNC               = { link = 'DropBarKindDefaultNC' },
+  DropBarKindListNC                  = { link = 'DropBarKindDefaultNC' },
+  DropBarKindMacroNC                 = { link = 'DropBarKindDefaultNC' },
+  DropBarKindMarkdownH1NC            = { link = 'DropBarKindDefaultNC' },
+  DropBarKindMarkdownH2NC            = { link = 'DropBarKindDefaultNC' },
+  DropBarKindMarkdownH3NC            = { link = 'DropBarKindDefaultNC' },
+  DropBarKindMarkdownH4NC            = { link = 'DropBarKindDefaultNC' },
+  DropBarKindMarkdownH5NC            = { link = 'DropBarKindDefaultNC' },
+  DropBarKindMarkdownH6NC            = { link = 'DropBarKindDefaultNC' },
+  DropBarKindMethodNC                = { link = 'DropBarKindDefaultNC' },
+  DropBarKindModuleNC                = { link = 'DropBarKindDefaultNC' },
+  DropBarKindNamespaceNC             = { link = 'DropBarKindDefaultNC' },
+  DropBarKindNullNC                  = { link = 'DropBarKindDefaultNC' },
+  DropBarKindNumberNC                = { link = 'DropBarKindDefaultNC' },
+  DropBarKindObjectNC                = { link = 'DropBarKindDefaultNC' },
+  DropBarKindOperatorNC              = { link = 'DropBarKindDefaultNC' },
+  DropBarKindPackageNC               = { link = 'DropBarKindDefaultNC' },
+  DropBarKindPairNC                  = { link = 'DropBarKindDefaultNC' },
+  DropBarKindPropertyNC              = { link = 'DropBarKindDefaultNC' },
+  DropBarKindReferenceNC             = { link = 'DropBarKindDefaultNC' },
+  DropBarKindRepeatNC                = { link = 'DropBarKindDefaultNC' },
+  DropBarKindReturnStatementNC       = { link = 'DropBarKindDefaultNC' },
+  DropBarKindRuleSetNC               = { link = 'DropBarKindDefaultNC' },
+  DropBarKindScopeNC                 = { link = 'DropBarKindDefaultNC' },
+  DropBarKindSectionNC               = { link = 'DropBarKindDefaultNC' },
+  DropBarKindSpecifierNC             = { link = 'DropBarKindDefaultNC' },
+  DropBarKindStatementNC             = { link = 'DropBarKindDefaultNC' },
+  DropBarKindStringNC                = { link = 'DropBarKindDefaultNC' },
+  DropBarKindStructNC                = { link = 'DropBarKindDefaultNC' },
+  DropBarKindSwitchStatementNC       = { link = 'DropBarKindDefaultNC' },
+  DropBarKindTableNC                 = { link = 'DropBarKindDefaultNC' },
+  DropBarKindTypeNC                  = { link = 'DropBarKindDefaultNC' },
+  DropBarKindTypeParameterNC         = { link = 'DropBarKindDefaultNC' },
+  DropBarKindUnitNC                  = { link = 'DropBarKindDefaultNC' },
+  DropBarKindValueNC                 = { link = 'DropBarKindDefaultNC' },
+  DropBarKindVariableNC              = { link = 'DropBarKindDefaultNC' },
+  DropBarKindWhileStatementNC        = { link = 'DropBarKindDefaultNC' },
+
+  DropBarIconUISeparatorNC           = { link = 'Comment' },
 }
 -- stylua: ignore end
 
@@ -94,6 +229,57 @@ local function set_hlgroups()
   end
 end
 
+---Check if `hl-WinBarNC` and `hl-WinBar` are equal
+---@return boolean
+local function winbar_hl_nc_equal()
+  return vim.deep_equal(
+    vim.api.nvim_get_hl(0, { name = 'WinBar', link = false, create = false }),
+    vim.api.nvim_get_hl(0, { name = 'WinBarNC', link = false, create = false })
+  )
+end
+
+---Dim/restore dropbar highlights in given window
+---@param win? integer
+---@param do_dim? boolean `true` to dim highlights, `false` to restore, default to `true`
+local function dim(win, do_dim)
+  win = win or vim.api.nvim_get_current_win()
+  if not vim.api.nvim_win_is_valid(win) then
+    return
+  end
+
+  local hl_map = {}
+  for hl_name, _ in pairs(hlgroups) do
+    if vim.endswith(hl_name, 'NC') then
+      hl_map[hl_name:gsub('NC$', '')] = hl_name
+    end
+  end
+
+  vim.api.nvim_win_call(win, function()
+    if do_dim ~= false then
+      ---@diagnostic disable-next-line: undefined-field
+      vim.opt_local.winhl:append(hl_map)
+    else
+      ---@diagnostic disable-next-line: undefined-field
+      vim.opt_local.winhl:remove(vim.tbl_keys(hl_map))
+    end
+  end)
+end
+
+---Dim highlights in non-current windows if `hl-WinBarNC` differs from
+---`hl-WinBar`
+local function dim_nc_wins()
+  if winbar_hl_nc_equal() then
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+      dim(win, false)
+    end
+  else
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+      dim(win)
+    end
+    dim(0, false)
+  end
+end
+
 ---Initialize highlight groups for dropbar
 local function init()
   local groupid = vim.api.nvim_create_augroup('DropBarHlGroups', {})
@@ -102,6 +288,31 @@ local function init()
   vim.api.nvim_create_autocmd('ColorScheme', {
     group = groupid,
     callback = set_hlgroups,
+  })
+
+  -- Dim dropbar highlights in non-current windows
+  dim_nc_wins()
+  vim.api.nvim_create_autocmd('ColorScheme', {
+    group = groupid,
+    callback = dim_nc_wins,
+  })
+
+  vim.api.nvim_create_autocmd('WinEnter', {
+    group = groupid,
+    callback = function()
+      if not winbar_hl_nc_equal() then
+        dim(0, false)
+      end
+    end,
+  })
+
+  vim.api.nvim_create_autocmd('WinLeave', {
+    group = groupid,
+    callback = function()
+      if not winbar_hl_nc_equal() then
+        dim()
+      end
+    end,
   })
 end
 
