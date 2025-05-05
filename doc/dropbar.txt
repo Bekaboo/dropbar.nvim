@@ -1303,6 +1303,20 @@ utils.menu.get_current()  *dropbar-utility-functions-utils.menu.get_current()*
 	Returns ~
 	    `dropbar_menu_t` or `nil`
 
+			  *dropbar-utility-functions-utils.menu.get_current()*
+utils.menu.select(items: any[], opts: table, on_choice: function(item, idx))
+
+	Opt-in replacement for `vim.ui.select`
+
+	Supports non-string items by formatting via the `opts.format_item`
+	callback
+
+	Parameters ~
+	    • {items}     (any[]) Arbitrary items, same as `vim.ui.select`
+	    • {opts}      (table) Additional options, same as `vim.ui.select`
+	    • {on_choice} (fun(item: T?, idx: integer?)) same as
+			    `vim.ui.select`
+
 ------------------------------------------------------------------------------
 HIGHLIGHTING                              *dropbar-configuration-highlighting*
 

@@ -1322,7 +1322,7 @@ Defined in [`lua/dropbar/utils/menu.lua`](lua/dropbar/utils/menu.lua).
   - If `opts.win` is not specified, return all opened dropbar menus
 - `utils.menu.get_current(): dropbar_menu_t?`
   - Get current dropbar menu
-- utils.menu.select(items: any[], opts: table, on_choice: function(item, idx))
+- `utils.menu.select(items: any[], opts: table, on_choice: function(item, idx))`
   - Opt-in replacement for `vim.ui.select`
   - Supports non-string items by formatting via the `opts.format_item` callback
 
