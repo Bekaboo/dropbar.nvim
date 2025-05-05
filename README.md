@@ -1328,157 +1328,37 @@ Defined in [`lua/dropbar/utils/menu.lua`](lua/dropbar/utils/menu.lua).
 
 ### Highlighting
 
-`dropbar.nvim` defines the following highlight groups that, override them in
-your colorscheme to change the appearance of the drop-down menu, the names
-should be self-explanatory:
+`dropbar.nvim` defines sets of highlight groups. Override them in your
+colorscheme to change the appearance of the drop-down menu:
 
 <details>
   <summary>Highlight groups</summary>
 
-  | Highlight group                    | Attributes                                 |
-  | ---------------------------------- | ------------------------------------------ |
-  | DropBarCurrentContext              | `{ link = 'Visual' }`                      |
-  | DropBarFzfMatch                    | `{ link = 'Special' }`                     |
-  | DropBarHover                       | `{ link = 'Visual' }`                      |
-  | DropBarIconKindDefault             | `{ link = 'Special' }`                     |
-  | DropBarIconKindArray               | `{ link = 'Operator' }`                    |
-  | DropBarIconKindBlockMappingPair    | `{ link = 'DropBarIconKindDefault' }`      |
-  | DropBarIconKindBoolean             | `{ link = 'Boolean' }`                     |
-  | DropBarIconKindBreakStatement      | `{ link = 'Error' }`                       |
-  | DropBarIconKindCall                | `{ link = 'Function' }`                    |
-  | DropBarIconKindCaseStatement       | `{ link = 'Conditional' }`                 |
-  | DropBarIconKindClass               | `{ link = 'Type' }`                        |
-  | DropBarIconKindConstant            | `{ link = 'Constant' }`                    |
-  | DropBarIconKindConstructor         | `{ link = '@constructor' }`                |
-  | DropBarIconKindContinueStatement   | `{ link = 'Repeat' }`                      |
-  | DropBarIconKindDeclaration         | `{ link = 'DropBarIconKindDefault' }`      |
-  | DropBarIconKindDelete              | `{ link = 'Error' }`                       |
-  | DropBarIconKindDoStatement         | `{ link = 'Repeat' }`                      |
-  | DropBarIconKindElseStatement       | `{ link = 'Conditional' }`                 |
-  | DropBarIconKindElement             | `{ link = 'DropBarIconKindDefault' }`      |
-  | DropBarIconKindEnum                | `{ link = 'Constant' }`                    |
-  | DropBarIconKindEnumMember          | `{ link = 'DropBarIconKindEnumMember' }`   |
-  | DropBarIconKindEvent               | `{ link = '@lsp.type.event' }`             |
-  | DropBarIconKindField               | `{ link = 'DropBarIconKindDefault' }`      |
-  | DropBarIconKindFile                | `{ link = 'DropBarIconKindFolder' }`       |
-  | DropBarIconKindFolder              | `{ link = 'Directory' }`                   |
-  | DropBarIconKindForStatement        | `{ link = 'Repeat' }`                      |
-  | DropBarIconKindFunction            | `{ link = 'Function' }`                    |
-  | DropBarIconKindGotoStatement       | `{ link = '@keyword.return' }`             |
-  | DropBarIconKindIdentifier          | `{ link = 'DropBarIconKindDefault' }`      |
-  | DropBarIconKindIfStatement         | `{ link = 'Conditional' }`                 |
-  | DropBarIconKindInterface           | `{ link = 'Type' }`                        |
-  | DropBarIconKindKeyword             | `{ link = '@keyword' }`                    |
-  | DropBarIconKindList                | `{ link = 'Operator' }`                    |
-  | DropBarIconKindMacro               | `{ link = 'Macro' }`                       |
-  | DropBarIconKindMarkdownH1          | `{ link = 'markdownH1' }`                  |
-  | DropBarIconKindMarkdownH2          | `{ link = 'markdownH2' }`                  |
-  | DropBarIconKindMarkdownH3          | `{ link = 'markdownH3' }`                  |
-  | DropBarIconKindMarkdownH4          | `{ link = 'markdownH4' }`                  |
-  | DropBarIconKindMarkdownH5          | `{ link = 'markdownH5' }`                  |
-  | DropBarIconKindMarkdownH6          | `{ link = 'markdownH6' }`                  |
-  | DropBarIconKindMethod              | `{ link = 'Function' }`                    |
-  | DropBarIconKindModule              | `{ link = '@module' }`                     |
-  | DropBarIconKindNamespace           | `{ link = '@lsp.type.namespace' }`         |
-  | DropBarIconKindNull                | `{ link = 'Constant' }`                    |
-  | DropBarIconKindNumber              | `{ link = 'Number' }`                      |
-  | DropBarIconKindObject              | `{ link = 'Statement' }`                   |
-  | DropBarIconKindOperator            | `{ link = 'Operator' }`                    |
-  | DropBarIconKindPackage             | `{ link = '@module' }`                     |
-  | DropBarIconKindPair                | `{ link = 'DropBarIconKindDefault' }`      |
-  | DropBarIconKindProperty            | `{ link = 'DropBarIconKindDefault' }`      |
-  | DropBarIconKindReference           | `{ link = 'DropBarIconKindDefault' }`      |
-  | DropBarIconKindRepeat              | `{ link = 'Repeat' }`                      |
-  | DropBarIconKindReturnStatement     | `{ link = '@keyword.return' }`             |
-  | DropBarIconKindRuleSet             | `{ link = '@lsp.type.namespace' }`         |
-  | DropBarIconKindScope               | `{ link = '@lsp.type.namespace' }`         |
-  | DropBarIconKindSection             | `{ link = 'Title' }`                       |
-  | DropBarIconKindSpecifier           | `{ link = '@keyword' }`                    |
-  | DropBarIconKindStatement           | `{ link = 'Statement' }`                   |
-  | DropBarIconKindString              | `{ link = '@string' }`                     |
-  | DropBarIconKindStruct              | `{ link = 'Type' }`                        |
-  | DropBarIconKindSwitchStatement     | `{ link = 'Conditional' }`                 |
-  | DropBarIconKindTable               | `{ link = 'DropBarIconKindDefault' }`      |
-  | DropBarIconKindTerminal            | `{ link = 'Number' }`                      |
-  | DropBarIconKindType                | `{ link = 'Type' }`                        |
-  | DropBarIconKindTypeParameter       | `{ link = 'DropBarIconKindDefault' }`      |
-  | DropBarIconKindUnit                | `{ link = 'DropBarIconKindDefault' }`      |
-  | DropBarIconKindValue               | `{ link = 'Number' }`                      |
-  | DropBarIconKindVariable            | `{ link = 'DropBarIconKindDefault' }`      |
-  | DropBarIconKindWhileStatement      | `{ link = 'Repeat' }`                      |
-  | DropBarIconUIIndicator             | `{ link = 'SpecialChar' }`                 |
-  | DropBarIconUIPickPivot             | `{ link = 'Error' }`                       |
-  | DropBarIconUISeparator             | `{ link = 'Comment' }`                     |
-  | DropBarIconUISeparatorMenu         | `{ link = 'DropBarIconUISeparator' }`      |
-  | DropBarMenuCurrentContext          | `{ link = 'PmenuSel' }`                    |
-  | DropBarMenuFloatBorder             | `{ link = 'FloatBorder' }`                 |
-  | DropBarMenuHoverEntry              | `{ link = 'IncSearch' }`                   |
-  | DropBarMenuHoverIcon               | `{ reverse = true }`                       |
-  | DropBarMenuHoverSymbol             | `{ bold = true }`                          |
-  | DropBarMenuNormalFloat             | `{ link = 'NormalFloat' }`                 |
-  | DropBarMenuSbar                    | `{ link = 'PmenuSbar' }`                   |
-  | DropBarMenuThumb                   | `{ link = 'PmenuThumb' }`                  |
-  | DropBarPreview                     | `{ link = 'Visual' }`                      |
-  | DropBarKindArray                   | undefined                                  |
-  | DropBarKindBoolean                 | undefined                                  |
-  | DropBarKindBreakStatement          | undefined                                  |
-  | DropBarKindCall                    | undefined                                  |
-  | DropBarKindCaseStatement           | undefined                                  |
-  | DropBarKindClass                   | undefined                                  |
-  | DropBarKindConstant                | undefined                                  |
-  | DropBarKindConstructor             | undefined                                  |
-  | DropBarKindContinueStatement       | undefined                                  |
-  | DropBarKindDeclaration             | undefined                                  |
-  | DropBarKindDelete                  | undefined                                  |
-  | DropBarKindDoStatement             | undefined                                  |
-  | DropBarKindElseStatement           | undefined                                  |
-  | DropBarKindElement                 | undefined                                  |
-  | DropBarKindEnum                    | undefined                                  |
-  | DropBarKindEnumMember              | undefined                                  |
-  | DropBarKindEvent                   | undefined                                  |
-  | DropBarKindField                   | undefined                                  |
-  | DropBarKindFile                    | undefined                                  |
-  | DropBarKindFolder                  | undefined                                  |
-  | DropBarKindForStatement            | undefined                                  |
-  | DropBarKindFunction                | undefined                                  |
-  | DropBarKindIdentifier              | undefined                                  |
-  | DropBarKindIfStatement             | undefined                                  |
-  | DropBarKindInterface               | undefined                                  |
-  | DropBarKindKeyword                 | undefined                                  |
-  | DropBarKindList                    | undefined                                  |
-  | DropBarKindMacro                   | undefined                                  |
-  | DropBarKindMarkdownH1              | undefined                                  |
-  | DropBarKindMarkdownH2              | undefined                                  |
-  | DropBarKindMarkdownH3              | undefined                                  |
-  | DropBarKindMarkdownH4              | undefined                                  |
-  | DropBarKindMarkdownH5              | undefined                                  |
-  | DropBarKindMarkdownH6              | undefined                                  |
-  | DropBarKindMethod                  | undefined                                  |
-  | DropBarKindModule                  | undefined                                  |
-  | DropBarKindNamespace               | undefined                                  |
-  | DropBarKindNull                    | undefined                                  |
-  | DropBarKindNumber                  | undefined                                  |
-  | DropBarKindObject                  | undefined                                  |
-  | DropBarKindOperator                | undefined                                  |
-  | DropBarKindPackage                 | undefined                                  |
-  | DropBarKindPair                    | undefined                                  |
-  | DropBarKindProperty                | undefined                                  |
-  | DropBarKindReference               | undefined                                  |
-  | DropBarKindRepeat                  | undefined                                  |
-  | DropBarKindRuleSet                 | undefined                                  |
-  | DropBarKindScope                   | undefined                                  |
-  | DropBarKindSpecifier               | undefined                                  |
-  | DropBarKindStatement               | undefined                                  |
-  | DropBarKindString                  | undefined                                  |
-  | DropBarKindStruct                  | undefined                                  |
-  | DropBarKindSwitchStatement         | undefined                                  |
-  | DropBarKindTerminal                | undefined                                  |
-  | DropBarKindType                    | undefined                                  |
-  | DropBarKindTypeParameter           | undefined                                  |
-  | DropBarKindUnit                    | undefined                                  |
-  | DropBarKindValue                   | undefined                                  |
-  | DropBarKindVariable                | undefined                                  |
-  | DropBarKindWhileStatement          | undefined                                  |
+  | Highlight group                    | Description                                                          | Attributes                                 |
+  | ---------------------------------- | -------------------------------------------------------------        | ------------------------------------------ |
+  | DropBarCurrentContext              | Background of selected/clicked symbol in dropbar                     | `{ link = 'Visual' }`                      |
+  | DropBarFzfMatch                    | Fzf fuzzy search matches                                             | `{ link = 'Special' }`                     |
+  | DropBarHover                       | Background of the dropbar symbol when the mouse is hovering over it  | `{ link = 'Visual' }`                      |
+  | DropBarIconKindDefault             | Default highlight for dropbar icons                                  | `{ link = 'Special' }`                     |
+  | DropBarIconKindDefaultNC           | Default highlight for dropbar icons in non-current windows           | `{ link = 'WinBarNC' }`                    |
+  | DropBarIconKind...                 | Highlights of corresponding symbol kind icons                        | `{ link = 'Repeat' }`                      |
+  | DropBarIconKind...NC               | Highlights of corresponding symbol kind icons in non-current windows | `{ link = 'DropBarIconKindDefaultNC' }`    |
+  | DropBarIconUIIndicator             | Shortcuts before entries in `utils.menu.select()`                    | `{ link = 'SpecialChar' }`                 |
+  | DropBarIconUIPickPivot             | Shortcuts shown before each symbol after entering pick mode          | `{ link = 'Error' }`                       |
+  | DropBarIconUISeparator             | Separator between each symbol in dropbar                             | `{ link = 'Comment' }`                     |
+  | DropBarIconUISeparatorMenu         | Separator between each symbol in dropbar menus                       | `{ link = 'DropBarIconUISeparator' }`      |
+  | DropBarMenuCurrentContext          | Background of current line in dropbar menus                          | `{ link = 'PmenuSel' }`                    |
+  | DropBarMenuFloatBorder             | Border of dropbar menus                                              | `{ link = 'FloatBorder' }`                 |
+  | DropBarMenuHoverEntry              | Background of hovered line in dropbar menus                          | `{ link = 'IncSearch' }`                   |
+  | DropBarMenuHoverIcon               | Background of hovered symbol icon in dropbar menus                   | `{ reverse = true }`                       |
+  | DropBarMenuHoverSymbol             | Background of hovered symbol name in dropbar menus                   | `{ bold = true }`                          |
+  | DropBarMenuNormalFloat             | Nomral text in dropbar menus                                         | `{ link = 'NormalFloat' }`                 |
+  | DropBarMenuSbar                    | Scrollbar background of dropbar menus                                | `{ link = 'PmenuSbar' }`                   |
+  | DropBarMenuThumb                   | Scrollbar thumb of dropbar menus                                     | `{ link = 'PmenuThumb' }`                  |
+  | DropBarPreview                     | Range of the symbol under the cursor in source code                  | `{ link = 'Visual' }`                      |
+  | DropBarKind...                     | Highlights of corresponding symbol kind names                        | undefined                                  |
+  | DropBarKind...NC                   | Highlights of corresponding symbol kind names in non-current windows | `{ link = 'DropBarKindDefaultNC' }`        |
+  | DropBarKindDefaultNC               | Default highlight for dropbar symbol names in non-current windows    | `{ link = 'WinBarNC' }`                    |
 
 </details>
 
