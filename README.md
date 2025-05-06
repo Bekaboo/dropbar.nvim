@@ -1357,8 +1357,7 @@ colorscheme to change the appearance of the drop-down menu:
   | DropBarMenuThumb                   | Scrollbar thumb of dropbar menus                                     | `{ link = 'PmenuThumb' }`                  |
   | DropBarPreview                     | Range of the symbol under the cursor in source code                  | `{ link = 'Visual' }`                      |
   | DropBarKind...                     | Highlights of corresponding symbol kind names                        | undefined                                  |
-  | DropBarKind...NC                   | Highlights of corresponding symbol kind names in non-current windows | `{ link = 'DropBarKindDefaultNC' }`        |
-  | DropBarKindDefaultNC               | Default highlight for dropbar symbol names in non-current windows    | `{ link = 'WinBarNC' }`                    |
+  | DropBarKind...NC                   | Highlights of corresponding symbol kind names in non-current windows | undefined                                  |
 
 </details>
 
