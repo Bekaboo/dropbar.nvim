@@ -24,17 +24,6 @@ jobs:
               | tar xzf - --strip-components=1 -C "${PWD}/nvim"
           }
 
-          DATA_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}"
-          NVIM_PACK_START="${DATA_HOME}/nvim/site/pack/packages/start"
-          mkdir -p "${NVIM_PACK_START}"
-          git clone --depth 1 https://github.com/nvim-lua/plenary.nvim "${NVIM_PACK_START}/plenary.nvim"
-
-          FZF_DIR="${NVIM_PACK_START}/telescope-fzf-native.nvim"
-          git clone --depth 1 "https://github.com/nvim-telescope/telescope-fzf-native.nvim" "${FZF_DIR}"
-          cmake "-S${FZF_DIR}" "-B${FZF_DIR}/build" -DCMAKE_BUILD_TYPE=Release && cmake --build "${FZF_DIR}/build" --config Release && cmake --install "${FZF_DIR}/build" --prefix "${FZF_DIR}/build"
-
-          ln -s "${PWD}" "${NVIM_PACK_START}"
-
       - name: run tests
         run: |
           export PATH="${PWD}/nvim/bin:${PATH}"
