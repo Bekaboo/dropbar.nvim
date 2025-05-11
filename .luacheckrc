@@ -14,3 +14,5 @@ files['tests'] = {
     'pending',
   },
 }
+
+exclude_files = { 'deps' }
