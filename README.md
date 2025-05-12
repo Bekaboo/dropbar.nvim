@@ -22,6 +22,38 @@
 
 </div>
 
+<!--toc:start-->
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Usage with `vim.ui.select`](#usage-with-vimuiselect)
+- [Configuration](#configuration)
+  - [Options](#options)
+    - [Bar](#bar)
+    - [Menu](#menu)
+    - [Fzf](#fzf)
+    - [Icons](#icons)
+    - [Symbol](#symbol)
+    - [Sources](#sources)
+      - [Path](#path)
+      - [Treesitter](#treesitter)
+      - [LSP](#lsp)
+      - [Markdown](#markdown)
+      - [Terminal](#terminal)
+  - [Highlighting](#highlighting)
+  - [Configuration Examples](#configuration-examples)
+    - [Highlight File Name Using Custom Highlight Group `DropBarFileName`](#highlight-file-name-using-custom-highlight-group-dropbarfilename)
+    - [Enable Path Source in Special Plugin Buffers, e.g. Oil or Fugitive](#enable-path-source-in-special-plugin-buffers-eg-oil-or-fugitive)
+- [Developers](#developers)
+  - [Architecture](#architecture)
+  - [Making a New Source](#making-a-new-source)
+    - [Making a Source With Drop-Down Menus](#making-a-source-with-drop-down-menus)
+    - [Default `on_click()` Callback](#default-onclick-callback)
+    - [Lazy-Loading Expensive Fields](#lazy-loading-expensive-fields)
+- [Similar Projects](#similar-projects)
+<!--toc:end-->
+
 ## Features
 
 https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-b20fc3098c5a
@@ -1205,39 +1237,37 @@ Thanks [@willothy](https://github.com/willothy) for implementing this.
 `dropbar.nvim` defines sets of highlight groups. Override them in your
 colorscheme to change the appearance of the drop-down menu:
 
-<details>
-  <summary>Highlight groups</summary>
-
-  | Highlight group                    | Description                                                          | Attributes                                 |
-  | ---------------------------------- | -------------------------------------------------------------        | ------------------------------------------ |
-  | DropBarCurrentContext              | Background of selected/clicked symbol in dropbar                     | `{ link = 'Visual' }`                      |
-  | DropBarFzfMatch                    | Fzf fuzzy search matches                                             | `{ link = 'Special' }`                     |
-  | DropBarHover                       | Background of the dropbar symbol when the mouse is hovering over it  | `{ link = 'Visual' }`                      |
-  | DropBarIconKindDefault             | Default highlight for dropbar icons                                  | `{ link = 'Special' }`                     |
-  | DropBarIconKindDefaultNC           | Default highlight for dropbar icons in non-current windows           | `{ link = 'WinBarNC' }`                    |
-  | DropBarIconKind...                 | Highlights of corresponding symbol kind icons                        | `{ link = 'Repeat' }`                      |
-  | DropBarIconKind...NC               | Highlights of corresponding symbol kind icons in non-current windows | `{ link = 'DropBarIconKindDefaultNC' }`    |
-  | DropBarIconUIIndicator             | Shortcuts before entries in `utils.menu.select()`                    | `{ link = 'SpecialChar' }`                 |
-  | DropBarIconUIPickPivot             | Shortcuts shown before each symbol after entering pick mode          | `{ link = 'Error' }`                       |
-  | DropBarIconUISeparator             | Separator between each symbol in dropbar                             | `{ link = 'Comment' }`                     |
-  | DropBarIconUISeparatorMenu         | Separator between each symbol in dropbar menus                       | `{ link = 'DropBarIconUISeparator' }`      |
-  | DropBarMenuCurrentContext          | Background of current line in dropbar menus                          | `{ link = 'PmenuSel' }`                    |
-  | DropBarMenuFloatBorder             | Border of dropbar menus                                              | `{ link = 'FloatBorder' }`                 |
-  | DropBarMenuHoverEntry              | Background of hovered line in dropbar menus                          | `{ link = 'IncSearch' }`                   |
-  | DropBarMenuHoverIcon               | Background of hovered symbol icon in dropbar menus                   | `{ reverse = true }`                       |
-  | DropBarMenuHoverSymbol             | Background of hovered symbol name in dropbar menus                   | `{ bold = true }`                          |
-  | DropBarMenuNormalFloat             | Nomral text in dropbar menus                                         | `{ link = 'NormalFloat' }`                 |
-  | DropBarMenuSbar                    | Scrollbar background of dropbar menus                                | `{ link = 'PmenuSbar' }`                   |
-  | DropBarMenuThumb                   | Scrollbar thumb of dropbar menus                                     | `{ link = 'PmenuThumb' }`                  |
-  | DropBarPreview                     | Range of the symbol under the cursor in source code                  | `{ link = 'Visual' }`                      |
-  | DropBarKind...                     | Highlights of corresponding symbol kind names                        | undefined                                  |
-  | DropBarKind...NC                   | Highlights of corresponding symbol kind names in non-current windows | undefined                                  |
-
-</details>
+| Highlight group                    | Description                                                          | Attributes                                 |
+| ---------------------------------- | -------------------------------------------------------------        | ------------------------------------------ |
+| DropBarCurrentContext              | Background of selected/clicked symbol in dropbar                     | `{ link = 'Visual' }`                      |
+| DropBarFzfMatch                    | Fzf fuzzy search matches                                             | `{ link = 'Special' }`                     |
+| DropBarHover                       | Background of the dropbar symbol when the mouse is hovering over it  | `{ link = 'Visual' }`                      |
+| DropBarIconKindDefault             | Default highlight for dropbar icons                                  | `{ link = 'Special' }`                     |
+| DropBarIconKindDefaultNC           | Default highlight for dropbar icons in non-current windows           | `{ link = 'WinBarNC' }`                    |
+| DropBarIconKind...                 | Highlights of corresponding symbol kind icons                        | `{ link = 'Repeat' }`                      |
+| DropBarIconKind...NC               | Highlights of corresponding symbol kind icons in non-current windows | `{ link = 'DropBarIconKindDefaultNC' }`    |
+| DropBarIconUIIndicator             | Shortcuts before entries in `utils.menu.select()`                    | `{ link = 'SpecialChar' }`                 |
+| DropBarIconUIPickPivot             | Shortcuts shown before each symbol after entering pick mode          | `{ link = 'Error' }`                       |
+| DropBarIconUISeparator             | Separator between each symbol in dropbar                             | `{ link = 'Comment' }`                     |
+| DropBarIconUISeparatorMenu         | Separator between each symbol in dropbar menus                       | `{ link = 'DropBarIconUISeparator' }`      |
+| DropBarMenuCurrentContext          | Background of current line in dropbar menus                          | `{ link = 'PmenuSel' }`                    |
+| DropBarMenuFloatBorder             | Border of dropbar menus                                              | `{ link = 'FloatBorder' }`                 |
+| DropBarMenuHoverEntry              | Background of hovered line in dropbar menus                          | `{ link = 'IncSearch' }`                   |
+| DropBarMenuHoverIcon               | Background of hovered symbol icon in dropbar menus                   | `{ reverse = true }`                       |
+| DropBarMenuHoverSymbol             | Background of hovered symbol name in dropbar menus                   | `{ bold = true }`                          |
+| DropBarMenuNormalFloat             | Nomral text in dropbar menus                                         | `{ link = 'NormalFloat' }`                 |
+| DropBarMenuSbar                    | Scrollbar background of dropbar menus                                | `{ link = 'PmenuSbar' }`                   |
+| DropBarMenuThumb                   | Scrollbar thumb of dropbar menus                                     | `{ link = 'PmenuThumb' }`                  |
+| DropBarPreview                     | Range of the symbol under the cursor in source code                  | `{ link = 'Visual' }`                      |
+| DropBarKind...                     | Highlights of corresponding symbol kind names                        | undefined                                  |
+| DropBarKind...NC                   | Highlights of corresponding symbol kind names in non-current windows | undefined                                  |
 
 ### Configuration Examples
 
-#### Highlight File Name Using Custom Highlight Group `DropBarFileName`
+#### Custom Filename Highlight Group
+
+This configuration highlights filenames from path source with custom highlight
+group `DropBarFileName`.
 
 ```lua
 local dropbar = require('dropbar')
@@ -1284,7 +1314,14 @@ dropbar.setup({
 })
 ```
 
-#### Enable Path Source in Special Plugin Buffers, e.g. Oil or Fugitive
+#### Normalize Path in Special Buffers
+
+Some plugins, e.g. [oil](https://github.com/stevearc/oil.nvim) and
+[fugitive](https://github.com/tpope/vim-fugitive), have buffers with file path
+confusing for dropbar.nvim. This is because their buffers names start with
+things like `oil://` or `fugitive://`.
+
+This configuration should addresses the issue:
 
 ```lua
 require('dropbar').setup({
@@ -1342,6 +1379,9 @@ require('dropbar').setup({
 ## Developers
 
 ### Architecture
+
+The flow chart below should well illustrate what does `dropbar` do user moves
+around in their window or clicks at a symbol in the winbar:
 
 ```
                                               ┌──────────────────┐
@@ -1445,7 +1485,7 @@ require('dropbar').setup({
 })
 ```
 
-#### Making a Source With Drop-Down Menus
+#### Source With Drop-Down Menus
 
 The following example shows how to make a source that returns two symbols with
 the first symbol having a drop-down menu with a single entry saying 'World':

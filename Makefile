@@ -18,6 +18,14 @@ deps/gen-vimdoc.nvim: | deps
 	git -C deps clone --depth=1 --filter=blob:none \
 		https://github.com/Bekaboo/gen-vimdoc.nvim
 
+deps/nvim-treesitter: | deps
+	git -C deps clone --depth=1 --filter=blob:none \
+		https://github.com/nvim-treesitter/nvim-treesitter
+
+deps/ts-vimdoc.nvim: | deps deps/nvim-treesitter
+	git -C deps clone --depth=1 --filter=blob:none \
+		https://github.com/ibhagwan/ts-vimdoc.nvim
+
 .PHONY: test
 test: | deps/plenary.nvim deps/telescope-fzf-native.nvim
 	nvim --clean --headless -u tests/minimal_init.lua \
@@ -43,5 +51,11 @@ lint:
 	luacheck .
 
 .PHONY: docs
-docs: | deps/gen-vimdoc.nvim
-	nvim --clean --headless -u scripts/minimal_init.lua -l scripts/gen_vimdoc.lua
+VIMDOC := doc/dropbar.txt
+define nvim_gen_vimdoc_from
+	nvim --clean --headless -u scripts/minimal_init.lua -l scripts/gen_vimdoc_from_$1.lua
+endef
+docs: | deps/ts-vimdoc.nvim deps/gen-vimdoc.nvim
+	$(call nvim_gen_vimdoc_from,md) && sed -i '$$ d' $(VIMDOC) # remove modeline
+	$(call nvim_gen_vimdoc_from,src)
+	sed -i 's/[ \t]\+$$//' $(VIMDOC) # remove trailing whitespaces
