@@ -21,8 +21,8 @@
 
 ## Introduction
 
-A polished, IDE-like, highly-customizable winbar for Neovim with drop-down menu
-and multiple backends.
+A polished, IDE-like, highly-customizable winbar for Neovim with drop-down
+menus and multiple backends.
 
 ## Features
 
