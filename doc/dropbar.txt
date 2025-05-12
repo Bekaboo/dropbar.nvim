@@ -130,7 +130,6 @@ CONFIGURATION                                          *dropbar-configuration*
 ------------------------------------------------------------------------------
 OPTIONS                                        *dropbar-configuration-options*
 
-..............................................................................
 BAR                                        *dropbar-configuration-options-bar*
 
 These options live under `opts.bar` and are used to control the behavior of
@@ -270,7 +269,6 @@ the winbar:
     - Whether to truncate the winbar if it doesn’t fit in the window
     - Default: `true`
 
-..............................................................................
 MENU                                      *dropbar-configuration-options-menu*
 
 These options live under `opts.menu` and are used to control the behavior of
@@ -432,7 +430,6 @@ the menu:
             }
 <
 
-..............................................................................
 FZF                                        *dropbar-configuration-options-fzf*
 
 These options live under `opts.fzf` and are used to control the behavior and
@@ -637,7 +634,6 @@ appearance of the fuzzy finder interface.
       open the submenu in fuzzy finder mode.
     - Default: `true`
 
-..............................................................................
 ICONS                                    *dropbar-configuration-options-icons*
 
 These options live under `opts.icons` and are used to configure the icons used
@@ -758,7 +754,6 @@ by the plugin:
             }
 <
 
-..............................................................................
 Symbol                                  *dropbar-configuration-options-symbol*
 
 These options live under `opts.bar` and are used to control the behavior of
@@ -883,7 +878,6 @@ the symbols:
 	    function() end
 <
 
-..............................................................................
 SOURCES                                *dropbar-configuration-options-sources*
 
 These options live under `opts.sources` and are used to control the behavior
@@ -1117,7 +1111,6 @@ TERMINAL                      *dropbar-configuration-options-sources-terminal*
 ------------------------------------------------------------------------------
 UTILITY FUNCTIONS                    *dropbar-configuration-utility-functions*
 
-..............................................................................
 BAR UTILITY FUNCTIONS            *dropbar-configuration-bar-utility-functions*
 
 Defined in `lua/dropbar/utils/bar.lua`.
@@ -1152,7 +1145,6 @@ utils.bar.get_current()    *dropbar-utility-functions-utils.bar.get_current()*
 	Returns ~
 	    `dropbar_t` or `nil`
 
-..............................................................................
 MENU UTILITY FUNCTIONS          *dropbar-configuration-menu-utility-functions*
 
 Defined in `lua/dropbar/utils/menu.lua`.
@@ -1450,7 +1442,6 @@ action: >lua
     })
 <
 
-..............................................................................
 MAKING A SOURCE WITH DROP-DOWN MENUS
 *dropbar-developers-making-a-source-with-drop-down-menus*
 
@@ -1500,7 +1491,6 @@ the first symbol having a drop-down menu with a single entry saying 'World':
     }
 <
 
-..............................................................................
 DEFAULT ON_CLICK() CALLBACK     *dropbar-developers-default-on_click-callback*
 
 `dropbar_symbol_t:new()` defines a default `on_click()` callback if non is
@@ -1567,7 +1557,6 @@ callback: >lua
     }
 <
 
-..............................................................................
 LAZY-LOADING EXPENSIVE FIELDS
 *dropbar-developers-lazy-loading-expensive-fields*
 
