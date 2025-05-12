@@ -25,7 +25,7 @@ deps/gen-vimdoc.nvim: | deps
 	git -C deps clone --depth=1 --filter=blob:none \
 		https://github.com/Bekaboo/gen-vimdoc.nvim
 
-deps/ts-vimdoc.nvim:
+deps/ts-vimdoc.nvim: | deps
 	git -C deps clone --depth=1 --filter=blob:none \
 		https://github.com/ibhagwan/ts-vimdoc.nvim
 
