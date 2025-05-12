@@ -1,0 +1,23 @@
+name: docs
+
+on: [push, pull_request]
+
+jobs:
+  docs:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: prepare
+        run: |
+          test -d nvim || {
+            mkdir -p nvim
+            curl -sL "https://github.com/neovim/neovim/releases/download/nightly/nvim-linux-x86_64.tar.gz" \
+              | tar xzf - --strip-components=1 -C "${PWD}/nvim"
+          }
+
+      - name: generate docs
+        run: |
+          export PATH="${PWD}/nvim/bin:${PATH}"
+          export VIM="${PWD}/nvim/share/nvim/runtime"
+          nvim --version
+          make docs
