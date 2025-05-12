@@ -130,7 +130,11 @@ function M.fuzzy_find_click(component)
 end
 
 ---Navigate to the nth entry above/below in the menu while fuzzy finding
----@param direction 'up'|'down'|integer
+---@param direction 'up'|'down'|integer Direction to negative to:
+--- - 'up':             navigate one entry upwards
+--- - 'down':           navigate one entry downwards
+--- - positive integer: navigate to the {direction}-th next entry
+--- - negative integer: navigate to the {direction}-th previous entry
 ---@return nil
 function M.fuzzy_find_navigate(direction)
   local menu = utils.menu.get_current()

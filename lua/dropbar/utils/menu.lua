@@ -89,6 +89,7 @@ function M.update_preview(mouse)
   last_previewed_menu = menu
 end
 
+---Options passed to `utils.menu.select` (`vim.ui.select` with some extensions).
 ---@class dropbar_select_opts_t
 ---Text to be displayed at the top of the menu
 ---@field prompt? string

@@ -7,12 +7,17 @@ local groupid = vim.api.nvim_create_augroup('DropBarMenu', {})
 ---@type table<integer, dropbar_menu_t>
 _G.dropbar.menus = {}
 
+---Highlight range in a single line of a drop-down menu.
 ---@class dropbar_menu_hl_info_t
 ---@field start integer byte-indexed, 0-indexed, start inclusive
 ---@field end integer byte-indexed, 0-indexed, end exclusive
 ---@field hlgroup string
 ---@field ns integer? namespace id, nil if using default namespace
 
+---Entry (row) in a drop-down menu.
+---A `dropbar_menu_t` instance is made up of multiple `dropbar_menu_entry_t`
+---instances while a `dropbar_menu_entry_t` instance can contain multiple
+---`dropbar_symbol_t` instances.
 ---@class dropbar_menu_entry_t
 ---@field separator dropbar_symbol_t
 ---@field padding {left: integer, right: integer}
@@ -174,11 +179,12 @@ function dropbar_menu_entry_t:next_clickable(col)
   end
 end
 
+---Represents a drop-down menu.
 ---@class dropbar_menu_t
----@field buf integer?
----@field win integer?
----@field is_opened boolean?
----@field entries dropbar_menu_entry_t[]
+---@field buf integer? buffer of the menu
+---@field win integer? window of the menu
+---@field is_opened boolean? whether the menu is currently opened
+---@field entries dropbar_menu_entry_t[] entries (rows) in the menu
 ---@field win_configs table window configuration, value can be a function
 ---@field _win_configs table evaluated window configuration
 ---@field cursor integer[]? initial cursor position
@@ -229,7 +235,6 @@ function dropbar_menu_t:new(opts)
 end
 
 ---Delete a dropbar menu
----@return nil
 function dropbar_menu_t:del()
   if self.sub_menu then
     self.sub_menu:del()
@@ -257,9 +262,9 @@ function dropbar_menu_t:root()
   return current
 end
 
----Evaluate window configurations
+---Evaluate window configurations `dropbar_menu_t.win_configs` and store result
+---in `dropbar_menu_t._win_configs`
 ---Side effects: update self._win_configs
----@return nil
 ---@see vim.api.nvim_open_win
 function dropbar_menu_t:eval_win_configs()
   -- Evaluate function-valued window configurations
@@ -347,7 +352,6 @@ end
 
 ---Update DropBarMenuHover* highlights according to pos
 ---@param pos integer[]? byte-indexed, 1,0-indexed cursor/mouse position
----@return nil
 function dropbar_menu_t:update_hover_hl(pos)
   if not self.buf then
     return
@@ -380,7 +384,6 @@ end
 
 ---Fill the menu buffer with entries in `self.entries` and add
 ---highlights to the buffer
----@return nil
 function dropbar_menu_t:fill_buf()
   local lines = {} ---@type string[]
   local hl_info = {} ---@type dropbar_menu_hl_info_t[][]
@@ -442,9 +445,8 @@ function dropbar_menu_t:fill_buf()
 end
 
 ---Make a buffer for the menu and set buffer-local keymaps
----Must be called after self:eval_win_configs()
----Side effect: change self.buf, self.hl_info
----@return nil
+---Must be called after `dropbar_menu_t:eval_win_configs()`
+---Side effect: change `dropbar_menu_t.buf`, `dropbar_menu_t.hl_info`
 function dropbar_menu_t:make_buf()
   if self.buf then
     return
@@ -529,7 +531,6 @@ end
 
 ---Open the popup window with win configs and opts,
 ---must be called after self:make_buf()
----@return nil
 function dropbar_menu_t:open_win()
   if self.is_opened then
     return
@@ -550,7 +551,6 @@ end
 ---Update the scrollbar's position and height, create a new scrollbar if
 ---one does not exist
 ---Side effect: can change self.scrollbar
----@return nil
 function dropbar_menu_t:update_scrollbar()
   if
     not self.win
@@ -625,7 +625,6 @@ end
 
 ---Close the scrollbar, if one exists
 ---Side effect: set self.scrollbar to nil
----@return nil
 function dropbar_menu_t:close_scrollbar()
   if not self.scrollbar then
     return
@@ -644,7 +643,6 @@ end
 
 ---Override menu options
 ---@param opts dropbar_menu_opts_t?
----@return nil
 function dropbar_menu_t:override(opts)
   if not opts then
     return
@@ -665,7 +663,6 @@ end
 ---Open the menu
 ---Side effect: change self.win and self.buf
 ---@param opts dropbar_menu_opts_t?
----@return nil
 function dropbar_menu_t:open(opts)
   if self.is_opened then
     return
@@ -708,8 +705,7 @@ function dropbar_menu_t:open(opts)
 end
 
 ---Close the menu
----@param restore_view boolean? whether to restore the source win view, default true
----@return nil
+---@param restore_view boolean? whether to restore the source win view, default `true`
 function dropbar_menu_t:close(restore_view)
   if not self.is_opened then
     return
@@ -744,7 +740,6 @@ end
 ---Preview the symbol at the given position
 ---@param pos integer[] 1,0-indexed, byte-indexed position
 ---@param look_ahead boolean? whether to look ahead for a component
----@return nil
 function dropbar_menu_t:preview_symbol_at(pos, look_ahead)
   if not pos then
     return
@@ -757,8 +752,10 @@ function dropbar_menu_t:preview_symbol_at(pos, look_ahead)
   self.symbol_previewed = component
 end
 
----Finish the preview in current menu
----@param restore_view boolean? whether to restore the source win view, default true
+---Finish previewing the symbol, preview highlights in the sourec buffer
+---will always be cleared, the original view in the source window will
+---be restored if `restore_view` is set to `true` (default)
+---@param restore_view boolean? whether to restore the source win view, default `true`
 function dropbar_menu_t:finish_preview(restore_view)
   restore_view = restore_view == nil or restore_view
   if self.symbol_previewed then
@@ -773,7 +770,6 @@ end
 ---Set the cursor to the nearest clickable component in the direction of
 ---cursor movement
 ---@param new_cursor integer[] 1,0-indexed, byte-indexed position
----@return nil
 function dropbar_menu_t:quick_navigation(new_cursor)
   local entry = self.entries and self.entries[new_cursor[1]]
   if not entry then
@@ -846,11 +842,12 @@ end
 ---Click on the currently selected fuzzy find menu entry, choosing the component
 ---to click according to `component`.
 ---
----If `component` is a `number`, the `component`-nth symbol is selected, unless
----`0` or `-1` is supplied, in which case the *first* or *last* clickable component
----is selected, respectively. If it is a `function`, it receives the `dropbar_menu_entry_t`
----as an argument and should return the `dropbar_symbol_t` that is to be clicked.
 ---@param component? number|dropbar_symbol_t|fun(entry: dropbar_menu_entry_t):dropbar_symbol_t?
+--- - If it is a `number`, the `component`-nth symbol is selected, unless `0`
+--- or `-1` is supplied, in which case the *first* or *last* clickable
+--- component is selected, respectively
+--- - If it is a function, it receives the `dropbar_menu_entry_t` as an
+--- argument and should return the `dropbar_symbol_t` that is to be clicked
 ---@version JIT
 function dropbar_menu_t:fuzzy_find_click_on_entry(component)
   if self.sub_menu then
@@ -899,8 +896,11 @@ function dropbar_menu_t:fuzzy_find_click_on_entry(component)
 end
 
 ---Navigate to the nth previous/next entry while fuzzy finding
----@param dir 'up'|'down'|integer
----@return nil
+---@param dir 'up'|'down'|integer Direction to negative to:
+--- - 'up':             navigate one entry upwards
+--- - 'down':           navigate one entry downwards
+--- - positive integer: navigate to the {direction}-th next entry
+--- - negative integer: navigate to the {direction}-th previous entry
 function dropbar_menu_t:fuzzy_find_navigate(dir)
   if not self.fzf_state then
     return
@@ -1146,7 +1146,6 @@ end
 
 ---Toggle the menu
 ---@param opts dropbar_menu_opts_t? menu options passed to self:open()
----@return nil
 function dropbar_menu_t:toggle(opts)
   if self.is_opened then
     self:close()

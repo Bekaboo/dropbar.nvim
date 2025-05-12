@@ -1,11 +1,13 @@
+---Sources providing symbol information for dropbars
 ---@class dropbar_source_t
----@field get_symbols fun(buf: integer, win: integer, cursor: integer[]): dropbar_symbol_t[]
+---@field get_symbols fun(buf: integer, win: integer, cursor: integer[]): dropbar_symbol_t[] gets the symbols to show in the winbar given buffer number `buf`, window number `win`, and cursor position `cursor`
 
 local notified = false
 
 ---For backword compatibility
 ---@param get_symbols fun(buf: integer, win: integer, cursor: integer[]): dropbar_symbol_t[]
 ---@return dropbar_symbol_t[]
+---@nodoc
 local function check_params(get_symbols, buf, win, cursor)
   if
     type(buf) ~= 'number'

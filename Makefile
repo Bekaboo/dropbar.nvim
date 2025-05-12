@@ -1,5 +1,5 @@
 .PHONY: all
-all: format-check lint test
+all: format-check lint test docs
 
 # Test / doc generation dependencies
 deps:
@@ -13,6 +13,10 @@ deps/telescope-fzf-native.nvim: | deps
 	git -C deps clone --depth=1 --filter=blob:none \
 		https://github.com/nvim-telescope/telescope-fzf-native.nvim
 	(cd deps/telescope-fzf-native.nvim && make)
+
+deps/gen-vimdoc.nvim: | deps
+	git -C deps clone --depth=1 --filter=blob:none \
+		https://github.com/Bekaboo/gen-vimdoc.nvim
 
 .PHONY: test
 test: | deps/plenary.nvim deps/telescope-fzf-native.nvim
@@ -37,3 +41,7 @@ format:
 .PHONY: lint
 lint:
 	luacheck .
+
+.PHONY: docs
+docs: | deps/gen-vimdoc.nvim
+	nvim --clean --headless -u scripts/minimal_init.lua -l scripts/gen_vimdoc.lua

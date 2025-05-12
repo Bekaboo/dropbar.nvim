@@ -7,50 +7,6 @@
 
 
 ==============================================================================
-CONTENTS                                           *dropbar-table-of-contents*
-
-1. Features                                                 |dropbar-features|
-2. Requirements                                         |dropbar-requirements|
-3. Installation                                         |dropbar-installation|
-4. Usage                                                       |dropbar-usage|
-  4.1 Usage with `vim.ui.select`                |dropbar-usage-with-ui-select|
-5. Configuration                                       |dropbar-configuration|
-  5.1 Options                                  |dropbar-configuration-options|
-    5.1.1 Bar                              |dropbar-configuration-options-bar|
-    5.1.2 Menu                            |dropbar-configuration-options-menu|
-    5.1.3 Fzf                              |dropbar-configuration-options-fzf|
-    5.1.4 Icons                          |dropbar-configuration-options-icons|
-    5.1.5 Symbol                        |dropbar-configuration-options-symbol|
-    5.1.6 Sources                      |dropbar-configuration-options-sources|
-      5.1.6.1 Path                |dropbar-configuration-options-sources-path|
-      5.1.6.2 Treesitter    |dropbar-configuration-options-sources-treesitter|
-      5.1.6.3 LSP                  |dropbar-configuration-options-sources-lsp|
-      5.1.6.4 Markdown        |dropbar-configuration-options-sources-markdown|
-      5.1.6.5 Terminal        |dropbar-configuration-options-sources-terminal|
-  5.2 API                                          |dropbar-configuration-api|
-  5.3 Utility Functions              |dropbar-configuration-utility-functions|
-    5.3.1 Bar Utility Functions  |dropbar-configuration-utility-functions-bar|
-    5.3.2 Menu Utility Functions |dropbar-configuration-utility-functions-menu|
-  5.5 Highlighting                        |dropbar-configuration-highlighting|
-  5.6 Configuration Examples                  |dropbar-configuration-examples|
-6. Developers                                             |dropbar-developers|
-  6.1 Architecture                           |dropbar-developers-architecture|
-  6.2 Classes                                     |dropbar-developers-classes|
-    6.2.1 `dropbar_t`                   |dropbar-developers-classes-dropbar_t|
-    6.2.2 `dropbar_symbol_t`     |dropbar-developers-classes-dropbar_symbol_t|
-    6.2.4 `dropbar_menu_t`         |dropbar-developers-classes-dropbar_menu_t|
-    6.2.5 `dropbar_menu_entry_t` |dropbar-developers-classes-dropbar_menu_entry_t|
-    6.2.6 `dropbar_menu_hl_info_t` |dropbar-developers-classes-dropbar_menu_hl_info_t|
-    6.2.7 `dropbar_source_t`     |dropbar-developers-classes-dropbar_source_t|
-    6.2.8 `dropbar_select_opts_t` |dropbar-developers-classes-dropbar_select_opts_t|
-  6.3 Making a new source             |dropbar-developers-making-a-new-source|
-    6.3.1 Making a source with drop-down menus |dropbar-developers-making-a-source-with-drop-down-menus|
-    6.3.2 Default `on_click()` callback |dropbar-developers-default-on_click-callback|
-    6.3.3 Lazy-loading expensive fields |dropbar-developers-lazy-loading-expensive-fields|
-7. Similar Projects                                 |dropbar-similar-projects|
-
-
-==============================================================================
 FEATURES                                                    *dropbar-features*
 
 `dropbar.nvim` is a Neovim plugin that provides a polished, IDE-like,
@@ -1159,86 +1115,6 @@ TERMINAL                      *dropbar-configuration-options-sources-terminal*
   - Default: `true`
 
 ------------------------------------------------------------------------------
-API                                                *dropbar-configuration-api*
-
-`dropbar.nvim` exposes a few functions in `lua/dropbar/api.lua` that can be
-used to interact with the winbar or the drop-down menu:
-
-api.get_dropbar({buf}, {win})                      *dropbar-api-get_dropbar()*
-
-	DEPRECATED: Use `utils.bar.get()` instead
-
-api.get_current_dropbar()                  *dropbar-api-get_current_dropbar()*
-
- 	DEPRECATED: Use `utils.bar.get_current()` instead
-
-api.get_dropbar_menu({win})                   *dropbar-api-get_dropbar_menu()*
-
-	DEPRECATED: Use `utils.menu.get()` instead
-
-api.get_current_dropbar_menu()        *dropbar-api-get_current_dropbar_menu()*
-
-	DEPRECATED: Use `utils.menu.get_current()` instead
-
-api.goto_context_start([{count}])           *dropbar-api-goto_context_start()*
-
-	Move the cursor to the start of the current context
-
-	If {count} is 0 or `nil`, go to the start of current context, or the
-	start at previous context if cursor is already at the start of current
-	context
-
-	If {count} is positive, goto the start of {count} previous context
-
-	Parameters: ~
-	    • {count} (integer?): The number of context to go back
-
-api.select_next_context()                  *dropbar-api-select_next_context()*
-
-	Open the next context in the drop-down menu
-
-api.pick([{idx}])                                         *dropbar-api-pick()*
-
-	Pick a component from current winbar
-
-	If {idx} is `nil`, enter interactive pick mode to select a component
-
-        If {idx} is a number, directly pick the component at that index if it
-	exists
-
-	Parameters: ~
-	    • {idx} (integer?): The index of the component to pick
-
-api.fuzzy_find_toggle([{opts}])                *dropbar-api-fuzzy_find_toggle*
-
-	Toggle fuzzy finding in current dropbar menu
-
-	Parameters: ~
-	    • {opts} (table?): fuzzy find options, ignored if closing fuzzy
-			       find
-
-api.fuzzy_find_navigate({direction})                 *api.fuzzy_find_navigate*
-
-	Navigate to the nth entry above/below in the menu while fuzzy finding
-
-	Parameters: ~
-	    • {direction} ("up"|"down"|integer):
-
-	      - "up":             navigate one entry upwards
-	      - "down":           navigate one entry downwards
-	      - positive integer: navigate to the {direction}-th next entry
-	      - negative integer: navigate to the {direction}-th previous
-				  entry
-
-api.fuzzy_find_prev()                                    *api.fuzzy_find_prev*
-
-	Navigate to the previous entry in the menu while fuzzy finding
-
-api.fuzzy_find_next()                                    *api.fuzzy_find_next*
-
-	Navigate to the next entry in the menu while fuzzy finding
-
-------------------------------------------------------------------------------
 UTILITY FUNCTIONS                    *dropbar-configuration-utility-functions*
 
 ..............................................................................
@@ -1514,1093 +1390,6 @@ around in their window or clicks at a symbol in the winbar:
 <
 
 ------------------------------------------------------------------------------
-CLASSES                                           *dropbar-developers-classes*
-
-..............................................................................
-DROPBAR_T                               *dropbar-developers-classes-dropbar_t*
-								   *dropbar_t*
-
-Declared and defined in `lua/dropbar/bar.lua`.
-
-`dropbar_t` is a class that represents a winbar.
-
-It gets symbols (|dropbar-developers-classes-dropbar_symbol_t|) from sources
-(|dropbar-developers-classes-dropbar_source_t|) and renders them to a string.
-It is also responsible for registering `on_click` callbacks of each symbol in
-the global table `_G.dropbar.callbacks` so that nvim knows which
-function to call when a symbol is clicked.
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-`dropbar_t` has the following fields:
-
-dropbar_t.buf                                                  *dropbar_t.buf*
-
-	The buffer the dropbar is attached to
-
-	Type ~
-	    integer
-
-dropbar_t.win                                                  *dropbar_t.win*
-
-	The window the dropbar is attached to
-
-	Type ~
-	    integer
-
-dropbar_t.sources                                          *dropbar_t.sources*
-
- 	Sourcess that provide symbols to the dropbar
-
-	Type ~
-	    `dropbar_source_t`[]
-
-dropbar_t.separator                                      *dropbar_t.separator*
-
- 	Seprarator between symbols provided by sources
-
-	Type ~
-	    `dropbar_symbol_t`
-
-dropbar_t.padding                                          *dropbar_t.padding*
-
- 	Padding to use between the winbar and the window border
-
-	Type ~
-	    { left: integer, right: integer }
-
-dropbar_t.extends                                          *dropbar_t.extends*
-
- 	Symbol to use at the end of a symbol when it is truncated
-
-	Type ~
-	    `dropbar_symbol_t`
-
-dropbar_t.components                                    *dropbar_t.components*
-
- 	Symbols got from sources
-
-	Type ~
-	    `dropbar_symbol_t`[]
-
-dropbar_t.string_cache                                *dropbar_t.string_cache*
-
- 	String cache of the dropbar
-
-	Type ~
-	    string
-
-dropbar_t.in_pick_mode                                *dropbar_t.in_pick_mode*
-
- 	Whether the dropbar is in pick mode
-
-	Type ~
-	    boolean?
-
-dropbar_t.symbol_on_hover                          *dropbar_t.symbol_on_hover*
-
-	The previous symbol under mouse hovering in the dropbar
-
-	Type ~
-	    dropbar_symbol_t?
-
-dropbar_t.last_update_request_tim         *dropbar_t.last_update_request_time*
-
-	Timestamp of the last update request in ms, see |uv.now()|
-
-	Type ~
-	    float?
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-`dropbar_t` has the following methods:
-
-dropbar_t:new([{opts}])                                      *dropbar_t:new()*
-
- 	Constructs a new dropbar
-
-	Parameters ~
-	    opts: `dropbar_opts_t`? `dropbar_symbol_t` with reduces fields
-
-	Returns ~
-	    `dropbar_t`
-
-dropbar_t:del()                                              *dropbar_t:del()*
-
- 	Destructs the dropbar
-
-dropbar_t:displaywidth()                            *dropbar_t:displaywidth()*
-
- 	Returns the display width of the dropbar
-
-	Returns ~
-	    The display width of the dropbar
-
-dropbar_t:truncate()                                    *dropbar_t:truncate()*
-
- 	Truncates the dropbar if it exceeds the window width
-
-	*Side effect* ~
-	    Changes `dropbar_t.components`
-
-dropbar_t:cat([{plain}])                                     *dropbar_t:cat()*
-
-	Concatenates the dropbar components into a string with substrings for
-	highlights and click support if `plain` is not set; else returns a
-	plain string without substrings for highlights and click support
-
-	Parameters ~
-	    • {plain} (boolean?): Whether to return a plain string without
-				  substrings for highlights and click support
-
-	Returns ~
-	    (string) The string representation of the dropbar
-
-dropbar_t:redraw()                                        *dropbar_t:redraw()*
-
- 	Redraws the dropbar
-
-dropbar_t:update()                                        *dropbar_t:update()*
-
- 	Updates dropbar components (`dropbar_t.components`) and redraws the
-	dropbar afterwards
-
-dropbar_t:pick_mode_wrap({fn}, ...)               *dropbar_t:pick_mode_wrap()*
-
- 	Executes {fn} in pick mode
-
-	Parameters ~
-	    • {fn} (fun(): T?): Function to execute in pick mode
-	    • ... (any): Arguments to pass to {fn}
-
- 	Returns ~
-	    (T?) The return value of {fn}
-
-dropbar_t:pick([{idx}])                                     *dropbar_t:pick()*
-
- 	Picks a component from the dropbar in interactive pick mode if {idx}
-	is not given; else picks the {idx}th component directly
-
-	Parameters ~
-	    • {idx} (integer?): The index of the component to pick
-
-						*dropbar_t:get_component_at()*
-dropbar_t:get_component_at({col}[, {look_ahead}])
-
- 	Get the component at column {col} and the range it occupies in the
-	menu
-
-	Parameters ~
-	    • {col} (integer): The column to look at
-	    • {look_ahead} (boolean?):
-		whether to look ahead to find a component if no component is
-		found at {col}
-
-	Returns ~
-	    (`dropbar_symbol_t`): the component at {col}
-
-	    A table with fields `start` and `end` representing the range the
-	    component occupies in the menu
-
-					 *dropbar_t:update_current_context_hl*
-dropbar_t:update_current_context_hl({bar_idx})
-
-	Update the current context highlight hl-DropBarCurrentContext
-	assuming the {bar_idx} th symbol is clicked in the winbar
-
-	Parameters ~
-	    • {bar_idx} (integer): index of the symbol in the winbar, see
-				   |dropbar_symbol_t.bar_idx|
-
-dropbar_t:update_hover_hl([{col}])                 *dropbar_t:update_hover_hl*
-
-	Highlight the symbol at {col} as if the mouse is hovering on it
-
-	Parameters ~
-	    • {col} (integer?): displaywidth-indexed, 0-indexed mouse
-				position, set to `nil` to clear the hover
-				highlights
-
-dropbar_t:__call()                                        *dropbar_t:__call()*
-
- 	Meta method to convert `dropbar_t` to its string representation
-
-..............................................................................
-DROPBAR_SYMBOL_T                 *dropbar-developers-classes-dropbar_symbol_t*
-							    *dropbar_symbol_t*
-
-Declared and defined in `lua/dropbar/bar.lua`.
-
-`dropbar_symbol_t` is a class that represents a symbol in a dropbar. It is the
-basic element of `dropbar_t` and `dropbar_menu_entry_t`, see
-|dropbar-developers-classes-dropbar_t| and
-|dropbar-developers-classes-dropbar_menu_entry_t| for more information.
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-`dropbar_symbol_t` has the following fields:
-
-dropbar_symbol_t.name                                  *dropbar_symbol_t.name*
-
- 	Name of the symbol
-
-	Type ~
-	    string
-
-dropbar_symbol_t.icon                                  *dropbar_symbol_t.icon*
-
- 	Icon of the symbol
-
-	Type ~
-	    string
-
-dropbar_symbol_t.name_hl                            *dropbar_symbol_t.name_hl*
-
- 	Highlight group of the name of the symbol
-
-	Type ~
-	    string?
-
-dropbar_symbol_t.icon_hl                            *dropbar_symbol_t.icon_hl*
-
- 	Highlight group of the icon of the symbol
-
-	Type ~
-	    string?
-
-dropbar_symbol_t.win                                    *dropbar_symbol_t.win*
-
- 	The source window the symbol is shown in
-
-	Type ~
-	    integer?
-
-dropbar_symbol_t.buf                                    *dropbar_symbol_t.buf*
-
- 	The source buffer the symbol is defined in
-
-	Type ~
-	    integer?
-
-dropbar_symbol_t.view                                  *dropbar_symbol_t.view*
-
-	The original view of the source window, created by |winsaveview()|,
-	used to restore the view after previewing the symbol
-
-	Type ~
-	    table?
-
-dropbar_symbol_t.bar                                    *dropbar_symbol_t.bar*
-
- 	The dropbar the symbol belongs to, if the symbol is shown inside a
-	winabr
-
-	Type ~
-	    `dropbar_t`?
-
-dropbar_symbol_t.menu                                  *dropbar_symbol_t.menu*
-
- 	The menu associated with the symbol, if the symbol is shown inside a
-	winbar
-
-	Type ~
-	    `dropbar_menu_t`?
-
-dropbar_symbol_t.entry                                *dropbar_symbol_t.entry*
-
- 	The menu entry the symbol belongs to, if the symbol is shown inside a
-	menu
-
-	Type ~
-	    `dropbar_menu_entry_t`?
-
-dropbar_symbol_t.children                         *dropbar_symbol_t.children*
-
- 	Children of the symbol
-
-	For example, the children of a directory symbol are the files and
-	directories inside the directory; the children of a function symbol
-        can be the arguments of the function or the local variables inside the
-        function
-
-  Type ~
-      `dropbar_symbol_t`[]?
-
-dropbar_symbol_t.siblings                         *dropbar_symbol_t.siblings*
-
- 	Siblings of the symbol
-
-	For example, the siblings of a directory symbol are the files and
-	directories in the same directory; the siblings of a level 4 markdown
-	heading symbol can be some other level 4 markdown heading symbols
-
-  Type ~
-      `dropbar_symbol_t`[]?
-
-dropbar_symbol_t.bar_idx                            *dropbar_symbol_t.bar_idx*
-
- 	Index of the symbol in the winbar
-
-	Type ~
-	    integer?
-
-dropbar_symbol_t.entry_idx                        *dropbar_symbol_t.entry_idx*
-
- 	Index of the symbol in the menu entry
-
-	Type ~
-	    integer?
-
-dropbar_symbol_t.sibling_idx                    *dropbar_symbol_t.sibling_idx*
-
- 	Index of the symbol in the siblings
-
-	Type ~
-	    integer?
-
-dropbar_symbol_t.range                                *dropbar_symbol_t.range*
-
- 	Range of the symbol in the source window
-
-	Type ~
-	    `{start: {line: integer, character: integer}, end: {line: integer, character: integer}}`
-
-dropbar_symbol_t.on_click                          *dropbar_symbol_t.on_click*
-
- 	Callback to invoke when the symbol is clicked
-
-	Type ~
-	    `fun(this: dropbar_symbol_t, min_width: integer?, n_clicks: integer?, button: string?, modifiers: string?)|false?`
-
-	    Parameters ~
-		• this (`dropbar_symbol_t`): The dropbar symbol itself
-		• min_width (integer?): The minimum width of the dropbar
-		• n_clicks (integer?): The number of clicks
-		• button (string?): The mouse button that was clicked
-		• modifiers (string?): The modifiers that were pressed
-
-		For more information about the parameters, see the description
-		about the execute function label in the help page for
-		'statusline'.
-
-dropbar_symbol_t.callback_idx                  *dropbar_symbol_t.callback_idx*
-
-	Index of the `on_click()` callback in
-	`_G.dropbar.callbacks[buf][win]`, use this to index callback function
-	because `bar_idx` could change after truncate
-
-	Type ~
-	    integer?
-
-dropbar_symbol_t.opts                                  *dropbar_symbol_t.opts*
-
-	Options passed to `dropbar_symbol_t:new()` when the symbols is created
-
-	Type ~
-	    `dropbar_symbol_opts_t`?
-
-dropbar_symbol_t.data                                  *dropbar_symbol_t.data*
-
- 	Any extra data associated with the symbol
-
-	Type ~
-	    table?
-
-dropbar_symbol_t.min_width                        *dropbar_symbol_t.min_width*
-
- 	Minimun width when truncated
-
-	Type ~
-	    integer?
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-`dropbar_symbol_t` has the following methods:
-
-dropbar_symbol_t:new([{opts}])                        *dropbar_symbol_t:new()*
-
- 	Constructor of `dropbar_symbol_t`
-
-	Parameters ~
-	    • {opts} (`dropbar_symbol_t`?): The options to create the
-					    `dropbar_symbol_t` with
-
- 	Returns ~
-	    (`dropbar_symbol_t`) The newly created `dropbar_symbol_t`
-
-dropbar_symbol_t:del()                                *dropbar_symbol_t:del()*
-
- 	Destructor of `dropbar_symbol_t`
-
-dropbar_symbol_t:merge({opts})                      *dropbar_symbol_t:merge()*
-
-	Create a new `dropbar_symbol_t` by merging `opts` into the current
-	`dropbar_symbol_t`
-
-  Parameters ~
-      • {opts} (`dropbar_symbol_t`): The options to merge into the
-				      `dropbar_symbol_t`
-
-dropbar_symbol_t:cat([{plain}])                       *dropbar_symbol_t:cat()*
-
- 	Concatenates the symbol into a string with substrings for highlights
-	and click support if `plain` is not set; else returns a plain string
-	without substrings for highlights and click support
-
-	Parameters ~
-	    • {plain} (boolean?): Whether to return a plain string without
-				   substrings for highlights and click support
-
- 	Returns ~
-	    (string) The concatenated string
-
-dropbar_symbol_t:displaywidth()              *dropbar_symbol_t:displaywidth()*
-
- 	Returns the display width of the symbol
-
-	Returns ~
-	    (integer) The display width of the symbol
-
-dropbar_symbol_t:bytewidth()                    *dropbar_symbol_t:bytewidth()*
-
- 	Returns the byte width of the symbol
-
-	Returns ~
-	    (integer) The byte width of the symbol
-
-dropbar_symbol_t:jump()                              *dropbar_symbol_t:jump()*
-
- 	Jump to the start of the symbol associated with the winbar symbol
-
-dropbar_symbol_t:preview([{orig_view}])           *dropbar_symbol_t:preview()*
-
-	Parameters ~
-	    • {orig_view} (table?): Use this win view as the original view of
-				    the source window, see |winsaveview()| and
-				    |winrestview()|. Default to the current
-				    view of the source window
-
- 	Preview the symbol in the source window
-
-dropbar_symbol_t:preview_restore_hl()  *dropbar_symbol_t:preview_restore_hl()*
-
-	Clear the preview highlights in the source window
-
-				     *dropbar_symbol_t:preview_restore_view()*
-dropbar_symbol_t:preview_restore_view()
-
- 	Restore the view in the source window after previewing the symbol
-
-					       *dropbar_symbol_t:swap_field()*
-dropbar_symbol_t:swap_field({field}, {new_val})
-
- 	Temporarily change the content of a dropbar symbol
-
-	Parameters ~
-	    • {field} (string): The field to change
-	    • {new_val} (any): The new value of the field
-
-dropbar_symbol_t:restore()                        *dropbar_symbol_t:restore()*
-
-	Restore the values of the fields of a dropbar symbol changed
-	in `dropbar_symbol_t:swap_field()`
-
-..............................................................................
-DROPBAR_MENU_T                     *dropbar-developers-classes-dropbar_menu_t*
-							      *dropbar_menu_t*
-
-Declared and defined in `lua/dropbar/menu.lua`.
-
-`dropbar_menu_t` is a class that represents a drop-down menu.
-
-`dropbar_menu_t` has the following fields:
-
-dropbar_menu_t.buf                                        *dropbar_menu_t.buf*
-
- 	Buffer of the menu
-
-	Type ~
-	    integer
-
-dropbar_menu_t.win                                        *dropbar_menu_t.win*
-
- 	Window of the menu
-
-	Type ~
-	    integer
-
-dropbar_menu_t.prev_buf                              *dropbar_menu_t.prev_buf*
-
-  Previous buffer, assigned when calling `new()` or automatically
-  determined in `open()`
-
-  Type ~
-      integer?
-
-dropbar_menu_t.is_opened                            *dropbar_menu_t.is_opened*
-
- 	Whether the menu is currently opened
-
-	Type ~
-	    boolean?
-
-dropbar_menu_t.entries                                *dropbar_menu_t.entries*
-
- 	Entries in the menu
-
-	Type ~
-	    `dropbar_menu_entry_t`[]
-
-dropbar_menu_t.win_configs                        *dropbar_menu_t.win_configs*
-
-	Window configuration, values in this table can be functions, see
-	|dropbar-configuration-options-menu|
-
-	Type ~
-	    table
-
-dropbar_menu_t._win_configs                      *dropbar_menu_t._win_configs*
-
- 	Evaluated window configuration
-
-	Type ~
-	    table?
-
-dropbar_menu_t.cursor                                  *dropbar_menu_t.cursor*
-
- 	Initial cursor position
-
-	Type ~
-	    integer[]?
-
-dropbar_menu_t.prev_win                              *dropbar_menu_t.prev_win*
-
- 	Previous window, assigned when calling `dropbar_menu_t:new()` or
-	automatically determined in `dropbar_menu_t:open()`
-
-	Type ~
-	    integer?
-
-dropbar_menu_t.sub_menu                              *dropbar_menu_t.sub_menu*
-
- 	Submenu, assigned when calling `dropbar_menu_t:new()` or automatically
-	determined when a new menu opens
-
-	Type ~
-	    `dropbar_menu_t`?
-
-dropbar_menu_t.prev_menu                            *dropbar_menu_t.prev_menu*
-
-	Previous menu, assigned when calling `dropbar_menu_t:new()` or
-	automatically determined in `dropbar_menu_t:open()`
-
-	Type ~
-	    `dropbar_menu_t`?
-
-dropbar_menu_t.clicked_at                          *dropbar_menu_t.clicked_at*
-
- 	Last position where the menu was clicked, 1,0-indexed
-
-	Type ~
-	    integer[]?
-
-dropbar_menu_t.prev_cursor                        *dropbar_menu_t.prev_cursor*
-
- 	Previous cursor position in the menu
-
-	Type ~
-	    integer[]?
-
-dropbar_menu_t.symbol_previewed              *dropbar_menu_t.symbol_previewed*
-
- 	Symbol being previewed in the menu
-
-	Type ~
-	    `dropbar_symbol_t`?
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-`dropbar_menu_t` has the following methods:
-
-dropbar_menu_t:new({opts})                              *dropbar_menu_t:new()*
-
- 	Constructor of `dropbar_menu_t`
-
-	Parameters ~
-	    • {opts} (`dropbar_menu_t`): options for the menu
-
-	Returns ~
-	    (`dropbar_menu_t`): the new menu
-
-dropbar_menu_t:del()                                    *dropbar_menu_t:del()*
-
- 	Destructor of `dropbar_menu_t`
-
-dropbar_menu_t:root()                                  *dropbar_menu_t:root()*
-
-	Get the root menu (menu without `prev_menu`)
-
-	Returns ~
-	    (`dropbar_menu_t`?): the new menu
-
-					   *dropbar_menu_t:eval_win_configs()*
-dropbar_menu_t:eval_win_configs()
-
-	Evaluate window configurations |dropbar_menu_t.win_configs| and store
-	the result in |dropbar_menu_t._win_configs|
-
-					   *dropbar_menu_t:get_component_at()*
-dropbar_menu_t:get_component_at({pos}[, {look_ahead}])
-
- 	Get the component at position `pos` and the range it occupies in the
-	menu
-
-	Parameters ~
-	    • {pos} (integer[]): 1,0-indexed position
-	    • {look_ahead} (boolean?):
-		whether to look ahead to find a component if no component is
-		found at `pos`
-
-	Returns ~
-	    (`dropbar_symbol_t`): the component at `pos`
-
-	    A table with fields `start` and `end` representing the range the
-	    component occupies in the menu
-
-						   *dropbar_menu_t:click_at()*
-dropbar_menu_t:click_at({pos}, {min_width}, {n_clicks}, {button}, {modifiers})
-
- 	Simulate a click at position `pos` in the menu
-
-	Parameters ~
-	    • {pos} (integer[]): 1,0-indexed position
-	    • {min_width} (integer?): minimum width of the menu
-	    • {n_clicks} (integer?): number of clicks
-	    • {button} (string?): mouse button
-	    • {modifiers} (string?): modifiers
-
-						   *dropbar_menu_t:click_on()*
-dropbar_menu_t:click_on({symbol}, {min_width}, {n_clicks}, {button}, {modifiers})
-
- 	Simulate a click at the component `symbol` of the menu
-
-	Parameters ~
-	    • {symbol} (`dropbar_symbol_t`): component symbol
-	    • {min_width} (integer?): minimum width of the menu
-	    • {n_clicks} (integer?): number of clicks
-	    • {button} (string?): mouse button
-	    • {modifiers} (string?): modifiers
-
-dropbar_menu_t:udpate_hover_hl([{pos}])     *dropbar_menu_t:udpate_hover_hl()*
-
-	Update the hover highlights (hl-DropBarMenuHover*) assuming the
-	cursor/mouse is hovering at {pos} in the menu
-
-	Parameters ~
-	    • {pos} (integer[]?): { start, end }
-
-				    *dropbar_menu_t:update_current_context_hl*
-dropbar_menu_t:update_current_context_hl([{linenr}])
-
-	Update the current context highlight hl-DropBarMenuCurrentContext
-	assuming the cursor is at line {linenr} in the menu
-
-	Parameters ~
-	    • {linenr} (integer?): 1-indexed line number
-
-dropbar_menu_t:make_buf()                          *dropbar_menu_t:make_buf()*
-
- 	Create the menu buffer from the entries
-	|dropbar-developers-classes-dropbar_menu_entry_t|, must be called
-	after |dropbar_menu_t:eval_win_configs()|.
-
-dropbar_menu_t:open_win()                          *dropbar_menu_t:open_win()*
-
-	Open the menu window with window configuration
-	|dropbar_menu_t._win_configs| and set relevant window options,
-	must be called after |dropbar_menu_t:make_buf()|.
-
-dropbar_menu_t:override([{opts}])                  *dropbar_menu_t:override()*
-
- 	Override menu options
-
-	Parameters ~
-	    • {opts} (`dropbar_menu_t`): menu options
-
-					  *dropbar_menu_t:preview_symbol_at()*
-dropbar_menu_t:preview_symbol_at({pos}[, {look_ahead}])
-
- 	Preview the symbol at position `pos` and the range it occupies in
-	the menu
-
-	Parameters ~
-	    • {pos} (integer[]): 1,0-indexed position
-	    • {look_ahead} (boolean?):
-		whether to look ahead to find a component if no component is
-		found at `pos`
-
-dropbar_menu_t:finish_preview([restore_view])    *dropbar_menu_t:finish_preview()*
-
- 	Finish previewing the symbol, preview highlights in the sourec buffer
-        will always be cleared, the original view in the source window will
-        be restored if {restore_view} is set to `true` (default).
-
-	Parameters ~
-	    • {restore_view} (boolean?): whether to restore the original view
-				      of the source window, default to `true`
-
-dropbar_menu_t:quick_navigation(new_cursor)      *dropbar_menu_t:quick_navigation()*
-
- 	Navigate the cursor the nearest clickable component on the current
-        menu entry in the direction of cursor movement
-
-	Parameters ~
-	    • {new_cursor} (integer[]): new cursor position
-
-dropbar_menu_t:open([{opts}])                         *dropbar_menu_t:open()*
-
-	Open the menu with options {opts}
-
-	Parameters ~
-	    • {opts} (`dropbar_menu_t`): menu options
-
-dropbar_menu_t:close([restore_view])                  *dropbar_menu_t:close()*
-
- 	Close the menu
-
-	Parameters ~
-	    • {restore_view} (boolean?): whether to restore the original
-					 view of the source window, default
-                                         to `true`
-
-dropbar_menu_t:toggle([{opts}])                      *dropbar_menu_t:toggle()*
-
- 	Toggle the menu
-
-	Parameters ~
-	    • {opts} (`dropbar_menu_t`): menu options
-
-				   *dropbar_menu_t.fuzzy_find_restore_entries*
-dropbar_menu_t:fuzzy_find_restore_entries()
-
-	Restore menu buffer and entries in their original order before
-	modified by fuzzy search
-
-dropbar_menu_t:fuzzy_find_close()            *dropbar_menu_t:fuzzy_find_close*
-
-	Stop fuzzy finding and clean up allocated memory
-
-				  *dropbar_menu_t:fuzzy_find_click_on_entry()*
-dropbar_menu_t:fuzzy_find_click_on_entry({component})
-
-	Click on the currently selected fuzzy menu entry, choosing the
-	component to click according to component
-
-	Parameters~
-	    • {component}
-	      (integer|fun(`dropbar_menu_entry_t`):`dropbar_symbol_t`):
-
-	      If {component} is a number, the {component}-nth symbol is
-	      selected, unless 0 or -1 is supplied, in which case the first or
-	      last clickable component is selected, respectively.
-
-	      If {component} is a function, it receives the
-	      `dropbar_menu_entry_t` as an argument and should return the
-	      `dropbar_symbol_t` that is to be clicked.
-
-dropbar_menu_t:fuzzy_find_open()              *dropbar_menu_t:fuzzy_find_open*
-
-	Open the fuzzy search menu, overriding fzf configuration with opts
-	argument
-
-				        *dropbar_menu_t:fuzzy_find_navigate()*
-dropbar_menu_t:fuzzy_find_navigate({direction})
-
-	Navigate to the nth previous/next entry while fuzzy finding
-
-	Parameters~
-	    • {direction} ("up"|"down"|integer):
-
-	      - "up":             navigate one entry upwards
-	      - "down":           navigate one entry downwards
-	      - positive integer: navigate to the {direction}-th next entry
-	      - negative integer: navigate to the {direction}-th previous
-				  entry
-
-..............................................................................
-DROPBAR_MENU_ENTRY_T         *dropbar-developers-classes-dropbar_menu_entry_t*
-							*dropbar_menu_entry_t*
-
-Declared and defined in `lua/dropbar/menu.lua`.
-
-`dropbar_menu_entry_t` is a class that represents an entry (row) in a
-drop-down menu. A `dropbar_menu_t` instance is made up of multiple
-`dropbar_menu_entry_t` instances while a `dropbar_menu_entry_t` instance can
-contain multiple `dropbar_symbol_t` instances.
-
-`dropbar_menu_entry_t` has the following fields:
-
-dropbar_menu_entry_t.separator                      *dropbar_menu_t.separator*
-
- 	Separator to use in the entry
-
-	Type ~
-	    `dropbar_symbol_t`
-
-dropbar_menu_entry_t.padding                          *dropbar_menu_t.padding*
-
- 	Padding to use between the menu entry and the menu border
-
-	Type ~
-	    { left: integer, right: integer }
-
-dropbar_menu_entry_t.components                    *dropbar_menu_t.components*
-
-	Symbols got from sources |dropbar-developers-classes-dropbar_source_t|
-	in the entry
-
-	Type ~
-	    `dropbar_symbol_t`[]
-
-dropbar_menu_entry_t.virt_text                      *dropbar_menu_t.virt_text*
-
-	Symbols got from sources |dropbar-developers-classes-dropbar_source_t|
-	in the entry
-
-	Type ~
-	    `string`[][]?
-
-dropbar_menu_entry_t.menu                                *dropbar_menu_t.menu*
-
- 	The menu the entry belongs to
-
-	Type ~
-	    `dropbar_menu_t`?
-
-dropbar_menu_entry_t.idx                                  *dropbar_menu_t.idx*
-
- 	The index of the entry in the menu
-
-	Type ~
-	    integer?
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-`dropbar_menu_entry_t` has the following methods:
-
-dropbar_menu_entry_t:new([{opts}])                *dropbar_menu_entry_t:new()*
-
- 	Constructor of `dropbar_menu_entry_t`
-
-	Parameters ~
-	    • {opts} (`dropbar_menu_entry_t`?): options for the entry
-
-	Returns ~
-	    (`dropbar_menu_entry_t`): the new entry
-
-dropbar_menu_entry_t:del()                        *dropbar_menu_entry_t:del()*
-
- 	Destructor of `dropbar_menu_entry_t`
-
-dropbar_menu_entry_t:cat()                        *dropbar_menu_entry_t:cat()*
-
- 	Concatenate the components into a string, returns the string and
-	highlight info |dropbar-developers-classes-dropbar_menu_hl_info_t|
-
-	Returns ~
-	    (string, `dropbar_menu_hl_info_t`): the string and highlight info
-
-dropbar_menu_entry_t:displaywidth()      *dropbar_menu_entry_t:displaywidth()*
-
-	Calculate the display width of the entry
-
-	Returns ~
-	    (integer): the display width of the entry
-
-dropbar_menu_entry_t:bytewidth()            *dropbar_menu_entry_t:bytewidth()*
-
-	Calculate the byte width of the entry
-
-	Returns ~
-	    (integer): the byte width of the entry
-
-				      *dropbar_menu_entry_t:first_clickable()*
-dropbar_menu_entry_t:first_clickable([{offset}])
-
-	Get the first clickable component
-	|dropbar-developers-classes-dropbar_symbol_t| and its range in the
-	menu in the dropbar menu entry starting from {offset}, which defaults
-	to 0
-
-	Parameters ~
-	    • {offset} (integer?): offset to start from, defaults to 0
-
-	Returns ~
-	    (`dropbar_symbol_t`?): the first clickable component
-
-	    A table with fields `start` and `end` representing the range the
-	    component occupies in the menu
-
-				     *dropbar_menu_entry_t:get_component_at()*
-dropbar_menu_entry_t:get_component_at({col}[, {look_ahead}])
-
-	Get the compoenent at column position {col} and the range it occupies
-	in the menu entry
-
-	Parameters ~
-	    • {col} (integer): column number, 1-based, byte-indexed
-	    • {look_ahead} (boolean?):
-		whether to look ahead to find a component if no component is
-		found at {col}
-
-	Returns ~
-	    (`dropbar_symbol_t`?): the component at the position
-
-	    A table with fields `start` and `end` representing the range the
-	    component occupies in the menu
-
-				       *dropbar_menu_entry_t:prev_clickable()*
-dropbar_menu_entry_t:prev_clickable({col})
-
-	Find the previous clickable component in the menu entry
-
-	Parameters ~
-	    • {col} (integer): column number, 0-based, byte-indexed
-
- 	Returns ~
-	    (`dropbar_symbol_t`?): the previous clickable component
-
-	    A table with fields `start` and `end` representing the range the
-	    component occupies in the menu
-
-				       *dropbar_menu_entry_t:next_clickable()*
-dropbar_menu_entry_t:next_clickable({col})
-
-	Find the next clickable component in the menu entry
-
-	Parameters ~
-	    • {col} (integer): column number, 0-based, byte-indexed
-
- 	Returns ~
-	    (`dropbar_symbol_t`?): the nextious clickable component
-
-	    A table with fields `start` and `end` representing the range the
-	    component occupies in the menu
-
-..............................................................................
-DROPBAR_MENU_HL_INFO_T     *dropbar-developers-classes-dropbar_menu_hl_info_t*
-						      *dropbar_menu_hl_info_t*
-
-Declared and defined in `lua/dropbar/menu.lua`.
-
-`dropbar_menu_hl_info_t` is a class that represents a highlight range in a
-single line of a drop-down menu.
-
-`dropbar_menu_hl_info_t` has the following fields:
-
-dropbar_menu_hl_info_t.start                    *dropbar_menu_hl_info_t.start*
-
- 	The start column of the highlight range
-
-	Type ~
-	    integer
-
-dropbar_menu_hl_info_t.end                        *dropbar_menu_hl_info_t.end*
-
- 	The end column of the highlight range
-
-	Type ~
-	    integer
-
-dropbar_menu_hl_info_t.hlgroup                *dropbar_menu_hl_info_t.hlgroup*
-
- 	The highlight group to use for the range
-
-	Type ~
-	    string
-
-dropbar_menu_hl_info_t.ns                          *dropbar_menu_hl_info_t.ns*
-
- 	The namespace to use for the range, nil if using default namespace
-
-	Type ~
-	    integer?
-
-..............................................................................
-DROPBAR_SOURCE_T                                            *dropbar_source_t*
-
-Declared in `lua/dropbar/sources/init.lua`.
-
-`dropbar_source_t` is a class that represents a source of a drop-down menu.
-
-`dropbar_source_t` has the following field:
-
-						*dropbar_source_t.get_symbols*
-dropbar_source_t.get_symbols({buf}, {win}, {cursor})
-
- 	Get the symbols to show in the winbar given buffer number {buf} and
-	cursor position {cursor}
-
-	Parameters ~
-	    • {buf} (integer): buffer number
-	    • {win} (integer): window number
-	    • {cursor} (integer[]): cursor position
-
-	Returns ~
-	    (`dropbar_symbol_t`[]): the symbols to show in the winbar
-
-..............................................................................
-DROPBAR_SELECT_OPTS_T                                  *dropbar_select_opts_t*
-
-Declared in `lua/dropbar/utils/menu.lua`.
-
-`dropbar_select_opts_t` is a class that represents the options passed to
-`utils.menu.select` (`vim.ui.select` with some extensions).
-
-`dropbar_select_opts_t` has the following fields:
-
-dropbar_select_opts_t.prompt                    *dropbar_select_opts_t.prompt*
-
-	The prompt to show at the top of the menu
-
-	Type ~
-	    string?
-
-dropbar_select_opts_t.format_item({item})  *dropbar_select_opts_t.format_item*
-
-	Format an item in the list of items passed to `utils.menu.select` into
-	a string
-
-	Parameters ~
-	    • {item} (any): item in the list of items passed to
-	      `utils.menu.select`
-
-	Returns ~
-	    (`string`): the text to display for the item
-	    (`string`[][]?): optional virtual text to display below the item
-
-					       *dropbar_select_opts_t.preview*
-dropbar_select_opts_t.preview({self}, {item}, {idx})
-
-	Previews the list item under the cursor
-
-	Parameters ~
-	    • {self} (`dropbar_select_opts_t`): the `dropbar_select_opts_t`
-	    • {item} (any): the item under the cursor
-	    • {idx} (integer): the index of the item under the cursor
-
-					 *dropbar_select_opts_t.preview_close*
-dropbar_select_opts_t.preview_close({self}, {item}, {idx})
-
-	Closes the preview when the menu is closed
-
-	Parameters ~
-	    • {self} (`dropbar_select_opts_t`): the `dropbar_select_opts_t`
-	    • {item} (any): the item under the cursor
-	    • {idx} (integer): the index of the item under the cursor
-
-
-------------------------------------------------------------------------------
 MAKING A NEW SOURCE                       *dropbar-developers-making-a-source*
 
 A `dropbar_source_t` instance is just a table with `get_symbols` field set to
@@ -2816,6 +1605,1157 @@ SIMILAR PROJECTS                                    *dropbar-similar-projects*
 
 - nvim-navic <https://github.com/SmiteshP/nvim-navic>
 
+==============================================================================
+DROPBAR API                                                      *dropbar-api*
 
-------------------------------------------------------------------------------
-vim:tw=78:ts=8:noet:ft=help:norl:
+fuzzy_find_click({component})                 *dropbar.api.fuzzy_find_click()*
+    Click on the currently selected fuzzy find menu entry, choosing the
+    component to click according to `component`.
+
+    If `component` is a `number`, the `component`-nth symbol is selected,
+    unless `0` or `-1` is supplied, in which case the first or last clickable
+    component is selected, respectively. If it is a `function`, it receives
+    the `dropbar_menu_entry_t` as an argument and should return the
+    `dropbar_symbol_t` that is to be clicked.
+
+    Parameters: ~
+      • {component}  (`integer|dropbar_symbol_t|fun(entry: dropbar_menu_entry_t):dropbar_symbol_t??`)
+
+    Return: ~
+        (`nil`)
+
+fuzzy_find_navigate({direction})           *dropbar.api.fuzzy_find_navigate()*
+    Navigate to the nth entry above/below in the menu while fuzzy finding
+
+    Parameters: ~
+      • {direction}  (`'up'|'down'|integer`) Direction to negative to:
+                     • 'up': navigate one entry upwards
+                     • 'down': navigate one entry downwards
+                     • positive integer: navigate to the {direction}-th next
+                       entry
+                     • negative integer: navigate to the {direction}-th
+                       previous entry
+
+    Return: ~
+        (`nil`)
+
+fuzzy_find_next()                              *dropbar.api.fuzzy_find_next()*
+    Navigate to the next entry in the menu while fuzzy finding
+
+    Return: ~
+        (`nil`)
+
+fuzzy_find_prev()                              *dropbar.api.fuzzy_find_prev()*
+    Navigate to the previous entry in the menu while fuzzy finding
+
+    Return: ~
+        (`nil`)
+
+fuzzy_find_toggle({opts})                    *dropbar.api.fuzzy_find_toggle()*
+    Toggle fuzzy finding in current dropbar menu
+
+    Parameters: ~
+      • {opts}  (`table?`) fuzzy find options, ignored if closing fuzzy find
+
+    Return: ~
+        (`nil`)
+
+goto_context_start({count})                 *dropbar.api.goto_context_start()*
+    Goto the start of context If `count` is 0, goto the start of current
+    context, or the start at prev context if cursor is already at the start of
+    current context; If `count` is positive, goto the start of `count` prev
+    context
+
+    Parameters: ~
+      • {count}  (`integer?`) default vim.v.count
+
+    Return: ~
+        (`nil`)
+
+pick({idx})                                               *dropbar.api.pick()*
+    Pick a component from current dropbar
+
+    Parameters: ~
+      • {idx}  (`integer?`)
+
+    Return: ~
+        (`nil`)
+
+select_next_context()                      *dropbar.api.select_next_context()*
+    Open the menu of current context to select the next context
+
+    Return: ~
+        (`nil`)
+
+
+==============================================================================
+DROPBAR BARS                                                    *dropbar-bars*
+
+*dropbar_opts_t*
+    Opts to create a new `dropbar_t`
+
+    Fields: ~
+      • {buf}        (`integer?`)
+      • {win}        (`integer?`)
+      • {sources}    (`(dropbar_source_t[]|fun(buf: integer, win: integer):dropbar_source_t[])?`)
+      • {separator}  (`dropbar_symbol_t?`)
+      • {extends}    (`dropbar_symbol_t?`)
+      • {padding}    (`{left: integer, right: integer}?`)
+
+*dropbar_symbol_opts_t*
+
+    Fields: ~
+      • {name}         (`string?`)
+      • {icon}         (`string?`)
+      • {name_hl}      (`string?`)
+      • {icon_hl}      (`string?`)
+      • {win}          (`integer?`) the source window the symbol is shown in
+      • {buf}          (`integer?`) the source buffer the symbol is defined in
+      • {view}         (`table?`) original view of the source window
+      • {bar}          (`dropbar_t?`) the winbar the symbol belongs to, if the
+                       symbol is shown inside a winbar
+      • {menu}         (`dropbar_menu_t?`) menu associated with the winbar
+                       symbol, if the symbol is shown inside a winbar
+      • {entry}        (`dropbar_menu_entry_t?`) the dropbar entry the symbol
+                       belongs to, if the symbol is shown inside a menu
+      • {children}     (`dropbar_symbol_t[]?`) children of the symbol
+      • {siblings}     (`dropbar_symbol_t[]?`) siblings of the symbol
+      • {bar_idx}      (`integer?`) index of the symbol in the winbar
+      • {entry_idx}    (`integer?`) index of the symbol in the menu entry
+      • {sibling_idx}  (`integer?`) index of the symbol in its siblings
+      • {range}        (`dropbar_symbol_range_t?`)
+      • {on_click}     (`fun(this: dropbar_symbol_t, min_width: integer?, n_clicks: integer?, button: string?, modifiers: string?)|false?`)
+                       force disable on_click when false
+      • {jump}         (`fun(reorient: boolean?)?`)
+      • {data}         (`table?`) any data associated with the symbol
+      • {cache}        (`table?`) caches string representation, length, etc.
+                       for the symbol
+
+*dropbar_symbol_t*
+    Symbol in dropbar, basic element of `dropbar_t` and `dropbar_menu_entry_t`
+
+    Fields: ~
+      • {name}                  (`string`) name of the symbol
+      • {icon}                  (`string`) icon of the symbol
+      • {name_hl}               (`string?`) highlight group of the name of the
+                                symbol
+      • {icon_hl}               (`string?`) highlight group of the icon of the
+                                symbol
+      • {win}                   (`integer?`) source window the symbol is shown
+                                in
+      • {buf}                   (`integer?`) source buffer the symbol is
+                                defined in
+      • {view}                  (`table?`) original view of the source window
+      • {bar}                   (`dropbar_t?`) winbar the symbol belongs to,
+                                if the symbol is shown inside a winbar
+      • {menu}                  (`dropbar_menu_t?`) menu associated with the
+                                winbar symbol, if the symbol is shown inside a
+                                winbar
+      • {entry}                 (`dropbar_menu_entry_t?`) dropbar entry the
+                                symbol belongs to, if the symbol is shown
+                                inside a menu
+      • {children}              (`dropbar_symbol_t[]?`) children of the symbol
+      • {siblings}              (`dropbar_symbol_t[]?`) siblings of the symbol
+      • {bar_idx}               (`integer?`) index of the symbol in the winbar
+      • {entry_idx}             (`integer?`) index of the symbol in the menu
+                                entry
+      • {sibling_idx}           (`integer?`) index of the symbol in its
+                                siblings
+      • {range}                 (`dropbar_symbol_range_t?`)
+      • {on_click}              (`fun(this: dropbar_symbol_t, min_width: integer?, n_clicks: integer?, button: string?, modifiers: string?)|false?`)
+                                callback to invoke when the symbol is clicked,
+                                force disable mouse click support when set to
+                                `false`
+      • {callback_idx}          (`integer?`) idx of the on_click callback in
+                                `_G.dropbar.callbacks[buf][win]`, use this to
+                                index callback function because `bar_idx`
+                                could change after truncate
+      • {opts}                  (`dropbar_symbol_opts_t?`) options passed to
+                                `dropbar_symbol_t:new()` when the symbols is
+                                created
+      • {data}                  (`table?`) any data associated with the symbol
+      • {cache}                 (`table`) caches string representation,
+                                length, etc. for the symbol
+      • {min_width}             (`integer?`) minimum width when truncated
+      • {merge}                 (`fun(self: dropbar_symbol_t, opts: dropbar_symbol_opts_t): dropbar_symbol_t`)
+                                See |dropbar_symbol_t:merge()|.
+      • {new}                   (`fun(self: dropbar_symbol_t, opts: dropbar_symbol_opts_t?): dropbar_symbol_t`)
+                                See |dropbar_symbol_t:new()|.
+      • {del}                   (`fun(self: dropbar_symbol_t): nil`) See
+                                |dropbar_symbol_t:del()|.
+      • {cat}                   (`fun(self: dropbar_symbol_t, plain: boolean?): string`)
+                                See |dropbar_symbol_t:cat()|.
+      • {displaywidth}          (`fun(self: dropbar_symbol_t): number`) See
+                                |dropbar_symbol_t:displaywidth()|.
+      • {bytewidth}             (`fun(self: dropbar_symbol_t): number`) See
+                                |dropbar_symbol_t:bytewidth()|.
+      • {jump}                  (`fun(self: dropbar_symbol_t, reorient: boolean?): nil`)
+                                See |dropbar_symbol_t:jump()|.
+      • {preview}               (`fun(self: dropbar_symbol_t, orig_view: table?): nil`)
+                                See |dropbar_symbol_t:preview()|.
+      • {preview_restore_hl}    (`fun(self: dropbar_symbol_t): nil`) See
+                                |dropbar_symbol_t:preview_restore_hl()|.
+      • {preview_restore_view}  (`fun(self: dropbar_symbol_t): nil`) See
+                                |dropbar_symbol_t:preview_restore_view()|.
+      • {swap_field}            (`fun(self: dropbar_symbol_t, field: string, new_val: any): nil`)
+                                See |dropbar_symbol_t:swap_field()|.
+      • {restore}               (`fun(self: dropbar_symbol_t): nil`) See
+                                |dropbar_symbol_t:restore()|.
+
+*dropbar_t*
+    Represents a winbar.
+
+    It gets symbols (`dropbar_symbol_t`) from sources (`dropbar_source_t`) and
+    renders them to a string.
+
+    It is also responsible for registering `on_click` callbacks of each symbol
+    in the global table `_G.dropbar.callbacks` so that nvim knows which
+    function to call when a symbol is clicked.
+
+    Fields: ~
+      • {buf}                        (`integer`) buffer the dropbar is
+                                     attached to
+      • {win}                        (`integer`) window the dropbar is
+                                     attached to
+      • {sources}                    (`dropbar_source_t[]`) sourcess that
+                                     provide symbols to the dropbar
+      • {separator}                  (`dropbar_symbol_t`) seprarator icon
+                                     between symbols provided by sources
+      • {padding}                    (`{left: integer, right: integer}`)
+                                     padding to use between the winbar and the
+                                     window border
+      • {extends}                    (`dropbar_symbol_t`) symbol to use at the
+                                     end of a symbol when it is truncated
+      • {components}                 (`dropbar_symbol_t[]`) symbols from
+                                     sources
+      • {string_cache}               (`string`) string cache of the dropbar
+      • {in_pick_mode}               (`boolean?`) whether the dropbar is in
+                                     pick mode
+      • {symbol_on_hover}            (`dropbar_symbol_t?`) previous symbol
+                                     under mouse hovering in the dropbar
+      • {last_update_request_time}   (`number?`) timestamp of the last update
+                                     request in ms, see :h uv.now()
+      • {new}                        (`fun(self: dropbar_t, opts: dropbar_opts_t?): dropbar_t`)
+                                     See |dropbar_t:new()|.
+      • {del}                        (`fun(self: dropbar_t): nil`) See
+                                     |dropbar_t:del()|.
+      • {displaywidth}               (`fun(self: dropbar_t): integer`) See
+                                     |dropbar_t:displaywidth()|.
+      • {truncate}                   (`fun(self: dropbar_t): nil`) See
+                                     |dropbar_t:truncate()|.
+      • {cat}                        (`fun(self: dropbar_t, plain: boolean?): string`)
+                                     See |dropbar_t:cat()|.
+      • {redraw}                     (`fun(self: dropbar_t): nil`) See
+                                     |dropbar_t:redraw()|.
+      • {update}                     (`fun(self: dropbar_t): nil`) See
+                                     |dropbar_t:update()|.
+      • {pick_mode_wrap}             (`fun(self: dropbar_t, fn: fun(...): ...?)`)
+                                     See |dropbar_t:pick_mode_wrap()|.
+      • {pick}                       (`fun(self: dropbar_t, idx: integer?): nil`)
+                                     See |dropbar_t:pick()|.
+      • {get_component_at}           (`fun(self: dropbar_t, col: integer, look_ahead: boolean?): dropbar_symbol_t?, {start: integer, end: integer}?`)
+                                     See |dropbar_t:get_component_at()|.
+      • {update_current_context_hl}  (`fun(self: dropbar_t, bar_idx: integer): nil`)
+                                     See
+                                     |dropbar_t:update_current_context_hl()|.
+      • {update_hover_hl}            (`fun(self: dropbar_t, col: integer?): nil`)
+                                     See |dropbar_t:update_hover_hl()|.
+
+
+dropbar_symbol_t:bytewidth()                    *dropbar_symbol_t:bytewidth()*
+    Get the byte length of the dropbar symbol
+
+    Return: ~
+        (`number`)
+
+dropbar_symbol_t:cat({plain})                         *dropbar_symbol_t:cat()*
+    Concatenate inside a dropbar symbol to get the final string with
+    highlights and click support
+
+    Parameters: ~
+      • {plain}  (`boolean?`) whether to return a plain string without
+                 highlights and click support
+
+    Return: ~
+        (`string`)
+
+dropbar_symbol_t:del()                                *dropbar_symbol_t:del()*
+    Delete a dropbar symbol instance
+
+    Return: ~
+        (`nil`)
+
+dropbar_symbol_t:displaywidth()              *dropbar_symbol_t:displaywidth()*
+    Get the display length of the dropbar symbol
+
+    Return: ~
+        (`number`)
+
+dropbar_symbol_t:jump({reorient})                    *dropbar_symbol_t:jump()*
+    Jump to the start of the symbol associated with the winbar symbol
+
+    Parameters: ~
+      • {reorient}  (`boolean?`) whether to set view after jumping, default
+                    `true`
+
+    Return: ~
+        (`nil`)
+
+dropbar_symbol_t:merge({opts})                      *dropbar_symbol_t:merge()*
+    Create a new dropbar symbol instance with merged options
+
+    Parameters: ~
+      • {opts}  (`dropbar_symbol_opts_t`)
+
+    Return: ~
+        (`dropbar_symbol_t`)
+
+dropbar_symbol_t:new({opts})                          *dropbar_symbol_t:new()*
+    Create a dropbar symbol instance
+
+    Parameters: ~
+      • {opts}  (`dropbar_symbol_opts_t?`) dropbar symbol structure
+
+    Return: ~
+        (`dropbar_symbol_t`)
+
+dropbar_symbol_t:preview({orig_view})             *dropbar_symbol_t:preview()*
+    Preview the symbol in the source window
+
+    Parameters: ~
+      • {orig_view}  (`table?`) use this view as original view
+
+    Return: ~
+        (`nil`)
+
+                                       *dropbar_symbol_t:preview_restore_hl()*
+dropbar_symbol_t:preview_restore_hl()
+    Clear the preview highlights in the source window
+
+    Return: ~
+        (`nil`)
+
+                                     *dropbar_symbol_t:preview_restore_view()*
+dropbar_symbol_t:preview_restore_view()
+    Restore the source window to its original view
+
+    Return: ~
+        (`nil`)
+
+dropbar_symbol_t:restore()                        *dropbar_symbol_t:restore()*
+    Restore the content of a dropbar symbol
+
+    Return: ~
+        (`nil`)
+
+                                               *dropbar_symbol_t:swap_field()*
+dropbar_symbol_t:swap_field({field}, {new_val})
+    Temporarily change the content of a dropbar symbol
+
+    Parameters: ~
+      • {field}    (`string`)
+      • {new_val}  (`any`)
+
+    Return: ~
+        (`nil`)
+
+dropbar_t:cat({plain})                                       *dropbar_t:cat()*
+    Concatenate dropbar into a string with separator, highlight, and click
+    support
+
+    Parameters: ~
+      • {plain}  (`boolean?`) whether to return a plain string without
+                 substrings for highlights and click support
+
+    Return: ~
+        (`string`)
+
+dropbar_t:del()                                              *dropbar_t:del()*
+    Delete a dropbar instance
+
+    Return: ~
+        (`nil`)
+
+dropbar_t:displaywidth()                            *dropbar_t:displaywidth()*
+    Get the display length of the dropbar
+
+    Return: ~
+        (`integer`)
+
+                                                *dropbar_t:get_component_at()*
+dropbar_t:get_component_at({col}, {look_ahead})
+    Get the component at the given position in the winbar
+
+    Parameters: ~
+      • {col}         (`integer`) 0-indexed, byte-indexed
+      • {look_ahead}  (`boolean?`) whether to look ahead for the next
+                      component if the given position does not contain a
+                      component
+
+    Return (multiple): ~
+        (`dropbar_symbol_t?`)
+        (`{start: integer, end: integer}?`) range of the component in the
+        menu, byte-indexed, 0-indexed, start-inclusive, end-exclusive
+
+dropbar_t:new({opts})                                        *dropbar_t:new()*
+    Create a dropbar instance
+
+    Parameters: ~
+      • {opts}  (`dropbar_opts_t?`)
+
+    Return: ~
+        (`dropbar_t`)
+
+dropbar_t:pick({idx})                                       *dropbar_t:pick()*
+    Pick a component from dropbar Side effect: change
+    `dropbar_t.in_pick_mode`, `dropbar_t.components`
+
+    Parameters: ~
+      • {idx}  (`integer?`) index of the component to pick
+
+    Return: ~
+        (`nil`)
+
+dropbar_t:pick_mode_wrap({fn})                    *dropbar_t:pick_mode_wrap()*
+    Execute a function in pick mode Side effect: change
+    `dropbar_t.in_pick_mode`
+
+    Parameters: ~
+      • {fn}  (`fun(...): ...?`) @return ...?
+
+dropbar_t:redraw()                                        *dropbar_t:redraw()*
+    Reevaluate dropbar string from components and redraw dropbar
+
+    Return: ~
+        (`nil`)
+
+dropbar_t:truncate()                                    *dropbar_t:truncate()*
+    Truncate the dropbar to fit the window width Side effect: change
+    `dropbar_t.components`
+
+    Return: ~
+        (`nil`)
+
+dropbar_t:update()                                        *dropbar_t:update()*
+    Update dropbar components from sources and redraw dropbar, supposed to be
+    called on events `CursorMoved`, `CursorMovedI`, `TextChanged`, and
+    `TextChangedI` Not updating when executing a macro
+
+    Return: ~
+        (`nil`)
+
+                                       *dropbar_t:update_current_context_hl()*
+dropbar_t:update_current_context_hl({bar_idx})
+    Highlight the symbol at `bar_idx` as current context
+
+    Parameters: ~
+      • {bar_idx}  (`integer`) see `dropbar_symbol_t.bar_idx`
+
+    Return: ~
+        (`nil`)
+
+dropbar_t:update_hover_hl({col})                 *dropbar_t:update_hover_hl()*
+    Highlight the symbol at col as if the mouse is hovering on it
+
+    Parameters: ~
+      • {col}  (`integer?`) displaywidth-indexed, 0-indexed mouse position,
+               nil to clear the hover highlights
+
+    Return: ~
+        (`nil`)
+
+
+==============================================================================
+DROPBAR MENUS                                                  *dropbar-menus*
+
+*dropbar_menu_entry_opts_t*
+
+    Fields: ~
+      • {separator}   (`dropbar_symbol_t?`)
+      • {padding}     (`{left: integer, right: integer}?`)
+      • {components}  (`dropbar_symbol_t[]?`)
+      • {virt_text}   (`string[][]?`)
+      • {menu}        (`dropbar_menu_t?`) the menu the entry belongs to
+      • {idx}         (`integer?`) the index of the entry in the menu
+
+*dropbar_menu_entry_t*
+    Entry (row) in a drop-down menu. A `dropbar_menu_t` instance is made up of
+    multiple `dropbar_menu_entry_t` instances while a `dropbar_menu_entry_t`
+    instance can contain multiple `dropbar_symbol_t` instances.
+
+    Fields: ~
+      • {separator}         (`dropbar_symbol_t`)
+      • {padding}           (`{left: integer, right: integer}`)
+      • {components}        (`dropbar_symbol_t[]`)
+      • {virt_text}         (`string[][]?`)
+      • {menu}              (`dropbar_menu_t?`) the menu the entry belongs to
+      • {idx}               (`integer?`) the index of the entry in the menu
+      • {new}               (`fun(self: dropbar_menu_entry_t, opts: dropbar_menu_entry_opts_t?): dropbar_menu_entry_t`)
+                            See |dropbar_menu_entry_t:new()|.
+      • {cat}               (`fun(self: dropbar_menu_entry_t): string, dropbar_menu_hl_info_t[]`)
+                            See |dropbar_menu_entry_t:cat()|.
+      • {displaywidth}      (`fun(self: dropbar_menu_entry_t): number`) See
+                            |dropbar_menu_entry_t:displaywidth()|.
+      • {bytewidth}         (`fun(self: dropbar_menu_entry_t): number`) See
+                            |dropbar_menu_entry_t:bytewidth()|.
+      • {first_clickable}   (`fun(self: dropbar_menu_entry_t, offset: integer?): dropbar_symbol_t?, {start: integer, end: integer}?`)
+                            See |dropbar_menu_entry_t:first_clickable()|.
+      • {get_component_at}  (`fun(self: dropbar_menu_entry_t, col: integer, look_ahead: boolean?): dropbar_symbol_t?, {start: integer, end: integer}?`)
+                            See |dropbar_menu_entry_t:get_component_at()|.
+      • {prev_clickable}    (`fun(self: dropbar_menu_entry_t, col: integer): dropbar_symbol_t?, {start: integer, end: integer}?`)
+                            See |dropbar_menu_entry_t:prev_clickable()|.
+      • {next_clickable}    (`fun(self: dropbar_menu_entry_t, col: integer): dropbar_symbol_t?, {start: integer, end: integer}?`)
+                            See |dropbar_menu_entry_t:next_clickable()|.
+
+*dropbar_menu_hl_info_t*
+    Highlight range in a single line of a drop-down menu.
+
+    Fields: ~
+      • {start}    (`integer`) byte-indexed, 0-indexed, start inclusive
+      • {end}      (`integer`) byte-indexed, 0-indexed, end exclusive
+      • {hlgroup}  (`string`)
+      • {ns}       (`integer?`) namespace id, nil if using default namespace
+
+*dropbar_menu_opts_t*
+
+    Fields: ~
+      • {buf}               (`integer?`)
+      • {win}               (`integer?`)
+      • {is_opened}         (`boolean?`)
+      • {entries}           (`dropbar_menu_entry_t[]?`)
+      • {win_configs}       (`table?`) window configuration, value can be a
+                            function
+      • {cursor}            (`integer[]?`) initial cursor position
+      • {prev_win}          (`integer?`) previous window, assigned when
+                            calling new() or automatically determined in
+                            open()
+      • {sub_menu}          (`dropbar_menu_t?`) submenu, assigned when calling
+                            new() or automatically determined when a new menu
+                            opens
+      • {prev_menu}         (`dropbar_menu_t?`) previous menu, assigned when
+                            calling new() or automatically determined in
+                            open()
+      • {clicked_at}        (`integer[]?`) last position where the menu was
+                            clicked, byte-indexed, 1,0-indexed
+      • {prev_cursor}       (`integer[]?`) previous cursor position
+      • {symbol_previewed}  (`dropbar_symbol_t?`) symbol being previewed
+
+*dropbar_menu_t*
+    Represents a drop-down menu.
+
+    Fields: ~
+      • {buf}                         (`integer?`) buffer of the menu
+      • {win}                         (`integer?`) window of the menu
+      • {is_opened}                   (`boolean?`) whether the menu is
+                                      currently opened
+      • {entries}                     (`dropbar_menu_entry_t[]`) entries
+                                      (rows) in the menu
+      • {win_configs}                 (`table`) window configuration, value
+                                      can be a function
+      • {cursor}                      (`integer[]?`) initial cursor position
+      • {prev_win}                    (`integer?`) previous window, assigned
+                                      when calling new() or automatically
+                                      determined in open()
+      • {prev_buf}                    (`integer?`) previous buffer, assigned
+                                      when calling new() or automatically
+                                      determined in open()
+      • {sub_menu}                    (`dropbar_menu_t?`) submenu, assigned
+                                      when calling new() or automatically
+                                      determined when a new menu opens
+      • {prev_menu}                   (`dropbar_menu_t?`) previous menu,
+                                      assigned when calling new() or
+                                      automatically determined in open()
+      • {clicked_at}                  (`integer[]?`) last position where the
+                                      menu was clicked, byte-indexed,
+                                      1,0-indexed
+      • {prev_cursor}                 (`integer[]?`) previous cursor position
+      • {symbol_previewed}            (`dropbar_symbol_t?`) symbol being
+                                      previewed
+      • {fzf_state}                   (`fzf_state_t?`) fuzzy-finding state, or
+                                      nil if not currently fuzzy-finding
+      • {fzf_win_configs}             (`table`) window configuration, value
+                                      can be a function
+      • {scrollbar}                   (`{ thumb: integer, background: integer }?`)
+                                      scrollbar window handlers
+      • {new}                         (`fun(self: dropbar_menu_t, opts: dropbar_menu_opts_t?): dropbar_menu_t`)
+                                      See |dropbar_menu_t:new()|.
+      • {del}                         (`fun(self: dropbar_menu_t)`) See
+                                      |dropbar_menu_t:del()|.
+      • {root}                        (`fun(self: dropbar_menu_t): dropbar_menu_t?`)
+                                      See |dropbar_menu_t:root()|.
+      • {eval_win_configs}            (`fun(self: dropbar_menu_t)`) See
+                                      |dropbar_menu_t:eval_win_configs()|.
+      • {get_component_at}            (`fun(self: dropbar_menu_t, pos: integer[], look_ahead: boolean?): dropbar_symbol_t?, {start: integer, end: integer}?`)
+                                      See |dropbar_menu_t:get_component_at()|.
+      • {click_at}                    (`fun(self: dropbar_menu_t, pos: integer[], min_width: integer?, n_clicks: integer?, button: string?, modifiers: string?)`)
+                                      See |dropbar_menu_t:click_at()|.
+      • {click_on}                    (`fun(self: dropbar_menu_t, symbol: dropbar_symbol_t, min_width: integer?, n_clicks: integer?, button: string?, modifiers: string?)`)
+                                      See |dropbar_menu_t:click_on()|.
+      • {update_hover_hl}             (`fun(self: dropbar_menu_t, pos: integer[]?)`)
+                                      See |dropbar_menu_t:update_hover_hl()|.
+      • {update_current_context_hl}   (`fun(self: dropbar_menu_t, linenr: integer?)`)
+                                      See
+                                      |dropbar_menu_t:update_current_context_hl()|.
+      • {fill_buf}                    (`fun(self: dropbar_menu_t)`) See
+                                      |dropbar_menu_t:fill_buf()|.
+      • {make_buf}                    (`fun(self: dropbar_menu_t)`) See
+                                      |dropbar_menu_t:make_buf()|.
+      • {open_win}                    (`fun(self: dropbar_menu_t)`) See
+                                      |dropbar_menu_t:open_win()|.
+      • {update_scrollbar}            (`fun(self: dropbar_menu_t)`) See
+                                      |dropbar_menu_t:update_scrollbar()|.
+      • {close_scrollbar}             (`fun(self: dropbar_menu_t)`) See
+                                      |dropbar_menu_t:close_scrollbar()|.
+      • {override}                    (`fun(self: dropbar_menu_t, opts: dropbar_menu_opts_t?)`)
+                                      See |dropbar_menu_t:override()|.
+      • {open}                        (`fun(self: dropbar_menu_t, opts: dropbar_menu_opts_t?)`)
+                                      See |dropbar_menu_t:open()|.
+      • {close}                       (`fun(self: dropbar_menu_t, restore_view: boolean?)`)
+                                      See |dropbar_menu_t:close()|.
+      • {preview_symbol_at}           (`fun(self: dropbar_menu_t, pos: integer[], look_ahead: boolean?)`)
+                                      See
+                                      |dropbar_menu_t:preview_symbol_at()|.
+      • {finish_preview}              (`fun(self: dropbar_menu_t, restore_view: boolean?)`)
+                                      See |dropbar_menu_t:finish_preview()|.
+      • {quick_navigation}            (`fun(self: dropbar_menu_t, new_cursor: integer[])`)
+                                      See |dropbar_menu_t:quick_navigation()|.
+      • {fuzzy_find_restore_entries}  (`fun(self: dropbar_menu_t)`) See
+                                      |dropbar_menu_t:fuzzy_find_restore_entries()|.
+      • {fuzzy_find_close}            (`fun(self: dropbar_menu_t)`) See
+                                      |dropbar_menu_t:fuzzy_find_close()|.
+      • {fuzzy_find_click_on_entry}   (`fun(self: dropbar_menu_t, component: number|dropbar_symbol_t|fun(entry: dropbar_menu_entry_t):dropbar_symbol_t??)`)
+                                      See
+                                      |dropbar_menu_t:fuzzy_find_click_on_entry()|.
+      • {fuzzy_find_navigate}         (`fun(self: dropbar_menu_t, dir: 'up'|'down'|integer)`)
+                                      See
+                                      |dropbar_menu_t:fuzzy_find_navigate()|.
+      • {update_border}               (`fun(self: dropbar_menu_t)`) See
+                                      |dropbar_menu_t:update_border()|.
+      • {fuzzy_find_open}             (`fun(self: dropbar_menu_t, opts: table<string, any>?)`)
+                                      See |dropbar_menu_t:fuzzy_find_open()|.
+      • {toggle}                      (`fun(self: dropbar_menu_t, opts: dropbar_menu_opts_t?)`)
+                                      See |dropbar_menu_t:toggle()|.
+
+
+dropbar_menu_entry_t:bytewidth()            *dropbar_menu_entry_t:bytewidth()*
+    Get the byte length of the dropbar menu entry
+
+    Return: ~
+        (`number`)
+
+dropbar_menu_entry_t:cat()                        *dropbar_menu_entry_t:cat()*
+    Concatenate inside a dropbar menu entry to get the final string and
+    highlight information of the entry
+
+    Return (multiple): ~
+        (`string`) str
+        (`dropbar_menu_hl_info_t[]`) hl_info
+
+                                         *dropbar_menu_entry_t:displaywidth()*
+dropbar_menu_entry_t:displaywidth()
+    Get the display length of the dropbar menu entry
+
+    Return: ~
+        (`number`)
+
+                                      *dropbar_menu_entry_t:first_clickable()*
+dropbar_menu_entry_t:first_clickable({offset})
+    Get the first clickable component in the dropbar menu entry
+
+    Parameters: ~
+      • {offset}  (`integer?`) offset from the beginning of the entry, default
+                  0
+
+    Return (multiple): ~
+        (`dropbar_symbol_t?`)
+        (`{start: integer, end: integer}?`) range of the clickable component
+        in the menu, byte-indexed, 0-indexed, start-inclusive, end-exclusive
+
+                                     *dropbar_menu_entry_t:get_component_at()*
+dropbar_menu_entry_t:get_component_at({col}, {look_ahead})
+    Get the component at the given position in the dropbar menu
+
+    Parameters: ~
+      • {col}         (`integer`) 0-indexed, byte-indexed
+      • {look_ahead}  (`boolean?`) whether to look ahead for the next
+                      component if the given position does not contain a
+                      component
+
+    Return (multiple): ~
+        (`dropbar_symbol_t?`)
+        (`{start: integer, end: integer}?`) range of the component in the
+        menu, byte-indexed, 0-indexed, start-inclusive, end-exclusive
+
+dropbar_menu_entry_t:new({opts})                  *dropbar_menu_entry_t:new()*
+    Create a dropbar menu entry instance
+
+    Parameters: ~
+      • {opts}  (`dropbar_menu_entry_opts_t?`)
+
+    Return: ~
+        (`dropbar_menu_entry_t`)
+
+                                       *dropbar_menu_entry_t:next_clickable()*
+dropbar_menu_entry_t:next_clickable({col})
+    Find the next clickable component in the dropbar menu entry
+
+    Parameters: ~
+      • {col}  (`integer`) byte-indexed, 0-indexed column position
+
+    Return (multiple): ~
+        (`dropbar_symbol_t?`)
+        (`{start: integer, end: integer}?`) range of the clickable component
+        in the menu, byte-indexed, 0-indexed, start-inclusive, end-exclusive
+
+                                       *dropbar_menu_entry_t:prev_clickable()*
+dropbar_menu_entry_t:prev_clickable({col})
+    Find the previous clickable component in the dropbar menu entry
+
+    Parameters: ~
+      • {col}  (`integer`) byte-indexed, 0-indexed column position
+
+    Return (multiple): ~
+        (`dropbar_symbol_t?`)
+        (`{start: integer, end: integer}?`) range of the clickable component
+        in the menu, byte-indexed, 0-indexed, start-inclusive, end-exclusive
+
+                                                   *dropbar_menu_t:click_at()*
+dropbar_menu_t:click_at({pos}, {min_width}, {n_clicks}, {button}, {modifiers})
+    "Click" the component at the given position in the dropbar menu Side
+    effects: update self.clicked_at
+
+    Parameters: ~
+      • {pos}        (`integer[]`) 1,0-indexed, byte-indexed
+      • {min_width}  (`integer?`)
+      • {n_clicks}   (`integer?`)
+      • {button}     (`string?`)
+      • {modifiers}  (`string?`)
+
+                                                   *dropbar_menu_t:click_on()*
+dropbar_menu_t:click_on({symbol}, {min_width}, {n_clicks}, {button},
+                        {modifiers})
+    "Click" the component in the dropbar menu Side effects: update
+    self.clicked_at
+
+    Parameters: ~
+      • {symbol}     (`dropbar_symbol_t`)
+      • {min_width}  (`integer?`)
+      • {n_clicks}   (`integer?`)
+      • {button}     (`string?`)
+      • {modifiers}  (`string?`)
+
+dropbar_menu_t:close({restore_view})                  *dropbar_menu_t:close()*
+    Close the menu
+
+    Parameters: ~
+      • {restore_view}  (`boolean?`) whether to restore the source win view,
+                        default `true`
+
+dropbar_menu_t:close_scrollbar()            *dropbar_menu_t:close_scrollbar()*
+    Close the scrollbar, if one exists Side effect: set self.scrollbar to nil
+
+dropbar_menu_t:del()                                    *dropbar_menu_t:del()*
+    Delete a dropbar menu
+
+dropbar_menu_t:eval_win_configs()          *dropbar_menu_t:eval_win_configs()*
+    Evaluate window configurations `dropbar_menu_t.win_configs` and store
+    result in `dropbar_menu_t._win_configs` Side effects: update
+    self._win_configs
+
+    See also: ~
+      • vim.api.nvim_open_win
+
+dropbar_menu_t:fill_buf()                          *dropbar_menu_t:fill_buf()*
+    Fill the menu buffer with entries in `self.entries` and add highlights to
+    the buffer
+
+                                             *dropbar_menu_t:finish_preview()*
+dropbar_menu_t:finish_preview({restore_view})
+    Finish previewing the symbol, preview highlights in the sourec buffer will
+    always be cleared, the original view in the source window will be restored
+    if `restore_view` is set to `true` (default)
+
+    Parameters: ~
+      • {restore_view}  (`boolean?`) whether to restore the source win view,
+                        default `true`
+
+                                  *dropbar_menu_t:fuzzy_find_click_on_entry()*
+dropbar_menu_t:fuzzy_find_click_on_entry({component})
+    Click on the currently selected fuzzy find menu entry, choosing the
+    component to click according to `component`.
+
+    Parameters: ~
+      • {component}  (`number|dropbar_symbol_t|fun(entry: dropbar_menu_entry_t):dropbar_symbol_t??`)
+                     • If it is a `number`, the `component`-nth symbol is
+                       selected, unless `0` or `-1` is supplied, in which case
+                       the first or last clickable component is selected,
+                       respectively
+                     • If it is a function, it receives the
+                       `dropbar_menu_entry_t` as an argument and should return
+                       the `dropbar_symbol_t` that is to be clicked @version
+                       JIT
+
+dropbar_menu_t:fuzzy_find_close()          *dropbar_menu_t:fuzzy_find_close()*
+    Stop fuzzy finding and clean up allocated memory @version JIT
+
+                                        *dropbar_menu_t:fuzzy_find_navigate()*
+dropbar_menu_t:fuzzy_find_navigate({dir})
+    Navigate to the nth previous/next entry while fuzzy finding
+
+    Parameters: ~
+      • {dir}  (`'up'|'down'|integer`) Direction to negative to:
+               • 'up': navigate one entry upwards
+               • 'down': navigate one entry downwards
+               • positive integer: navigate to the {direction}-th next entry
+               • negative integer: navigate to the {direction}-th previous
+                 entry
+
+                                            *dropbar_menu_t:fuzzy_find_open()*
+dropbar_menu_t:fuzzy_find_open({opts})
+    Enable fuzzy finding mode
+
+    Parameters: ~
+      • {opts}  (`table<string, any>?`) @version JIT
+
+                                 *dropbar_menu_t:fuzzy_find_restore_entries()*
+dropbar_menu_t:fuzzy_find_restore_entries()
+    Restore menu buffer and entries in their original order before
+    modification by fuzzy finding @version JIT
+
+                                           *dropbar_menu_t:get_component_at()*
+dropbar_menu_t:get_component_at({pos}, {look_ahead})
+    Get the component at the given position in the dropbar menu
+
+    Parameters: ~
+      • {pos}         (`integer[]`) 1,0-indexed, byte-indexed
+      • {look_ahead}  (`boolean?`) whether to look ahead for the component at
+                      the given position
+
+    Return (multiple): ~
+        (`dropbar_symbol_t?`)
+        (`{start: integer, end: integer}?`) range of the component in the
+        menu, byte-indexed, 0-indexed, start-inclusive, end-exclusive
+
+dropbar_menu_t:make_buf()                          *dropbar_menu_t:make_buf()*
+    Make a buffer for the menu and set buffer-local keymaps Must be called
+    after `dropbar_menu_t:eval_win_configs()` Side effect: change
+    `dropbar_menu_t.buf`, `dropbar_menu_t.hl_info`
+
+dropbar_menu_t:new({opts})                              *dropbar_menu_t:new()*
+    Create a dropbar menu instance
+
+    Parameters: ~
+      • {opts}  (`dropbar_menu_opts_t?`)
+
+    Return: ~
+        (`dropbar_menu_t`)
+
+dropbar_menu_t:open({opts})                            *dropbar_menu_t:open()*
+    Open the menu Side effect: change self.win and self.buf
+
+    Parameters: ~
+      • {opts}  (`dropbar_menu_opts_t?`)
+
+dropbar_menu_t:open_win()                          *dropbar_menu_t:open_win()*
+    Open the popup window with win configs and opts, must be called after
+    self:make_buf()
+
+dropbar_menu_t:override({opts})                    *dropbar_menu_t:override()*
+    Override menu options
+
+    Parameters: ~
+      • {opts}  (`dropbar_menu_opts_t?`)
+
+                                          *dropbar_menu_t:preview_symbol_at()*
+dropbar_menu_t:preview_symbol_at({pos}, {look_ahead})
+    Preview the symbol at the given position
+
+    Parameters: ~
+      • {pos}         (`integer[]`) 1,0-indexed, byte-indexed position
+      • {look_ahead}  (`boolean?`) whether to look ahead for a component
+
+                                           *dropbar_menu_t:quick_navigation()*
+dropbar_menu_t:quick_navigation({new_cursor})
+    Set the cursor to the nearest clickable component in the direction of
+    cursor movement
+
+    Parameters: ~
+      • {new_cursor}  (`integer[]`) 1,0-indexed, byte-indexed position
+
+dropbar_menu_t:root()                                  *dropbar_menu_t:root()*
+    Retrieves the root menu (first menu opened from winbar)
+
+    Return: ~
+        (`dropbar_menu_t?`)
+
+dropbar_menu_t:toggle({opts})                        *dropbar_menu_t:toggle()*
+    Toggle the menu
+
+    Parameters: ~
+      • {opts}  (`dropbar_menu_opts_t?`) menu options passed to self:open()
+
+dropbar_menu_t:update_border()                *dropbar_menu_t:update_border()*
+
+                                  *dropbar_menu_t:update_current_context_hl()*
+dropbar_menu_t:update_current_context_hl({linenr})
+    Update highlights for current context according to pos
+
+    Parameters: ~
+      • {linenr}  (`integer?`) 1-indexed line number
+
+                                            *dropbar_menu_t:update_hover_hl()*
+dropbar_menu_t:update_hover_hl({pos})
+    Update DropBarMenuHover* highlights according to pos
+
+    Parameters: ~
+      • {pos}  (`integer[]?`) byte-indexed, 1,0-indexed cursor/mouse position
+
+dropbar_menu_t:update_scrollbar()          *dropbar_menu_t:update_scrollbar()*
+    Update the scrollbar's position and height, create a new scrollbar if one
+    does not exist Side effect: can change self.scrollbar
+
+
+==============================================================================
+DROPBAR SOURCE                                                *dropbar-source*
+
+*dropbar_source_t*
+    Sources providing symbol information for dropbars
+
+    Fields: ~
+      • {get_symbols}  (`fun(buf: integer, win: integer, cursor: integer[]): dropbar_symbol_t[]`)
+                       gets the symbols to show in the winbar given buffer
+                       number `buf`, window number `win`, and cursor position
+                       `cursor`
+
+
+
+==============================================================================
+DROPBAR BAR UTILS                                          *dropbar-bar-utils*
+
+attach({win}, {buf}, {info})                      *dropbar.utils.bar.attach()*
+    Attach dropbar to window
+
+    Parameters: ~
+      • {win}   (`integer?`)
+      • {buf}   (`integer?`)
+      • {info}  (`table?`) info from autocmd
+
+exec({method}, {opts})                              *dropbar.utils.bar.exec()*
+    Call method on dropbar(s) given the window id and/or buffer number the
+    dropbar(s) attached to
+    • If only `opts.win` is specified, call the dropbar attached the window;
+    • If only `opts.buf` is specified, call all dropbars attached the buffer;
+    • If both `opts.win` and `opts.buf` are specified, call the dropbar
+      attached the window that contains the buffer;
+    • If neither `opts.win` nor `opts.buf` is specified, call all dropbars
+    • `opts.params` specifies params passed to the method
+
+    Parameters: ~
+      • {method}  (`string`)
+      • {opts}    (`{win: integer?, buf: integer?, params: table?}?`)
+
+    Return: ~
+        (`any?`) return values of the method
+
+get({opts})                                          *dropbar.utils.bar.get()*
+    Get dropbar
+    • If only `opts.win` is specified, return the dropbar attached the window;
+    • If only `opts.buf` is specified, return all dropbars attached the
+      buffer;
+    • If both `opts.win` and `opts.buf` are specified, return the dropbar
+      attached the window that contains the buffer;
+    • If neither `opts.win` nor `opts.buf` is specified, return all dropbars
+      in the form of `table<buf, table<win, dropbar_t>>`
+
+    Parameters: ~
+      • {opts}  (`{win: integer?, buf: integer?}?`)
+
+    Return: ~
+        (`dropbar_t?`)
+
+get_current()                                *dropbar.utils.bar.get_current()*
+    Get current dropbar
+
+    Return: ~
+        (`dropbar_t?`)
+
+hl({str}, {hlgroup})                                  *dropbar.utils.bar.hl()*
+    Add highlight to a string
+
+    Parameters: ~
+      • {str}      (`string`)
+      • {hlgroup}  (`string?`)
+
+    Return: ~
+        (`string`)
+
+make_clickable({str}, {callback})         *dropbar.utils.bar.make_clickable()*
+    Make a dropbar string clickable
+
+    Parameters: ~
+      • {str}       (`string`)
+      • {callback}  (`string`)
+
+    Return: ~
+        (`string`)
+
+                                          *dropbar.utils.bar.set_min_widths()*
+set_min_widths({symbols}, {min_widths})
+    Set min widths for dropbar symbols
+
+    Parameters: ~
+      • {symbols}     (`dropbar_symbol_t[]`)
+      • {min_widths}  (`integer[]`)
+
+update_hover_hl({mouse})                 *dropbar.utils.bar.update_hover_hl()*
+    Update dropbar hover highlights given the mouse position
+
+    Parameters: ~
+      • {mouse}  (`table`)
+
+    Return: ~
+        (`nil`)
+
+
+==============================================================================
+DROPBAR MENU UTILS                                        *dropbar-menu-utils*
+
+*dropbar_select_opts_t*
+    Options passed to `utils.menu.select` (`vim.ui.select` with some
+    extensions).
+
+    Fields: ~
+      • {prompt}?         (`string`) Text to be displayed at the top of the
+                          menu
+      • {format_item}?    (`fun(item: any): string, string[][]?`) Function to
+                          format each item in the menu. Required if `items` is
+                          not a list of strings. The second return value is a
+                          list of virtual text chunks to be displayed below
+                          the item. If nothing is returned for the second
+                          value, no virtual text will be displayed.
+      • {preview}?        (`fun(self: dropbar_symbol_t, item: any, idx: integer)`)
+      • {preview_close}?  (`fun(self: dropbar_symbol_t, item: any, idx: integer)`)
+
+
+exec({method}, {opts})                             *dropbar.utils.menu.exec()*
+    Call method on dropbar menu(s) given the window id
+    • If `opts.win` is specified, call the dropbar menu with the window id;
+    • If `opts.win` is not specified, call all opened dropbars
+    • `opts.params` specifies params passed to the method
+
+    Parameters: ~
+      • {method}  (`string`)
+      • {opts}    (`{win: integer?, params: table?}?`)
+
+    Return: ~
+        (`any?`) return values of the method
+
+get({opts})                                         *dropbar.utils.menu.get()*
+    Get dropbar menu
+    • If `opts.win` is specified, return the dropbar menu attached the window;
+    • If `opts.win` is not specified, return all opened dropbar menus
+
+    Parameters: ~
+      • {opts}  (`{win: integer?}?`)
+
+    Return: ~
+        (`dropbar_menu_t?`)
+
+get_current()                               *dropbar.utils.menu.get_current()*
+    Get current menu
+
+    Return: ~
+        (`dropbar_menu_t?`)
+
+select({items}, {opts})                          *dropbar.utils.menu.select()*
+
+    Parameters: ~
+      • {items}  (`string[]|table[]`) list of items to be selected
+      • {opts}   (`dropbar_select_opts_t`)
+
+update_hover_hl({mouse})                *dropbar.utils.menu.update_hover_hl()*
+    Update menu hover highlights given the mouse position
+
+    Parameters: ~
+      • {mouse}  (`table`)
+
+    Return: ~
+        (`nil`)
+
+update_preview({mouse})                  *dropbar.utils.menu.update_preview()*
+    Update menu preview given the mouse position
+
+    Parameters: ~
+      • {mouse}  (`table`)
+
+    Return: ~
+        (`nil`)
+
+
+==============================================================================
+DROPBAR SOURCE UTILS                                    *dropbar-source-utils*
+
+fallback({sources})                          *dropbar.utils.source.fallback()*
+
+    Parameters: ~
+      • {sources}  (`dropbar_source_t[]`)
+
+    Return: ~
+        (`dropbar_source_t`)
+
+
+==============================================================================
+DROPBAR FZF UTILS                                          *dropbar-fzf-utils*
+
+*fzf_entry_t*
+
+    Fields: ~
+      • {index}      (`integer`)
+      • {str}        (`string`)
+      • {locations}  (`integer[]`)
+      • {score}      (`integer`)
+      • {first}      (`integer`)
+      • {pos}        (`integer[]?`)
+
+*fzf_lib_t*
+
+    Fields: ~
+      • {free_pattern}   (`fun`) @field get_score | fun(input: string,
+                         pattern: ffi.cdata*, slab: ffi.cdata*): number @field
+                         get_pos | fun(input: string, pattern: ffi.cdata*,
+                         slab: ffi.cdata*): nil|number[] @field parse_pattern
+                         | fun(pattern: string, case_mode: integer?, fuzzy:
+                         boolean): ffi.cdata*
+      • {allocate_slab}  (`fun(): ffi.cdata`)
+      • {free_slab}      (`fun`)
+
+*fzf_state_t*
+
+    Fields: ~
+      • {slab}          (`ffi.cdata`)
+      • {menu_entries}  (`dropbar_menu_entry_t[]`)
+      • {entries}       (`fzf_entry_t[]`)
+      • {win}           (`integer`)
+      • {proxy}         (`userdata`)
+      • {num_entries}   (`integer`)
+      • {new}           (`fun(self: fzf_state_t, menu: dropbar_menu_t, win: integer, opts: table): fzf_state_t?`)
+                        See |fzf_state_t:new()|.
+      • {gc}            (`fun(self: fzf_state_t)`) See |fzf_state_t:gc()|.
+
+
+fzf_state_t:gc()                                            *fzf_state_t:gc()*
+    Free the memory allocated by the fuzzy finder @version JIT
+
+fzf_state_t:new({menu}, {win}, {opts})                     *fzf_state_t:new()*
+    Create a new `fzf_state_t`. This extracts the
+
+    Parameters: ~
+      • {menu}  (`dropbar_menu_t`)
+      • {win}   (`integer`)
+      • {opts}  (`table`)
+
+    Return: ~
+        (`fzf_state_t?`) @version JIT
+
+
+ vim:tw=78:ts=8:sw=4:sts=4:et:ft=help:norl:

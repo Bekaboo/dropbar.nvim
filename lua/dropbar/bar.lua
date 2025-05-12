@@ -13,25 +13,27 @@ end
 
 ---@alias dropbar_symbol_range_t lsp_range_t
 
+---Symbol in dropbar, basic element of `dropbar_t` and
+---`dropbar_menu_entry_t`
 ---@class dropbar_symbol_t
 ---@field _ dropbar_symbol_t
----@field name string
----@field icon string
----@field name_hl string?
----@field icon_hl string?
----@field win integer? the source window the symbol is shown in
----@field buf integer? the source buffer the symbol is defined in
+---@field name string name of the symbol
+---@field icon string icon of the symbol
+---@field name_hl string? highlight group of the name of the symbol
+---@field icon_hl string? highlight group of the icon of the symbol
+---@field win integer? source window the symbol is shown in
+---@field buf integer? source buffer the symbol is defined in
 ---@field view table? original view of the source window
----@field bar dropbar_t? the winbar the symbol belongs to, if the symbol is shown inside a winbar
+---@field bar dropbar_t? winbar the symbol belongs to, if the symbol is shown inside a winbar
 ---@field menu dropbar_menu_t? menu associated with the winbar symbol, if the symbol is shown inside a winbar
----@field entry dropbar_menu_entry_t? the dropbar entry the symbol belongs to, if the symbol is shown inside a menu
+---@field entry dropbar_menu_entry_t? dropbar entry the symbol belongs to, if the symbol is shown inside a menu
 ---@field children dropbar_symbol_t[]? children of the symbol
 ---@field siblings dropbar_symbol_t[]? siblings of the symbol
 ---@field bar_idx integer? index of the symbol in the winbar
 ---@field entry_idx integer? index of the symbol in the menu entry
 ---@field sibling_idx integer? index of the symbol in its siblings
 ---@field range dropbar_symbol_range_t?
----@field on_click fun(this: dropbar_symbol_t, min_width: integer?, n_clicks: integer?, button: string?, modifiers: string?)|false|nil force disable on_click when false
+---@field on_click fun(this: dropbar_symbol_t, min_width: integer?, n_clicks: integer?, button: string?, modifiers: string?)|false|nil callback to invoke when the symbol is clicked, force disable mouse click support when set to `false`
 ---@field callback_idx integer? idx of the on_click callback in `_G.dropbar.callbacks[buf][win]`, use this to index callback function because `bar_idx` could change after truncate
 ---@field opts dropbar_symbol_opts_t? options passed to `dropbar_symbol_t:new()` when the symbols is created
 ---@field data table? any data associated with the symbol
@@ -128,8 +130,8 @@ function dropbar_symbol_t:del()
   end
 end
 
----Concatenate inside a dropbar symbol to get the final string
----@param plain boolean?
+---Concatenate inside a dropbar symbol to get the final string with highlights and click support
+---@param plain boolean? whether to return a plain string without highlights and click support
 ---@return string
 function dropbar_symbol_t:cat(plain)
   if self.cache.plain_str and plain then
@@ -183,7 +185,7 @@ function dropbar_symbol_t:bytewidth()
 end
 
 ---Jump to the start of the symbol associated with the winbar symbol
----@param reorient boolean? whether to set view after jumping, default true
+---@param reorient boolean? whether to set view after jumping, default `true`
 ---@return nil
 function dropbar_symbol_t:jump(reorient)
   if not self.range or not self.win then
@@ -263,6 +265,7 @@ function dropbar_symbol_t:restore()
   self.data.swapped = nil
 end
 
+---Opts to create a new `dropbar_t`
 ---@class dropbar_opts_t
 ---@field buf integer?
 ---@field win integer?
@@ -271,17 +274,25 @@ end
 ---@field extends dropbar_symbol_t?
 ---@field padding {left: integer, right: integer}?
 
+---Represents a winbar.
+---
+---It gets symbols (`dropbar_symbol_t`) from sources (`dropbar_source_t`) and
+---renders them to a string.
+---
+---It is also responsible for registering `on_click` callbacks of each symbol
+---in the global table `_G.dropbar.callbacks` so that nvim knows which
+---function to call when a symbol is clicked.
 ---@class dropbar_t
----@field buf integer
----@field win integer
----@field sources dropbar_source_t[]
----@field separator dropbar_symbol_t
----@field padding {left: integer, right: integer}
----@field extends dropbar_symbol_t
----@field components dropbar_symbol_t[]
----@field string_cache string
----@field in_pick_mode boolean?
----@field symbol_on_hover dropbar_symbol_t?
+---@field buf integer buffer the dropbar is attached to
+---@field win integer window the dropbar is attached to
+---@field sources dropbar_source_t[] sourcess that provide symbols to the dropbar
+---@field separator dropbar_symbol_t seprarator icon between symbols provided by sources
+---@field padding {left: integer, right: integer} padding to use between the winbar and the window border
+---@field extends dropbar_symbol_t symbol to use at the end of a symbol when it is truncated
+---@field components dropbar_symbol_t[] symbols from sources
+---@field string_cache string string cache of the dropbar
+---@field in_pick_mode boolean? whether the dropbar is in pick mode
+---@field symbol_on_hover dropbar_symbol_t? previous symbol under mouse hovering in the dropbar
 ---@field last_update_request_time number? timestamp of the last update request in ms, see :h uv.now()
 local dropbar_t = {}
 dropbar_t.__index = dropbar_t
@@ -331,7 +342,7 @@ function dropbar_t:displaywidth()
 end
 
 ---Truncate the dropbar to fit the window width
----Side effect: change dropbar.components
+---Side effect: change `dropbar_t.components`
 ---@return nil
 function dropbar_t:truncate()
   if not self.win or not vim.api.nvim_win_is_valid(self.win) then
@@ -400,8 +411,8 @@ function dropbar_t:truncate()
   end
 end
 
----Concatenate dropbar into a string with separator and highlight
----@param plain boolean?
+---Concatenate dropbar into a string with separator, highlight, and click support
+---@param plain boolean? whether to return a plain string without substrings for highlights and click support
 ---@return string
 function dropbar_t:cat(plain)
   if vim.tbl_isempty(self.components) then
@@ -438,7 +449,8 @@ function dropbar_t:redraw()
 end
 
 ---Update dropbar components from sources and redraw dropbar, supposed to be
----called at CursorMoved, CursorMovedI, TextChanged, and TextChangedI
+---called on events `CursorMoved`, `CursorMovedI`, `TextChanged`, and
+---`TextChangedI`
 ---Not updating when executing a macro
 ---@return nil
 function dropbar_t:update()
@@ -501,7 +513,7 @@ function dropbar_t:update()
 end
 
 ---Execute a function in pick mode
----Side effect: change dropbar.in_pick_mode
+---Side effect: change `dropbar_t.in_pick_mode`
 ---@param fn fun(...): ...?
 ---@return ...?
 function dropbar_t:pick_mode_wrap(fn, ...)
@@ -513,7 +525,7 @@ function dropbar_t:pick_mode_wrap(fn, ...)
 end
 
 ---Pick a component from dropbar
----Side effect: change dropbar.in_pick_mode, dropbar.components
+---Side effect: change `dropbar_t.in_pick_mode`, `dropbar_t.components`
 ---@param idx integer? index of the component to pick
 ---@return nil
 function dropbar_t:pick(idx)
@@ -618,8 +630,8 @@ function dropbar_t:get_component_at(col, look_ahead)
   return nil, nil
 end
 
----Highlight the symbol at bar_idx as current context
----@param bar_idx integer see dropbar_symbol_t.bar_idx
+---Highlight the symbol at `bar_idx` as current context
+---@param bar_idx integer see `dropbar_symbol_t.bar_idx`
 ---@return nil
 function dropbar_t:update_current_context_hl(bar_idx)
   local symbol = self.components[bar_idx]
