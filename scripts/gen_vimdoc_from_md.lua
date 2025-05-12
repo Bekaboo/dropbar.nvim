@@ -1,8 +1,3 @@
-require('nvim-treesitter.install').commands.TSInstallSync['run!'](
-  'markdown',
-  'markdown_inline'
-)
-
 require('ts-vimdoc.formatting').style_elements = {
   header_break = {
     string.rep('=', 78), -- atx_h1_marker

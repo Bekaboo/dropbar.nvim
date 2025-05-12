@@ -1,6 +1,10 @@
 .PHONY: all
 all: format-check lint test docs
 
+.PHONY: clean
+clean:
+	rm -rf deps doc
+
 # Test / doc generation dependencies
 doc:
 	mkdir doc
@@ -21,11 +25,7 @@ deps/gen-vimdoc.nvim: | deps
 	git -C deps clone --depth=1 --filter=blob:none \
 		https://github.com/Bekaboo/gen-vimdoc.nvim
 
-deps/nvim-treesitter: | deps
-	git -C deps clone --depth=1 --filter=blob:none \
-		https://github.com/nvim-treesitter/nvim-treesitter
-
-deps/ts-vimdoc.nvim: | deps deps/nvim-treesitter
+deps/ts-vimdoc.nvim:
 	git -C deps clone --depth=1 --filter=blob:none \
 		https://github.com/ibhagwan/ts-vimdoc.nvim
 
