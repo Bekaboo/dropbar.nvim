@@ -1,6 +1,6 @@
 *dropbar.txt*                                         Last change: 2025 May 12
 
-------------------------------------------------------------------------------
+==============================================================================
 INTRODUCTION                                            *dropbar-introduction*
 
 
@@ -8,7 +8,7 @@ A polished, IDE-like, highly-customizable winbar for Neovim with drop-down
 menus and multiple backends.
 
 
-------------------------------------------------------------------------------
+==============================================================================
 FEATURES                                                    *dropbar-features*
 
 
@@ -55,7 +55,7 @@ https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-
 - Add scrollbar to the menu when the symbol list is too long scrollbar
   <https://github.com/Bekaboo/dropbar.nvim/assets/76579810/ace94d9a-e850-4a6b-9ab3-51a290e5af32>
 
-------------------------------------------------------------------------------
+==============================================================================
 REQUIREMENTS                                            *dropbar-requirements*
 
 
@@ -68,7 +68,7 @@ REQUIREMENTS                                            *dropbar-requirements*
   source to work - Working treesitter parser installation for the treesitter
   source to work
 
-------------------------------------------------------------------------------
+==============================================================================
 INSTALLATION                                            *dropbar-installation*
 
 
@@ -117,7 +117,7 @@ INSTALLATION                                            *dropbar-installation*
 Lazy-loading is unneeded as it is already done in plugin/dropbar.lua
   <plugin/dropbar.lua>.
 
-------------------------------------------------------------------------------
+==============================================================================
 USAGE                                                          *dropbar-usage*
 
 
@@ -142,7 +142,7 @@ USAGE                                                          *dropbar-usage*
   disable, remap or add new keymaps in the drop-down menu, see menu options
   <#menu>
 
-
+------------------------------------------------------------------------------
 USAGE WITH `VIM.UI.SELECT`                 *dropbar-usage-with-`vim.ui.select*
 
 Dropbar can be used as a drop-in replacement for Neovim's builtin
@@ -155,19 +155,18 @@ To enable this functionality, simply replace `vim.ui.select` with
     vim.ui.select = require('dropbar.utils.menu').select
 <
 
-------------------------------------------------------------------------------
+==============================================================================
 CONFIGURATION                                          *dropbar-configuration*
 
 
 
-
+------------------------------------------------------------------------------
 OPTIONS                                                      *dropbar-options*
 
 For all available options and their default values, see
 lua/dropbar/configs.lua <lua/dropbar/configs.lua>.
 
 Below are the detailed explanation of the options.
-
 
 
 BAR                                                              *dropbar-bar*
@@ -287,7 +286,6 @@ the winbar:
   `'abcdefghijklmnopqrstuvwxyz'`
 - `opts.bar.truncate`: `boolean` - Whether to truncate the winbar if it
   doesn't fit in the window - Default: `true`
-
 
 MENU                                                            *dropbar-menu*
 
@@ -444,7 +442,6 @@ the menu:
           end,
         }
 <
-
 
 FZF                                                              *dropbar-fzf*
 
@@ -649,7 +646,6 @@ appearance of the fuzzy finder interface.
     fuzzy_find_on_click = true
 <
 
-
 ICONS                                                          *dropbar-icons*
 
 These options live under `opts.icons` and are used to configure the icons used
@@ -765,7 +761,6 @@ by the plugin:
           indicator = ' ',
         }
 <
-
 
 SYMBOL                                                        *dropbar-symbol*
 
@@ -894,7 +889,6 @@ the symbols:
 >lua
     function() end
 <
-
 
 SOURCES                                                      *dropbar-sources*
 
@@ -1113,7 +1107,7 @@ Thanks @willothy <https://github.com/willothy> for implementing this.
 - `opts.sources.terminal.show_current: boolean` - Show the current terminal
   buffer in the menu - Default: `true`
 
-
+------------------------------------------------------------------------------
 HIGHLIGHTING                                            *dropbar-highlighting*
 
 `dropbar.nvim` defines sets of highlight groups. Override them in your
@@ -1145,9 +1139,8 @@ colorscheme to change the appearance of the drop-down menu:
 | DropBarKind...NC                   | Highlights of corresponding symbol kind names in non-current windows | undefined                                  |
 
 
-
+------------------------------------------------------------------------------
 CONFIGURATION EXAMPLES                        *dropbar-configuration-examples*
-
 
 
 CUSTOM FILENAME HIGHLIGHT GROUP      *dropbar-custom-filename-highlight-group*
@@ -1199,7 +1192,6 @@ group `DropBarFileName`.
       },
     })
 <
-
 
 NORMALIZE PATH IN SPECIAL BUFFERS  *dropbar-normalize-path-in-special-buffers*
 
@@ -1263,12 +1255,12 @@ This configuration should addresses the issue:
     })
 <
 
-------------------------------------------------------------------------------
+==============================================================================
 DEVELOPERS                                                *dropbar-developers*
 
 
 
-
+------------------------------------------------------------------------------
 ARCHITECTURE                                            *dropbar-architecture*
 
 The flow chart below should well illustrate what does `dropbar` do user moves
@@ -1320,7 +1312,7 @@ around in their window or clicks at a symbol in the winbar:
                                                                          open drop-down menu, goto symbol, etc
 <
 
-
+------------------------------------------------------------------------------
 MAKING A NEW SOURCE                              *dropbar-making-a-new-source*
 
 A `dropbar_source_t` instance is just a table with `get_symbols` field set to
@@ -1376,7 +1368,6 @@ Add this source to `opts.bar.sources` <#bar> table to see it in action:
     })
 <
 
-
 SOURCE WITH DROP-DOWN MENUS              *dropbar-source-with-drop-down-menus*
 
 The following example shows how to make a source that returns two symbols with
@@ -1424,7 +1415,6 @@ the first symbol having a drop-down menu with a single entry saying 'World':
       end,
     }
 <
-
 
 DEFAULT `ON_CLICK()` CALLBACK          *dropbar-default-`on_click()`-callback*
 
@@ -1501,7 +1491,6 @@ To see this source in action add it to `opts.bar.sources` <#bar> table:
     })
 <
 
-
 LAZY-LOADING EXPENSIVE FIELDS          *dropbar-lazy-loading-expensive-fields*
 
 If the symbol fields `siblings` or `children` are expensive to compute, you
@@ -1537,7 +1526,7 @@ To see concrete examples of lazy-loading see `lua/dropbar/sources`
 <lua/dropbar/sources>.
 
 
-------------------------------------------------------------------------------
+==============================================================================
 SIMILAR PROJECTS                                    *dropbar-similar-projects*
 
 
