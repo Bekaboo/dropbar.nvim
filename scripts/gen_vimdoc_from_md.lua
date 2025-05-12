@@ -7,4 +7,5 @@ require('ts-vimdoc').docgen({
   input_file = 'README.md',
   output_file = 'doc/dropbar.txt',
   project_name = 'dropbar',
+  table_of_contents = false,
 })

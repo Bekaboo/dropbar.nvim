@@ -10,113 +10,57 @@
   <img src=https://github.com/Bekaboo/dropbar.nvim/assets/76579810/28db72ab-d75c-46fe-8a9d-1f06b4440de9 width=500>
 </p>
 
-<p align='center'>
-  A polished, IDE-like, highly-customizable winbar for Neovim <br>
-  with drop-down menu support and multiple backends
-</p>
-
-<div align='center'>
-
-  [![docs](https://github.com/bekaboo/dropbar.nvim/actions/workflows/tests.yml/badge.svg)](./doc/dropbar.txt)
-  [![luarocks](https://img.shields.io/luarocks/v/bekaboo/dropbar.nvim?logo=lua&color=blue)](https://luarocks.org/modules/bekaboo/dropbar.nvim)
-
+<div align="center">
+  <a href="./doc/dropbar.txt">
+    <img src="https://github.com/bekaboo/dropbar.nvim/actions/workflows/tests.yml/badge.svg" alt="docs">
+  </a>
+  <a href="https://luarocks.org/modules/bekaboo/dropbar.nvim">
+    <img src="https://img.shields.io/luarocks/v/bekaboo/dropbar.nvim?logo=lua&color=blue" alt="luarocks">
+  </a>
 </div>
 
-<!--toc:start-->
-- [Features](#features)
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Usage](#usage)
-  - [Usage with `vim.ui.select`](#usage-with-vimuiselect)
-- [Configuration](#configuration)
-  - [Options](#options)
-    - [Bar](#bar)
-    - [Menu](#menu)
-    - [Fzf](#fzf)
-    - [Icons](#icons)
-    - [Symbol](#symbol)
-    - [Sources](#sources)
-      - [Path](#path)
-      - [Treesitter](#treesitter)
-      - [LSP](#lsp)
-      - [Markdown](#markdown)
-      - [Terminal](#terminal)
-  - [Highlighting](#highlighting)
-  - [Configuration Examples](#configuration-examples)
-    - [Highlight File Name Using Custom Highlight Group `DropBarFileName`](#highlight-file-name-using-custom-highlight-group-dropbarfilename)
-    - [Enable Path Source in Special Plugin Buffers, e.g. Oil or Fugitive](#enable-path-source-in-special-plugin-buffers-eg-oil-or-fugitive)
-- [Developers](#developers)
-  - [Architecture](#architecture)
-  - [Making a New Source](#making-a-new-source)
-    - [Making a Source With Drop-Down Menus](#making-a-source-with-drop-down-menus)
-    - [Default `on_click()` Callback](#default-onclick-callback)
-    - [Lazy-Loading Expensive Fields](#lazy-loading-expensive-fields)
-- [Similar Projects](#similar-projects)
-<!--toc:end-->
+## Introduction
+
+A polished, IDE-like, highly-customizable winbar for Neovim with drop-down menu
+and multiple backends.
 
 ## Features
 
 https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-b20fc3098c5a
 
-- [x] Opening drop-down menus or go to definition with a single mouse click
-
+- Opening drop-down menus or go to definition with a single mouse click
     ![mouse-click](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/25282bf2-c90d-496b-9c37-0cbb6938ff5f)
-
-- [x] Pick mode for quickly selecting a component in the winbar with shortcuts
-
+- Pick mode for quickly selecting a component in the winbar with shortcuts
     ![pick-mode](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/6126ceb1-0ad9-468b-89b9-457ce4110999)
-
-- [x] Automatically truncating long components
-
+- Automatically truncating long components
     ![auto-truncate](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/c3b03e7f-d6f7-4c60-9c0d-da038529e1c7)
-
-  - [x] Better truncation when winbar is still too long after shortening
+  - Better truncation when winbar is still too long after shortening
         all components
-
-- [x] Multiple backends that support fall-backs
-
+- Multiple backends that support fall-backs
   `dropbar.nvim` comes with five builtin sources:
-
-  - [x] [lsp](lua/dropbar/sources/lsp.lua): gets symbols from language servers using nvim's builtin LSP framework
-
-  - [x] [markdown](lua/dropbar/sources/markdown.lua): a custom incremental parser that gets symbol information about markdown headings
-
-  - [x] [path](lua/dropbar/sources/path.lua): gets current file path
-
-  - [x] [treesitter](lua/dropbar/sources/treesitter.lua): gets symbols from treesitter parsers using nvim's builtin treesitter integration
-
-  - [x] [terminal](lua/dropbar/sources/terminal.lua): easily switch terminal buffers using the dropdown menu
-
+  - [lsp](lua/dropbar/sources/lsp.lua): gets symbols from language servers using nvim's builtin LSP framework
+  - [markdown](lua/dropbar/sources/markdown.lua): a custom incremental parser that gets symbol information about markdown headings
+  - [path](lua/dropbar/sources/path.lua): gets current file path
+  - [treesitter](lua/dropbar/sources/treesitter.lua): gets symbols from treesitter parsers using nvim's builtin treesitter integration
+  - [terminal](lua/dropbar/sources/terminal.lua): easily switch terminal buffers using the dropdown menu
   To make a new source yourself, see [making a new source](#making-a-new-source).
-
   For source fall-backs support, see [bar options](#bar).
-
-- [x] Zero config & Zero dependency
-
+- Zero config & Zero dependency
   `dropbar.nvim` does not require [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig), [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)
   or any third-party UI libraries to work.
   As long as the language server or the treesitter parser is installed,
   it should work just fine.
-
   Optionally, you can install [telescope-fzf-native](https://github.com/nvim-telescope/telescope-fzf-native.nvim)
   to add fuzzy search support to dropbar menus.
-
-- [x] Drop-down menu components and winbar symbols that response to
+- Drop-down menu components and winbar symbols that response to
       mouse/cursor hovering:
-
     ![hover](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/c944d61c-d39b-42e9-8b24-e3e33672b0d2)
-
     - This features requires `:h mousemoveevent` to be enabled.
-
-- [x] Preview symbols in their source windows when hovering over them in the
+- Preview symbols in their source windows when hovering over them in the
   drop-down menu
-
     ![preview](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/93f33b90-4f42-459c-861a-1e70114ba6f2)
-
-- [x] Reorient the source window on previewing or after jumping to a symbol
-
-- [x] Add scrollbar to the menu when the symbol list is too long
-
+- Reorient the source window on previewing or after jumping to a symbol
+- Add scrollbar to the menu when the symbol list is too long
   ![scrollbar](https://github.com/Bekaboo/dropbar.nvim/assets/76579810/ace94d9a-e850-4a6b-9ab3-51a290e5af32)
 
 ## Requirements
