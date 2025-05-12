@@ -2,6 +2,9 @@
 all: format-check lint test docs
 
 # Test / doc generation dependencies
+doc:
+	mkdir doc
+
 deps:
 	mkdir deps
 
@@ -55,7 +58,7 @@ VIMDOC := doc/dropbar.txt
 define nvim_gen_vimdoc_from
 	nvim --clean --headless -u scripts/minimal_init.lua -l scripts/gen_vimdoc_from_$1.lua
 endef
-docs: | deps/ts-vimdoc.nvim deps/gen-vimdoc.nvim
+docs: README.md lua | doc deps/ts-vimdoc.nvim deps/gen-vimdoc.nvim
 	$(call nvim_gen_vimdoc_from,md) && sed -i '$$ d' $(VIMDOC) # remove modeline
 	$(call nvim_gen_vimdoc_from,src)
 	sed -i 's/[ \t]\+$$//' $(VIMDOC) # remove trailing whitespaces
