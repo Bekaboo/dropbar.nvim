@@ -1,5 +1,21 @@
 # Changelog
 
+## [14.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v13.0.0...v14.0.0) (2025-05-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* **hlgroups:** use `hl-WinBarNC` as default nc symbol name hl
+
+### Features
+
+* **hlgroups:** dim highlights in non-current windows ([#239](https://github.com/Bekaboo/dropbar.nvim/issues/239)) ([aff8629](https://github.com/Bekaboo/dropbar.nvim/commit/aff8629d14f9ea10ec843e460aa541c9d7e05d55))
+
+
+### Code Refactoring
+
+* **hlgroups:** use `hl-WinBarNC` as default nc symbol name hl ([a945b92](https://github.com/Bekaboo/dropbar.nvim/commit/a945b924d0803e4a24cb178e337bc364cdcd6abd))
+
 ## [13.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v12.0.2...v13.0.0) (2025-04-20)
 
 
