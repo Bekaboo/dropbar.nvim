@@ -1184,6 +1184,8 @@ colorscheme to change the appearance of the drop-down menu:
 | Highlight group                    | Description                                                          | Attributes                                 |
 | ---------------------------------- | -------------------------------------------------------------        | ------------------------------------------ |
 | DropBarCurrentContext              | Background of selected/clicked symbol in dropbar                     | `{ link = 'Visual' }`                      |
+| DropBarCurrentContextIcon          | Highlight for selected/clicked symbol's icon in dropbar              | `{ link = 'DropBarCurrentContext' }`       |
+| DropBarCurrentContextName          | Highlight for selected/clicked symbol's name in dropbar              | `{ link = 'DropBarCurrentContext' }`       |
 | DropBarFzfMatch                    | Fzf fuzzy search matches                                             | `{ link = 'Special' }`                     |
 | DropBarHover                       | Background of the dropbar symbol when the mouse is hovering over it  | `{ link = 'Visual' }`                      |
 | DropBarIconKindDefault             | Default highlight for dropbar icons                                  | `{ link = 'Special' }`                     |
@@ -1199,7 +1201,7 @@ colorscheme to change the appearance of the drop-down menu:
 | DropBarMenuHoverEntry              | Background of hovered line in dropbar menus                          | `{ link = 'IncSearch' }`                   |
 | DropBarMenuHoverIcon               | Background of hovered symbol icon in dropbar menus                   | `{ reverse = true }`                       |
 | DropBarMenuHoverSymbol             | Background of hovered symbol name in dropbar menus                   | `{ bold = true }`                          |
-| DropBarMenuNormalFloat             | Nomral text in dropbar menus                                         | `{ link = 'NormalFloat' }`                 |
+| DropBarMenuNormalFloat             | Normal text in dropbar menus                                         | `{ link = 'NormalFloat' }`                 |
 | DropBarMenuSbar                    | Scrollbar background of dropbar menus                                | `{ link = 'PmenuSbar' }`                   |
 | DropBarMenuThumb                   | Scrollbar thumb of dropbar menus                                     | `{ link = 'PmenuThumb' }`                  |
 | DropBarPreview                     | Range of the symbol under the cursor in source code                  | `{ link = 'Visual' }`                      |
