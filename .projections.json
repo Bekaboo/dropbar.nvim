@@ -1,0 +1,10 @@
+{
+    "lua/dropbar/*.lua": {
+      "alternate": "tests/{}_spec.lua",
+      "type": "source"
+    },
+    "tests/*_spec.lua": {
+      "alternate": "lua/dropbar/{}.lua",
+      "type": "test"
+    }
+}
