@@ -644,12 +644,12 @@ function dropbar_t:update_current_context_hl(bar_idx)
   vim.api.nvim_set_hl(
     0,
     hl_currentcontext_icon,
-    utils.hl.merge('WinBarNC', symbol.icon_hl, 'DropBarCurrentContext')
+    utils.hl.merge('WinBarNC', symbol.icon_hl, 'DropBarCurrentContextIcon')
   )
   vim.api.nvim_set_hl(
     0,
     hl_currentcontext_name,
-    utils.hl.merge('WinBarNC', symbol.name_hl, 'DropBarCurrentContext')
+    utils.hl.merge('WinBarNC', symbol.name_hl, 'DropBarCurrentContextName')
   )
   symbol:swap_field('icon_hl', hl_currentcontext_icon)
   symbol:swap_field('name_hl', hl_currentcontext_name)
