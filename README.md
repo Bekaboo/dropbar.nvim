@@ -24,6 +24,8 @@
 A polished, IDE-like, highly-customizable winbar for Neovim with drop-down
 menus and multiple backends.
 
+For more information see [`:h dropbar`](doc/dropbar.txt).
+
 ## Features
 
 https://github.com/Bekaboo/dropbar.nvim/assets/76579810/e8c1ac26-0321-4762-9975-b20fc3098c5a

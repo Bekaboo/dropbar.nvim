@@ -1,4 +1,4 @@
-*dropbar.txt*                                         Last change: 2025 May 19
+*dropbar.txt*                                         Last change: 2025 May 21
 
 ==============================================================================
 INTRODUCTION                                            *dropbar-introduction*
@@ -6,6 +6,8 @@ INTRODUCTION                                            *dropbar-introduction*
 
 A polished, IDE-like, highly-customizable winbar for Neovim with drop-down
 menus and multiple backends.
+
+For more information see `:h dropbar` <doc/dropbar.txt>.
 
 
 ==============================================================================
