@@ -1,5 +1,17 @@
 # Changelog
 
+## [14.1.0](https://github.com/Bekaboo/dropbar.nvim/compare/v14.0.0...v14.1.0) (2025-06-01)
+
+
+### Features
+
+* **hlgrouos:** separate hl for current context icon and name ([#243](https://github.com/Bekaboo/dropbar.nvim/issues/243)) ([1cb3fac](https://github.com/Bekaboo/dropbar.nvim/commit/1cb3facee196a4ac7ee31df502d5dddeb77122e7))
+
+
+### Bug Fixes
+
+* **hlgroups:** shouldn't dim icons in menus ([b434e22](https://github.com/Bekaboo/dropbar.nvim/commit/b434e223f69d2ee101a3b1cb5c5a961344e4c832))
+
 ## [14.0.0](https://github.com/Bekaboo/dropbar.nvim/compare/v13.0.0...v14.0.0) (2025-05-17)
 
 
