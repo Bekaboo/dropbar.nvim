@@ -462,12 +462,13 @@ menu:
         )
       end,
       zindex = function(menu)
-        if menu.prev_menu then
-          if menu.prev_menu.scrollbar and menu.prev_menu.scrollbar.thumb then
-            return vim.api.nvim_win_get_config(menu.prev_menu.scrollbar.thumb).zindex
-          end
-          return vim.api.nvim_win_get_config(menu.prev_win).zindex
+        if not menu.prev_menu then
+          return
         end
+        return menu.prev_menu.scrollbar
+            and menu.prev_menu.scrollbar.thumb
+            and vim.api.nvim_win_get_config(menu.prev_menu.scrollbar.thumb).zindex
+          or vim.api.nvim_win_get_config(menu.prev_win).zindex
       end,
     }
     ```
