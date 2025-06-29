@@ -1,5 +1,17 @@
 # Changelog
 
+## [14.2.0](https://github.com/Bekaboo/dropbar.nvim/compare/v14.1.0...v14.2.0) (2025-06-29)
+
+
+### Features
+
+* **sources.path:** highlight extended security marks in `ls` output ([64f5540](https://github.com/Bekaboo/dropbar.nvim/commit/64f5540824ab350f02dabc1276f4a1f4f141276b))
+
+
+### Bug Fixes
+
+* **configs:** default attach to terminals ([#247](https://github.com/Bekaboo/dropbar.nvim/issues/247)) ([12df0ef](https://github.com/Bekaboo/dropbar.nvim/commit/12df0effadec35529f3a4862e4a7caa3782a57af))
+
 ## [14.1.0](https://github.com/Bekaboo/dropbar.nvim/compare/v14.0.0...v14.1.0) (2025-06-01)
 
 
