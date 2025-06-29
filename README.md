@@ -217,7 +217,7 @@ winbar:
   - Default:
     ```lua
     {
-      'OptionSet',
+      'TermOpen',
       'BufWinEnter',
       'BufWritePost',
     }
@@ -1291,9 +1291,8 @@ require('dropbar').setup({
         return false
       end
 
-      return vim.bo[buf].ft == 'markdown'
-        or vim.bo[buf].ft == 'oil' -- enable in oil buffers
-        or vim.bo[buf].ft == 'fugitive' -- enable in fugitive buffers
+      return vim.bo[buf].bt == 'terminal'
+        or vim.bo[buf].ft == 'markdown'
         or pcall(vim.treesitter.get_parser, buf)
         or not vim.tbl_isempty(vim.lsp.get_clients({
           bufnr = buf,
