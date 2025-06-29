@@ -155,10 +155,11 @@ local function preview_decorate(win)
             syn match DropbarDirPreviewTypeSocket /^s/ nextgroup=DropbarDirPreviewSocketPerms skipwhite
 
             for type in ['File', 'Dir', 'Fifo', 'Link', 'Socket']
-              exe substitute('syn match DropbarDirPreview%sPerms /\v[-rwxs]{9}\.?/ contained
+              exe substitute('syn match DropbarDirPreview%sPerms /\v[-rwxs]{9}[\.\@\+]?/ contained
                             \ contains=DropbarDirPreviewPermRead,DropbarDirPreviewPermWrite,
                                      \ DropbarDirPreviewPermExec,DropbarDirPreviewPermSetuid,
-                                     \ DropbarDirPreviewPermNone,DropbarDirPreviewSecurityContext
+                                     \ DropbarDirPreviewPermNone,DropbarDirPreviewSecurityContext,
+                                     \ DropbarDirPreviewSecurityExtended
                             \ nextgroup=DropbarDirPreview%sNumHardLinksNormal,
                                       \ DropbarDirPreview%sNumHardLinksMulti
                             \ skipwhite', '%s', type, 'g')
@@ -185,6 +186,7 @@ local function preview_decorate(win)
             syn match DropbarDirPreviewPermSetuid /s/ contained
             syn match DropbarDirPreviewPermNone /-/ contained
             syn match DropbarDirPreviewSecurityContext /\./ contained
+            syn match DropbarDirPreviewSecurityExtended /@\|+/ contained
 
             syn match DropbarDirPreviewDir /[^.].*/ contained
             syn match DropbarDirPreviewFile /[^.].*/ contained
@@ -211,6 +213,7 @@ local function preview_decorate(win)
             hi def link DropBarDirPreviewPermSetuid DignosticSignHint
             hi def link DropBarDirPreviewPermNone NonText
             hi def link DropBarDirPreviewSecurityContext Special
+            hi def link DropBarDirPreviewSecurityExtended Special
 
             hi def link DropBarDirPreviewDir Directory
             hi def link DropBarDirPreviewFile DropBarKindFile
