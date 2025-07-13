@@ -330,6 +330,10 @@ end
 ---Attach LSP symbol getter to buffer
 ---@param buf integer buffer handler
 local function attach(buf)
+  if not vim.api.nvim_buf_is_valid(buf) then
+    return
+  end
+
   if vim.b[buf].dropbar_lsp_attached then
     return
   end
@@ -348,6 +352,10 @@ end
 ---Detach LSP symbol getter from buffer
 ---@param buf integer buffer handler
 local function detach(buf)
+  if not vim.api.nvim_buf_is_valid(buf) then
+    return
+  end
+
   if vim.b[buf].dropbar_lsp_attached then
     vim.api.nvim_del_autocmd(vim.b[buf].dropbar_lsp_attached)
     vim.b[buf].dropbar_lsp_attached = nil
