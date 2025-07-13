@@ -1,4 +1,4 @@
-*dropbar.txt*                                        Last change: 2025 June 10
+*dropbar.txt*                                        Last change: 2025 June 28
 
 ==============================================================================
 INTRODUCTION                                            *dropbar-introduction*
