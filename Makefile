@@ -43,10 +43,13 @@ test: | deps/plenary.nvim deps/telescope-fzf-native.nvim
 		+"PlenaryBustedDirectory tests { minimal_init = 'tests/minimal_init.lua' }" \
 		+qa!
 
+# Examples:
+# test-file-bar (will run `tests/bar_spec.lua`)
+# test-file-sources:lsp (will run `tests/sources/lsp_spec.lua`)
 .PHONY: test-file-%
 test-file-%:
 	nvim --clean --headless -u tests/minimal_init.lua \
-		+"lua require(\"plenary.busted\").run(\"tests/$*_spec.lua\")" \
+		+"lua require(\"plenary.busted\").run(\"tests/$(subst :,/,$*)_spec.lua\")" \
 		+qa!
 
 .PHONY: format-check
