@@ -90,7 +90,8 @@ local symbol_kind_names = setmetatable({
 local function symbol_type(symbols)
   if symbols[1] and symbols[1].location then
     return 'SymbolInformation'
-  elseif symbols[1] and symbols[1].range then
+  end
+  if symbols[1] and symbols[1].range then
     return 'DocumentSymbol'
   end
 end
@@ -179,7 +180,9 @@ local function convert_document_symbol(
           return convert_document_symbol(child, buf, win)
         end, document_symbol.children)
         return self.children
-      elseif k == 'siblings' then
+      end
+
+      if k == 'siblings' then
         if not siblings then
           return nil
         end
