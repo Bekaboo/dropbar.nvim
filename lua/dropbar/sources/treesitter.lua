@@ -187,6 +187,4 @@ local function get_symbols(buf, win, cursor)
   return symbols
 end
 
-return {
-  get_symbols = get_symbols,
-}
+return { get_symbols = get_symbols }
