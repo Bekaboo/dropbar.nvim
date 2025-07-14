@@ -74,7 +74,7 @@ describe('[source][lsp]', function()
     -- Mock a client that returns response with disordered symbols on
     -- textDocument/documentSymbol request
     ---@diagnostic disable-next-line: assign-type-mismatch
-    mock_client.request = spy.new(function(_, method, _, handler)
+    mock_client.request = function(_, method, _, handler)
       if method ~= 'textDocument/documentSymbol' then
         return
       end
@@ -104,10 +104,13 @@ describe('[source][lsp]', function()
             ['end'] = { line = 10, character = 0 },
           },
         },
+      }, {
+        method = 'textDocument/documentSymbol',
+        client_id = mock_client.id,
       })
 
       return true, 1
-    end)
+    end
 
     -- Trigger LSP update
     vim.api.nvim_exec_autocmds(configs.opts.bar.update_events.buf[1], {
