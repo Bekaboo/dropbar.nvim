@@ -76,18 +76,18 @@ end
 ---@return integer idx index of the node in its siblings
 local function get_node_siblings(node, buf)
   local siblings = {}
-  local current = node --[[@type TSNode?]]
+
+  local current = node ---@type TSNode?
   while current do
     if valid_node(current, buf) then
       table.insert(siblings, 1, current)
     else
-      for _, sib in ipairs(get_node_children(current, buf)) do
-        table.insert(siblings, 1, sib)
-      end
+      siblings = vim.list_extend(get_node_children(current, buf), siblings)
     end
     current = current:prev_sibling()
   end
   local idx = #siblings
+
   current = node:next_sibling()
   while current do
     if valid_node(current, buf) then
@@ -97,6 +97,7 @@ local function get_node_siblings(node, buf)
     end
     current = current:next_sibling()
   end
+
   return siblings, idx
 end
 
@@ -137,7 +138,9 @@ local function convert(ts_node, buf, win)
           return convert(child, buf, win)
         end, get_node_children(ts_node, buf))
         return self.children
-      elseif k == 'siblings' or k == 'sibling_idx' then
+      end
+
+      if k == 'siblings' or k == 'sibling_idx' then
         local siblings, idx = get_node_siblings(ts_node, buf)
         self.siblings = vim.tbl_map(function(sibling)
           return convert(sibling, buf, win)
