@@ -37,7 +37,6 @@ describe('[source][lsp]', function()
       vim.api.nvim_get_current_win(),
       { 1, 0 }
     )
-    vim.wait(100)
 
     assert.spy(mock_client.request).was.called(1)
     assert.spy(mock_client.cancel_request).was.called(0)
@@ -50,7 +49,6 @@ describe('[source][lsp]', function()
     vim.api.nvim_exec_autocmds(configs.opts.bar.update_events.buf[1], {
       buffer = 0,
     })
-    vim.wait(100)
 
     -- Should have canceled first request and made new request
     assert.spy(mock_client.cancel_request).was.called(1)
