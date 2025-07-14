@@ -321,7 +321,23 @@ local function update_symbols(buf, ttl)
         defer_update_symbols()
         return
       end
+
+      -- Unify symbols to common format and sort by position since LSP
+      -- responses can be disordered i.e. later symbols can appear first
       lsp_buf_symbols[buf] = unify(symbols)
+
+      ---@param s1 lsp_document_symbol_t
+      ---@param s2 lsp_document_symbol_t
+      ---@return boolean precedes true if `s1` appears before `s2`
+      table.sort(lsp_buf_symbols[buf], function(s1, s2)
+        local l1, l2, c1, c2 =
+          s1.range.start.line,
+          s2.range.start.line,
+          s1.range.start.character,
+          s2.range.start.character
+
+        return l1 < l2 or l1 == l2 and c1 <= c2
+      end)
     end,
     buf
   )
@@ -426,6 +442,8 @@ local function init()
     end,
   })
 end
+
+---@param buf integer buffer handler
 ---@param win integer window handler
 ---@param cursor integer[] cursor position
 ---@return dropbar_symbol_t[] symbols dropbar symbols
