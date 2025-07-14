@@ -1,5 +1,25 @@
 # Changelog
 
+## [14.2.0](https://github.com/Bekaboo/dropbar.nvim/compare/v14.1.0...v14.2.0) (2025-07-14)
+
+
+### Features
+
+* **sources.lsp:** improve lsp symbol type hint ([8f8ae08](https://github.com/Bekaboo/dropbar.nvim/commit/8f8ae083cfc4dbc900cc73f5803fbc77346496ab))
+* **sources.path:** highlight extended security marks in `ls` output ([64f5540](https://github.com/Bekaboo/dropbar.nvim/commit/64f5540824ab350f02dabc1276f4a1f4f141276b))
+
+
+### Bug Fixes
+
+* **configs:** default attach to terminals ([#247](https://github.com/Bekaboo/dropbar.nvim/issues/247)) ([12df0ef](https://github.com/Bekaboo/dropbar.nvim/commit/12df0effadec35529f3a4862e4a7caa3782a57af))
+* **sources.lsp:** check buf valid before attaching/detaching ([85e4647](https://github.com/Bekaboo/dropbar.nvim/commit/85e4647589ede29ddf393963ad62efca443ab8a8))
+* **sources.lsp:** sort lsp symbols by start position ([#250](https://github.com/Bekaboo/dropbar.nvim/issues/250)) ([9bdd4ac](https://github.com/Bekaboo/dropbar.nvim/commit/9bdd4ac87bcf88abb8ddddb394dc16ab8f111199))
+
+
+### Performance Improvements
+
+* **sources.lsp:** cancel previous lsp request on new request ([#249](https://github.com/Bekaboo/dropbar.nvim/issues/249)) ([1a40b4c](https://github.com/Bekaboo/dropbar.nvim/commit/1a40b4c83d10a7269471d16338dbe78078ef0fc0))
+
 ## [14.1.0](https://github.com/Bekaboo/dropbar.nvim/compare/v14.0.0...v14.1.0) (2025-06-01)
 
 
