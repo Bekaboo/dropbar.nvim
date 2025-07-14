@@ -84,9 +84,11 @@ local symbol_kind_names = setmetatable({
 })
 -- stylua: ignore end
 
+---@alias lsp_symbol_type_t 'SymbolInformation'|'DocumentSymbol'
+
 ---Return type of the symbol table
 ---@param symbols lsp_symbol_t[] symbol table
----@return string? symbol type
+---@return lsp_symbol_type_t? type symbol type
 local function symbol_type(symbols)
   if symbols[1] and symbols[1].location then
     return 'SymbolInformation'
