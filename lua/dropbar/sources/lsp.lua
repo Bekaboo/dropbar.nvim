@@ -336,14 +336,14 @@ local function update_symbols(buf, ttl)
           s1.range.start.character,
           s2.range.start.character
 
-      -- Pitfall: don't use `l1 == l2 and c1 <= c2` here as sort algorithm is
-      -- not stable and we shouldn't return `true` for two elements with equal
-      -- total order, i.e. symbols with the same start position (both line &
-      -- column), else lua will throw the error: 'invalid order function for
-      -- sorting', see:
-      -- - https://blog.csdn.net/twwk120120/article/details/102697411
-      -- - https://www.lua.org/manual/5.4/manual.html#pdf-table.sort
-      return l1 < l2 or l1 == l2 and c1 < c2
+        -- Pitfall: don't use `l1 == l2 and c1 <= c2` here as sort algorithm is
+        -- not stable and we shouldn't return `true` for two elements with equal
+        -- total order, i.e. symbols with the same start position (both line &
+        -- column), else lua will throw the error: 'invalid order function for
+        -- sorting', see:
+        -- - https://blog.csdn.net/twwk120120/article/details/102697411
+        -- - https://www.lua.org/manual/5.4/manual.html#pdf-table.sort
+        return l1 < l2 or l1 == l2 and c1 < c2
       end)
     end,
     buf
