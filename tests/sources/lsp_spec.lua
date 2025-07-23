@@ -138,4 +138,105 @@ describe('[source][lsp]', function()
       end, symbols[1].siblings)
     )
   end)
+
+  it(
+    'handles symbols with identical start positions without sorting error',
+    function()
+      -- Make sure function type is a valid LSP symbol type so that symbols in
+      -- mock client response will be included in `get_symbols()` result
+      dropbar.setup({
+        sources = {
+          lsp = {
+            valid_symbols = {
+              'Function', -- code = 12
+            },
+          },
+        },
+      })
+
+      -- Mock a client that returns symbols with identical start positions
+      ---@diagnostic disable-next-line: assign-type-mismatch
+      mock_client.request = function(_, method, _, handler)
+        if method ~= 'textDocument/documentSymbol' then
+          return
+        end
+
+        handler(nil, {
+          {
+            name = 's2',
+            kind = 12,
+            range = {
+              start = { line = 5, character = 10 },
+              ['end'] = { line = 8, character = 0 },
+            },
+          },
+          {
+            name = 's3',
+            kind = 12,
+            range = {
+              start = { line = 5, character = 10 }, -- Same position as `s2`
+              ['end'] = { line = 10, character = 0 },
+            },
+          },
+          {
+            name = 's4',
+            kind = 12,
+            range = {
+              start = { line = 5, character = 10 }, -- Same position as `s2` and `s3`
+              ['end'] = { line = 12, character = 0 },
+            },
+          },
+          {
+            name = 's1',
+            kind = 12,
+            range = {
+              start = { line = 3, character = 5 },
+              ['end'] = { line = 6, character = 0 },
+            },
+          },
+        }, {
+          method = 'textDocument/documentSymbol',
+          client_id = mock_client.id,
+        })
+
+        return true, 1
+      end
+
+      -- Should not throw 'invalid order function for sorting' error
+      assert.is_true(pcall(function()
+        -- Trigger LSP update
+        vim.api.nvim_exec_autocmds(configs.opts.bar.update_events.buf[1], {
+          buffer = 0,
+        })
+
+        lsp_source.get_symbols(
+          vim.api.nvim_get_current_buf(),
+          vim.api.nvim_get_current_win(),
+          { 6, 0 }
+        )
+      end))
+
+      -- Verify siblings are in correct order:
+      -- `s1` should be the first, followed by `s2/3/4` in any order since
+      -- they has identical positions
+      local symbols = lsp_source.get_symbols(
+        vim.api.nvim_get_current_buf(),
+        vim.api.nvim_get_current_win(),
+        { 6, 0 }
+      )
+      local siblings = symbols[1].siblings ---@type dropbar_symbol_t[]
+      assert.is_truthy(siblings)
+      assert.are.equal(4, #siblings)
+      assert.is.same('s1', siblings[1].name)
+      assert.are.same({
+        s2 = true,
+        s3 = true,
+        s4 = true,
+      }, {
+        [siblings[2].name] = true,
+        [siblings[3].name] = true,
+        [siblings[4].name] = true,
+      })
+    end
+  )
 end)
