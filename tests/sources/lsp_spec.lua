@@ -218,7 +218,7 @@ describe('[source][lsp]', function()
 
       -- Verify siblings are in correct order:
       -- `s1` should be the first, followed by `s2/3/4` in any order since
-      -- they has identical positions
+      -- they have identical positions
       local symbols = lsp_source.get_symbols(
         vim.api.nvim_get_current_buf(),
         vim.api.nvim_get_current_win(),
