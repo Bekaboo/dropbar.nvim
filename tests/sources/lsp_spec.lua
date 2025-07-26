@@ -18,7 +18,7 @@ describe('[source][lsp]', function()
       id = 1,
       name = 'mock-lsp',
       supports_method = function(method)
-        return method == 'textDocument/documentSymbol'
+        return method == vim.lsp.protocol.Methods.textDocument_definition
       end,
     }
   end)
@@ -75,7 +75,7 @@ describe('[source][lsp]', function()
     -- textDocument/documentSymbol request
     ---@diagnostic disable-next-line: assign-type-mismatch
     mock_client.request = function(_, method, _, handler)
-      if method ~= 'textDocument/documentSymbol' then
+      if method ~= vim.lsp.protocol.Methods.textDocument_definition then
         return
       end
 
@@ -105,7 +105,7 @@ describe('[source][lsp]', function()
           },
         },
       }, {
-        method = 'textDocument/documentSymbol',
+        method = vim.lsp.protocol.Methods.textDocument_definition,
         client_id = mock_client.id,
       })
 
@@ -157,7 +157,7 @@ describe('[source][lsp]', function()
       -- Mock a client that returns symbols with identical start positions
       ---@diagnostic disable-next-line: assign-type-mismatch
       mock_client.request = function(_, method, _, handler)
-        if method ~= 'textDocument/documentSymbol' then
+        if method ~= vim.lsp.protocol.Methods.textDocument_definition then
           return
         end
 
@@ -195,7 +195,7 @@ describe('[source][lsp]', function()
             },
           },
         }, {
-          method = 'textDocument/documentSymbol',
+          method = vim.lsp.protocol.Methods.textDocument_definition,
           client_id = mock_client.id,
         })
 
