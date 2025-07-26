@@ -5,8 +5,7 @@ local configs = require('dropbar.configs')
 ---@return dropbar_symbol_opts_t
 local function buf_info(buf)
   return {
-    icon = configs.opts.icons.enable
-      and configs.eval(configs.opts.sources.terminal.icon, buf),
+    icon = configs.eval(configs.opts.sources.terminal.icon, buf),
     name = configs.eval(configs.opts.sources.terminal.name, buf),
     icon_hl = 'DropBarIconKindTerminal',
     name_hl = 'DropBarKindTerminal',
