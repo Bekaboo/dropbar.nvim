@@ -4,7 +4,6 @@
         "library": [
             "$VIMRUNTIME",
             "$VIMRUNTIME/lua",
-            "./lua",
             "${3rd}/busted/library",
             "${3rd}/luassert/library",
             "${3rd}/luv/library"
@@ -13,9 +12,8 @@
     "runtime": {
         "version": "LuaJIT",
         "path": [
-            "./?.lua",
-            "./lua/?.lua",
-            "./lua/?/init.lua",
+            "lua/?.lua",
+            "lua/?/init.lua",
              "/usr/share/luajit-2.1.0-beta3/?.lua",
              "/usr/local/share/lua/5.1/?.lua",
              "/usr/local/share/lua/5.1/?/init.lua",
