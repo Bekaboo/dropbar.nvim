@@ -1,3 +1,5 @@
+---@diagnostic disable: undefined-field
+
 local menu = require('dropbar.menu')
 local bar = require('dropbar.bar')
 local spy = require('luassert.spy')

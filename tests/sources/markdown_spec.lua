@@ -1,3 +1,5 @@
+---@diagnostic disable: undefined-field
+
 local dropbar = require('dropbar')
 local source_markdown = require('dropbar.sources.markdown')
 

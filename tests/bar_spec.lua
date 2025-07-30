@@ -1,3 +1,5 @@
+---@diagnostic disable: undefined-field
+
 local dropbar = require('dropbar')
 local configs = require('dropbar.configs')
 local bar = require('dropbar.bar')
