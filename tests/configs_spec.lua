@@ -1,3 +1,5 @@
+---@diagnostic disable: undefined-field
+
 describe('[terminal]', function()
   local term_buf = nil
   local term_win = nil
@@ -12,7 +14,7 @@ describe('[terminal]', function()
 
   after_each(function()
     -- Clean up terminal buffer
-    if vim.api.nvim_buf_is_valid(term_buf) then
+    if term_buf and vim.api.nvim_buf_is_valid(term_buf) then
       vim.api.nvim_buf_delete(term_buf, { force = true })
     end
   end)
