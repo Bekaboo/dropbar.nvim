@@ -1,6 +1,3 @@
-local dropbar = require('dropbar')
-local configs = require('dropbar.configs')
-
 describe('[terminal]', function()
   local term_buf = nil
   local term_win = nil
