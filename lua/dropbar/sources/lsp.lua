@@ -298,7 +298,7 @@ local function update_symbols(buf, ttl)
 
   local client = vim.lsp.get_clients({
     bufnr = buf,
-    method = vim.lsp.protocol.Methods.textDocument_definition,
+    method = vim.lsp.protocol.Methods.textDocument_documentSymbol,
   })[1]
   if not client then
     defer_update_symbols()
@@ -314,7 +314,7 @@ local function update_symbols(buf, ttl)
   end
 
   local _, request_id = client:request(
-    vim.lsp.protocol.Methods.textDocument_definition,
+    vim.lsp.protocol.Methods.textDocument_documentSymbol,
     { textDocument = vim.lsp.util.make_text_document_params(buf) },
     function(err, symbols, _)
       if err or not symbols or vim.tbl_isempty(symbols) then
@@ -403,7 +403,7 @@ local function init()
     if
       not vim.tbl_isempty(vim.lsp.get_clients({
         bufnr = buf,
-        method = vim.lsp.protocol.Methods.textDocument_definition,
+        method = vim.lsp.protocol.Methods.textDocument_documentSymbol,
       }))
     then
       attach(buf)
@@ -422,7 +422,7 @@ local function init()
       if
         client
         and client:supports_method(
-          vim.lsp.protocol.Methods.textDocument_definition
+          vim.lsp.protocol.Methods.textDocument_documentSymbol
         )
       then
         attach(info.buf)
@@ -438,7 +438,7 @@ local function init()
       if
         vim.tbl_isempty(vim.lsp.get_clients({
           bufnr = info.buf,
-          method = vim.lsp.protocol.Methods.textDocument_definition,
+          method = vim.lsp.protocol.Methods.textDocument_documentSymbol,
         }))
       then
         detach(info.buf)
