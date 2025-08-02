@@ -1,5 +1,15 @@
 # Changelog
 
+## [14.2.1](https://github.com/Bekaboo/dropbar.nvim/compare/v14.2.0...v14.2.1) (2025-07-31)
+
+
+### Bug Fixes
+
+* **sources.lsp:** error sorting LSP symbols with the same start position ([#255](https://github.com/Bekaboo/dropbar.nvim/issues/255)) ([498a8e6](https://github.com/Bekaboo/dropbar.nvim/commit/498a8e6a48d9948bbf27b3abd05f7d6e42d60f2b))
+* **sources.lsp:** wrong request due to typo ([#259](https://github.com/Bekaboo/dropbar.nvim/issues/259)) ([80751f5](https://github.com/Bekaboo/dropbar.nvim/commit/80751f5e9db69b0cdf2a25d321f1e79745f9b324))
+* **sources.terminal:** symbol icon is `nil` if `icons.enable` is `false` ([4f38124](https://github.com/Bekaboo/dropbar.nvim/commit/4f38124764135fb568c92efaf1d0e6533087f2a2))
+* **tests.configs:** ensure that `term_buf` exists before cleaning up ([4110875](https://github.com/Bekaboo/dropbar.nvim/commit/4110875115bbccfad9beb3127465f8760ec8606e))
+
 ## [14.2.0](https://github.com/Bekaboo/dropbar.nvim/compare/v14.1.0...v14.2.0) (2025-07-14)
 
 
