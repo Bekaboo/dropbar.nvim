@@ -63,12 +63,15 @@ local function setup(opts)
     )
     return
   end
+
   configs.set(opts)
   hlgroups.init()
-  local groupid = vim.api.nvim_create_augroup('DropBar', {})
+
   for _, win in ipairs(vim.api.nvim_list_wins()) do
     utils.bar.attach(vim.api.nvim_win_get_buf(win), win)
   end
+
+  local groupid = vim.api.nvim_create_augroup('DropBar', {})
   if not vim.tbl_isempty(configs.opts.bar.attach_events) then
     vim.api.nvim_create_autocmd(configs.opts.bar.attach_events, {
       group = groupid,
@@ -83,15 +86,46 @@ local function setup(opts)
       desc = 'Attach dropbar',
     })
   end
-  vim.api.nvim_create_autocmd({ 'BufDelete', 'BufUnload', 'BufWipeOut' }, {
+
+  -- Garbage collection
+  vim.api.nvim_create_autocmd('BufDelete', {
     group = groupid,
     callback = function(info)
       utils.bar.exec('del', { buf = info.buf })
-      _G.dropbar.bars[info.buf] = nil
-      _G.dropbar.callbacks['buf' .. info.buf] = nil
     end,
-    desc = 'Remove dropbar from cache on buffer delete/unload/wipeout.',
+    desc = 'Remove dropbar from cache on buffer delete.',
   })
+
+  vim.api.nvim_create_autocmd('WinClosed', {
+    group = groupid,
+    callback = function(info)
+      utils.bar.exec('del', { win = tonumber(info.match) })
+    end,
+    desc = 'Remove dropbar from cache on window closed.',
+  })
+
+  local gc_timer = vim.uv.new_timer()
+  if gc_timer then
+    gc_timer:start(
+      configs.opts.bar.gc.interval,
+      configs.opts.bar.gc.interval,
+      vim.schedule_wrap(function()
+        for buf, _ in pairs(_G.dropbar.bars) do
+          if not vim.api.nvim_buf_is_valid(buf) then
+            utils.bar.exec('del', { buf = buf })
+            goto continue
+          end
+          for win, _ in pairs(_G.dropbar.bars[buf]) do
+            if not vim.api.nvim_win_is_valid(win) then
+              utils.bar.exec('del', { win = win })
+            end
+          end
+          ::continue::
+        end
+      end)
+    )
+  end
+
   if not vim.tbl_isempty(configs.opts.bar.update_events.win) then
     vim.api.nvim_create_autocmd(configs.opts.bar.update_events.win, {
       group = groupid,
@@ -110,6 +144,7 @@ local function setup(opts)
       desc = 'Update a single winbar.',
     })
   end
+
   if not vim.tbl_isempty(configs.opts.bar.update_events.buf) then
     vim.api.nvim_create_autocmd(configs.opts.bar.update_events.buf, {
       group = groupid,
@@ -119,31 +154,24 @@ local function setup(opts)
       desc = 'Update all winbars associated with buf.',
     })
   end
+
   if not vim.tbl_isempty(configs.opts.bar.update_events.global) then
     vim.api.nvim_create_autocmd(configs.opts.bar.update_events.global, {
       group = groupid,
-      callback = function(info)
-        if vim.tbl_isempty(utils.bar.get({ buf = info.buf })) then
-          return
-        end
+      callback = function()
         utils.bar.exec('update')
       end,
       desc = 'Update all winbars.',
     })
   end
-  vim.api.nvim_create_autocmd({ 'WinClosed' }, {
-    group = groupid,
-    callback = function(info)
-      utils.bar.exec('del', { win = tonumber(info.match) })
-    end,
-    desc = 'Remove dropbar from cache on window closed.',
-  })
+
   if configs.opts.bar.hover then
     vim.on_key(function(key)
       if key == vim.keycode('<MouseMove>') then
         utils.bar.update_hover_hl(vim.fn.getmousepos())
       end
     end)
+
     vim.api.nvim_create_autocmd('FocusLost', {
       group = groupid,
       callback = function()
@@ -151,6 +179,7 @@ local function setup(opts)
       end,
       desc = 'Remove hover highlight on focus lost.',
     })
+
     vim.api.nvim_create_autocmd('FocusGained', {
       group = groupid,
       callback = function()
@@ -159,6 +188,7 @@ local function setup(opts)
       desc = 'Update hover highlight on focus gained.',
     })
   end
+
   vim.g.loaded_dropbar = true
 end
 
