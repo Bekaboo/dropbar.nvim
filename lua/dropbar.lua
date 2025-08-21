@@ -87,45 +87,6 @@ local function setup(opts)
     })
   end
 
-  -- Garbage collection
-  vim.api.nvim_create_autocmd('BufDelete', {
-    group = groupid,
-    callback = function(info)
-      utils.bar.exec('del', { buf = info.buf })
-    end,
-    desc = 'Remove dropbar from cache on buffer delete.',
-  })
-
-  vim.api.nvim_create_autocmd('WinClosed', {
-    group = groupid,
-    callback = function(info)
-      utils.bar.exec('del', { win = tonumber(info.match) })
-    end,
-    desc = 'Remove dropbar from cache on window closed.',
-  })
-
-  local gc_timer = vim.uv.new_timer()
-  if gc_timer then
-    gc_timer:start(
-      configs.opts.bar.gc.interval,
-      configs.opts.bar.gc.interval,
-      vim.schedule_wrap(function()
-        for buf, _ in pairs(_G.dropbar.bars) do
-          if not vim.api.nvim_buf_is_valid(buf) then
-            utils.bar.exec('del', { buf = buf })
-            goto continue
-          end
-          for win, _ in pairs(_G.dropbar.bars[buf]) do
-            if not vim.api.nvim_win_is_valid(win) then
-              utils.bar.exec('del', { win = win })
-            end
-          end
-          ::continue::
-        end
-      end)
-    )
-  end
-
   if not vim.tbl_isempty(configs.opts.bar.update_events.win) then
     vim.api.nvim_create_autocmd(configs.opts.bar.update_events.win, {
       group = groupid,
@@ -187,6 +148,45 @@ local function setup(opts)
       end,
       desc = 'Update hover highlight on focus gained.',
     })
+  end
+
+  -- Garbage collection
+  vim.api.nvim_create_autocmd('BufDelete', {
+    group = groupid,
+    callback = function(info)
+      utils.bar.exec('del', { buf = info.buf })
+    end,
+    desc = 'Remove dropbar from cache on buffer delete.',
+  })
+
+  vim.api.nvim_create_autocmd('WinClosed', {
+    group = groupid,
+    callback = function(info)
+      utils.bar.exec('del', { win = tonumber(info.match) })
+    end,
+    desc = 'Remove dropbar from cache on window closed.',
+  })
+
+  local gc_timer = vim.uv.new_timer()
+  if gc_timer then
+    gc_timer:start(
+      configs.opts.bar.gc.interval,
+      configs.opts.bar.gc.interval,
+      vim.schedule_wrap(function()
+        for buf, _ in pairs(_G.dropbar.bars) do
+          if not vim.api.nvim_buf_is_valid(buf) then
+            utils.bar.exec('del', { buf = buf })
+            goto continue
+          end
+          for win, _ in pairs(_G.dropbar.bars[buf]) do
+            if not vim.api.nvim_win_is_valid(win) then
+              utils.bar.exec('del', { win = win })
+            end
+          end
+          ::continue::
+        end
+      end)
+    )
   end
 
   vim.g.loaded_dropbar = true

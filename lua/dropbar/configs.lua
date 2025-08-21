@@ -346,6 +346,11 @@ M.opts = {
       pivots = 'abcdefghijklmnopqrstuvwxyz',
     },
     truncate = true,
+    -- Interval of periodic garbage collection, i.e. remove winbars attached to
+    -- invalid buffers/windows, in ms
+    gc = {
+      interval = 60000,
+    },
   },
   menu = {
     -- When on, preview the symbol under the cursor on CursorMoved

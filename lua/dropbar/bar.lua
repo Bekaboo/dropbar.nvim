@@ -328,8 +328,25 @@ end
 ---Delete a dropbar instance
 ---@return nil
 function dropbar_t:del()
-  _G.dropbar.bars[self.buf][self.win] = nil
-  _G.dropbar.callbacks['buf' .. self.buf]['win' .. self.win] = nil
+  local buf = self.buf
+  local win = self.win
+
+  local cb_buf_idx = 'buf' .. buf -- index to get buf callbacks in global table
+  local cb_win_idx = 'win' .. win -- index to get win callbacks in global table
+
+  local bars = _G.dropbar.bars
+  local callbacks = _G.dropbar.callbacks
+
+  bars[buf][win] = nil
+  if vim.tbl_isempty(bars[buf]) then
+    bars[buf] = nil
+  end
+
+  callbacks[cb_buf_idx][cb_win_idx] = nil
+  if vim.tbl_isempty(callbacks[cb_buf_idx]) then
+    callbacks[cb_buf_idx] = nil
+  end
+
   for _, component in ipairs(self.components) do
     component:del()
   end

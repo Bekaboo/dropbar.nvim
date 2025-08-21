@@ -307,6 +307,9 @@ winbar:
 - `opts.bar.truncate`: `boolean`
   - Whether to truncate the winbar if it doesn't fit in the window
   - Default: `true`
+- `opts.bar.gc.interval`: `number`
+    - Interval of periodic garbage collection, i.e. remove winbars attached to
+      invalid buffers/windows, in ms
 
 #### Menu
 

@@ -1,4 +1,4 @@
-*dropbar.txt*                                        Last change: 2025 July 30
+*dropbar.txt*                                      Last change: 2025 August 20
 
 ==============================================================================
 INTRODUCTION                                            *dropbar-introduction*
@@ -288,6 +288,8 @@ the winbar:
   `'abcdefghijklmnopqrstuvwxyz'`
 - `opts.bar.truncate`: `boolean` - Whether to truncate the winbar if it
   doesn't fit in the window - Default: `true`
+- `opts.bar.gc.interval`: `number` - Interval of periodic garbage collection,
+  i.e. remove winbars attached to invalid buffers/windows, in ms
 
 MENU                                                            *dropbar-menu*
 
