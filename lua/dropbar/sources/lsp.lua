@@ -368,8 +368,8 @@ local function attach(buf)
     vim.api.nvim_create_autocmd(configs.opts.bar.update_events.buf, {
       group = groupid,
       buffer = buf,
-      callback = function(info)
-        update_symbols(info.buf)
+      callback = function(args)
+        update_symbols(args.buf)
       end,
     })
 end
@@ -413,8 +413,8 @@ local function init()
   vim.api.nvim_create_autocmd({ 'LspAttach' }, {
     desc = 'Attach LSP symbol getter to buffer when an LS that supports documentSymbol attaches.',
     group = groupid,
-    callback = function(info)
-      local id = info.data and info.data.client_id
+    callback = function(args)
+      local id = args.data and args.data.client_id
       if not id then
         return
       end
@@ -425,7 +425,7 @@ local function init()
           vim.lsp.protocol.Methods.textDocument_documentSymbol
         )
       then
-        attach(info.buf)
+        attach(args.buf)
       end
     end,
   })
@@ -434,14 +434,14 @@ local function init()
     desc = 'Detach LSP symbol getter from buffer when no LS supporting documentSymbol is attached.',
     group = groupid,
     -- Schedule to wait for lsp that triggers `LspDetach` to actually detach
-    callback = vim.schedule_wrap(function(info)
+    callback = vim.schedule_wrap(function(args)
       if
         vim.tbl_isempty(vim.lsp.get_clients({
-          bufnr = info.buf,
+          bufnr = args.buf,
           method = vim.lsp.protocol.Methods.textDocument_documentSymbol,
         }))
       then
-        detach(info.buf)
+        detach(args.buf)
       end
     end),
   })
@@ -449,8 +449,8 @@ local function init()
   vim.api.nvim_create_autocmd({ 'BufDelete', 'BufUnload', 'BufWipeOut' }, {
     desc = 'Detach LSP symbol getter from buffer on buffer delete/unload/wipeout.',
     group = groupid,
-    callback = function(info)
-      detach(info.buf)
+    callback = function(args)
+      detach(args.buf)
     end,
   })
 end

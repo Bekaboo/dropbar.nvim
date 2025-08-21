@@ -75,12 +75,12 @@ local function setup(opts)
   if not vim.tbl_isempty(configs.opts.bar.attach_events) then
     vim.api.nvim_create_autocmd(configs.opts.bar.attach_events, {
       group = groupid,
-      callback = function(info)
+      callback = function(args)
         -- Try attaching dropbar to all windows containing the buffer
         -- Notice that we cannot simply let `win=0` here since the current
         -- buffer isn't necessarily the window containing the buffer
-        for _, win in ipairs(vim.fn.win_findbuf(info.buf)) do
-          utils.bar.attach(info.buf, win, info)
+        for _, win in ipairs(vim.fn.win_findbuf(args.buf)) do
+          utils.bar.attach(args.buf, win, args)
         end
       end,
       desc = 'Attach dropbar',
@@ -90,14 +90,14 @@ local function setup(opts)
   if not vim.tbl_isempty(configs.opts.bar.update_events.win) then
     vim.api.nvim_create_autocmd(configs.opts.bar.update_events.win, {
       group = groupid,
-      callback = function(info)
-        if info.event == 'WinResized' then
+      callback = function(args)
+        if args.event == 'WinResized' then
           for _, win in ipairs(vim.v.event.windows or {}) do
             utils.bar.exec('update', { win = win })
           end
         else
           utils.bar.exec('update', {
-            win = info.event == 'WinScrolled' and tonumber(info.match)
+            win = args.event == 'WinScrolled' and tonumber(args.match)
               or vim.api.nvim_get_current_win(),
           })
         end
@@ -109,8 +109,8 @@ local function setup(opts)
   if not vim.tbl_isempty(configs.opts.bar.update_events.buf) then
     vim.api.nvim_create_autocmd(configs.opts.bar.update_events.buf, {
       group = groupid,
-      callback = function(info)
-        utils.bar.exec('update', { buf = info.buf })
+      callback = function(args)
+        utils.bar.exec('update', { buf = args.buf })
       end,
       desc = 'Update all winbars associated with buf.',
     })
@@ -153,16 +153,16 @@ local function setup(opts)
   -- Garbage collection
   vim.api.nvim_create_autocmd('BufDelete', {
     group = groupid,
-    callback = function(info)
-      utils.bar.exec('del', { buf = info.buf })
+    callback = function(args)
+      utils.bar.exec('del', { buf = args.buf })
     end,
     desc = 'Remove dropbar from cache on buffer delete.',
   })
 
   vim.api.nvim_create_autocmd('WinClosed', {
     group = groupid,
-    callback = function(info)
-      utils.bar.exec('del', { win = tonumber(info.match) })
+    callback = function(args)
+      utils.bar.exec('del', { win = tonumber(args.match) })
     end,
     desc = 'Remove dropbar from cache on window closed.',
   })
