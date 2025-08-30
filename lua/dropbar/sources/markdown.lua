@@ -67,7 +67,11 @@ setmetatable(markdown_heading_buf_symbols, {
 ---@param incremental? boolean incremental parsing
 ---@return nil
 local function parse_buf(buf, lnum_end, incremental)
-  buf = buf or vim.api.nvim_get_current_buf()
+  buf = vim._resolve_bufnr(buf)
+  if not vim.api.nvim_buf_is_valid(buf) then
+    return
+  end
+
   lnum_end = lnum_end or vim.fn.line('.')
   if not vim.api.nvim_buf_is_valid(buf) then
     markdown_heading_buf_symbols[buf] = nil
@@ -288,12 +292,19 @@ end
 ---@param cursor integer[] cursor position
 ---@return dropbar_symbol_t[] symbols dropbar symbols
 local function get_symbols(buf, win, cursor)
+  buf = vim._resolve_bufnr(buf)
+  if not vim.api.nvim_buf_is_valid(buf) then
+    return {}
+  end
+
   if vim.bo[buf].filetype ~= 'markdown' then
     return {}
   end
+
   if not initialized then
     init()
   end
+
   local buf_symbols = markdown_heading_buf_symbols[buf]
   if buf_symbols['end'].lnum < cursor[1] then
     parse_buf(
@@ -302,6 +313,7 @@ local function get_symbols(buf, win, cursor)
       true
     )
   end
+
   local result = {}
   local current_level = 7
   for idx, symbol in vim.iter(buf_symbols.symbols):enumerate():rev() do

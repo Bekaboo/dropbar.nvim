@@ -12,21 +12,26 @@ local function buf_info(buf)
   }
 end
 
----@param bar_buf integer buffer handler
+---@param buf integer buffer handler
 ---@return dropbar_symbol_t[]
-local function get_symbols(bar_buf)
-  local current = buf_info(bar_buf)
+local function get_symbols(buf)
+  buf = vim._resolve_bufnr(buf)
+  if not vim.api.nvim_buf_is_valid(buf) then
+    return {}
+  end
+
+  local current = buf_info(buf)
   current.siblings = vim
     .iter(vim.api.nvim_list_bufs())
-    :filter(function(buf)
-      return vim.bo[buf].buftype == 'terminal'
+    :filter(function(b)
+      return vim.bo[b].buftype == 'terminal'
     end)
     :enumerate()
-    :map(function(i, buf)
-      local is_current = buf == bar_buf
-      local entry = is_current and current or buf_info(buf)
+    :map(function(i, b)
+      local is_current = b == buf
+      local entry = is_current and current or buf_info(b)
       entry.jump = function()
-        vim.api.nvim_win_set_buf(current.bar.win, buf)
+        vim.api.nvim_win_set_buf(current.bar.win, b)
       end
       entry.sibling_idx = i
       if is_current and not configs.opts.sources.terminal.show_current then

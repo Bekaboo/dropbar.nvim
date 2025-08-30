@@ -564,6 +564,13 @@ local fs_normalize = vim.uv.os_uname().sysname:find('Windows', 1, true)
 ---@param _ integer[] cursor position, ignored
 ---@return dropbar_symbol_t[] dropbar symbols
 local function get_symbols(buf, win, _)
+  buf = vim._resolve_bufnr(buf)
+  if
+    not vim.api.nvim_buf_is_valid(buf) or not vim.api.nvim_win_is_valid(win)
+  then
+    return {}
+  end
+
   local path_opts = configs.opts.sources.path
   local symbols = {} ---@type dropbar_symbol_t[]
   local current_path = fs_normalize((vim.api.nvim_buf_get_name(buf)))
@@ -578,9 +585,11 @@ local function get_symbols(buf, win, _)
     table.insert(symbols, 1, convert(current_path, buf, win))
     current_path = vim.fs.dirname(current_path)
   end
+
   if vim.bo[buf].mod then
     symbols[#symbols] = path_opts.modified(symbols[#symbols])
   end
+
   utils.bar.set_min_widths(symbols, path_opts.min_widths)
   return symbols
 end
