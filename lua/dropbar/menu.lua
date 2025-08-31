@@ -1,7 +1,7 @@
 local bar = require('dropbar.bar')
 local utils = require('dropbar.utils')
 local configs = require('dropbar.configs')
-local groupid = vim.api.nvim_create_augroup('DropBarMenu', {})
+local groupid = vim.api.nvim_create_augroup('dropbar.menu', {})
 
 ---Lookup table for dropbar menus
 ---@type table<integer, dropbar_menu_t>
@@ -977,7 +977,7 @@ function dropbar_menu_t:fuzzy_find_open(opts)
     self:fuzzy_find_close()
   end
 
-  local ns_name = 'DropBarFzf' .. tostring(self.win)
+  local ns_name = 'dropbar.fzf.win.' .. tostring(self.win)
   local augroup = vim.api.nvim_create_augroup(ns_name, { clear = true })
   local ns_id = vim.api.nvim_create_namespace(ns_name)
 

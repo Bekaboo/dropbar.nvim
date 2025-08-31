@@ -71,7 +71,8 @@ local function setup(opts)
     utils.bar.attach(vim.api.nvim_win_get_buf(win), win)
   end
 
-  local groupid = vim.api.nvim_create_augroup('DropBar', {})
+  local groupid = vim.api.nvim_create_augroup('dropbar', {})
+
   if not vim.tbl_isempty(configs.opts.bar.attach_events) then
     vim.api.nvim_create_autocmd(configs.opts.bar.attach_events, {
       group = groupid,

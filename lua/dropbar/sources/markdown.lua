@@ -3,7 +3,7 @@ local bar = require('dropbar.bar')
 local utils = require('dropbar.utils')
 
 local initialized = false
-local groupid = vim.api.nvim_create_augroup('DropBarMarkdown', {})
+local groupid = vim.api.nvim_create_augroup('dropbar.sources.markdown', {})
 
 ---@class markdown_heading_symbol_t
 ---@field name string

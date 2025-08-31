@@ -285,7 +285,7 @@ end
 
 ---Initialize highlight groups for dropbar
 local function init()
-  local groupid = vim.api.nvim_create_augroup('DropBarHlGroups', {})
+  local groupid = vim.api.nvim_create_augroup('dropbar.hl', {})
 
   set_hlgroups()
   vim.api.nvim_create_autocmd('ColorScheme', {

@@ -1,7 +1,7 @@
 local configs = require('dropbar.configs')
 local bar = require('dropbar.bar')
 local utils = require('dropbar.utils')
-local groupid = vim.api.nvim_create_augroup('DropBarLsp', {})
+local groupid = vim.api.nvim_create_augroup('dropbar.sources.lsp', {})
 local initialized = false
 
 ---@type table<integer, lsp_document_symbol_t[]>
