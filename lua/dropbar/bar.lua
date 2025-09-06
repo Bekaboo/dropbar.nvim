@@ -465,67 +465,82 @@ function dropbar_t:redraw()
   end
 end
 
----Update dropbar components from sources and redraw dropbar, supposed to be
----called on events `CursorMoved`, `CursorMovedI`, `TextChanged`, and
----`TextChangedI`
----Not updating when executing a macro
----@return nil
-function dropbar_t:update()
-  local request_time = vim.uv.now()
-  self.last_update_request_time = request_time
-  vim.defer_fn(function()
-    -- Cancel current update if
-    -- 1. another update request is sent within the update interval
-    -- 2. is inside pick mode
-    -- 3. is executing a macro
-    if
-      self.last_update_request_time ~= request_time
-      or self.in_pick_mode
-      or vim.fn.reg_executing() ~= ''
-    then
-      return
-    end
-    if
-      not self.win
-      or not self.buf
-      or not vim.api.nvim_win_is_valid(self.win)
-      or not vim.api.nvim_buf_is_valid(self.buf)
-    then
-      self:del()
-      return
-    end
-    local cursor = vim.api.nvim_win_get_cursor(self.win)
-    for _, component in ipairs(self.components) do
-      component:del()
-    end
-    self.components = {}
-    _G.dropbar.callbacks['buf' .. self.buf]['win' .. self.win] = {}
-    for _, source in ipairs(self.sources) do
-      local symbols = source.get_symbols(self.buf, self.win, cursor)
-      for _, symbol in ipairs(symbols) do
-        symbol.bar_idx = #self.components + 1
-        symbol.callback_idx = symbol.bar_idx
-        symbol.bar = self
-        table.insert(self.components, symbol)
-        -- Register on_click callback for each symbol
-        if symbol.on_click then
-          ---@param min_width integer 0 if no N specified
-          ---@param n_clicks integer number of clicks
-          ---@param button string mouse button used
-          ---@param modifiers string modifiers used
-          ---@return nil
-          _G.dropbar.callbacks['buf' .. self.buf]['win' .. self.win]['fn' .. symbol.callback_idx] = function(
-            min_width,
-            n_clicks,
-            button,
-            modifiers
-          )
-            symbol:on_click(min_width, n_clicks, button, modifiers)
-          end
+---Helper function to update dropbar (without debounce)
+---Notice:
+--- - Dropbar instance can be deleted if its source window or buffer is invalid
+--- - Not updated when winbar is in pick mode or nvim is executing a macro
+function dropbar_t:_update()
+  if
+    not self.win
+    or not self.buf
+    or not vim.api.nvim_win_is_valid(self.win)
+    or not vim.api.nvim_buf_is_valid(self.buf)
+  then
+    self:del()
+    return
+  end
+
+  -- Cancel current update if is inside pick mode or is executing a macro
+  if self.in_pick_mode or vim.fn.reg_executing() ~= '' then
+    return
+  end
+
+  local cursor = vim.api.nvim_win_get_cursor(self.win)
+  for _, component in ipairs(self.components) do
+    component:del()
+  end
+
+  self.components = {}
+  _G.dropbar.callbacks['buf' .. self.buf]['win' .. self.win] = {}
+  for _, source in ipairs(self.sources) do
+    local symbols = source.get_symbols(self.buf, self.win, cursor)
+    for _, symbol in ipairs(symbols) do
+      symbol.bar_idx = #self.components + 1
+      symbol.callback_idx = symbol.bar_idx
+      symbol.bar = self
+      table.insert(self.components, symbol)
+      -- Register on_click callback for each symbol
+      if symbol.on_click then
+        ---@param min_width integer 0 if no N specified
+        ---@param n_clicks integer number of clicks
+        ---@param button string mouse button used
+        ---@param modifiers string modifiers used
+        ---@return nil
+        _G.dropbar.callbacks['buf' .. self.buf]['win' .. self.win]['fn' .. symbol.callback_idx] = function(
+          min_width,
+          n_clicks,
+          button,
+          modifiers
+        )
+          symbol:on_click(min_width, n_clicks, button, modifiers)
         end
       end
     end
-    self:redraw()
+  end
+
+  self:redraw()
+end
+
+---Update dropbar components from sources and redraw dropbar with debounce,
+---supposed to be called on events `CursorMoved`, `CursorMovedI`,
+---`TextChanged`, and `TextChangedI`
+---@return nil
+function dropbar_t:update()
+  local first_request = not self.last_update_request_time
+  local request_time = vim.uv.now()
+  self.last_update_request_time = request_time
+
+  -- Update immediately for the first update request to make UI snappier
+  if first_request then
+    self:_update()
+    return
+  end
+
+  vim.defer_fn(function()
+    if self.last_update_request_time ~= request_time then
+      return
+    end
+    self:_update()
   end, configs.opts.bar.update_debounce)
 end
 

@@ -2020,9 +2020,9 @@ dropbar_t:truncate()                                    *dropbar_t:truncate()*
         (`nil`)
 
 dropbar_t:update()                                        *dropbar_t:update()*
-    Update dropbar components from sources and redraw dropbar, supposed to be
-    called on events `CursorMoved`, `CursorMovedI`, `TextChanged`, and
-    `TextChangedI` Not updating when executing a macro
+    Update dropbar components from sources and redraw dropbar with debounce,
+    supposed to be called on events `CursorMoved`, `CursorMovedI`,
+    `TextChanged`, and `TextChangedI`
 
     Return: ~
         (`nil`)
