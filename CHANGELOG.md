@@ -1,5 +1,12 @@
 # Changelog
 
+## [14.2.2](https://github.com/Bekaboo/dropbar.nvim/compare/v14.2.1...v14.2.2) (2025-09-06)
+
+
+### Performance Improvements
+
+* **bar:** make first update snappier ([37a24ae](https://github.com/Bekaboo/dropbar.nvim/commit/37a24aecbea6cf467c74b25f49ee3f8f92ebd7d1))
+
 ## [14.2.1](https://github.com/Bekaboo/dropbar.nvim/compare/v14.2.0...v14.2.1) (2025-07-31)
 
 
