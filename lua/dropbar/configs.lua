@@ -296,8 +296,11 @@ M.opts = {
     end,
     attach_events = {
       'TermOpen',
+      'BufEnter',
       'BufWinEnter',
       'BufWritePost',
+      'FileType',
+      'LspAttach',
     },
     -- Wait for a short time before updating the winbar, if another update
     -- request is received within this time, the previous request will be

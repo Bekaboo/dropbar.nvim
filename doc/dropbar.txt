@@ -219,8 +219,11 @@ the winbar:
 >lua
     {
           'TermOpen',
+          'BufEnter',
           'BufWinEnter',
           'BufWritePost',
+          'FileType',
+          'LspAttach',
         }
 <
 - `opts.bar.update_debounce`: `number` - Wait for a short time before updating

@@ -226,8 +226,11 @@ winbar:
     ```lua
     {
       'TermOpen',
+      'BufEnter',
       'BufWinEnter',
       'BufWritePost',
+      'FileType',
+      'LspAttach',
     }
     ```
 - `opts.bar.update_debounce`: `number`
