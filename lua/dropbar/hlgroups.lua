@@ -55,6 +55,7 @@ local hlgroups = {
   DropBarIconKindReference         = { link = 'DropBarIconKindDefault' },
   DropBarIconKindRepeat            = { link = 'Repeat' },
   DropBarIconKindReturnStatement   = { link = '@keyword.return' },
+  DropBarIconKindRule              = { link = '@lsp.type.namespace' },
   DropBarIconKindRuleSet           = { link = '@lsp.type.namespace' },
   DropBarIconKindScope             = { link = '@lsp.type.namespace' },
   DropBarIconKindSection           = { link = 'Title' },

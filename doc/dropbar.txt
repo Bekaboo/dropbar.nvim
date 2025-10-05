@@ -1,4 +1,4 @@
-*dropbar.txt*                                   Last change: 2025 September 07
+*dropbar.txt*                                     Last change: 2025 October 05
 
 ==============================================================================
 INTRODUCTION                                            *dropbar-introduction*
@@ -774,6 +774,7 @@ by the plugin:
           Regex = ' ',
           Repeat = '󰑖 ',
           Return = '󰌑 ',
+          Rule = '󰅩 ',
           RuleSet = '󰅩 ',
           Scope = '󰅩 ',
           Section = '󰅩 ',
@@ -1049,6 +1050,7 @@ TREESITTER                                                *dropbar-treesitter*
           'reference',
           'repeat',
           'return_statement',
+          'rule',
           'rule_set',
           'scope',
           'section',
