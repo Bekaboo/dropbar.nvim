@@ -215,7 +215,7 @@ winbar:
         or pcall(vim.treesitter.get_parser, buf)
         or not vim.tbl_isempty(vim.lsp.get_clients({
           bufnr = buf,
-          method = vim.lsp.protocol.Methods.textDocument_documentSymbol,
+          method = 'textDocument/documentSymbol',
         }))
     end,
     ```
@@ -1352,7 +1352,7 @@ require('dropbar').setup({
         or pcall(vim.treesitter.get_parser, buf)
         or not vim.tbl_isempty(vim.lsp.get_clients({
           bufnr = buf,
-          method = vim.lsp.protocol.Methods.textDocument_documentSymbol,
+          method = 'textDocument/documentSymbol',
         }))
     end,
   },
