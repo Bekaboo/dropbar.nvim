@@ -1,5 +1,18 @@
 # Changelog
 
+## [14.3.0](https://github.com/Bekaboo/dropbar.nvim/compare/v14.2.1...v14.3.0) (2025-10-05)
+
+
+### Features
+
+* **configs:** add support to makefile rules ([ce20224](https://github.com/Bekaboo/dropbar.nvim/commit/ce202248134e3949aac375fd66c28e5207785b10))
+* **configs:** attach on `BufEnter`, `FileType`, and `LspAttach` ([3460930](https://github.com/Bekaboo/dropbar.nvim/commit/3460930700ca67b4590a69ac3f1d65d5f9658fb6))
+
+
+### Performance Improvements
+
+* **bar:** make first update snappier ([37a24ae](https://github.com/Bekaboo/dropbar.nvim/commit/37a24aecbea6cf467c74b25f49ee3f8f92ebd7d1))
+
 ## [14.2.1](https://github.com/Bekaboo/dropbar.nvim/compare/v14.2.0...v14.2.1) (2025-07-31)
 
 
