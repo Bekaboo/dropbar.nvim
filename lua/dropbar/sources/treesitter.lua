@@ -45,6 +45,7 @@ end
 local function resolve_node_short_name(node, buf)
   local has_named_children = false
   local named_children = {} ---@type TSNode[]
+  local node_start_line = select(1, node:range())
 
   for child, field_name in node:iter_children() do
     if child:named() then
@@ -66,6 +67,11 @@ local function resolve_node_short_name(node, buf)
   end
 
   for _, child in ipairs(named_children) do
+    local child_start_line = select(1, child:range())
+    if child_start_line ~= node_start_line then
+      goto continue
+    end
+
     local name = extract_short_name(
       vim.treesitter.get_node_text(child, buf):gsub('\n', ' ')
     )
@@ -75,6 +81,8 @@ local function resolve_node_short_name(node, buf)
         source_range = get_node_range(child),
       }
     end
+
+    ::continue::
   end
 
   if has_named_children then
