@@ -112,6 +112,76 @@ local function valid_node(node, buf)
     and get_node_short_name(node, buf) ~= ''
 end
 
+---@param a_pos { line: integer, character: integer }
+---@param b_pos { line: integer, character: integer }
+---@return integer
+local function compare_pos(a_pos, b_pos)
+  if a_pos.line ~= b_pos.line then
+    return a_pos.line < b_pos.line and -1 or 1
+  end
+  if a_pos.character ~= b_pos.character then
+    return a_pos.character < b_pos.character and -1 or 1
+  end
+  return 0
+end
+
+---@param outer dropbar_symbol_t
+---@param inner dropbar_symbol_t
+---@return boolean
+local function range_contains(outer, inner)
+  return compare_pos(outer.range.start, inner.range.start) <= 0
+    and compare_pos(outer.range['end'], inner.range['end']) >= 0
+end
+
+---@param lhs dropbar_symbol_t
+---@param rhs dropbar_symbol_t
+---@return boolean
+local function should_dedupe_adjacent(lhs, rhs)
+  if lhs.name ~= rhs.name or lhs.name == '' then
+    return false
+  end
+
+  local same_start = compare_pos(lhs.range.start, rhs.range.start) == 0
+  local same_end = compare_pos(lhs.range['end'], rhs.range['end']) == 0
+  if not same_start and not same_end then
+    return false
+  end
+
+  return range_contains(lhs, rhs) or range_contains(rhs, lhs)
+end
+
+---@param symbols dropbar_symbol_t[]
+---@return dropbar_symbol_t[]
+local function dedupe_adjacent_symbols(symbols)
+  if #symbols < 2 then
+    return symbols
+  end
+
+  local deduped = { symbols[1] }
+  for i = 2, #symbols do
+    local current = symbols[i]
+    local previous = deduped[#deduped]
+    if should_dedupe_adjacent(previous, current) then
+      local previous_contains_current = range_contains(previous, current)
+      local current_contains_previous = range_contains(current, previous)
+      if previous_contains_current and not current_contains_previous then
+        -- Keep narrower symbol when names overlap.
+        deduped[#deduped] = current
+      elseif current_contains_previous and not previous_contains_current then
+        -- Keep narrower symbol when names overlap.
+        deduped[#deduped] = previous
+      else
+        -- Equal ranges: keep the deeper (later) symbol.
+        deduped[#deduped] = current
+      end
+    else
+      table.insert(deduped, current)
+    end
+  end
+
+  return deduped
+end
+
 ---Get treesitter node children
 ---@param node TSNode
 ---@param buf integer buffer handler
@@ -174,6 +244,7 @@ local function convert(ts_node, buf, win)
   return bar.dropbar_symbol_t:new(setmetatable({
     buf = buf,
     win = win,
+    kind = kind,
     name = get_node_short_name(ts_node, buf),
     icon = configs.opts.icons.kinds.symbols[kind],
     name_hl = 'DropBarKind' .. kind,
@@ -248,6 +319,8 @@ local function get_symbols(buf, win, cursor)
     end
     node = node:parent()
   end
+
+  symbols = dedupe_adjacent_symbols(symbols)
 
   utils.bar.set_min_widths(symbols, configs.opts.sources.treesitter.min_widths)
   return symbols
