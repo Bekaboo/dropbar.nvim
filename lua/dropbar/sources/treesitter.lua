@@ -15,19 +15,50 @@ local function snake_to_camel(str)
 end
 
 ---Get short name of treesitter symbols in buffer buf
+---@param text string
+---@return string
+local function extract_short_name(text)
+  return vim
+    .trim(vim.fn.matchstr(text, configs.opts.sources.treesitter.name_regex))
+    :gsub('%s+', ' ')
+end
+
+---@param node_type string
+---@return boolean
+local function is_name_like_node_type(node_type)
+  node_type = node_type:lower()
+  return node_type:find('ident', 1, true)
+    or node_type:find('name', 1, true)
+    or node_type:find('string', 1, true)
+    or node_type:find('symbol', 1, true)
+    or node_type:find('key', 1, true)
+end
+
 ---@param node TSNode
 ---@param buf integer buffer handler
 ---@return string name
 local function get_node_short_name(node, buf)
-  return (
-    vim
-      .trim(
-        vim.fn.matchstr(
-          vim.treesitter.get_node_text(node, buf):gsub('\n', ' '),
-          configs.opts.sources.treesitter.name_regex
+  local has_named_children = false
+  for child in node:iter_children() do
+    if child:named() then
+      has_named_children = true
+      if is_name_like_node_type(child:type()) then
+        local name = extract_short_name(
+          vim.treesitter.get_node_text(child, buf):gsub('\n', ' ')
         )
-      )
-      :gsub('%s+', ' ')
+        if name ~= '' then
+          return name
+        end
+      end
+    end
+  end
+
+  if has_named_children then
+    return ''
+  end
+
+  return extract_short_name(
+    vim.treesitter.get_node_text(node, buf):gsub('\n', ' ')
   )
 end
 
