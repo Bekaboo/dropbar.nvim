@@ -23,71 +23,81 @@ local function extract_short_name(text)
     :gsub('%s+', ' ')
 end
 
----@param node_type string
----@return boolean
-local function is_name_like_node_type(node_type)
-  node_type = node_type:lower()
-  return node_type:find('ident', 1, true)
-    or node_type:find('name', 1, true)
-    or node_type:find('string', 1, true)
-    or node_type:find('symbol', 1, true)
-    or node_type:find('key', 1, true)
+---@param node TSNode
+---@return { start: { line: integer, character: integer }, ['end']: { line: integer, character: integer } }
+local function get_node_range(node)
+  local range = { node:range() }
+  return {
+    start = {
+      line = range[1],
+      character = range[2],
+    },
+    ['end'] = {
+      line = range[3],
+      character = range[4],
+    },
+  }
 end
 
----@param field_name string
----@return boolean
-local function is_name_like_field_name(field_name)
-  field_name = field_name:lower()
-  return field_name:find('name', 1, true)
-    or field_name:find('ident', 1, true)
-    or field_name:find('id', 1, true)
-    or field_name:find('key', 1, true)
-    or field_name:find('path', 1, true)
-    or field_name:find('label', 1, true)
+---@param node TSNode
+---@param buf integer
+---@return { name: string, source_range?: { start: { line: integer, character: integer }, ['end']: { line: integer, character: integer } } }
+local function resolve_node_short_name(node, buf)
+  local has_named_children = false
+  local named_children = {} ---@type TSNode[]
+
+  for child, field_name in node:iter_children() do
+    if child:named() then
+      has_named_children = true
+      table.insert(named_children, child)
+
+      if field_name then
+        local name = extract_short_name(
+          vim.treesitter.get_node_text(child, buf):gsub('\n', ' ')
+        )
+        if name ~= '' then
+          return {
+            name = name,
+            source_range = get_node_range(child),
+          }
+        end
+      end
+    end
+  end
+
+  for _, child in ipairs(named_children) do
+    local name = extract_short_name(
+      vim.treesitter.get_node_text(child, buf):gsub('\n', ' ')
+    )
+    if name ~= '' then
+      return {
+        name = name,
+        source_range = get_node_range(child),
+      }
+    end
+  end
+
+  if has_named_children then
+    return { name = '' }
+  end
+
+  local name =
+    extract_short_name(vim.treesitter.get_node_text(node, buf):gsub('\n', ' '))
+  if name == '' then
+    return { name = '' }
+  end
+
+  return {
+    name = name,
+    source_range = get_node_range(node),
+  }
 end
 
 ---@param node TSNode
 ---@param buf integer buffer handler
 ---@return string name
 local function get_node_short_name(node, buf)
-  local has_named_children = false
-  local name_like_children = {} ---@type TSNode[]
-
-  for child, field_name in node:iter_children() do
-    if child:named() then
-      has_named_children = true
-
-      if field_name and is_name_like_field_name(field_name) then
-        local name = extract_short_name(
-          vim.treesitter.get_node_text(child, buf):gsub('\n', ' ')
-        )
-        if name ~= '' then
-          return name
-        end
-      end
-
-      if is_name_like_node_type(child:type()) then
-        table.insert(name_like_children, child)
-      end
-    end
-  end
-
-  for _, child in ipairs(name_like_children) do
-    local name = extract_short_name(
-      vim.treesitter.get_node_text(child, buf):gsub('\n', ' ')
-    )
-    if name ~= '' then
-      return name
-    end
-  end
-
-  if has_named_children then
-    return ''
-  end
-
-  return extract_short_name(
-    vim.treesitter.get_node_text(node, buf):gsub('\n', ' ')
-  )
+  return resolve_node_short_name(node, buf).name
 end
 
 ---Get valid treesitter node type name
@@ -125,6 +135,15 @@ local function compare_pos(a_pos, b_pos)
   return 0
 end
 
+---@param lhs_pos { line: integer, character: integer }
+---@param rhs_pos { line: integer, character: integer }
+---@param max_offset integer
+---@return boolean
+local function pos_matches_with_offset(lhs_pos, rhs_pos, max_offset)
+  return lhs_pos.line == rhs_pos.line
+    and math.abs(lhs_pos.character - rhs_pos.character) <= max_offset
+end
+
 ---@param outer dropbar_symbol_t
 ---@param inner dropbar_symbol_t
 ---@return boolean
@@ -133,12 +152,26 @@ local function range_contains(outer, inner)
     and compare_pos(outer.range['end'], inner.range['end']) >= 0
 end
 
+---@param lhs_range { start: { line: integer, character: integer }, ['end']: { line: integer, character: integer } }
+---@param rhs_range { start: { line: integer, character: integer }, ['end']: { line: integer, character: integer } }
+---@return boolean
+local function range_boundary_matches(lhs_range, rhs_range)
+  return pos_matches_with_offset(lhs_range.start, rhs_range.start, 2)
+    or pos_matches_with_offset(lhs_range['end'], rhs_range['end'], 2)
+end
+
 ---@param lhs dropbar_symbol_t
 ---@param rhs dropbar_symbol_t
 ---@return boolean
 local function should_dedupe_adjacent(lhs, rhs)
   if lhs.name ~= rhs.name or lhs.name == '' then
     return false
+  end
+
+  if lhs.name_source and rhs.name_source then
+    if range_boundary_matches(lhs.name_source, rhs.name_source) then
+      return true
+    end
   end
 
   local same_start = compare_pos(lhs.range.start, rhs.range.start) == 0
@@ -236,29 +269,27 @@ end
 ---@param win integer window handler
 ---@return dropbar_symbol_t?
 local function convert(ts_node, buf, win)
-  if not valid_node(ts_node, buf) then
+  local short_type = get_node_short_type(ts_node)
+  if short_type == '' then
     return nil
   end
-  local kind = snake_to_camel(get_node_short_type(ts_node))
-  local range = { ts_node:range() }
+
+  local name_info = resolve_node_short_name(ts_node, buf)
+  if name_info.name == '' then
+    return nil
+  end
+
+  local kind = snake_to_camel(short_type)
   return bar.dropbar_symbol_t:new(setmetatable({
     buf = buf,
     win = win,
     kind = kind,
-    name = get_node_short_name(ts_node, buf),
+    name = name_info.name,
+    name_source = name_info.source_range,
     icon = configs.opts.icons.kinds.symbols[kind],
     name_hl = 'DropBarKind' .. kind,
     icon_hl = 'DropBarIconKind' .. kind,
-    range = {
-      start = {
-        line = range[1],
-        character = range[2],
-      },
-      ['end'] = {
-        line = range[3],
-        character = range[4],
-      },
-    },
+    range = get_node_range(ts_node),
   }, {
     ---@param self dropbar_symbol_t
     ---@param k string|number
