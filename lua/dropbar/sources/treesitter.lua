@@ -34,15 +34,30 @@ local function is_name_like_node_type(node_type)
     or node_type:find('key', 1, true)
 end
 
+---@param field_name string
+---@return boolean
+local function is_name_like_field_name(field_name)
+  field_name = field_name:lower()
+  return field_name:find('name', 1, true)
+    or field_name:find('ident', 1, true)
+    or field_name:find('id', 1, true)
+    or field_name:find('key', 1, true)
+    or field_name:find('path', 1, true)
+    or field_name:find('label', 1, true)
+end
+
 ---@param node TSNode
 ---@param buf integer buffer handler
 ---@return string name
 local function get_node_short_name(node, buf)
   local has_named_children = false
-  for child in node:iter_children() do
+  local name_like_children = {} ---@type TSNode[]
+
+  for child, field_name in node:iter_children() do
     if child:named() then
       has_named_children = true
-      if is_name_like_node_type(child:type()) then
+
+      if field_name and is_name_like_field_name(field_name) then
         local name = extract_short_name(
           vim.treesitter.get_node_text(child, buf):gsub('\n', ' ')
         )
@@ -50,6 +65,19 @@ local function get_node_short_name(node, buf)
           return name
         end
       end
+
+      if is_name_like_node_type(child:type()) then
+        table.insert(name_like_children, child)
+      end
+    end
+  end
+
+  for _, child in ipairs(name_like_children) do
+    local name = extract_short_name(
+      vim.treesitter.get_node_text(child, buf):gsub('\n', ' ')
+    )
+    if name ~= '' then
+      return name
     end
   end
 
