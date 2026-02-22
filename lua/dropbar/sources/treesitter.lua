@@ -43,12 +43,20 @@ end
 ---@param buf integer
 ---@return { name: string, source_range?: { start: { line: integer, character: integer }, ['end']: { line: integer, character: integer } } }
 local function resolve_node_short_name(node, buf)
+  local function has_anonymous_only_children(candidate)
+    return candidate:child_count() > 0 and candidate:named_child_count() == 0
+  end
+
   local has_named_children = false
   local named_children = {} ---@type TSNode[]
   local node_start_line = select(1, node:range())
 
   for child, field_name in node:iter_children() do
     if child:named() then
+      if has_anonymous_only_children(child) then
+        goto continue
+      end
+
       has_named_children = true
       table.insert(named_children, child)
 
@@ -64,6 +72,8 @@ local function resolve_node_short_name(node, buf)
         end
       end
     end
+
+    ::continue::
   end
 
   for _, child in ipairs(named_children) do
