@@ -178,6 +178,14 @@ local function range_boundary_matches(lhs_range, rhs_range)
     or pos_matches_with_offset(lhs_range['end'], rhs_range['end'], 2)
 end
 
+---@param outer_range { start: { line: integer, character: integer }, ['end']: { line: integer, character: integer } }
+---@param inner_range { start: { line: integer, character: integer }, ['end']: { line: integer, character: integer } }
+---@return boolean
+local function range_contains_range(outer_range, inner_range)
+  return compare_pos(outer_range.start, inner_range.start) <= 0
+    and compare_pos(outer_range['end'], inner_range['end']) >= 0
+end
+
 ---@param lhs dropbar_symbol_t
 ---@param rhs dropbar_symbol_t
 ---@return boolean
@@ -212,6 +220,17 @@ local function dedupe_adjacent_symbols(symbols)
   for i = 2, #symbols do
     local current = symbols[i]
     local previous = deduped[#deduped]
+
+    if
+      previous.name_source
+      and current.name_source
+      and range_contains_range(previous.name_source, current.name_source)
+      and previous.name_source.start.line == current.name_source.start.line
+      and previous.name_source['end'].line == current.name_source['end'].line
+    then
+      goto continue
+    end
+
     if should_dedupe_adjacent(previous, current) then
       local previous_contains_current = range_contains(previous, current)
       local current_contains_previous = range_contains(current, previous)
@@ -228,6 +247,8 @@ local function dedupe_adjacent_symbols(symbols)
     else
       table.insert(deduped, current)
     end
+
+    ::continue::
   end
 
   return deduped
