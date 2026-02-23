@@ -259,24 +259,34 @@ end
 ---@param lhs dropbar_symbol_t
 ---@param rhs dropbar_symbol_t
 ---@return boolean
+---@return boolean lhs_contains_rhs
+---@return boolean rhs_contains_lhs
 local function should_dedupe_adjacent(lhs, rhs)
   if lhs.name ~= rhs.name or lhs.name == '' then
-    return false
+    return false, false, false
   end
+
+  local lhs_contains_rhs, rhs_contains_lhs
 
   if lhs.name_source and rhs.name_source then
     if range_boundary_matches(lhs.name_source, rhs.name_source) then
-      return true
+      lhs_contains_rhs = range_contains(lhs, rhs)
+      rhs_contains_lhs = range_contains(rhs, lhs)
+      return true, lhs_contains_rhs, rhs_contains_lhs
     end
   end
 
   local same_start = compare_pos(lhs.range.start, rhs.range.start) == 0
   local same_end = compare_pos(lhs.range['end'], rhs.range['end']) == 0
   if not same_start and not same_end then
-    return false
+    return false, false, false
   end
 
-  return range_contains(lhs, rhs) or range_contains(rhs, lhs)
+  lhs_contains_rhs = range_contains(lhs, rhs)
+  rhs_contains_lhs = range_contains(rhs, lhs)
+  return lhs_contains_rhs or rhs_contains_lhs,
+    lhs_contains_rhs,
+    rhs_contains_lhs
 end
 
 ---@param symbols dropbar_symbol_t[]
@@ -323,9 +333,9 @@ local function dedupe_adjacent_symbols(symbols)
       end
     end
 
-    if should_dedupe_adjacent(previous, current) then
-      local previous_contains_current = range_contains(previous, current)
-      local current_contains_previous = range_contains(current, previous)
+    local should_dedupe, previous_contains_current, current_contains_previous =
+      should_dedupe_adjacent(previous, current)
+    if should_dedupe then
       if previous_contains_current and not current_contains_previous then
         -- Keep narrower symbol when names overlap.
         deduped[#deduped] = current
