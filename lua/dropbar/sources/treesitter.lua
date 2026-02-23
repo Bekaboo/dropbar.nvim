@@ -2,6 +2,9 @@ local configs = require('dropbar.configs')
 local bar = require('dropbar.bar')
 local utils = require('dropbar.utils')
 
+---@alias dropbar_ts_pos { line: integer, character: integer }
+---@alias dropbar_ts_range { start: dropbar_ts_pos, ['end']: dropbar_ts_pos }
+
 ---Convert a snake_case string to camelCase
 ---@param str string?
 ---@return string?
@@ -24,24 +27,25 @@ local function extract_short_name(text)
 end
 
 ---@param node TSNode
----@return { start: { line: integer, character: integer }, ['end']: { line: integer, character: integer } }
+---@return dropbar_ts_range
 local function get_node_range(node)
-  local range = { node:range() }
+  local start_line, start_col, end_line, end_col =
+    vim.treesitter.get_node_range(node)
   return {
     start = {
-      line = range[1],
-      character = range[2],
+      line = start_line,
+      character = start_col,
     },
     ['end'] = {
-      line = range[3],
-      character = range[4],
+      line = end_line,
+      character = end_col,
     },
   }
 end
 
 ---@param node TSNode
 ---@param buf integer
----@return { name: string, source_range?: { start: { line: integer, character: integer }, ['end']: { line: integer, character: integer } } }
+---@return { name: string, source_range?: dropbar_ts_range }
 local function resolve_node_short_name(node, buf)
   local function has_anonymous_only_children(candidate)
     return candidate:child_count() > 0 and candidate:named_child_count() == 0
@@ -49,7 +53,7 @@ local function resolve_node_short_name(node, buf)
 
   local has_named_children = false
   local named_children = {} ---@type TSNode[]
-  local node_start_line = select(1, node:range())
+  local node_start_line = vim.treesitter.get_node_range(node)
 
   for child, field_name in node:iter_children() do
     if child:named() then
@@ -77,7 +81,7 @@ local function resolve_node_short_name(node, buf)
   end
 
   for _, child in ipairs(named_children) do
-    local child_start_line = select(1, child:range())
+    local child_start_line = vim.treesitter.get_node_range(child)
     if child_start_line ~= node_start_line then
       goto continue
     end
@@ -140,8 +144,8 @@ local function valid_node(node, buf)
     and get_node_short_name(node, buf) ~= ''
 end
 
----@param a_pos { line: integer, character: integer }
----@param b_pos { line: integer, character: integer }
+---@param a_pos dropbar_ts_pos
+---@param b_pos dropbar_ts_pos
 ---@return integer
 local function compare_pos(a_pos, b_pos)
   if a_pos.line ~= b_pos.line then
@@ -153,8 +157,19 @@ local function compare_pos(a_pos, b_pos)
   return 0
 end
 
----@param lhs_pos { line: integer, character: integer }
----@param rhs_pos { line: integer, character: integer }
+---@param range dropbar_ts_range
+---@return integer[]
+local function to_range4(range)
+  return {
+    range.start.line,
+    range.start.character,
+    range['end'].line,
+    range['end'].character,
+  }
+end
+
+---@param lhs_pos dropbar_ts_pos
+---@param rhs_pos dropbar_ts_pos
 ---@param max_offset integer
 ---@return boolean
 local function pos_matches_with_offset(lhs_pos, rhs_pos, max_offset)
@@ -166,20 +181,19 @@ end
 ---@param inner dropbar_symbol_t
 ---@return boolean
 local function range_contains(outer, inner)
-  return compare_pos(outer.range.start, inner.range.start) <= 0
-    and compare_pos(outer.range['end'], inner.range['end']) >= 0
+  return vim.treesitter.node_contains(outer.ts_node, to_range4(inner.range))
 end
 
----@param lhs_range { start: { line: integer, character: integer }, ['end']: { line: integer, character: integer } }
----@param rhs_range { start: { line: integer, character: integer }, ['end']: { line: integer, character: integer } }
+---@param lhs_range dropbar_ts_range
+---@param rhs_range dropbar_ts_range
 ---@return boolean
 local function range_boundary_matches(lhs_range, rhs_range)
   return pos_matches_with_offset(lhs_range.start, rhs_range.start, 2)
     or pos_matches_with_offset(lhs_range['end'], rhs_range['end'], 2)
 end
 
----@param outer_range { start: { line: integer, character: integer }, ['end']: { line: integer, character: integer } }
----@param inner_range { start: { line: integer, character: integer }, ['end']: { line: integer, character: integer } }
+---@param outer_range dropbar_ts_range
+---@param inner_range dropbar_ts_range
 ---@return boolean
 local function range_contains_range(outer_range, inner_range)
   return compare_pos(outer_range.start, inner_range.start) <= 0
@@ -344,6 +358,7 @@ local function convert(ts_node, buf, win)
   return bar.dropbar_symbol_t:new(setmetatable({
     buf = buf,
     win = win,
+    ts_node = ts_node,
     kind = kind,
     name = name_info.name,
     name_source = name_info.source_range,

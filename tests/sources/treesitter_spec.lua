@@ -113,6 +113,32 @@ local function stub_treesitter(cursor_node, stubs)
       return node._text
     end)
   )
+  table.insert(
+    stubs,
+    stub(vim.treesitter, 'get_node_range', function(node_or_range)
+      if type(node_or_range) == 'table' and node_or_range._range then
+        return unpack(node_or_range._range)
+      end
+      return unpack(node_or_range)
+    end)
+  )
+  table.insert(
+    stubs,
+    stub(vim.treesitter, 'node_contains', function(node, range)
+      local node_start_row, node_start_col, node_end_row, node_end_col =
+        unpack(node._range)
+      local range_start_row, range_start_col, range_end_row, range_end_col =
+        unpack(range)
+      local node_starts_before_range = node_start_row < range_start_row
+        or (
+          node_start_row == range_start_row
+          and node_start_col <= range_start_col
+        )
+      local node_ends_after_range = node_end_row > range_end_row
+        or (node_end_row == range_end_row and node_end_col >= range_end_col)
+      return node_starts_before_range and node_ends_after_range
+    end)
+  )
 end
 
 ---@param symbols dropbar_symbol_t[]
