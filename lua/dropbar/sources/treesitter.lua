@@ -115,13 +115,6 @@ local function resolve_node_short_name(node, buf)
   }
 end
 
----@param node TSNode
----@param buf integer buffer handler
----@return string name
-local function get_node_short_name(node, buf)
-  return resolve_node_short_name(node, buf).name
-end
-
 ---Get valid treesitter node type name
 ---@param node TSNode
 ---@return string type_name
@@ -135,13 +128,38 @@ local function get_node_short_type(node)
   return ''
 end
 
+---@class dropbar_ts_symbol_info
+---@field short_type string
+---@field kind string
+---@field name_info { name: string, source_range?: dropbar_ts_range }
+
+---@param node TSNode
+---@param buf integer buffer handler
+---@return dropbar_ts_symbol_info?
+local function resolve_symbol_info(node, buf)
+  local short_type = get_node_short_type(node)
+  if short_type == '' then
+    return nil
+  end
+
+  local name_info = resolve_node_short_name(node, buf)
+  if name_info.name == '' then
+    return nil
+  end
+
+  return {
+    short_type = short_type,
+    kind = snake_to_camel(short_type),
+    name_info = name_info,
+  }
+end
+
 ---Check if treesitter node is valid
 ---@param node TSNode
 ---@param buf integer buffer handler
 ---@return boolean
 local function valid_node(node, buf)
-  return get_node_short_type(node) ~= ''
-    and get_node_short_name(node, buf) ~= ''
+  return resolve_symbol_info(node, buf) ~= nil
 end
 
 ---@param a_pos dropbar_ts_pos
@@ -342,29 +360,24 @@ end
 ---@param ts_node TSNode
 ---@param buf integer buffer handler
 ---@param win integer window handler
+---@param symbol_info? dropbar_ts_symbol_info
 ---@return dropbar_symbol_t?
-local function convert(ts_node, buf, win)
-  local short_type = get_node_short_type(ts_node)
-  if short_type == '' then
+local function convert(ts_node, buf, win, symbol_info)
+  symbol_info = symbol_info or resolve_symbol_info(ts_node, buf)
+  if not symbol_info then
     return nil
   end
 
-  local name_info = resolve_node_short_name(ts_node, buf)
-  if name_info.name == '' then
-    return nil
-  end
-
-  local kind = snake_to_camel(short_type)
   return bar.dropbar_symbol_t:new(setmetatable({
     buf = buf,
     win = win,
     ts_node = ts_node,
-    kind = kind,
-    name = name_info.name,
-    name_source = name_info.source_range,
-    icon = configs.opts.icons.kinds.symbols[kind],
-    name_hl = 'DropBarKind' .. kind,
-    icon_hl = 'DropBarIconKind' .. kind,
+    kind = symbol_info.kind,
+    name = symbol_info.name_info.name,
+    name_source = symbol_info.name_info.source_range,
+    icon = configs.opts.icons.kinds.symbols[symbol_info.kind],
+    name_hl = 'DropBarKind' .. symbol_info.kind,
+    icon_hl = 'DropBarIconKind' .. symbol_info.kind,
     range = get_node_range(ts_node),
   }, {
     ---@param self dropbar_symbol_t
@@ -421,8 +434,9 @@ local function get_symbols(buf, win, cursor)
   })
 
   while node and #symbols < configs.opts.sources.treesitter.max_depth do
-    if valid_node(node, buf) then
-      table.insert(symbols, 1, convert(node, buf, win))
+    local symbol_info = resolve_symbol_info(node, buf)
+    if symbol_info then
+      table.insert(symbols, 1, convert(node, buf, win, symbol_info))
     end
     node = node:parent()
   end
