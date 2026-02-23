@@ -254,6 +254,33 @@ describe('[source][treesitter]', function()
     end
   )
 
+  it(
+    'prefers narrower name when broader parent starts same place across lines',
+    function()
+      local broad = ts_node({
+        type_name = 'identifier',
+        text = 'self.get_base_types_for_class',
+        range = { 0, 17, 2, 33 },
+      })
+      local self_symbol = ts_node({
+        type_name = 'identifier',
+        text = 'self',
+        range = { 0, 17, 1, 29 },
+      })
+      self_symbol._parent = broad
+
+      stub_treesitter(self_symbol, stubs)
+
+      local symbols = source_treesitter.get_symbols(
+        vim.api.nvim_get_current_buf(),
+        vim.api.nvim_get_current_win(),
+        { 1, 18 }
+      )
+
+      assert.are.same({ 'self' }, symbol_names(symbols))
+    end
+  )
+
   it('deduplicates wrapper symbols with identical names', function()
     local settings_pair = ts_node({
       type_name = 'pair',

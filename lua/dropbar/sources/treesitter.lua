@@ -225,10 +225,26 @@ local function dedupe_adjacent_symbols(symbols)
       previous.name_source
       and current.name_source
       and range_contains_range(previous.name_source, current.name_source)
-      and previous.name_source.start.line == current.name_source.start.line
-      and previous.name_source['end'].line == current.name_source['end'].line
     then
-      goto continue
+      local same_start =
+        compare_pos(previous.name_source.start, current.name_source.start) == 0
+      local current_ends_earlier =
+        compare_pos(current.name_source['end'], previous.name_source['end']) < 0
+      if
+        same_start
+        and current_ends_earlier
+        and previous.name_source['end'].line ~= current.name_source['end'].line
+      then
+        deduped[#deduped] = current
+        goto continue
+      end
+
+      if
+        previous.name_source.start.line == current.name_source.start.line
+        and previous.name_source['end'].line == current.name_source['end'].line
+      then
+        goto continue
+      end
     end
 
     if should_dedupe_adjacent(previous, current) then
