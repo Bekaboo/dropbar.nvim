@@ -19,15 +19,6 @@ local function snake_to_camel(str)
   )
 end
 
----Get short name of treesitter symbols in buffer buf
----@param text string
----@return string
-local function extract_short_name(text)
-  return vim
-    .trim(vim.fn.matchstr(text, configs.opts.sources.treesitter.name_regex))
-    :gsub('%s+', ' ')
-end
-
 ---@return table
 local function create_symbol_cache()
   return {
@@ -36,18 +27,25 @@ local function create_symbol_cache()
   }
 end
 
+---Get short name of treesitter symbols in buffer buf
 ---@param node TSNode
 ---@param buf integer
 ---@param cache table
 ---@return string?
-local function get_short_name_for_node(node, buf, cache)
+local function get_node_short_name(node, buf, cache)
   local cached = cache.short_name[node]
   if cached ~= nil then
     return cached == cache_nil and nil or cached
   end
 
-  local name =
-    extract_short_name(vim.treesitter.get_node_text(node, buf):gsub('\n', ' '))
+  local name = vim
+    .trim(
+      vim.fn.matchstr(
+        vim.treesitter.get_node_text(node, buf):gsub('\n', ' '),
+        configs.opts.sources.treesitter.name_regex
+      )
+    )
+    :gsub('%s+', ' ')
   if name == '' then
     cache.short_name[node] = cache_nil
     return nil
@@ -97,7 +95,7 @@ local function resolve_node_short_name(node, buf, cache)
       table.insert(named_children, child)
 
       if field_name then
-        local name = get_short_name_for_node(child, buf, cache)
+        local name = get_node_short_name(child, buf, cache)
         if name then
           return {
             name = name,
@@ -116,7 +114,7 @@ local function resolve_node_short_name(node, buf, cache)
       goto continue
     end
 
-    local name = get_short_name_for_node(child, buf, cache)
+    local name = get_node_short_name(child, buf, cache)
     if name then
       return {
         name = name,
@@ -131,7 +129,7 @@ local function resolve_node_short_name(node, buf, cache)
     return nil
   end
 
-  local name = get_short_name_for_node(node, buf, cache)
+  local name = get_node_short_name(node, buf, cache)
   if not name then
     return nil
   end
