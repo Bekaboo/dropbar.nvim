@@ -19,21 +19,25 @@ local function snake_to_camel(str)
   )
 end
 
----@return table
+---@class dropbar_ts_cache_t
+---@field symbol_info table<TSNode, dropbar_ts_symbol_info|false>
+---@field short_names table<TSNode, string|false>
+
+---@return dropbar_ts_cache_t
 local function create_symbol_cache()
   return {
     symbol_info = setmetatable({}, { __mode = 'k' }),
-    short_name = setmetatable({}, { __mode = 'k' }),
+    short_names = setmetatable({}, { __mode = 'k' }),
   }
 end
 
 ---Get short name of treesitter symbols in buffer buf
 ---@param node TSNode
 ---@param buf integer
----@param cache table
+---@param cache dropbar_ts_cache_t
 ---@return string?
 local function get_node_short_name(node, buf, cache)
-  local cached = cache.short_name[node]
+  local cached = cache.short_names[node]
   if cached ~= nil then
     return cached == cache_nil and nil or cached
   end
@@ -47,11 +51,11 @@ local function get_node_short_name(node, buf, cache)
     )
     :gsub('%s+', ' ')
   if name == '' then
-    cache.short_name[node] = cache_nil
+    cache.short_names[node] = cache_nil
     return nil
   end
 
-  cache.short_name[node] = name
+  cache.short_names[node] = name
   return name
 end
 
@@ -84,7 +88,7 @@ end
 
 ---@param node TSNode
 ---@param buf integer
----@param cache table
+---@param cache dropbar_ts_cache_t
 ---@return { name: string, source_range?: dropbar_ts_range }?
 local function resolve_node_short_name(node, buf, cache)
   local has_named_children = false
@@ -166,7 +170,7 @@ end
 
 ---@param node TSNode
 ---@param buf integer buffer handler
----@param cache table
+---@param cache dropbar_ts_cache_t
 ---@return dropbar_ts_symbol_info?
 local function resolve_symbol_info(node, buf, cache)
   local cached = cache.symbol_info[node]
@@ -198,7 +202,7 @@ end
 ---Check if treesitter node is valid
 ---@param node TSNode
 ---@param buf integer buffer handler
----@param cache table
+---@param cache dropbar_ts_cache_t
 ---@return boolean
 local function valid_node(node, buf, cache)
   return resolve_symbol_info(node, buf, cache) ~= nil
@@ -363,7 +367,7 @@ end
 ---Get treesitter node children
 ---@param node TSNode
 ---@param buf integer buffer handler
----@param cache table
+---@param cache dropbar_ts_cache_t
 ---@return TSNode[] children
 local function get_node_children(node, buf, cache)
   local children = {}
@@ -380,7 +384,7 @@ end
 ---Get treesitter node siblings
 ---@param node TSNode
 ---@param buf integer buffer handler
----@param cache table
+---@param cache dropbar_ts_cache_t
 ---@return TSNode[] siblings
 ---@return integer idx index of the node in its siblings
 local function get_node_siblings(node, buf, cache)
@@ -415,7 +419,7 @@ end
 ---@param ts_node TSNode
 ---@param buf integer buffer handler
 ---@param win integer window handler
----@param cache table
+---@param cache dropbar_ts_cache_t
 ---@param symbol_info? dropbar_ts_symbol_info
 ---@return dropbar_symbol_t?
 local function convert(ts_node, buf, win, cache, symbol_info)
