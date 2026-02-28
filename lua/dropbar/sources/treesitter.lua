@@ -72,22 +72,28 @@ local function get_node_range(node)
   }
 end
 
+---Returns true if the node has at least one child and none of its children are
+---named treesitter nodes i.e. all children are anonymous
+---
+---By heuristic such nodes can be skipped when collecting symbols
+---@param node TSNode
+---@return boolean
+local function has_only_anonymous_children(node)
+  return node:child_count() > 0 and node:named_child_count() == 0
+end
+
 ---@param node TSNode
 ---@param buf integer
 ---@param cache table
 ---@return { name: string, source_range?: dropbar_ts_range }?
 local function resolve_node_short_name(node, buf, cache)
-  local function has_anonymous_only_children(candidate)
-    return candidate:child_count() > 0 and candidate:named_child_count() == 0
-  end
-
   local has_named_children = false
   local named_children = {} ---@type TSNode[]
   local node_start_line = vim.treesitter.get_node_range(node)
 
   for child, field_name in node:iter_children() do
     if child:named() then
-      if has_anonymous_only_children(child) then
+      if has_only_anonymous_children(child) then
         goto continue
       end
 
