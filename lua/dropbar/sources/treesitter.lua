@@ -5,8 +5,6 @@ local utils = require('dropbar.utils')
 ---@alias dropbar_ts_pos { line: integer, character: integer }
 ---@alias dropbar_ts_range { start: dropbar_ts_pos, ['end']: dropbar_ts_pos }
 
-local cache_nil = {}
-
 ---Convert a snake_case string to camelCase
 ---@param str string?
 ---@return string?
@@ -39,7 +37,7 @@ end
 local function get_node_short_name(node, buf, cache)
   local cached = cache.short_names[node]
   if cached ~= nil then
-    return cached == cache_nil and nil or cached
+    return cached or nil
   end
 
   local name = vim
@@ -51,7 +49,7 @@ local function get_node_short_name(node, buf, cache)
     )
     :gsub('%s+', ' ')
   if name == '' then
-    cache.short_names[node] = cache_nil
+    cache.short_names[node] = false
     return nil
   end
 
@@ -175,18 +173,18 @@ end
 local function resolve_symbol_info(node, buf, cache)
   local cached = cache.symbol_info[node]
   if cached ~= nil then
-    return cached == cache_nil and nil or cached
+    return cached or nil
   end
 
   local short_type = get_node_short_type(node)
   if short_type == '' then
-    cache.symbol_info[node] = cache_nil
+    cache.symbol_info[node] = false
     return nil
   end
 
   local name_info = resolve_node_short_name(node, buf, cache)
   if not name_info then
-    cache.symbol_info[node] = cache_nil
+    cache.symbol_info[node] = false
     return nil
   end
 
