@@ -221,34 +221,34 @@ local function compare_pos(a_pos, b_pos)
   return 0
 end
 
----@param lhs dropbar_symbol_t
----@param rhs dropbar_symbol_t
+---@param s1 dropbar_symbol_t
+---@param s2 dropbar_symbol_t
 ---@return boolean
----@return boolean lhs_contains_rhs
----@return boolean rhs_contains_lhs
-local function should_dedupe_adjacent(lhs, rhs)
-  if lhs.name ~= rhs.name or lhs.name == '' then
+---@return boolean s1_contains_s2
+---@return boolean s2_contains_s1
+local function should_dedupe_adjacent(s1, s2)
+  if s1.name ~= s2.name or s1.name == '' then
     return false, false, false
   end
 
-  local lhs_contains_rhs, rhs_contains_lhs
+  local s1_contains_s2, s2_contains_s1
 
-  if lhs.name_source and rhs.name_source then
+  if s1.name_source and s2.name_source then
     if
       utils.range.matches(
-        lhs.name_source,
-        rhs.name_source,
+        s1.name_source,
+        s2.name_source,
         DEDUP_RANGE_MATCH_TOL
       )
     then
-      lhs_contains_rhs = utils.range.contains(lhs.range, rhs.range, false)
-      rhs_contains_lhs = utils.range.contains(rhs.range, lhs.range, false)
-      return true, lhs_contains_rhs, rhs_contains_lhs
+      s1_contains_s2 = utils.range.contains(s1.range, s2.range, false)
+      s2_contains_s1 = utils.range.contains(s2.range, s1.range, false)
+      return true, s1_contains_s2, s2_contains_s1
     end
   end
 
-  local same_start = compare_pos(lhs.range.start, rhs.range.start) == 0
-  local same_end = compare_pos(lhs.range['end'], rhs.range['end']) == 0
+  local same_start = compare_pos(s1.range.start, s2.range.start) == 0
+  local same_end = compare_pos(s1.range['end'], s2.range['end']) == 0
   if not same_start and not same_end then
     return false, false, false
   end
@@ -258,11 +258,9 @@ local function should_dedupe_adjacent(lhs, rhs)
     return true, false, false
   end
 
-  lhs_contains_rhs = utils.range.contains(lhs.range, rhs.range, false)
-  rhs_contains_lhs = utils.range.contains(rhs.range, lhs.range, false)
-  return lhs_contains_rhs or rhs_contains_lhs,
-    lhs_contains_rhs,
-    rhs_contains_lhs
+  s1_contains_s2 = utils.range.contains(s1.range, s2.range, false)
+  s2_contains_s1 = utils.range.contains(s2.range, s1.range, false)
+  return s1_contains_s2 or s2_contains_s1, s1_contains_s2, s2_contains_s1
 end
 
 ---@param symbols dropbar_symbol_t[]
