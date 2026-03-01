@@ -2,8 +2,10 @@ local configs = require('dropbar.configs')
 local bar = require('dropbar.bar')
 local utils = require('dropbar.utils')
 
----@alias dropbar_ts_pos { line: integer, character: integer }
----@alias dropbar_ts_range { start: dropbar_ts_pos, ['end']: dropbar_ts_pos }
+-- Max character offset when comparing symbol boundaries during deduplication
+-- If two boundaries are on the same line and within this offset, treat them as
+-- equal range
+local DEDUP_RANGE_MATCH_TOL = 2
 
 ---Convert a snake_case string to camelCase
 ---@param str string?
@@ -58,7 +60,7 @@ local function get_node_short_name(node, buf, cache)
 end
 
 ---@param node TSNode
----@return dropbar_ts_range
+---@return dropbar_range_t
 local function get_node_range(node)
   local start_line, start_col, end_line, end_col =
     vim.treesitter.get_node_range(node)
@@ -87,7 +89,7 @@ end
 ---@param node TSNode
 ---@param buf integer
 ---@param cache dropbar_ts_cache_t
----@return { name: string, source_range?: dropbar_ts_range }?
+---@return { name: string, source_range?: dropbar_range_t }?
 local function resolve_node_short_name(node, buf, cache)
   local has_named_children = false
   local named_children = {} ---@type TSNode[]
@@ -164,7 +166,7 @@ end
 ---@class dropbar_ts_symbol_info
 ---@field short_type string
 ---@field kind string
----@field name_info { name: string, source_range?: dropbar_ts_range }
+---@field name_info { name: string, source_range?: dropbar_range_t }
 
 ---@param node TSNode
 ---@param buf integer buffer handler
@@ -206,8 +208,8 @@ local function valid_node(node, buf, cache)
   return resolve_symbol_info(node, buf, cache) ~= nil
 end
 
----@param a_pos dropbar_ts_pos
----@param b_pos dropbar_ts_pos
+---@param a_pos dropbar_pos_t
+---@param b_pos dropbar_pos_t
 ---@return integer
 local function compare_pos(a_pos, b_pos)
   if a_pos.line ~= b_pos.line then
@@ -217,49 +219,6 @@ local function compare_pos(a_pos, b_pos)
     return a_pos.character < b_pos.character and -1 or 1
   end
   return 0
-end
-
----@param range dropbar_ts_range
----@return integer[]
-local function to_range4(range)
-  return {
-    range.start.line,
-    range.start.character,
-    range['end'].line,
-    range['end'].character,
-  }
-end
-
----@param lhs_pos dropbar_ts_pos
----@param rhs_pos dropbar_ts_pos
----@param max_offset integer
----@return boolean
-local function pos_matches_with_offset(lhs_pos, rhs_pos, max_offset)
-  return lhs_pos.line == rhs_pos.line
-    and math.abs(lhs_pos.character - rhs_pos.character) <= max_offset
-end
-
----@param outer dropbar_symbol_t
----@param inner dropbar_symbol_t
----@return boolean
-local function range_contains(outer, inner)
-  return vim.treesitter.node_contains(outer.ts_node, to_range4(inner.range))
-end
-
----@param lhs_range dropbar_ts_range
----@param rhs_range dropbar_ts_range
----@return boolean
-local function range_boundary_matches(lhs_range, rhs_range)
-  return pos_matches_with_offset(lhs_range.start, rhs_range.start, 2)
-    or pos_matches_with_offset(lhs_range['end'], rhs_range['end'], 2)
-end
-
----@param outer_range dropbar_ts_range
----@param inner_range dropbar_ts_range
----@return boolean
-local function range_contains_range(outer_range, inner_range)
-  return compare_pos(outer_range.start, inner_range.start) <= 0
-    and compare_pos(outer_range['end'], inner_range['end']) >= 0
 end
 
 ---@param lhs dropbar_symbol_t
@@ -275,9 +234,15 @@ local function should_dedupe_adjacent(lhs, rhs)
   local lhs_contains_rhs, rhs_contains_lhs
 
   if lhs.name_source and rhs.name_source then
-    if range_boundary_matches(lhs.name_source, rhs.name_source) then
-      lhs_contains_rhs = range_contains(lhs, rhs)
-      rhs_contains_lhs = range_contains(rhs, lhs)
+    if
+      utils.range.matches(
+        lhs.name_source,
+        rhs.name_source,
+        DEDUP_RANGE_MATCH_TOL
+      )
+    then
+      lhs_contains_rhs = utils.range.contains(lhs.range, rhs.range, false)
+      rhs_contains_lhs = utils.range.contains(rhs.range, lhs.range, false)
       return true, lhs_contains_rhs, rhs_contains_lhs
     end
   end
@@ -288,8 +253,13 @@ local function should_dedupe_adjacent(lhs, rhs)
     return false, false, false
   end
 
-  lhs_contains_rhs = range_contains(lhs, rhs)
-  rhs_contains_lhs = range_contains(rhs, lhs)
+  -- Equal ranges should still deduplicate; strict containment would return false
+  if same_start and same_end then
+    return true, false, false
+  end
+
+  lhs_contains_rhs = utils.range.contains(lhs.range, rhs.range, false)
+  rhs_contains_lhs = utils.range.contains(rhs.range, lhs.range, false)
   return lhs_contains_rhs or rhs_contains_lhs,
     lhs_contains_rhs,
     rhs_contains_lhs
@@ -310,7 +280,11 @@ local function dedupe_adjacent_symbols(symbols)
     if
       previous.name_source
       and current.name_source
-      and range_contains_range(previous.name_source, current.name_source)
+      and utils.range.contains(
+        previous.name_source,
+        current.name_source,
+        false
+      )
     then
       local same_start = compare_pos(
         previous.name_source.start,
