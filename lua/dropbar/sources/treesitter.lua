@@ -226,7 +226,7 @@ end
 ---@return boolean
 ---@return boolean s1_contains_s2
 ---@return boolean s2_contains_s1
-local function should_dedupe_adjacent(s1, s2)
+local function should_dedup_adjacent(s1, s2)
   if s1.name ~= s2.name or s1.name == '' then
     return false, false, false
   end
@@ -265,7 +265,7 @@ end
 
 ---@param symbols dropbar_symbol_t[]
 ---@return dropbar_symbol_t[]
-local function dedupe_adjacent_symbols(symbols)
+local function dedup_adjacent_symbols(symbols)
   if #symbols < 2 then
     return symbols
   end
@@ -311,9 +311,9 @@ local function dedupe_adjacent_symbols(symbols)
       end
     end
 
-    local should_dedupe, previous_contains_current, current_contains_previous =
-      should_dedupe_adjacent(previous, current)
-    if should_dedupe then
+    local should_dedup, previous_contains_current, current_contains_previous =
+      should_dedup_adjacent(previous, current)
+    if should_dedup then
       if previous_contains_current and not current_contains_previous then
         -- Keep narrower symbol when names overlap.
         deduped[#deduped] = current
@@ -473,7 +473,7 @@ local function get_symbols(buf, win, cursor)
     node = node:parent()
   end
 
-  symbols = dedupe_adjacent_symbols(symbols)
+  symbols = dedup_adjacent_symbols(symbols)
 
   utils.bar.set_min_widths(symbols, configs.opts.sources.treesitter.min_widths)
   return symbols
