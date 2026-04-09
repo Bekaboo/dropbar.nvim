@@ -289,7 +289,10 @@ M.opts = {
 
       return vim.bo[buf].bt == 'terminal'
         or vim.bo[buf].ft == 'markdown'
-        or pcall(vim.treesitter.get_parser, buf)
+        or (function()
+          local ok, parser = pcall(vim.treesitter.get_parser, buf)
+          return ok and parser ~= nil
+        end)()
         or not vim.tbl_isempty(vim.lsp.get_clients({
           bufnr = buf,
           method = 'textDocument/documentSymbol',
