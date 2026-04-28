@@ -246,7 +246,7 @@ the winbar:
   trigger an update on all dropbars attached to a buffer - Default:
 >lua
     {
-          'BufModifiedSet',
+          'OptionSet',
           'FileChangedShellPost',
           'TextChanged',
           'ModeChanged',

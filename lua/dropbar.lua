@@ -109,6 +109,7 @@ local function setup(opts)
 
   if not vim.tbl_isempty(configs.opts.bar.update_events.buf) then
     vim.api.nvim_create_autocmd(configs.opts.bar.update_events.buf, {
+      pattern = 'modified',
       group = groupid,
       callback = function(args)
         utils.bar.exec('update', { buf = args.buf })

@@ -320,7 +320,7 @@ M.opts = {
         'WinResized',
       },
       buf = {
-        'BufModifiedSet',
+        'OptionSet',
         'FileChangedShellPost',
         'TextChanged',
         'ModeChanged',
