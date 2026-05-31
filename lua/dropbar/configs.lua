@@ -298,6 +298,12 @@ M.opts = {
           method = 'textDocument/documentSymbol',
         }))
     end,
+    ---@alias dropbar.event dropbar.structured_event|vim.api.keyset.events
+    ---
+    ---@class dropbar.structured_event
+    ---@field event vim.api.keyset.events name of the event
+    ---@field pattern string pattern of the event
+    ---@type dropbar.event[]
     attach_events = {
       'TermOpen',
       'BufEnter',
@@ -314,13 +320,19 @@ M.opts = {
     -- setting this option to a number slightly larger than
     -- 1000 / key_repeat_rate
     update_debounce = 32,
+    ---@type table<string, dropbar.event[]>
     update_events = {
       win = {
         'CursorMoved',
         'WinResized',
       },
       buf = {
-        'BufModifiedSet',
+        -- Neovim v0.13 removes `BufModifiedSet`, use `OptionSet` with
+        -- `pattern=modified` instead
+        {
+          event = 'OptionSet',
+          pattern = 'modified',
+        },
         'FileChangedShellPost',
         'TextChanged',
         'ModeChanged',

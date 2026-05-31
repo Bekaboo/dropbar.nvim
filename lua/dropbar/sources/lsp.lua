@@ -364,14 +364,21 @@ local function attach(buf)
   end
 
   update_symbols(buf)
-  vim.b[buf].dropbar_lsp_attached =
-    vim.api.nvim_create_autocmd(configs.opts.bar.update_events.buf, {
+  vim.b[buf].dropbar_lsp_attached = vim.api.nvim_create_autocmd(
+    vim
+      .iter(configs.opts.bar.update_events.buf)
+      :map(function(event)
+        return type(event) == 'table' and event.event or event
+      end)
+      :totable(),
+    {
       group = groupid,
       buffer = buf,
       callback = function(args)
         update_symbols(args.buf)
       end,
-    })
+    }
+  )
 end
 
 ---Detach LSP symbol getter from buffer

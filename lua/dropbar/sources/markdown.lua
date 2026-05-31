@@ -228,14 +228,22 @@ local function attach(buf)
   end
 
   vim.b[buf].dropbar_markdown_heading_parser_attached =
-    vim.api.nvim_create_autocmd(configs.opts.bar.update_events.buf, {
-      desc = 'Update markdown heading symbols on buffer change.',
-      group = groupid,
-      buffer = buf,
-      callback = function(args)
-        parse_buf(args.buf)
-      end,
-    })
+    vim.api.nvim_create_autocmd(
+      vim
+        .iter(configs.opts.bar.update_events.buf)
+        :map(function(event)
+          return type(event) == 'table' and event.event or event
+        end)
+        :totable(),
+      {
+        desc = 'Update markdown heading symbols on buffer change.',
+        group = groupid,
+        buffer = buf,
+        callback = function(args)
+          parse_buf(args.buf)
+        end,
+      }
+    )
   parse_buf(buf)
 end
 

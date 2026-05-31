@@ -48,7 +48,7 @@ describe('[source][lsp]', function()
     -- Second request, use autocmd to trigger update
     -- Don't use `get_symbols()` here as the result from first request is
     -- cached
-    vim.api.nvim_exec_autocmds(configs.opts.bar.update_events.buf[1], {
+    vim.api.nvim_exec_autocmds('TextChanged', {
       buffer = 0,
     })
 
@@ -115,7 +115,7 @@ describe('[source][lsp]', function()
     end
 
     -- Trigger LSP update
-    vim.api.nvim_exec_autocmds(configs.opts.bar.update_events.buf[1], {
+    vim.api.nvim_exec_autocmds('TextChanged', {
       buffer = 0,
     })
 
@@ -207,7 +207,7 @@ describe('[source][lsp]', function()
       -- Should not throw 'invalid order function for sorting' error
       assert.is_true(pcall(function()
         -- Trigger LSP update
-        vim.api.nvim_exec_autocmds(configs.opts.bar.update_events.buf[1], {
+        vim.api.nvim_exec_autocmds('TextChanged', {
           buffer = 0,
         })
 

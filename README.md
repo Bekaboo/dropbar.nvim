@@ -219,7 +219,7 @@ winbar:
         }))
     end,
     ```
-- `opts.bar.attach_events`: `string[]`
+- `opts.bar.attach_events`: `(string|{event: string, pattern: string})[]`
   - Controls when to evaluate the `enable()` function and attach the plugin
     to corresponding buffer or window
   - Default:
@@ -242,7 +242,7 @@ winbar:
     setting this option to a number slightly larger than
     `1000 / key_repeat_rate`
   - Default: `32`
-- `opts.bar.update_events.win`: `string[]`
+- `opts.bar.update_events.win`: `(string|{event: string, pattern: string})[]`
   - List of events that should trigger an update on the dropbar attached to
     a single window
   - Default:
@@ -253,19 +253,24 @@ winbar:
       'WinResized',
     }
     ```
-- `opts.bar.update_events.buf`: `string[]`
+- `opts.bar.update_events.buf`: `(string|{event: string, pattern: string})[]`
   - List of events that should trigger an update on all dropbars attached to a
     buffer
   - Default:
     ```lua
     {
-      'BufModifiedSet',
+      -- Neovim v0.13 removes `BufModifiedSet`, use `OptionSet` with
+      -- `pattern=modified` instead
+      {
+        event = 'OptionSet',
+        pattern = 'modified',
+      },
       'FileChangedShellPost',
       'TextChanged',
       'ModeChanged',
     }
     ```
-- `opts.bar.update_events.global`: `string[]`
+- `opts.bar.update_events.global`: `(string|{event: string, pattern: string})[]`
   - List of events that should trigger an update of all dropbars in current
     nvim session
   - Default:
