@@ -11,7 +11,7 @@ local function str_sanitize(str)
   return str and vim.gsplit(str, '\n')()
 end
 
----@alias dropbar_symbol_range_t lsp_range_t
+---@alias dropbar_symbol_range_t dropbar_range_t
 
 ---Symbol in dropbar, basic element of `dropbar_t` and
 ---`dropbar_menu_entry_t`
