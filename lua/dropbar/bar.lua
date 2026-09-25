@@ -708,7 +708,7 @@ function dropbar_t:update_hover_hl(col)
   local hl_hover_icon = '_DropBarIconHover'
   local hl_hover_name = '_DropBarHover'
   local hl_winbar = vim.api.nvim_get_current_win() == self.win and 'WinBar'
-    or 'WinbarNC'
+    or 'WinBarNC'
   vim.api.nvim_set_hl(
     0,
     hl_hover_icon,
