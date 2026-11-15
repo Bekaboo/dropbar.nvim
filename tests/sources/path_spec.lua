@@ -12,6 +12,7 @@ end
 
 describe('[source][path]', function()
   local tmpdir
+  local cwd
   local created_bufs = {}
   local created_wins = {}
 
@@ -49,6 +50,10 @@ describe('[source][path]', function()
     tmpdir = vim.fn.tempname()
     vim.fn.mkdir(tmpdir, 'p')
     vim.cmd('cd ' .. vim.fn.fnameescape(tmpdir))
+    -- Use the canonical cwd so buffer paths share a prefix with
+    -- `opts.sources.path.relative_to` even when `tmpdir` goes through a
+    -- symlink (e.g. macOS `/var` -> `/private/var`)
+    cwd = vim.fn.getcwd()
     dropbar.setup({
       sources = {
         path = {
@@ -78,8 +83,8 @@ describe('[source][path]', function()
   end)
 
   it('extends depth for buffers sharing a basename', function()
-    local buf1, win1 = add_buffer(tmpdir .. '/a/foo.lua')
-    local buf2, win2 = add_buffer(tmpdir .. '/b/foo.lua')
+    local buf1, win1 = add_buffer(cwd .. '/a/foo.lua')
+    local buf2, win2 = add_buffer(cwd .. '/b/foo.lua')
 
     assert.are.same(
       { 'a', 'foo.lua' },
@@ -92,9 +97,9 @@ describe('[source][path]', function()
   end)
 
   it('extends depth by the minimum needed to disambiguate', function()
-    local buf1, win1 = add_buffer(tmpdir .. '/a/b/c')
-    local buf2, win2 = add_buffer(tmpdir .. '/d/b/c')
-    local buf3, win3 = add_buffer(tmpdir .. '/e/c')
+    local buf1, win1 = add_buffer(cwd .. '/a/b/c')
+    local buf2, win2 = add_buffer(cwd .. '/d/b/c')
+    local buf3, win3 = add_buffer(cwd .. '/e/c')
 
     assert.are.same(
       { 'a', 'b', 'c' },
@@ -111,7 +116,7 @@ describe('[source][path]', function()
   end)
 
   it('keeps max_depth for buffers with unique basenames', function()
-    local buf, win = add_buffer(tmpdir .. '/x/bar.lua')
+    local buf, win = add_buffer(cwd .. '/x/bar.lua')
 
     assert.are.same(
       { 'bar.lua' },
@@ -129,8 +134,8 @@ describe('[source][path]', function()
       },
     })
 
-    local buf1, win1 = add_buffer(tmpdir .. '/a/foo.lua')
-    local buf2, win2 = add_buffer(tmpdir .. '/b/foo.lua')
+    local buf1, win1 = add_buffer(cwd .. '/a/foo.lua')
+    local buf2, win2 = add_buffer(cwd .. '/b/foo.lua')
 
     assert.are.same(
       { 'foo.lua' },
