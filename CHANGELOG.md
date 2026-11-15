@@ -1,5 +1,28 @@
 # Changelog
 
+## [14.3.0](https://github.com/Bekaboo/dropbar.nvim/compare/v14.2.1...v14.3.0) (2026-11-15)
+
+
+### Features
+
+* **configs:** add support to makefile rules ([ce20224](https://github.com/Bekaboo/dropbar.nvim/commit/ce202248134e3949aac375fd66c28e5207785b10))
+* **configs:** attach on `BufEnter`, `FileType`, and `LspAttach` ([3460930](https://github.com/Bekaboo/dropbar.nvim/commit/3460930700ca67b4590a69ac3f1d65d5f9658fb6))
+* **configs:** support specifying event pattern in config ([808ba31](https://github.com/Bekaboo/dropbar.nvim/commit/808ba31cde89aec8833e9789f5e04557cd31c9e1))
+* **sources.path:** support unique paths ([1ccc675](https://github.com/Bekaboo/dropbar.nvim/commit/1ccc6750f7c1c15eabf1375f3326b7f4dfa699ef)), closes [#268](https://github.com/Bekaboo/dropbar.nvim/issues/268)
+
+
+### Bug Fixes
+
+* **bar:** cancel pick mode on &lt;C-c&gt; instead of erroring ([#285](https://github.com/Bekaboo/dropbar.nvim/issues/285)) ([cbd37e4](https://github.com/Bekaboo/dropbar.nvim/commit/cbd37e4f499b2149c24093c4ddca11a895865774))
+* **bar:** typo `WinbarNC` (should be `WinBarNC`) ([f7c6fa2](https://github.com/Bekaboo/dropbar.nvim/commit/f7c6fa21e2a7c32576e7a1791774a3736987f467))
+* **sources.treesitter:** nvim 0.12 treesitter api has changed ([#276](https://github.com/Bekaboo/dropbar.nvim/issues/276)) ([f0a42bd](https://github.com/Bekaboo/dropbar.nvim/commit/f0a42bd92aa647e44221397723453403f5e20f16))
+* **tests.path:** use canonical cwd in unique path tests ([19e60f7](https://github.com/Bekaboo/dropbar.nvim/commit/19e60f7b5f94b3268528b07b1379bc4ef4e82f20))
+
+
+### Performance Improvements
+
+* **bar:** make first update snappier ([37a24ae](https://github.com/Bekaboo/dropbar.nvim/commit/37a24aecbea6cf467c74b25f49ee3f8f92ebd7d1))
+
 ## [14.2.1](https://github.com/Bekaboo/dropbar.nvim/compare/v14.2.0...v14.2.1) (2025-07-31)
 
 
