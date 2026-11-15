@@ -11,11 +11,11 @@ jobs:
           - os: ubuntu-22.04
             release-build: nvim-linux-x86_64.tar.gz
             version: nightly
-          - os: macos-13
-            release-build: nvim-macos-x86_64.tar.gz
+          - os: macos-15
+            release-build: nvim-macos-arm64.tar.gz
             version: nightly
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: prepare
         run: |
           test -d nvim || {
