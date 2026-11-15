@@ -1,6 +1,8 @@
 local M = {}
 
-local utils = require('dropbar.utils')
+---@class dropbar_pos_t
+---@field line integer
+---@field character integer
 
 ---@class dropbar_range_t
 ---@field start dropbar_pos_t
@@ -66,18 +68,6 @@ function M.contains_cursor(cursor, range, strict)
         )
       )
     )
-end
-
----Check if two ranges match at either boundary within a tolerance
----Two ranges 'match' when their starts are on the same line and within `tol` columns,
----or their ends are on the same line and within `tol` columns.
----@param r1 dropbar_range_t 0-based range
----@param r2 dropbar_range_t 0-based range
----@param tol integer maximum allowed column delta for boundary comparison (>= 0)
----@return boolean
-function M.matches(r1, r2, tol)
-  return utils.pos.matches(r1.start, r2.start, tol)
-    or utils.pos.matches(r1['end'], r2['end'], tol)
 end
 
 return M

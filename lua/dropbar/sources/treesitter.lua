@@ -2,11 +2,6 @@ local configs = require('dropbar.configs')
 local bar = require('dropbar.bar')
 local utils = require('dropbar.utils')
 
--- Max character offset when comparing symbol boundaries during deduplication
--- If two boundaries are on the same line and within this offset, treat them as
--- equal range
-local DEDUP_RANGE_MATCH_TOL = 2
-
 ---Convert a snake_case string to camelCase
 ---@param str string?
 ---@return string?
@@ -208,129 +203,45 @@ local function valid_node(node, buf, cache)
   return resolve_symbol_info(node, buf, cache) ~= nil
 end
 
----@param a_pos dropbar_pos_t
----@param b_pos dropbar_pos_t
----@return integer
-local function compare_pos(a_pos, b_pos)
-  if a_pos.line ~= b_pos.line then
-    return a_pos.line < b_pos.line and -1 or 1
-  end
-  if a_pos.character ~= b_pos.character then
-    return a_pos.character < b_pos.character and -1 or 1
-  end
-  return 0
-end
-
----@param s1 dropbar_symbol_t
----@param s2 dropbar_symbol_t
----@return boolean
----@return boolean s1_contains_s2
----@return boolean s2_contains_s1
-local function should_dedup_adjacent(s1, s2)
-  if s1.name ~= s2.name or s1.name == '' then
-    return false, false, false
-  end
-
-  local s1_contains_s2, s2_contains_s1
-
-  if s1.name_source and s2.name_source then
-    if
-      utils.range.matches(
-        s1.name_source,
-        s2.name_source,
-        DEDUP_RANGE_MATCH_TOL
-      )
-    then
-      s1_contains_s2 = utils.range.contains(s1.range, s2.range, false)
-      s2_contains_s1 = utils.range.contains(s2.range, s1.range, false)
-      return true, s1_contains_s2, s2_contains_s1
-    end
-  end
-
-  local same_start = compare_pos(s1.range.start, s2.range.start) == 0
-  local same_end = compare_pos(s1.range['end'], s2.range['end']) == 0
-  if not same_start and not same_end then
-    return false, false, false
-  end
-
-  -- Equal ranges should still deduplicate; strict containment would return false
-  if same_start and same_end then
-    return true, false, false
-  end
-
-  s1_contains_s2 = utils.range.contains(s1.range, s2.range, false)
-  s2_contains_s1 = utils.range.contains(s2.range, s1.range, false)
-  return s1_contains_s2 or s2_contains_s1, s1_contains_s2, s2_contains_s1
-end
-
+---Deduplicate adjacent symbols that represent the same underlying node.
+---
+---Symbols are collected by walking the ancestor chain, so `previous.range`
+---always contains `current.range`. Two adjacent symbols are duplicates when
+---the current symbol's name range is contained in the previous symbol's name
+---range:
+---
+---* same start, different end line: keep the narrower (current) symbol,
+---* same line: keep the outer symbol with its full name,
+---* otherwise they are distinct nested symbols and both are kept.
+---
 ---@param symbols dropbar_symbol_t[]
 ---@return dropbar_symbol_t[]
 local function dedup_adjacent_symbols(symbols)
-  if #symbols < 2 then
-    return symbols
-  end
-
-  local deduped = { symbols[1] }
-  for i = 2, #symbols do
-    local current = symbols[i]
+  local deduped = {}
+  for _, symbol in ipairs(symbols) do
     local previous = deduped[#deduped]
+    local prev_name = previous and previous.name_source
+    local curr_name = symbol.name_source
 
     if
-      previous.name_source
-      and current.name_source
-      and utils.range.contains(
-        previous.name_source,
-        current.name_source,
-        false
-      )
+      prev_name
+      and curr_name
+      and utils.range.contains(prev_name, curr_name)
     then
-      local same_start = compare_pos(
-        previous.name_source.start,
-        current.name_source.start
-      ) == 0
-      local current_ends_earlier = compare_pos(
-        current.name_source['end'],
-        previous.name_source['end']
-      ) < 0
-      if
-        same_start
-        and current_ends_earlier
-        and previous.name_source['end'].line
-          ~= current.name_source['end'].line
-      then
-        deduped[#deduped] = current
-        goto continue
-      end
+      local same_start_line = prev_name.start.line == curr_name.start.line
+      local same_start_pos = same_start_line
+        and prev_name.start.character == curr_name.start.character
+      local same_end_line = prev_name['end'].line == curr_name['end'].line
 
-      if
-        previous.name_source.start.line == current.name_source.start.line
-        and previous.name_source['end'].line
-          == current.name_source['end'].line
-      then
-        goto continue
-      end
-    end
-
-    local should_dedup, previous_contains_current, current_contains_previous =
-      should_dedup_adjacent(previous, current)
-    if should_dedup then
-      if previous_contains_current and not current_contains_previous then
-        -- Keep narrower symbol when names overlap.
-        deduped[#deduped] = current
-      elseif current_contains_previous and not previous_contains_current then
-        -- Keep narrower symbol when names overlap.
-        deduped[#deduped] = previous
-      else
-        -- Equal ranges: keep the deeper (later) symbol.
-        deduped[#deduped] = current
+      if same_start_pos and not same_end_line then
+        deduped[#deduped] = symbol
+      elseif not (same_start_line and same_end_line) then
+        table.insert(deduped, symbol)
       end
     else
-      table.insert(deduped, current)
+      table.insert(deduped, symbol)
     end
-
-    ::continue::
   end
-
   return deduped
 end
 
