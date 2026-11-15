@@ -203,6 +203,20 @@ describe('[bar]', function()
       vim.fn.getchar:revert() ---@diagnostic disable-line: undefined-field
       assert.spy(agent).was.called(1)
     end)
+    it('cancels interactive pick mode on keyboard interrupt', function()
+      local agent = spy.on(winbar.components[2], 'on_click')
+      local icon = winbar.components[2].icon
+      stub(vim.fn, 'getchar', function()
+        error('Keyboard interrupt')
+      end)
+      assert.has_no.errors(function()
+        winbar:pick()
+      end)
+      vim.fn.getchar:revert() ---@diagnostic disable-line: undefined-field
+      assert.spy(agent).was_not.called()
+      assert.is_falsy(winbar.in_pick_mode)
+      assert.are.equal(icon, winbar.components[2].icon)
+    end)
     it('picks directly', function()
       local agent = spy.on(winbar.components[2], 'on_click')
       winbar.in_pick_mode = true
