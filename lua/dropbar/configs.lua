@@ -702,6 +702,11 @@ M.opts = {
   sources = {
     path = {
       max_depth = 16,
+      ---When enabled, extend the depth of the path source beyond
+      ---`max_depth` for buffers that would otherwise show the same path as
+      ---another visible buffer, until all such paths are unique
+      ---@type boolean
+      unique = false,
       ---@type string|fun(buf: integer, win: integer): string
       relative_to = function(_, win)
         -- Workaround for Vim:E5002: Cannot find window number

@@ -558,6 +558,164 @@ local fs_normalize = vim.uv.os_uname().sysname:find('Windows', 1, true)
     )
   end
 
+---Given a list of paths sharing the same basename, return for each path the
+---minimal suffix of ancestor directories that uniquely identifies it, or an
+---empty string when the paths are identical
+---Port of the path-diff logic used by the author's statusline to
+---disambiguate buffers with the same file name
+---e.g. { 'a/b/c', 'a/b/d', 'a/e/f' } -> { 'c', 'd', 'f' }
+---     { 'a/b/c', 'd/b/c', 'e/c' } -> { 'a/b', 'd/b', 'e' }
+---@param paths string[] full paths
+---@return string[] diffs indexed like `paths`
+local function path_diffs(paths)
+  local n_paths = 0
+  do
+    local seen = {}
+    for _, path in ipairs(paths) do
+      if not seen[path] then
+        seen[path] = true
+        n_paths = n_paths + 1
+      end
+    end
+  end
+
+  ---@alias dropbar_ipath_t { [1]: string, [2]: integer }
+  ---Paths with their original index
+  ---@type dropbar_ipath_t[]
+  local ipaths = {}
+  for i, path in ipairs(paths) do
+    table.insert(ipaths, { path, i })
+  end
+
+  ---Groups of paths with the same tail
+  ---@type table<string, dropbar_ipath_t[]>
+  local groups = { [''] = ipaths }
+
+  while vim.tbl_count(groups) < n_paths do
+    local g = {} ---@type table<string, dropbar_ipath_t[]>
+    local n_groups = vim.tbl_count(groups)
+    for tail, iheads in pairs(groups) do
+      for _, ihead in ipairs(iheads) do
+        local head = ihead[1]
+        local idx = ihead[2]
+        local t = vim.fn.fnamemodify(head, ':t')
+        local h = vim.fn.fnamemodify(head, ':h')
+        if n_groups > 1 then
+          t = t == '' and tail or tail == '' and t or vim.fs.joinpath(t, tail)
+        end
+        h = h == '.' and '' or h
+
+        if not g[t] then
+          g[t] = {}
+        end
+        table.insert(g[t], { h, idx })
+      end
+    end
+    groups = g
+  end
+
+  local diffs = {} ---@type string[]
+  for tail, iheads in pairs(groups) do
+    for _, ihead in ipairs(iheads) do
+      diffs[ihead[2]] = tail
+    end
+  end
+  return diffs
+end
+
+---Count the number of path components in a path suffix
+---@param path string
+---@return integer
+local function component_count(path)
+  local n = 0
+  while path and path ~= '' and path ~= '.' do
+    n = n + 1
+    path = vim.fs.dirname(path)
+  end
+  return n
+end
+
+---Get the buffer path and its ancestors up to (but not including) the root
+---from `opts.sources.path.relative_to`, ordered from the buffer path to the
+---outermost ancestor
+---@param buf integer buffer handler
+---@param win integer window handler
+---@return string[] paths
+local function path_chain(buf, win)
+  local path_opts = configs.opts.sources.path
+  local paths = {} ---@type string[]
+  local current_path = fs_normalize(vim.api.nvim_buf_get_name(buf))
+  local root = fs_normalize(configs.eval(path_opts.relative_to, buf, win))
+  while
+    current_path
+    and current_path ~= '.'
+    and current_path ~= root
+    and current_path ~= vim.fs.dirname(current_path)
+  do
+    table.insert(paths, current_path)
+    current_path = vim.fs.dirname(current_path)
+  end
+  return paths
+end
+
+---Compute the required path depth for each visible buffer whose dropbar uses
+---the path source, so that buffers sharing a file name show enough ancestor
+---directories to be told apart
+---@return table<integer, integer> buf -> required depth
+local function unique_depths()
+  local path_source ---@type dropbar_source_t?
+  ---Groups of buffers sharing a basename
+  ---@type table<string, { buf: integer, path: string }[]>
+  local by_basename = {}
+
+  for _, wins in pairs((_G.dropbar and _G.dropbar.bars) or {}) do
+    for _, dropbar in pairs(wins) do
+      local buf, win = dropbar.buf, dropbar.win
+      if
+        buf
+        and win
+        and vim.api.nvim_buf_is_valid(buf)
+        and vim.api.nvim_win_is_valid(win)
+      then
+        if not path_source then
+          path_source = require('dropbar.sources.path')
+        end
+        local uses_path_source = false
+        for _, source in ipairs(dropbar.sources or {}) do
+          if source == path_source then
+            uses_path_source = true
+            break
+          end
+        end
+        if uses_path_source then
+          local path = fs_normalize(vim.api.nvim_buf_get_name(buf))
+          if path ~= '' then
+            local basename = vim.fs.basename(path)
+            by_basename[basename] = by_basename[basename] or {}
+            table.insert(by_basename[basename], { buf = buf, path = path })
+          end
+        end
+      end
+    end
+  end
+
+  local depths = {} ---@type table<integer, integer>
+  for _, group in pairs(by_basename) do
+    if #group > 1 then
+      local diffs = path_diffs(vim.tbl_map(function(entry)
+        return entry.path
+      end, group))
+      for i, entry in ipairs(group) do
+        local diff = diffs[i]
+        if diff and diff ~= '' then
+          depths[entry.buf] = 1 + component_count(diff)
+        end
+      end
+    end
+  end
+  return depths
+end
+
 ---Get list of dropbar symbols of the parent directories of given buffer
 ---@param buf integer buffer handler
 ---@param win integer window handler
@@ -572,18 +730,20 @@ local function get_symbols(buf, win, _)
   end
 
   local path_opts = configs.opts.sources.path
+  local paths = path_chain(buf, win)
+  local depth = path_opts.max_depth
+
+  if path_opts.unique then
+    local required = unique_depths()[buf]
+    if required then
+      depth = math.max(depth, required)
+    end
+  end
+  depth = math.min(depth, #paths)
+
   local symbols = {} ---@type dropbar_symbol_t[]
-  local current_path = fs_normalize((vim.api.nvim_buf_get_name(buf)))
-  local root = fs_normalize(configs.eval(path_opts.relative_to, buf, win))
-  while
-    #symbols < configs.opts.sources.path.max_depth
-    and current_path
-    and current_path ~= '.'
-    and current_path ~= root
-    and current_path ~= vim.fs.dirname(current_path)
-  do
-    table.insert(symbols, 1, convert(current_path, buf, win))
-    current_path = vim.fs.dirname(current_path)
+  for i = depth, 1, -1 do
+    table.insert(symbols, convert(paths[i], buf, win))
   end
 
   if vim.bo[buf].mod then

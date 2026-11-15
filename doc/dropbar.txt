@@ -960,6 +960,11 @@ PATH                                                            *dropbar-path*
 - `opts.sources.path.max_depth`: `integer` - Maximum number of symbols to
   return - A smaller number can help to improve performance in deeply nested
   paths - Default: `16`
+- `opts.sources.path.unique`: `boolean` - When enabled, extend the depth of
+  the path source **beyond** `max_depth` for buffers that would otherwise show
+  the same path as another visible buffer, until all such paths are unique -
+  Only buffers whose dropbar uses the path source are examined, and buffers
+  with unique paths keep `max_depth` - Default: `false`
 - `opts.sources.path.relative_to`: `string|fun(buf: integer, win: integer):
   string` - The path to use as the root of the relative path - If a function
   is provided, it will be called with the current buffer number and window id
