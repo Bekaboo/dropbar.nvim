@@ -4,7 +4,7 @@ local utils = require('dropbar.utils')
 local groupid = vim.api.nvim_create_augroup('dropbar.sources.lsp', {})
 local initialized = false
 
----@type table<integer, lsp_document_symbol_t[]>
+---@type table<integer, dropbar_lsp_document_symbol_t[]>
 local lsp_buf_symbols = {}
 setmetatable(lsp_buf_symbols, {
   __index = function(_, k)
@@ -13,40 +13,36 @@ setmetatable(lsp_buf_symbols, {
   end,
 })
 
----@alias lsp_client_t table
+---@alias dropbar_lsp_client_t table
 
----@class lsp_range_t
----@field start {line: integer, character: integer}
----@field end {line: integer, character: integer}
-
----@class lsp_location_t
+---@class dropbar_lsp_location_t
 ---@field uri string
----@field range lsp_range_t
+---@field range dropbar_range_t
 
----@class lsp_document_symbol_t
+---@class dropbar_lsp_document_symbol_t
 ---@field name string
 ---@field kind integer
 ---@field tags? table
 ---@field deprecated? boolean
 ---@field detail? string
----@field range? lsp_range_t
----@field selectionRange? lsp_range_t
----@field children? lsp_document_symbol_t[]
+---@field range? dropbar_range_t
+---@field selectionRange? dropbar_range_t
+---@field children? dropbar_lsp_document_symbol_t[]
 
----@class lsp_symbol_information_t
+---@class dropbar_lsp_symbol_information_t
 ---@field name string
 ---@field kind integer
 ---@field tags? table
 ---@field deprecated? boolean
----@field location? lsp_location_t
+---@field location? dropbar_lsp_location_t
 ---@field containerName? string
 
----@class lsp_symbol_information_tree_t: lsp_symbol_information_t
----@field parent? lsp_symbol_information_tree_t
----@field children? lsp_symbol_information_tree_t[]
----@field siblings? lsp_symbol_information_tree_t[]
+---@class dropbar_lsp_symbol_information_tree_t: dropbar_lsp_symbol_information_t
+---@field parent? dropbar_lsp_symbol_information_tree_t
+---@field children? dropbar_lsp_symbol_information_tree_t[]
+---@field siblings? dropbar_lsp_symbol_information_tree_t[]
 
----@alias lsp_symbol_t lsp_document_symbol_t|lsp_symbol_information_t
+---@alias dropbar_lsp_symbol_t dropbar_lsp_document_symbol_t|dropbar_lsp_symbol_information_t
 
 -- Map symbol number to symbol kind
 -- stylua: ignore start
@@ -87,7 +83,7 @@ local symbol_kind_names = setmetatable({
 ---@alias lsp_symbol_type_t 'SymbolInformation'|'DocumentSymbol'
 
 ---Return type of the symbol table
----@param symbols lsp_symbol_t[] symbol table
+---@param symbols dropbar_lsp_symbol_t[] symbol table
 ---@return lsp_symbol_type_t? type symbol type
 local function symbol_type(symbols)
   if symbols[1] and symbols[1].location then
@@ -98,61 +94,11 @@ local function symbol_type(symbols)
   end
 end
 
----Check if cursor is in range
----@param cursor integer[] cursor position (line, character); (1, 0)-based
----@param range lsp_range_t 0-based range
----@return boolean
-local function cursor_in_range(cursor, range)
-  local cursor0 = { cursor[1] - 1, cursor[2] }
-  -- stylua: ignore start
-  return (
-    cursor0[1] > range.start.line
-    or (cursor0[1] == range.start.line
-        and cursor0[2] >= range.start.character)
-  )
-    and (
-      cursor0[1] < range['end'].line
-      or (cursor0[1] == range['end'].line
-          and cursor0[2] <= range['end'].character)
-    )
-  -- stylua: ignore end
-end
-
----Check if range1 contains range2
----Strict indexing -- if range1 == range2, return false
----@param range1 lsp_range_t 0-based range
----@param range2 lsp_range_t 0-based range
----@return boolean
-local function range_contains(range1, range2)
-  -- stylua: ignore start
-  return (
-    range2.start.line > range1.start.line
-    or (range2.start.line == range1.start.line
-        and range2.start.character > range1.start.character)
-    )
-    and (
-      range2.start.line < range1['end'].line
-      or (range2.start.line == range1['end'].line
-          and range2.start.character < range1['end'].character)
-    )
-    and (
-      range2['end'].line > range1.start.line
-      or (range2['end'].line == range1.start.line
-          and range2['end'].character > range1.start.character)
-    )
-    and (
-      range2['end'].line < range1['end'].line
-      or (range2['end'].line == range1['end'].line
-          and range2['end'].character < range1['end'].character)
-    )
-  -- stylua: ignore end
-end
-
 ---Convert LSP DocumentSymbol into winbar symbol
----@param document_symbol lsp_document_symbol_t LSP DocumentSymbol
+---@param document_symbol dropbar_lsp_document_symbol_t LSP DocumentSymbol
 ---@param buf integer buffer number
 ---@param win integer window number
----@param siblings lsp_document_symbol_t[]? siblings of the symbol
+---@param siblings dropbar_lsp_document_symbol_t[]? siblings of the symbol
 ---@param idx integer? index of the symbol in siblings
 ---@return dropbar_symbol_t
 local function convert_document_symbol(
@@ -200,7 +146,7 @@ end
 ---Convert LSP DocumentSymbol[] into a list of dropbar symbols
 ---Side effect: change dropbar_symbols
 ---LSP Specification document: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/
----@param lsp_symbols lsp_document_symbol_t[]
+---@param lsp_symbols dropbar_lsp_document_symbol_t[]
 ---@param dropbar_symbols dropbar_symbol_t[] (reference to) dropbar symbols
 ---@param buf integer buffer number
 ---@param win integer window number
@@ -219,7 +165,7 @@ local function convert_document_symbol_list(
   -- Parse in reverse order so that the symbol with the largest start position
   -- is preferred
   for idx, symbol in vim.iter(lsp_symbols):enumerate():rev() do
-    if cursor_in_range(cursor, symbol.range) then
+    if utils.range.contains_cursor(cursor, symbol.range) then
       if
         vim.tbl_contains(
           configs.opts.sources.lsp.valid_symbols,
@@ -246,8 +192,8 @@ local function convert_document_symbol_list(
 end
 
 ---Convert LSP SymbolInformation[] into DocumentSymbol[]
----@param symbols lsp_symbol_t LSP symbols
----@return lsp_document_symbol_t[]
+---@param symbols dropbar_lsp_symbol_t LSP symbols
+---@return dropbar_lsp_document_symbol_t[]
 local function unify(symbols)
   if symbol_type(symbols) == 'DocumentSymbol' or vim.tbl_isempty(symbols) then
     return symbols
@@ -262,9 +208,9 @@ local function unify(symbols)
   -- symbol can only be a child or a sibling of the previous symbol in the
   -- same list
   for list_idx, sym in vim.iter(symbols):enumerate():skip(1) do
-    local prev = symbols[list_idx - 1] --[[@as lsp_symbol_information_tree_t]]
+    local prev = symbols[list_idx - 1] --[[@as dropbar_lsp_symbol_information_tree_t]]
     -- If the symbol is a child of the previous symbol
-    if range_contains(prev.location.range, sym.location.range) then
+    if utils.range.contains(prev.location.range, sym.location.range) then
       sym.parent = prev
     else -- Else the symbol is a sibling of the previous symbol
       sym.parent = prev.parent
@@ -326,8 +272,8 @@ local function update_symbols(buf, ttl)
       -- responses can be disordered i.e. later symbols can appear first
       lsp_buf_symbols[buf] = unify(symbols)
 
-      ---@param s1 lsp_document_symbol_t
-      ---@param s2 lsp_document_symbol_t
+      ---@param s1 dropbar_lsp_document_symbol_t
+      ---@param s2 dropbar_lsp_document_symbol_t
       ---@return boolean precedes true if `s1` appears before `s2`
       table.sort(lsp_buf_symbols[buf], function(s1, s2)
         local l1, l2, c1, c2 =
