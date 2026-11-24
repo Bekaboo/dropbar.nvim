@@ -146,4 +146,237 @@ describe('[source][path]', function()
       symbol_names(source_path.get_symbols(buf2, win2, {}))
     )
   end)
+
+  it('extends depth when buffers share parent directories (#287)', function()
+    dropbar.setup({
+      sources = {
+        path = {
+          unique = true,
+          max_depth = 2,
+        },
+      },
+    })
+
+    local buf1, win1 = add_buffer(cwd .. '/a/b/init.lua')
+    local buf2, win2 = add_buffer(cwd .. '/c/b/init.lua')
+
+    assert.are.same(
+      { 'a', 'b', 'init.lua' },
+      symbol_names(source_path.get_symbols(buf1, win1, {}))
+    )
+    assert.are.same(
+      { 'c', 'b', 'init.lua' },
+      symbol_names(source_path.get_symbols(buf2, win2, {}))
+    )
+  end)
+
+  it('extends depth across deeply shared ancestor chains', function()
+    dropbar.setup({
+      sources = {
+        path = {
+          unique = true,
+          max_depth = 2,
+        },
+      },
+    })
+
+    local buf1, win1 = add_buffer(cwd .. '/x/p/q/r/init.lua')
+    local buf2, win2 = add_buffer(cwd .. '/y/p/q/r/init.lua')
+
+    assert.are.same(
+      { 'x', 'p', 'q', 'r', 'init.lua' },
+      symbol_names(source_path.get_symbols(buf1, win1, {}))
+    )
+    assert.are.same(
+      { 'y', 'p', 'q', 'r', 'init.lua' },
+      symbol_names(source_path.get_symbols(buf2, win2, {}))
+    )
+  end)
+
+  it('disambiguates overlapping suffix paths', function()
+    dropbar.setup({
+      sources = {
+        path = {
+          unique = true,
+          max_depth = 2,
+        },
+      },
+    })
+
+    local buf1, win1 = add_buffer(cwd .. '/a/b/init.lua')
+    local buf2, win2 = add_buffer(cwd .. '/c/a/b/init.lua')
+
+    assert.are.same(
+      { 'a', 'b', 'init.lua' },
+      symbol_names(source_path.get_symbols(buf1, win1, {}))
+    )
+    assert.are.same(
+      { 'c', 'a', 'b', 'init.lua' },
+      symbol_names(source_path.get_symbols(buf2, win2, {}))
+    )
+  end)
+
+  it('disambiguates top-level and nested files with shared names', function()
+    dropbar.setup({
+      sources = {
+        path = {
+          unique = true,
+          max_depth = 2,
+        },
+      },
+    })
+
+    local buf1, win1 = add_buffer(cwd .. '/init.lua')
+    local buf2, win2 = add_buffer(cwd .. '/a/init.lua')
+
+    assert.are.same(
+      { 'init.lua' },
+      symbol_names(source_path.get_symbols(buf1, win1, {}))
+    )
+    assert.are.same(
+      { 'a', 'init.lua' },
+      symbol_names(source_path.get_symbols(buf2, win2, {}))
+    )
+  end)
+
+  it('disambiguates nested suffix and deeper parent path', function()
+    dropbar.setup({
+      sources = {
+        path = {
+          unique = true,
+          max_depth = 2,
+        },
+      },
+    })
+
+    local buf1, win1 = add_buffer(cwd .. '/b/init.lua')
+    local buf2, win2 = add_buffer(cwd .. '/a/b/init.lua')
+
+    assert.are.same(
+      { 'b', 'init.lua' },
+      symbol_names(source_path.get_symbols(buf1, win1, {}))
+    )
+    assert.are.same(
+      { 'a', 'b', 'init.lua' },
+      symbol_names(source_path.get_symbols(buf2, win2, {}))
+    )
+  end)
+
+  it('keeps max_depth when the same buffer is open in two windows', function()
+    dropbar.setup({
+      sources = {
+        path = {
+          unique = true,
+          max_depth = 2,
+        },
+      },
+    })
+
+    local buf1, win1 = add_buffer(cwd .. '/a/b/init.lua')
+    vim.cmd.vsplit()
+    local win2 = vim.api.nvim_get_current_win()
+    vim.api.nvim_win_set_buf(win2, buf1)
+    table.insert(created_wins, win2)
+    _G.dropbar.bars[buf1][win2] = bar.dropbar_t:new({
+      buf = buf1,
+      win = win2,
+      sources = { source_path },
+    })
+
+    assert.are.same(
+      { 'b', 'init.lua' },
+      symbol_names(source_path.get_symbols(buf1, win1, {}))
+    )
+    assert.are.same(
+      { 'b', 'init.lua' },
+      symbol_names(source_path.get_symbols(buf1, win2, {}))
+    )
+  end)
+
+  it('caps depth at custom relative_to root', function()
+    local buf1, win1 = add_buffer(cwd .. '/a/b/init.lua')
+    local buf2, win2 = add_buffer(cwd .. '/c/b/init.lua')
+
+    dropbar.setup({
+      sources = {
+        path = {
+          unique = true,
+          max_depth = 2,
+          relative_to = function(buf, _)
+            return buf == buf1 and (cwd .. '/a/b') or cwd
+          end,
+        },
+      },
+    })
+
+    assert.are.same(
+      { 'init.lua' },
+      symbol_names(source_path.get_symbols(buf1, win1, {}))
+    )
+    assert.are.same(
+      { 'c', 'b', 'init.lua' },
+      symbol_names(source_path.get_symbols(buf2, win2, {}))
+    )
+  end)
+
+  it('ignores hidden buffers no longer displayed in a window', function()
+    dropbar.setup({
+      sources = {
+        path = {
+          unique = true,
+          max_depth = 2,
+        },
+      },
+    })
+
+    local buf1, win1 = add_buffer(cwd .. '/a/b/init.lua')
+    local _, win2 = add_buffer(cwd .. '/c/b/init.lua')
+
+    assert.are.same(
+      { 'a', 'b', 'init.lua' },
+      symbol_names(source_path.get_symbols(buf1, win1, {}))
+    )
+
+    local buf3 = vim.api.nvim_create_buf(true, false)
+    vim.api.nvim_buf_set_name(buf3, cwd .. '/other.lua')
+    table.insert(created_bufs, buf3)
+    vim.api.nvim_win_set_buf(win2, buf3)
+    _G.dropbar.bars[buf3] = {}
+    _G.dropbar.bars[buf3][win2] = bar.dropbar_t:new({
+      buf = buf3,
+      win = win2,
+      sources = { source_path },
+    })
+
+    assert.are.same(
+      { 'b', 'init.lua' },
+      symbol_names(source_path.get_symbols(buf1, win1, {}))
+    )
+  end)
+
+  it(
+    'does not extend depth with shared parents when unique is disabled',
+    function()
+      dropbar.setup({
+        sources = {
+          path = {
+            unique = false,
+            max_depth = 2,
+          },
+        },
+      })
+
+      local buf1, win1 = add_buffer(cwd .. '/a/b/init.lua')
+      local buf2, win2 = add_buffer(cwd .. '/c/b/init.lua')
+
+      assert.are.same(
+        { 'b', 'init.lua' },
+        symbol_names(source_path.get_symbols(buf1, win1, {}))
+      )
+      assert.are.same(
+        { 'b', 'init.lua' },
+        symbol_names(source_path.get_symbols(buf2, win2, {}))
+      )
+    end
+  )
 end)

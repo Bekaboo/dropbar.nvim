@@ -591,19 +591,25 @@ local function path_diffs(paths)
   ---@type table<string, dropbar_ipath_t[]>
   local groups = { [''] = ipaths }
 
+  local iter = 0
   while vim.tbl_count(groups) < n_paths do
+    iter = iter + 1
     local g = {} ---@type table<string, dropbar_ipath_t[]>
     local n_groups = vim.tbl_count(groups)
+    local progressed = false
     for tail, iheads in pairs(groups) do
       for _, ihead in ipairs(iheads) do
         local head = ihead[1]
         local idx = ihead[2]
         local t = vim.fn.fnamemodify(head, ':t')
         local h = vim.fn.fnamemodify(head, ':h')
-        if n_groups > 1 then
+        if iter > 2 or n_groups > 1 then
           t = t == '' and tail or tail == '' and t or vim.fs.joinpath(t, tail)
         end
         h = h == '.' and '' or h
+        if h ~= head then
+          progressed = true
+        end
 
         if not g[t] then
           g[t] = {}
@@ -612,6 +618,9 @@ local function path_diffs(paths)
       end
     end
     groups = g
+    if not progressed then
+      break
+    end
   end
 
   local diffs = {} ---@type string[]
@@ -676,6 +685,7 @@ local function unique_depths()
         and win
         and vim.api.nvim_buf_is_valid(buf)
         and vim.api.nvim_win_is_valid(win)
+        and vim.api.nvim_win_get_buf(win) == buf
       then
         if not path_source then
           path_source = require('dropbar.sources.path')
