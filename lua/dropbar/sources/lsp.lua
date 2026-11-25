@@ -279,6 +279,75 @@ local function unify(symbols)
   return document_symbols
 end
 
+---@type table<dropbar_t, boolean>
+local pending_dropbar_updates = setmetatable({}, { __mode = 'k' })
+
+---Find an opened root menu associated with the given dropbar
+---@param dropbar dropbar_t
+---@return dropbar_menu_t?
+local function get_open_root_menu(dropbar)
+  for _, menu in pairs(utils.menu.get() or {}) do
+    local root = menu:root()
+    if root and root.is_opened and root.prev_win == dropbar.win then
+      return root
+    end
+  end
+  for _, component in ipairs(dropbar.components) do
+    if component.menu and component.menu.is_opened then
+      return component.menu:root()
+    end
+  end
+end
+
+---Update a dropbar, holding back the update until the user leaves any open menu
+---@param dropbar dropbar_t
+local function update_dropbar(dropbar)
+  if
+    not dropbar.win
+    or not dropbar.buf
+    or not vim.api.nvim_win_is_valid(dropbar.win)
+    or not vim.api.nvim_buf_is_valid(dropbar.buf)
+  then
+    pending_dropbar_updates[dropbar] = nil
+    return
+  end
+
+  local root_menu = get_open_root_menu(dropbar)
+  if
+    root_menu
+    and root_menu.win
+    and vim.api.nvim_win_is_valid(root_menu.win)
+  then
+    if pending_dropbar_updates[dropbar] then
+      return
+    end
+    pending_dropbar_updates[dropbar] = true
+    vim.api.nvim_create_autocmd('WinClosed', {
+      group = groupid,
+      pattern = tostring(root_menu.win),
+      once = true,
+      callback = vim.schedule_wrap(function()
+        pending_dropbar_updates[dropbar] = nil
+        update_dropbar(dropbar)
+      end),
+    })
+    return
+  end
+
+  pending_dropbar_updates[dropbar] = nil
+  if vim.api.nvim_win_get_buf(dropbar.win) == dropbar.buf then
+    dropbar:update()
+  end
+end
+
+---Update all dropbars attached to `buf`, deferring any with an open menu
+---@param buf integer
+local function update_buf_dropbars(buf)
+  for _, dropbar in pairs(utils.bar.get({ buf = buf })) do
+    update_dropbar(dropbar)
+  end
+end
+
 ---Update LSP symbols from an LSP client
 ---Side effect: update symbol_list
 ---@param buf integer buffer handler
@@ -322,6 +391,8 @@ local function update_symbols(buf, ttl)
         return
       end
 
+      local was_empty = vim.tbl_isempty(lsp_buf_symbols[buf])
+
       -- Unify symbols to common format and sort by position since LSP
       -- responses can be disordered i.e. later symbols can appear first
       lsp_buf_symbols[buf] = unify(symbols)
@@ -345,6 +416,12 @@ local function update_symbols(buf, ttl)
         -- - https://www.lua.org/manual/5.4/manual.html#pdf-table.sort
         return l1 < l2 or l1 == l2 and c1 < c2
       end)
+
+      if was_empty then
+        vim.schedule(function()
+          update_buf_dropbars(buf)
+        end)
+      end
     end,
     buf
   )
@@ -392,9 +469,7 @@ local function detach(buf)
     vim.api.nvim_del_autocmd(vim.b[buf].dropbar_lsp_attached)
     vim.b[buf].dropbar_lsp_attached = nil
     lsp_buf_symbols[buf] = nil
-    for _, dropbar in pairs(_G.dropbar.bars[buf]) do
-      dropbar:update()
-    end
+    update_buf_dropbars(buf)
   end
 end
 
@@ -428,6 +503,32 @@ local function init()
       local client = vim.lsp.get_client_by_id(id)
       if client and client:supports_method('textDocument/documentSymbol') then
         attach(args.buf)
+      end
+    end,
+  })
+
+  vim.api.nvim_create_autocmd({ 'LspProgress' }, {
+    desc = 'Update LSP symbols when LS finishes loading.',
+    group = groupid,
+    pattern = 'end',
+    callback = function(args)
+      local id = args.data and args.data.client_id
+      if not id then
+        return
+      end
+      local client = vim.lsp.get_client_by_id(id)
+      if client and client:supports_method('textDocument/documentSymbol') then
+        local attached_bufs = client.attached_buffers
+          or (args.buf and { [args.buf] = true } or {})
+        for buf in pairs(attached_bufs) do
+          if
+            vim.api.nvim_buf_is_valid(buf)
+            and vim.b[buf].dropbar_lsp_attached
+            and vim.tbl_isempty(lsp_buf_symbols[buf])
+          then
+            update_symbols(buf)
+          end
+        end
       end
     end,
   })
